@@ -1,4 +1,4 @@
-namespace Boojs.Compilation
+namespace Boojs.Compiler
 
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem

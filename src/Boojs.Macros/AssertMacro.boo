@@ -6,4 +6,4 @@ import Boo.Lang.Compiler.Ast
 macro assert:
 
     condition, = assert.Arguments
-    yield [| raise Exception($(condition.ToCodeString())) if not $condition |]
+    yield [| raise $(condition.ToCodeString()) if not $condition |]

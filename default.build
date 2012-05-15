@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
-<project name="boojs" default="test">
+<project name="boojs" default="boojs">
 
 	<!--
 	Define the right values for your system in a build.properties file.
 	-->
 
-	<property name="build.dir" value="bin" />
+	<property name="build.dir" value="build" />
 	<property name="dist.dir" value="dist" />
   <property name="boo.dir" value="lib" />
 	
 	<include buildfile="build.properties" if="${file::exists('build.properties')}" />
 	<!--<include buildfile="${boo.dir}/../tests/nunit.inc" />-->
 	
-	<target name="all" depends="test">
+	<target name="all" depends="boojs">
 	</target>
 	
 	<target name="dist" depends="boojs">
@@ -23,20 +23,8 @@
 				<include name="*.exe" />
 				<include name="*.dll" />
 				<include name="*.mdb" />
-				<exclude name="*.Tests.*" />
 			</fileset>
 		</copy>
-	</target>
-	
-	<target name="test" depends="dist, Boojs.Compilation.Tests">
-		<nunit2>
-			<formatter type="Plain" />
-			<test>
-				<assemblies basedir="${build.dir}">
-					<include name="Boojay.Compilation.Tests.dll" />
-				</assemblies>
-			</test>
-		</nunit2>
 	</target>
 	
 	<target name="boojs" depends="copy-libs">
@@ -54,8 +42,8 @@
 			</sources>
 		</booc>
 	
-		<booc target="library" output="${build.dir}/Boojs.Compilation.dll">
-			<sources basedir="src/Boojs.Compilation">
+		<booc target="library" output="${build.dir}/Boojs.Compiler.dll">
+			<sources basedir="src/Boojs.Compiler">
 				<include name="**/*.boo" />
 			</sources>
 			<references basedir="${build.dir}">
@@ -70,15 +58,15 @@
 				<include name="*.boo" />
 			</sources>
 			<references basedir="${build.dir}">
-				<include name="Boojay.Compilation.dll" />
+				<include name="Boojay.Compiler.dll" />
 			</references>
 		</booc>
 		
-		<exec program="${build.dir}/boojs.exe" workingdir="${build.dir}" useruntimeengine="true">
+		<!-- exec program="${build.dir}/boojs.exe" workingdir="${build.dir}" useruntimeengine="true">
 			<arg value="-srcdir:${path::get-full-path('src/Boojs.Lang')}" />
 			<arg value="-out:${path::get-full-path(build.dir)}" />
 			<arg value="-verbose" />
-		</exec>
+		</exec -->
 	</target>
 
 	<target name="clean">

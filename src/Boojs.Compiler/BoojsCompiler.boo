@@ -3,19 +3,20 @@ namespace Boojs.Compiler
 import Boo.Lang.Environments
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.TypeSystem
-import Boojs.Compiler.TypeSystem
+
 
 def newBoojsCompiler():
-    return newBoojsCompiler(BoojsPipelines.ProduceBytecode())
+    return newBoojsCompiler(BoojsPipelines.ProduceJs())
 
-def newBoojayCompiler(pipeline as CompilerPipeline):
+def newBoojsCompiler(pipeline as CompilerPipeline):
     parameters = newBoojsCompilerParameters()
     parameters.Pipeline = pipeline
     return BooCompiler(parameters)
 
 def newBoojsCompilerParameters():
     # TODO: Do we need our custom TypeSystem provider?
-    parameters = CompilerParameters(JavaReflectionTypeSystemProvider.SharedTypeSystemProvider, true)
+    #parameters = CompilerParameters(JavaReflectionTypeSystemProvider.SharedTypeSystemProvider, true)
+    parameters = CompilerParameters()
     # TODO: ???
     #parameters.References.Add(typeof(java.lang.Object).Assembly)
 

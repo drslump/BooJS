@@ -1,11 +1,12 @@
-namespace Boojs.Compilation.Steps
+namespace Boojs.Compiler.Steps
 
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.TypeSystem.Services
 
-class JsPrinterVisitor(Visitors.BooPrinterVisitor):
+#class JsPrinterVisitor(Visitors.BooPrinterVisitor):
+class JsPrinterVisitor(Visitors.TextEmitter):
 
     # TODO: Comments are not present in the AST?
 
@@ -485,10 +486,10 @@ class JsPrinterVisitor(Visitors.BooPrinterVisitor):
 
 
 
-class PrintBoojs(PrintBoo):
+class PrintJs(PrintBoo):
 
     override def Run():
-        visitor = BoojsPrinterVisitor(OutputWriter)
+        visitor = JsPrinterVisitor(OutputWriter)
         visitor.Print(CompileUnit);
 
 

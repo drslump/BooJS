@@ -1,4 +1,4 @@
-namespace Boojs.Compilation.Steps
+namespace Boojs.Compiler.Steps
 
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem

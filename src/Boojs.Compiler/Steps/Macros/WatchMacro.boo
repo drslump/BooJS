@@ -1,4 +1,4 @@
-namespace Boojs.Compilation.Steps.Macros
+namespace Boojs.Compiler.Steps.Macros
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast

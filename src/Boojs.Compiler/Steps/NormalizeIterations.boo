@@ -1,11 +1,9 @@
-namespace Boojs.Compilation.Steps
+namespace Boojs.Compiler.Steps
 
 import Boo.Lang.PatternMatching
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.Steps
-
-import Boojs.Compilation.TypeSystem
 
 class NormalizeIterations(AbstractVisitorCompilerStep):
     
@@ -36,7 +34,8 @@ class NormalizeIterations(AbstractVisitorCompilerStep):
     RuntimeServices_GetEnumerable:
         get:
             if _RuntimeServices_GetEnumerable is null:
-                _RuntimeServices_GetEnumerable = resolveMethod(Boojay.Lang.RuntimeServices, "GetEnumerable")
+                #_RuntimeServices_GetEnumerable = resolveMethod(Boojs.Lang.RuntimeServices, "GetEnumerable")
+                raise 'Boojs.Lang.RuntimeServices not implemented'
             return _RuntimeServices_GetEnumerable
             
     def resolveMethod(type as System.Type, methodName as string):
@@ -45,5 +44,5 @@ class NormalizeIterations(AbstractVisitorCompilerStep):
     def typeOf(e as Expression):
         return typeSystem().GetExpressionType(e)
         
-    def typeSystem() as JavaTypeSystem:
-        return self.TypeSystemServices
+    #def typeSystem() as JavaTypeSystem:
+    #    return self.TypeSystemServices

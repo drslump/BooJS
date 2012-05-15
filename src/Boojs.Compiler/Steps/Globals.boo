@@ -1,4 +1,4 @@
-namespace Boojs.Compilation.Steps
+namespace Boojs.Compiler.Steps
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.TypeSystem
@@ -38,7 +38,9 @@ def isJavaLangObject(type as IType):
 def definitionFor(m as IMethodBase) as IMethodBase:
     if m.DeclaringType.ConstructedInfo is null:
         return m
-    return Boojay.Compilation.TypeSystem.GenericMethodDefinitionFinder(m).find()
+    # TODO: What do we need this for
+    #return Boojs.Compilation.TypeSystem.GenericMethodDefinitionFinder(m).find()
+    raise 'GenericMethodDefinitionFinder not implemented'
 
 def typeOf(e as Expression) as IType:
     match e:

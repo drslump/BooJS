@@ -6,8 +6,7 @@ import System.Diagnostics
 import System.IO as SysIO
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
-import Boojs.Compilation from Boojs.Compilation
-import Boojs.Compilation.TypeSystem from Boojs.Compilation
+import Boojs.Compiler from Boojs.Compiler
 
 def loadAssembly(name as string):
     if SysIO.File.Exists(name):
