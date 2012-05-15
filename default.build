@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project name="boojs" default="test">
+
+	<!--
+	Define the right values for your system in a build.properties file.
+	-->
+
+	<property name="build.dir" value="bin" />
+	<property name="dist.dir" value="dist" />
+  <property name="boo.dir" value="lib" />
+	
+	<include buildfile="build.properties" if="${file::exists('build.properties')}" />
+	<!--<include buildfile="${boo.dir}/../tests/nunit.inc" />-->
+	
+	<target name="all" depends="test">
+	</target>
+	
+	<target name="dist" depends="boojs">
+		<mkdir dir="${dist.dir}" />
+		
+		<copy todir="${dist.dir}">
+			<fileset basedir="${build.dir}">
+				<include name="*.exe" />
+				<include name="*.dll" />
+				<include name="*.mdb" />
+				<exclude name="*.Tests.*" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="test" depends="dist, Boojs.Compilation.Tests">
+		<nunit2>
+			<formatter type="Plain" />
+			<test>
+				<assemblies basedir="${build.dir}">
+					<include name="Boojay.Compilation.Tests.dll" />
+				</assemblies>
+			</test>
+		</nunit2>
+	</target>
+	
+	<target name="boojs" depends="copy-libs">
+    <!-- TODO: Do we need to create the .dll ?? -->
+		<booc target="library" output="${build.dir}/Boojs.Macros.dll">
+			<sources basedir="src/Boojs.Macros">
+				<include name="*.boo" />
+			</sources>
+		</booc>
+		
+    <!-- TODO: Do we need to create the .dll ?? -->
+		<booc target="library" output="${build.dir}/Boojs.Lang.dll">
+			<sources basedir="src/Boojs.Lang">
+				<include name="*.boo" />
+			</sources>
+		</booc>
+	
+		<booc target="library" output="${build.dir}/Boojs.Compilation.dll">
+			<sources basedir="src/Boojs.Compilation">
+				<include name="**/*.boo" />
+			</sources>
+			<references basedir="${build.dir}">
+				<include name="Boo.Lang.Useful.dll" />
+				<include name="Boojs.Macros.dll" />
+				<include name="Boojs.Lang.dll" />
+			</references>
+		</booc>
+		
+		<booc target="exe" output="${build.dir}/boojs.exe">
+			<sources basedir="src/boojs">
+				<include name="*.boo" />
+			</sources>
+			<references basedir="${build.dir}">
+				<include name="Boojay.Compilation.dll" />
+			</references>
+		</booc>
+		
+		<exec program="${build.dir}/boojs.exe" workingdir="${build.dir}" useruntimeengine="true">
+			<arg value="-srcdir:${path::get-full-path('src/Boojs.Lang')}" />
+			<arg value="-out:${path::get-full-path(build.dir)}" />
+			<arg value="-verbose" />
+		</exec>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+	
+	<target name="copy-libs" depends="init">
+		<copy todir="${build.dir}">
+			<fileset basedir="${boo.dir}">
+				<include name="Boo.*.dll" />
+				<include name="booc.*" />
+			</fileset>
+		</copy>
+		
+		<loadtasks assembly="${build.dir}/Boo.NAnt.Tasks.dll" />
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${build.dir}" />
+	</target>
+	
+</project>
