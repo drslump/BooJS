@@ -1,8 +1,6 @@
 namespace Boojs.Compiler
 
-import Boo.Lang.Environments
 import Boo.Lang.Compiler
-import Boo.Lang.Compiler.TypeSystem
 
 
 def newBoojsCompiler():

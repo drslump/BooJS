@@ -1,7 +1,6 @@
 namespace Boojs.Compiler
 
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.TypeSystem
 
 def boojsCompile(unit as CompileUnit):
     compiler = newBoojsCompiler()

@@ -17,13 +17,24 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Remove(NormalizeIterationStatements)
         Remove(OptimizeIterationStatements)
 
-        Add(NormalizeCallables())
-        Add(PatchCallableConstruction())
-        /*Add(InjectCasts())*/
+        # Since JS is dynamic we don't need the additional tooling for duck types
+        Remove(ExpandDuckTypedExpressions)
+        # Same applies to Closures
+        Remove(InjectCallableConversions)
+        Remove(ProcessClosures)
+
+        #Add(NormalizeCallables())
+        #Add(PatchCallableConstruction())
+        #Add(InjectCasts())
+
+        Add(UndoProcessMethod())
+
+        for step in self:
+            print step
 
 
 class ProduceJs(Compile):
 
     def constructor():
-
+        a = 1
         Add(PrintJs())

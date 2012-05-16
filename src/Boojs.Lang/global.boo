@@ -12,3 +12,6 @@ class global(Boo.Lang.IQuackFu):
     def QuackInvoke(name as string, args as (object)) as object:
         pass
 
+def foobar():
+    pass
+
