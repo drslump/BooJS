@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.2.0.8783
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "boojs", "boojs\boojs.booproj", "{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}"
+EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "BooJs.Macros", "Boojs.Macros\BooJs.Macros.booproj", "{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}"
+EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "BooJs.Lang", "Boojs.Lang\BooJs.Lang.booproj", "{D910050A-F1F8-4773-9E34-8252BBE1CDFE}"
+EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "BooJs.Compiler", "BooJs.Compiler\BooJs.Compiler.booproj", "{576D8BA6-B55E-4984-853E-387133D3EC48}"
+EndProject
+Project("{A33008B1-5DAC-44D5-9060-242E3B6E38F2}") = "BooJs.Compiler.Test", "BooJs.Compiler.Test\BooJs.Compiler.Test.booproj", "{EF0D7427-0168-48BF-A021-0956B9D1C22A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Default|Any CPU = Default|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|x86.Build.0 = Debug|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|x86.ActiveCfg = Release|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|x86.Build.0 = Release|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Debug|x86.Build.0 = Debug|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Release|x86.ActiveCfg = Release|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Release|x86.Build.0 = Release|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|x86.Build.0 = Debug|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Release|x86.ActiveCfg = Release|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Release|x86.Build.0 = Release|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Debug|x86.Build.0 = Debug|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Release|x86.ActiveCfg = Release|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Release|x86.Build.0 = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|x86.Build.0 = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576D8BA6-B55E-4984-853E-387133D3EC48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D910050A-F1F8-4773-9E34-8252BBE1CDFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = boojs\boojs.booproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = text/x-boo
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 100
+		$2.NoTabsAfterNonTabs = True
+		$2.RemoveTrailingWhitespace = True
+		$2.EolMarker = Unix
+		$2.inheritsSet = VisualStudio
+		$2.inheritsScope = text/plain
+		$2.scope = text/plain
+		outputpath = ..\build\
+	EndGlobalSection
+EndGlobal
