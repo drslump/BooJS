@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.PatternMatching
 import Boo.Lang.Compiler.Ast
@@ -13,9 +13,8 @@ class NormalizeIterations(AbstractVisitorCompilerStep):
         Visit CompileUnit
         
     override def LeaveForStatement(node as ForStatement):
-
-        return
-        
+        pass
+        /*
         if typeOf(node.Iterator).IsArray: return
         if isGetEnumerableInvocation(node.Iterator): return
         
@@ -23,6 +22,7 @@ class NormalizeIterations(AbstractVisitorCompilerStep):
         // anything comes in
         
         node.Iterator = CodeBuilder.CreateMethodInvocation(RuntimeServices_GetEnumerable, node.Iterator)
+        */
         
     def isGetEnumerableInvocation(e as Expression):
         match e:

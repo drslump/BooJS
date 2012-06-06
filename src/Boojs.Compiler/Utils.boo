@@ -1,9 +1,9 @@
-namespace Boojs.Compiler
+namespace BooJs.Compiler
 
 import Boo.Lang.Compiler.Ast
 
-def boojsCompile(unit as CompileUnit):
-    compiler = newBoojsCompiler()
+def booJsCompile(unit as CompileUnit):
+    compiler = newBooJsCompiler()
     result = compiler.Run(unit)
     assert 0 == len(result.Errors), result.Errors.ToString(true) + unit.ToCodeString()
 

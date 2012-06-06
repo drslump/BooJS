@@ -41,7 +41,7 @@ class CommandLine(AbstractCommandLine):
     public Boo = false
 
     [Option("Prints the expanded js code to stdout.", LongForm: "boojs")]
-    public Boojs = false
+    public BooJs = false
 
     [Option("Enables duck typing.", LongForm: "ducky")]
     public Ducky = false

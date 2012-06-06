@@ -4,11 +4,11 @@ import System.Runtime.InteropServices
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Boojs.Macros")]
+[assembly: AssemblyTitle("BooJs.Macros")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Boojs.Macros")]
+[assembly: AssemblyProduct("BooJs.Macros")]
 [assembly: AssemblyCopyright("Copyright 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

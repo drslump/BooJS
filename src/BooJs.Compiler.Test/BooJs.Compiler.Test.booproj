@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D0769ED8-0F2C-4DBE-A6FE-715C82938A3D}</ProjectGuid>
+    <ProjectGuid>{EF0D7427-0168-48BF-A021-0956B9D1C22A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Test</RootNamespace>
     <AssemblyName>BooJs.Compiler.Test</AssemblyName>
@@ -34,10 +34,42 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Boo.Lang, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <Reference Include="Boo.Lang.PatternMatching, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <Reference Include="Boo.Lang.Parser, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jurassic">
+      <HintPath>lib\Jurassic.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.boo" />
+    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
+      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
+      <Name>BooJs.Compiler</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FixtureRunner.boo" />
+    <Compile Include="OperatorsFixtures.boo" />
+    <Compile Include="ArrayFixtures.boo" />
+    <Compile Include="StatementsFixtures.boo" />
+    <Compile Include="SourceMap.boo" />
+    <Compile Include="PrimitivesFixtures.boo" />
+    <Compile Include="CompilationFixtures.boo" />
+    <Compile Include="ClosuresFixtures.boo" />
+    <Compile Include="DuckTypingFixtures.boo" />
+    <Compile Include="StdlibFixtures.boo" />
+    <Compile Include="DevelFixtures.boo" />
   </ItemGroup>
 </Project>

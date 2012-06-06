@@ -2,36 +2,118 @@ import NUnit.Framework
 
 import Boo.Lang.Parser
 import Boo.Lang.Compiler.Ast
+import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 
-import Jint
+# The JavaScript interpretter
+import Jurassic
+import Jurassic.Library
 
+class ConsoleMock(ObjectInstance):
+    _output = []
 
-class ConsoleMock:
-  _output = []
+    def constructor(engine as ScriptEngine):
+        super(engine)
+        PopulateFunctions()
 
-  def log(itm as string):
-     _output.Add(itm)
-  
-  def log(itm as bool):
-     # Jint prints bool values as True/False instead of true/false
-     log( ('true' if itm else 'false') )
+    [JSFunction(Name:'log')]
+    def log(msg as string):
+        _output.Add(msg)
 
-  def output():
-     return _output.Join("\n")
+    def output():
+        return _output.Join("\n")
 
 
 
 class FixtureRunner:
 
+    static _comp as BooJsCompiler
+
+    static def run(file as string):
+
+      comp = setupCompiler()
+      comp.Parameters.Input.Clear()
+      comp.Parameters.Input.Add(FileInput(file))
+
+      result = comp.Run()
+      assert 0 == len(result.Errors), result.Errors.ToString(true) + result.CompileUnit.ToCodeString()
+
+      module = result.CompileUnit.Modules[0]
+      expected = module.Documentation or ''
+      if expected.IndexOf('@IGNORE') >= 0:
+        Assert.Ignore(expected.Split(char('\n'))[0])
+
+      code = comp.Parameters.OutputWriter.ToString()
+      runTest(code, expected)
+
+
+    static def setupCompiler():
+        if not _comp:
+            pipeline = Pipelines.ProduceBooJs()
+            _comp = newBooJsCompiler(pipeline)
+            _comp.Parameters.Debug = true
+
+        # Reset the output writer
+        _comp.Parameters.OutputWriter = System.IO.StringWriter()
+        return _comp
+
+
+    static def runTest(code as string, expected as string):
+        print '---------------------------------------------[code]-'
+        print code
+
+        # TODO: Check if we can reuse the same engine
+        using engine = ScriptEngine():
+          # Try to target older browser with ES3 (JS 1.5)
+          engine.CompatibilityMode = CompatibilityMode.ECMAScript3
+          # Force strict mode
+          engine.ForceStrictMode = true
+
+          # TODO: Does this help us somehow to get better error reports?
+          #engine.EnableDebugging = true
+
+          # Configure the global environment
+          console = ConsoleMock(engine)
+          engine.SetGlobalValue('console', console)
+
+          # Load runtime
+          engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.js')
+
+          # Wrap code is a function to avoid leaking many globals
+          #code = "(function(){\n\n" + code + "\n\n}).call(this)\n"
+
+          try:
+            engine.Execute(code)
+          except e as JavaScriptException:
+            assert false, e.Message + "\n----------------------\n" + code
+          except e as System.Exception:
+            assert false, e.ToString() + "\n---------------------\n" + code
+
+        print '--------------------------------------------[output]-'
+        print console.output()
+        print '-----------------------------------------------------'
+
+        Assert.AreEqual(expected, console.output())
+
+
+
+
+
+
+
+class FixtureRunner_OLD:
+
     static def run(file as string):
       unit = BooParser.ParseFile(file)
-      main = unit.Modules[0]
-      Assert.IsNotNull(main.Documentation != null,
-          "Expecting documentation for '${file}'")
+      module = unit.Modules[0]
+      #Assert.IsNotNull(main.Documentation, "Expecting documentation for '${file}'")
+      expected = module.Documentation or ''
+
+      if expected.IndexOf('@IGNORE@') >= 0:
+        Assert.Ignore(expected.Split(char('\n'))[0])
 
       code = compile(unit)
-      runTest(code, main.Documentation)
+      runTest(code, expected)
 
     static def compile(unit as CompileUnit):
     
@@ -48,29 +130,38 @@ class FixtureRunner:
       return writer.ToString()
 
     static def runTest(code as string, expected as string):
-        console = ConsoleMock()
-        ctx = _init_jint()
-        ctx.SetParameter('console', console)
- 
         print '---------------------------------------------[code]-'
         print code
         
-        try:
-          program = ctx.Compile(code, true)
-          ctx.Run(program)
-        except e as JintException:
-          assert false, e.ToString() + code
-        except e as System.Exception:
-          assert false, e.ToString() + code
+        # TODO: Check if we can reuse the same engine
+        using engine = ScriptEngine():
+          # Try to target older browser with ES3 (JS 1.5)
+          engine.CompatibilityMode = CompatibilityMode.ECMAScript3
+          # Force strict mode
+          engine.ForceStrictMode = true
+
+          # TODO: Does this help us somehow to get better error reports?
+          #engine.EnableDebugging = true
+
+          # Configure the global environment
+          console = ConsoleMock(engine)
+          engine.SetGlobalValue('console', console)
+          
+          # Load runtime
+          engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.js')
+          
+          # Wrap code is a function to avoid leaking many globals
+          #code = "(function(){\n\n" + code + "\n\n}).call(this)\n"
+          
+          try:
+            engine.Execute(code)
+          except e as JavaScriptException:
+            assert false, e.Message + "\n----------------------\n" + code
+          except e as System.Exception:
+            assert false, e.ToString() + "\n---------------------\n" + code
           
         print '--------------------------------------------[output]-'
         print console.output()
         print '-----------------------------------------------------'
  
         Assert.AreEqual(expected, console.output())
- 
-    protected static def _init_jint():
-        # Saving/Restoring state in Jint is broken :(
-        ctx = JintEngine()
-        ctx.EnableSecurity()
-        return ctx

@@ -1,201 +1,89 @@
 """
-Interfaces for DOM Level 2
+Interfaces for DOM Level 3
 
-Ref: http://www.w3.org/TR/DOM-Level-2-Core/idl-definitions.html
+Ref: http://www.w3.org/TR/DOM-Level-3-Core/idl-definitions.html
 """
-namespace BooJs.Lang.Dom2
+namespace BooJs.Lang.Dom3
+
+import BooJs.Lang.Dom2 as Dom2
 
 
-interface Node:
-    /*
-    static final ELEMENT_NODE as ushort                = 1
-    static final ATTRIBUTE_NODE as ushort              = 2
-    static final TEXT_NODE as ushort                   = 3
-    static final CDATA_SECTION_NODE as ushort          = 4
-    static final ENTITY_REFERENCE_NODE as ushort       = 5
-    static final ENTITY_NODE as ushort                 = 6
-    static final PROCESSING_INSTRUCTION_NODE as ushort = 7
-    static final COMMENT_NODE as ushort                = 8
-    static final DOCUMENT_NODE as ushort               = 9
-    static final DOCUMENT_TYPE_NODE as ushort          = 10
-    static final DOCUMENT_FRAGMENT_NODE as ushort      = 11
-    static final NOTATION_NODE as ushort               = 12
-    */
-
-    //readonly attribute DOMString        nodeName;
-    nodeName as string:
+interface Node(Dom2.Node):
+    baseURI as string:
         get
-    //attribute DOMString        nodeValue;
-    nodevalue as string:
+
+    textContent as string:
         get
         set
 
-    //readonly attribute unsigned short   nodeType;
-    nodeType as ushort:
-        get
-    //readonly attribute Node             parentNode;
-    parentNode as Node:
-        get
-    //readonly attribute NodeList         childNodes;
-    childNodes as NodeList:
-        get
-    //readonly attribute Node             firstChild;
-    firstChild as Node:
-        get
-    //readonly attribute Node             lastChild;
-    lastChild as Node:
-        get
-    //readonly attribute Node             previousSibling;
-    previousSibling as Node:
-        get
-    //readonly attribute Node             nextSibling;
-    nextSibling as Node:
-        get
-    //readonly attribute NamedNodeMap     attributes;
-    attributes as NamedNodeMap:
-        get
-    //readonly attribute Document         ownerDocument;
-    ownerDocument as Document:
-        get
-    //readonly attribute DOMString        namespaceURI;
-    namespaceURI as string:
-        get
-    //attribute DOMString        prefix;
-    prefix as string:
-        get
-        set
-    //readonly attribute DOMString        localName;
-    localName as string:
-        get
-
-    def insertBefore(newChild as Node, refChild as Node) as Node
-    def replaceChild(newChild as Node, oldChild as Node) as Node
-    def removeChild(oldChild as Node) as Node
-    def appendChild(newChild as Node) as Node
-    def hasChildNodes() as bool
-    def cloneNode(deep as bool) as Node
-    def normalize() as void
-    def isSupported(feature as string, version as string) as bool
-    def hasAttributes() as bool
+    def compareDocumentPosition(other as Node) as ushort
+    def isSameNode(other as Node) as bool
+    def lookupPrefix(namespaceURI as string) as string
+    def isDefaultNamespace(namespaceURI as string) as bool
+    def lookupNamespaceURI(prefix as string) as string
+    def isEqualNode(arg as Node) as bool
+    def getFeature(feature as string, version as string) as object # DOMObject
+    def setUserData(key as string, data as object /*DOMUserData*/, handler as UserDataHandler) as object /*DOMUserData*/
+    def getUserData(key as string) as object /*DOMUserData*/
 
 
-
-interface NodeList:
-    //readonly attribute unsigned long    length;
-    length as ulong:
-        get
-
-    def item(index as ulong) as Node
-
-
-interface NamedNodeMap:
-    //readonly attribute unsigned long    length;
-    length as ulong:
-        get
-
-    def getNamedItem(name as string) as Node
-    def setNamedItem(arg as Node) as Node
-    def removeNamedItem(name as string) as Node
-    def item(index as ulong) as Node
-    def getNamedItemNS(namespaceURI as string, localName as string) as Node
-    def setNamedItemNS(arg as Node) as Node
-    def removeNamedItemNS(namespaceURI as string, localName as string) as Node
-
-interface DocumentType(Node):
-    name as string:
-        get
-    entities as NamedNodeMap:
-        get
-    notations as NamedNodeMap:
-        get
-    publicId as string:
-        get
-    systemId as string:
-        get
-    internalSubset as string:
-        get
-
-
-interface DOMImplementation:
-    def hasFeature(feature as string, version as string) as bool
-    def createDocumentType(qualifiedName as string, publicId as string, systemId as string) as DocumentType
-    def createDocument(namespaceURI as string, qualifiedName as string, doctype as DocumentType) as Document
-
-
-interface Element(Node):
-    tagName as string:
-        get
-
-    def getAttribute(name as string) as string
-    def setAttribute(name as string, value as string) as void
-    def removeAttribute(name as string) as void
-    /*
-    Attr               getAttributeNode(in DOMString name);
-    Attr               setAttributeNode(in Attr newAttr)
-    Attr               removeAttributeNode(in Attr oldAttr)
-    NodeList           getElementsByTagName(in DOMString name);
-    DOMString          getAttributeNS(in DOMString namespaceURI,
-                                    in DOMString localName);
-    void               setAttributeNS(in DOMString namespaceURI,
-                                    in DOMString qualifiedName,
-                                    in DOMString value)
-    void               removeAttributeNS(in DOMString namespaceURI,
-                                       in DOMString localName)
-                                        raises(DOMException);
-    Attr               getAttributeNodeNS(in DOMString namespaceURI,
-                                        in DOMString localName);
-    Attr               setAttributeNodeNS(in Attr newAttr)
-                                        raises(DOMException);
-    NodeList           getElementsByTagNameNS(in DOMString namespaceURI,
-                                            in DOMString localName);
-    */
-    def hasAttribute(name as string) as bool
-    def hasAttributeNS(namespaceURI as string, localName as string) as bool
-
-
-interface Attr(Node):
-    name as string:
-        get
-    specified as bool:
-        get
-    value as string:
-        get
-        set
-    ownerElement as Element:
-        get
-
-
-interface DocumentFragment(Node):
+interface NodeList(Dom2.NodeList):
     pass
 
 
-interface CharacterData(Node):
-    data as string:
+interface NamedNodeMap(Dom2.NamedNodeMap):
+    pass
+
+
+interface DocumentType(Dom2.DocumentType):
+    pass
+
+
+interface DOMImplementation(Dom2.DOMImplementation):
+    def getFeature(feature as string, version as string) as object #DOMObject
+
+
+interface Element(Dom2.Element):
+    schemaTypeInfo as TypeInfo:
         get
-        set
 
-    length as ulong:
+    def setIdAttribute(name as string, isId as bool) as void
+    def setIdAttributeNS(namespaceURI as string, localName as string, isId as bool) as void
+    def setIdAttributeNode(idAttr as Attr, isId as bool) as void
+
+interface Attr(Dom2.Attr):
+    schemaTypeInfo as TypeInfo:
+        get
+    isId as bool:
         get
 
-    def substringData(offset as ulong, count as ulong) as string
-    def appendData(arg as string) as void
-    def insertData(offset as ulong, data as string) as void
-    def deleteData(offset as ulong, count as ulong) as void
-    def replaceData(offset as ulong, count as ulong, arg as string) as void
 
-interface Text(CharacterData):
-    def splitText(offset as ulong) as Text
-
-interface Comment(CharacterData):
+interface DocumentFragment(Dom2.DocumentFragment):
     pass
 
-interface CDATASection(Text):
+
+interface CharacterData(Dom2.CharacterData):
     pass
 
-interface EntityReference(Node):
+interface Text(Dom2.Text):
+    isElementContentWhitespace as bool:
+        get
+    wholeText as string:
+        get
+
+    def replaceWholeText(content as string) as Text
+
+
+interface Comment(Dom2.Comment):
     pass
 
-interface ProcessingInstruction(Node):
+interface CDATASection(Dom2.CDATASection):
+    pass
+
+interface EntityReference(Dom2.EntityReference):
+    pass
+
+interface ProcessingInstruction(Dom2.ProcessingInstruction):
     target as string:
         get
 
@@ -203,43 +91,138 @@ interface ProcessingInstruction(Node):
         get
         set
 
-interface Notation(Node):
-    publicId as string:
+interface Notation(Dom2.Notation):
+    pass
+
+interface Entity(Dom2.Entity):
+    inputEncoding as string:
         get
-    systemId as string:
+    xmlEncoding as string:
+        get
+    xmlVersion as string:
         get
 
-interface Entity(Node):
-    publicId as string:
+
+interface Document(Dom2.Document):
+    inputEncoding as string:
         get
-    systemId as string:
+    xmlEncoding as string:
         get
-    notationName as string:
+    xmlStandalone as bool:
+        get
+        set
+    xmlVersion as string:
+        get
+        set
+    strictErrorChecking as bool:
+        get
+        set
+    documentURI as string:
+        get
+        set
+    domConfig as DOMConfiguration:
         get
 
-interface Document(Node):
-    //readonly attribute DocumentType     doctype;
-    doctype as DocumentType:
-        get
-    //readonly attribute DOMImplementation  implementation;
-    implementation as DOMImplementation:
-        get
-    //readonly attribute Element          documentElement;
-    documentElement as Element:
+    def adoptNode(source as Node) as Node
+    def normalizeDocument() as void
+    def renameNode(n as Node, namespaceURI as string, qualifiedName as string) as Node
+
+
+
+# New interfaces in Level 3
+
+interface DOMStringList:
+    length as ulong:
         get
 
-    def createElement(tagName as string) as Element
-    def createDocumentFragment() as DocumentFragment
-    def createTextNode(data as string) as Text
-    def createComment(data as string) as Comment
-    def createCDATASection(data as string) as CDATASection
-    def createProcessingInstruction(target as string, data as string) as ProcessingInstruction
-    def createAttribute(name as string) as Attr
-    def createEntityReference(name as string) as EntityReference
-    def getElementsByTagName(tagname as string) as NodeList
-    def importNode(importedNode as Node, deep as bool) as Node
-    def createElementNS(namespaceURI as string, qualifiedName as string) as Element
-    def createAttributeNS(namespaceURI as string, qualifiedNamed as string) as Attr
-    def getElementsByTagNameNS(namespaceURI as string, localName as string) as NodeList
-    def getElementById(elementId as string) as Element
+    def item(index as ulong) as string
+    def contains(str as string) as bool
 
+interface NameList:
+    length as ulong:
+        get
+
+    def getName(index as ulong) as string
+    def getNamespaceURI(index as ulong) as string
+    def contains(str as string) as bool
+    def containsNS(namespaceURI as string, name as string) as bool
+
+interface DOMImplementationList:
+    length as ulong:
+        get
+
+    def item(index as ulong) as DOMImplementation
+
+interface DOMImplementationSource:
+    def getDOMImplementation(features as string) as DOMImplementation
+    def getDOMImplementationList(features as string) as DOMImplementationList
+
+interface TypeInfo:
+    typeName as string:
+        get
+    typeNamespace as string:
+        get
+
+    // DerivationMethods
+    //const unsigned long       DERIVATION_RESTRICTION         = 0x00000001;
+    //const unsigned long       DERIVATION_EXTENSION           = 0x00000002;
+    //const unsigned long       DERIVATION_UNION               = 0x00000004;
+    //const unsigned long       DERIVATION_LIST                = 0x00000008;
+
+    def isDerivedFrom(typeNamespaceArg as string, typeNameArg as string, derivationMethod as ulong) as bool
+
+interface UserDataHandler:
+
+    // OperationType
+    //const unsigned short      NODE_CLONED                    = 1;
+    //const unsigned short      NODE_IMPORTED                  = 2;
+    //const unsigned short      NODE_DELETED                   = 3;
+    //const unsigned short      NODE_RENAMED                   = 4;
+    //const unsigned short      NODE_ADOPTED                   = 5;
+
+    def handle(operation as ushort, key as string, data as object /*DOMUserData*/, src as Node, dst as Node) as void
+
+interface DOMError:
+
+    // ErrorSeverity
+    //const unsigned short      SEVERITY_WARNING               = 1;
+    //const unsigned short      SEVERITY_ERROR                 = 2;
+    //const unsigned short      SEVERITY_FATAL_ERROR           = 3;
+
+    severity as ushort:
+        get
+    message as string:
+        get
+    type as string:
+        get
+    relatedException as object: #DOMObject
+        get
+    relatedData as object: #DOMObject
+        get
+    location as DOMLocator:
+        get
+
+interface DOMErrorHandler:
+    def handleError(error as DOMError) as bool
+
+interface DOMLocator:
+    lineNumber as long:
+        get
+    columnNumber as long:
+        get
+    byteOffset as long:
+        get
+    utf16Offset as long:
+        get
+    relatedNode as Node:
+        get
+    uri as string:
+        get
+
+interface DOMConfiguration:
+    parameterNames as DOMStringList:
+        get
+
+    def setParameter(name as string, value as object /*DOMUserData*/) as void
+    def getParameter(name as string) as object /*DOMUserData*/
+    def canSetParameter(name as string, value as object /*DOMUserData*/) as bool

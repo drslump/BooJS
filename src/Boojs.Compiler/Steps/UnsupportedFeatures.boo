@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
@@ -28,6 +28,37 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         type.
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
+
+    def OnSlicingExpression(node as SlicingExpression):
+    """ Boo implements python style slicing, allowing to extract/replace ranges. JS does not have
+        a direct syntax for it thus until we can work on converting the slices we flag this
+        feature as unsupported
+    """
+        if len(node.Indices) != 1:
+            NotImplemented node, 'Only one index is supported when slicing'
+
+        slice = node.Indices[0]
+        if not slice.Begin or slice.End or slice.Step:
+            NotImplemented node, 'Range slicing is not supported'
+
+        if slice.Begin isa UnaryExpression and \
+           (slice.Begin as UnaryExpression).Operator == UnaryOperatorType.UnaryNegation:
+            NotImplemented node, 'Slicing with a negative index is not supported'
+
+        print slice.Begin, slice.Begin.NodeType
+
+
+    def _OnUnpackStatement(node as UnpackStatement):
+    """ Boo allows to unpack enumerables into local variables: a, b, c = [1, 2, 3]
+    """
+        NotImplemented node, 'Unpack statements are not supported'
+
+
+    def OnTimeSpanLiteralExpression(node as TimeSpanLiteralExpression):
+    """ Literal timespan values ( 1s, 4d, 3h ...)
+    """
+        NotImplemented node, 'Timespan expressions are not supported'
+
 
     def __OnYieldStatement(node as YieldStatement):
     """ Porting yield/generators to standard Javascript is very difficult and it's not

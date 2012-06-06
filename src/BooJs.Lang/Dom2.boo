@@ -22,49 +22,34 @@ interface Node:
     static final NOTATION_NODE as ushort               = 12
     */
 
-    //readonly attribute DOMString        nodeName;
     nodeName as string:
         get
-    //attribute DOMString        nodeValue;
     nodevalue as string:
         get
         set
-
-    //readonly attribute unsigned short   nodeType;
     nodeType as ushort:
         get
-    //readonly attribute Node             parentNode;
     parentNode as Node:
         get
-    //readonly attribute NodeList         childNodes;
     childNodes as NodeList:
         get
-    //readonly attribute Node             firstChild;
     firstChild as Node:
         get
-    //readonly attribute Node             lastChild;
     lastChild as Node:
         get
-    //readonly attribute Node             previousSibling;
     previousSibling as Node:
         get
-    //readonly attribute Node             nextSibling;
     nextSibling as Node:
         get
-    //readonly attribute NamedNodeMap     attributes;
     attributes as NamedNodeMap:
         get
-    //readonly attribute Document         ownerDocument;
     ownerDocument as Document:
         get
-    //readonly attribute DOMString        namespaceURI;
     namespaceURI as string:
         get
-    //attribute DOMString        prefix;
     prefix as string:
         get
         set
-    //readonly attribute DOMString        localName;
     localName as string:
         get
 

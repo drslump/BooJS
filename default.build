@@ -4,13 +4,11 @@
 	<!--
 	Define the right values for your system in a build.properties file.
 	-->
-
 	<property name="build.dir" value="build" />
 	<property name="dist.dir" value="dist" />
-  <property name="boo.dir" value="lib" />
+    <property name="boo.dir" value="lib" />
 	
 	<include buildfile="build.properties" if="${file::exists('build.properties')}" />
-	<!--<include buildfile="${boo.dir}/../tests/nunit.inc" />-->
 	
 	<target name="all" depends="boojs">
 	</target>
@@ -28,21 +26,22 @@
 	</target>
 	
 	<target name="boojs" depends="copy-libs">
-    <!-- TODO: Do we need to create the .dll ?? -->
-		<booc target="library" output="${build.dir}/Boojs.Macros.dll">
+		<booc target="library" output="${build.dir}/Boojs.Macros.dll"
+			  debug="true">
 			<sources basedir="src/Boojs.Macros">
 				<include name="*.boo" />
 			</sources>
 		</booc>
 		
-    <!-- TODO: Do we need to create the .dll ?? -->
-		<booc target="library" output="${build.dir}/Boojs.Lang.dll">
+		<booc target="library" output="${build.dir}/Boojs.Lang.dll"
+			  debug="true">
 			<sources basedir="src/Boojs.Lang">
 				<include name="*.boo" />
 			</sources>
 		</booc>
 	
-		<booc target="library" output="${build.dir}/Boojs.Compiler.dll">
+		<booc target="library" output="${build.dir}/Boojs.Compiler.dll"
+			  debug="true">
 			<sources basedir="src/Boojs.Compiler">
 				<include name="**/*.boo" />
 			</sources>
@@ -53,12 +52,13 @@
 			</references>
 		</booc>
 		
-		<booc target="exe" output="${build.dir}/boojs.exe">
+		<booc target="exe" output="${build.dir}/boojs.exe"
+			  debug="true">
 			<sources basedir="src/boojs">
 				<include name="*.boo" />
 			</sources>
 			<references basedir="${build.dir}">
-				<include name="Boojay.Compiler.dll" />
+				<include name="Boojs.Compiler.dll" />
 			</references>
 		</booc>
 		
@@ -67,6 +67,28 @@
 			<arg value="-out:${path::get-full-path(build.dir)}" />
 			<arg value="-verbose" />
 		</exec -->
+		<exec program="mono" 
+			  verbose="true"
+			  failonerror="true"
+			  output="test.boo.js">
+			<arg value="--debug" /> <!-- Run mono in debug mode -->
+
+			<arg value="${build.dir}/boojs.exe" />
+			<arg value="-verbose" />
+			<arg value="test.boo" />
+		</exec>
+	</target>
+
+	<target name="test" depends="copy-libs">
+		<booc target="library" output="${build.dir}/Boojs.tests.dll">
+			<sources basedir="tests">
+				<include name="*.boo" />
+			</sources>
+		</booc>
+		<nunit2 verbose="true" failonerror="true">
+			<formatter type="Plain" />
+		    <test assemblyname="${build.dir}/Boojs.tests.dll" />
+		</nunit2>
 	</target>
 
 	<target name="clean">

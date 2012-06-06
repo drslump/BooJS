@@ -1,18 +1,32 @@
-namespace Boojs.Lang
+namespace BooJs.Lang
 
-# TODO: Do we actually need to defined these?
+def range(stop as int):
+    return range(0, stop, 1)
 
-def range(begin as int, end as int) as int:
+def range(start as int, stop as int):
+    return range(start, stop, 1)
+
+def range(start as int, stop as int, step as int) as (int):
     pass
 
-def range(max as int):
-    assert max >= 0
-    return range(0, max)
+def print(*list as (object)) as void:
+    pass
 
-def join(items):
+
+def cat(*list as (object)) as (object):
+""" Concatenates the given enumerable arguments """
+    pass
+
+def join(items as (object)):
     return join(items, ' ')
 
-def join(items, separator) as string:
+def join(items as (object), separator as string) as string:
+    pass
+
+def map(items as (object), callback as callable) as (object):
+    pass
+
+def reversed(items as (object)) as (object):
     pass
 
 def prompt(msg as string):
