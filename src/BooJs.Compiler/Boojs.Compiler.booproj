@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{576D8BA6-B55E-4984-853E-387133D3EC48}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BooJs.Compiler</RootNamespace>
+    <AssemblyName>BooJs.Compiler</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Debug</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <ducky>false</ducky>
+    <culture />
+    <nostdlib>false</nostdlib>
+    <ConsolePause>false</ConsolePause>
+    <genwarnings>false</genwarnings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <ducky>false</ducky>
+    <culture />
+    <nostdlib>false</nostdlib>
+    <ConsolePause>false</ConsolePause>
+    <genwarnings>false</genwarnings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Boo.Lang, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang.Parser, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.boo" />
+    <Compile Include="BooJsCompiler.boo" />
+    <Compile Include="BooJsPipelines.boo" />
+    <Compile Include="CompilerContext.boo" />
+    <Compile Include="CompilerParameters.boo" />
+    <Compile Include="CompilerPipeline.boo" />
+    <Compile Include="Utils.boo" />
+    <Compile Include="Mozilla\Ast.boo" />
+    <Compile Include="Steps\Globals.boo" />
+    <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
+    <Compile Include="Steps\InjectCasts.boo" />
+    <Compile Include="Steps\IntroduceBoojsNamespaces.boo" />
+    <Compile Include="Steps\NormalizeCallables.boo" />
+    <Compile Include="Steps\NormalizeIterations.boo" />
+    <Compile Include="Steps\NormalizeLiterals.boo" />
+    <Compile Include="Steps\NormalizeLoops.boo" />
+    <Compile Include="Steps\PatchCallableConstruction.boo" />
+    <Compile Include="Steps\PrintJs.boo" />
+    <Compile Include="Steps\ProcessGenerators.boo" />
+    <Compile Include="Steps\ProcessGoto.boo" />
+    <Compile Include="Steps\UndoProcessMethod.boo" />
+    <Compile Include="Steps\UnsupportedFeatures.boo" />
+    <Compile Include="Steps\Macros\WatchMacro.boo" />
+    <Compile Include="Steps\InjectImplicitBooleanConversions.boo" />
+    <Compile Include="Steps\OverrideProcessMethodBodies.boo" />
+    <Compile Include="Steps\ProcessTry.boo" />
+    <Compile Include="SourceMap\Base64VLQ.boo" />
+    <Compile Include="SourceMap\MapBuilder.boo" />
+    <Compile Include="TypeSystem\JsTypeSystem.boo" />
+    <Compile Include="Steps\SafeMemberAccess.boo" />
+    <Compile Include="Steps\Preprocess.boo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">
+      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
+      <Name>BooJs.Macros</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Boojs.Lang\BooJs.Lang.booproj">
+      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
+      <Name>BooJs.Lang</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SourceMap\" />
+    <Folder Include="TypeSystem\" />
+  </ItemGroup>
+</Project>
