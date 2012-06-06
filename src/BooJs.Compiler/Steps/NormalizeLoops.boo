@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import System
 import Boo.Lang.Compiler.Ast
@@ -14,6 +14,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
           Fully optimize the range case.
 """
 
+    # If set to true uses a runtime helper to perform the iteration
     SIMPLE_LOOPS = true
 
     override def Run():
@@ -88,8 +89,14 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         # TODO: This doesn't play nice with nested loops in Boo.each
         #Visit node.Block
 
+        # TODO: When using Boo.each() we need to convert a `continue` to a `return` and a
+        #       `break` to a `return Boo.STOP`.
+
         # Override unpacking
         if len(node.Declarations) >= 2:
+            DesugarizeOrThenBlocks(node)
+            ProcessContinueBreak(node.Block)
+
             decl1 = ReferenceExpression(Name: node.Declarations[0].Name)
             decl2 = ReferenceExpression(Name: node.Declarations[1].Name)
             loop = [|
@@ -100,6 +107,9 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
         # Simplified form
         elif SIMPLE_LOOPS:
+            DesugarizeOrThenBlocks(node)
+            ProcessContinueBreak(node.Block)
+
             decl = ReferenceExpression(Name:node.Declarations[0].Name)
             loop = [|
                 Block:
@@ -266,9 +276,50 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         return ReferenceExpression(Name:name)
 
 
-        
+    def ProcessContinueBreak(node as Block):
+    """ Replaces the continue keyword with a return and the break one with a return of Boo.STOP
+    """
+        return if not node
+        for st in node.Statements:
+            if st.NodeType == NodeType.ContinueStatement:
+                node.Statements.Replace(st, [| return |])
+            elif st.NodeType == NodeType.BreakStatement:
+                node.Statements.Replace(st, [| return Boo.STOP |])
+            elif st.NodeType == NodeType.Block:
+                ProcessContinueBreak(st)
+            elif st.NodeType == NodeType.IfStatement:
+                ProcessContinueBreak((st as IfStatement).TrueBlock)
+                ProcessContinueBreak((st as IfStatement).FalseBlock)
+            elif st.NodeType == NodeType.ForStatement:
+                ProcessContinueBreak((st as ForStatement).OrBlock)
+                ProcessContinueBreak((st as ForStatement).ThenBlock)
+            elif st.NodeType == NodeType.WhileStatement:
+                ProcessContinueBreak((st as WhileStatement).OrBlock)
+                ProcessContinueBreak((st as WhileStatement).ThenBlock)
 
-        
+    def ProcessBreakForThenFlag(node as Block, flag as string):
+    """ Signals the use of the break keyword by setting a flag
+    """
+        return if not node
+
+        for st in node.Statements.ToArray():
+            if st.NodeType == NodeType.BreakStatement:
+                idx = node.Statements.IndexOf(st)
+                reference = ReferenceExpression(Name: flag)
+                stmt = ExpressionStatement(Expression:[| $reference = true |])
+                node.Statements.Insert(idx, stmt)
+            elif st.NodeType == NodeType.Block:
+                ProcessBreakForThenFlag(st, flag)
+            elif st.NodeType == NodeType.IfStatement:
+                ProcessBreakForThenFlag((st as IfStatement).TrueBlock, flag)
+                ProcessBreakForThenFlag((st as IfStatement).FalseBlock, flag)
+            elif st.NodeType == NodeType.ForStatement:
+                ProcessBreakForThenFlag((st as ForStatement).OrBlock, flag)
+                ProcessBreakForThenFlag((st as ForStatement).ThenBlock, flag)
+            elif st.NodeType == NodeType.WhileStatement:
+                ProcessBreakForThenFlag((st as WhileStatement).OrBlock, flag)
+                ProcessBreakForThenFlag((st as WhileStatement).ThenBlock, flag)
+
 
 
     def OptimizeRange(decl as ReferenceExpression, node as ForStatement):
@@ -299,49 +350,88 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     def DesugarizeOrThenBlocks(node as WhileStatement):
     """ Converts `or:` and `then:` blocks into simple ifs
     """
-        if not node.OrBlock and not node.ThenBlock:
-            return
+        if node.ThenBlock:
+            # Check for nested before modifying it
+            Visit node.ThenBlock
 
+            ProcessThenBlock(node, node.Block, node.ThenBlock)
+            node.ThenBlock = null
+
+        if node.OrBlock:
+            # Check for nested before modifying it
+            Visit node.OrBlock
+
+            ProcessOrBlock(node, node.Block, node.OrBlock)
+            node.OrBlock = null
+
+    def DesugarizeOrThenBlocks(node as ForStatement):
+    """ Converts `or:` and `then:` blocks into simple ifs
+    """
+        if node.ThenBlock:
+            # Check for nested before modifying it
+            Visit node.ThenBlock
+
+            ProcessThenBlock(node, node.Block, node.ThenBlock)
+            node.ThenBlock = null
+
+        if node.OrBlock:
+            # Check for nested before modifying it
+            Visit node.OrBlock
+
+            ProcessOrBlock(node, node.Block, node.OrBlock)
+            node.OrBlock = null
+
+
+    def ProcessThenBlock(node as Statement, body as Block, block as Block):
         stmts = (node.ParentNode as Block).Statements
-        while_idx = stmts.IndexOf(node)
 
         # Setup a flag in the parent block
-        watch_name = Context.GetUniqueName('watch')
+        watch_name = Context.GetUniqueName('then')
+        watch_ref = ReferenceExpression(watch_name)
         watch_decl = DeclarationStatement(
             Declaration:Declaration(Name:watch_name),
             Initializer:BoolLiteralExpression(Value:false)
         )
-        stmts.Insert(while_idx, watch_decl)
+        node_idx = stmts.IndexOf(node)
+        stmts.Insert(node_idx, watch_decl)
 
         # Trigger the flag if the loop is entered
-        node.Block.Statements.Insert(
-            0, 
+        ProcessBreakForThenFlag(body, watch_name)
+
+        # Check if the loop exited normally (no break)
+        cond = [|
+            if not $watch_ref:
+                $(block)
+        |]
+        node_idx = stmts.IndexOf(node)
+        stmts.Insert(node_idx+1, cond)
+
+
+    def ProcessOrBlock(node as Statement, body as Block, block as Block):
+        stmts = (node.ParentNode as Block).Statements
+
+        # Setup a flag in the parent block
+        watch_name = Context.GetUniqueName('or')
+        watch_ref = ReferenceExpression(watch_name)
+        watch_decl = DeclarationStatement(
+            Declaration:Declaration(Name:watch_name),
+            Initializer:BoolLiteralExpression(Value:false)
+        )
+        node_idx = stmts.IndexOf(node)
+        stmts.Insert(node_idx++, watch_decl)
+
+        # Trigger the flag if the loop is entered
+        body.Statements.Insert(
+            0,
             ExpressionStatement(
-                Expression:[| $(ReferenceExpression(Name:watch_name)) = true |]
+                Expression:[| $watch_ref = true |]
             )
         )
 
-        # Apply the or/then blocks
-        if node.OrBlock and node.ThenBlock:
-            cond = [|
-                if not watch:
-                    $(node.OrBlock)
-                else:
-                    $(node.ThenBlock)
-            |]
-        elif node.OrBlock:
-            cond = [|
-                if not watch:
-                    $(node.OrBlock)
-            |]
-        elif node.ThenBlock:
-            cond = [|
-                if watch:
-                    $(node.ThenBlock)
-            |]
-
-        while_idx = stmts.IndexOf(node)
-        stmts.Insert(while_idx+1, cond)
-        Visit cond
-
-
+        # Check if the loop was not entered at all
+        cond = [|
+            if not $watch_ref:
+                $(block)
+        |]
+        node_idx = stmts.IndexOf(node)
+        stmts.Insert(node_idx+1, cond)

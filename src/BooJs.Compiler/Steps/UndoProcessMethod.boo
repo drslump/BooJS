@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
@@ -94,3 +94,17 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
 
         return false
 
+
+    override def LeaveRaiseStatement(node as RaiseStatement):
+        # Boo allows to re-raise an exception by omitting the exception argument. We always capture
+        # the exception in `__e` so we just define it for empty raise statements.
+        # TODO: Move this to ProcessTry ???
+        if not node.Exception:
+            node.Exception = [| __e |]
+
+        # Boo wraps the raising of literals with System.Exception. We have to undo
+        # that transformation to issue Javascript's native Error one.
+        if node.Exception.NodeType == NodeType.MethodInvocationExpression:
+            ex = node.Exception as MethodInvocationExpression
+            if ex.Target.ToString() == 'System.Exception':
+                ex.Target = [| Error |]

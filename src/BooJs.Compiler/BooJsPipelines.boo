@@ -1,50 +1,65 @@
-namespace Boojs.Compiler.BoojsPipelines
+namespace BooJs.Compiler.Pipelines
 
 import Boo.Lang.Compiler.Steps
-import Boojs.Compiler.Steps as Steps
+import BooJs.Compiler.Steps as Steps
 
 class Compile(Boo.Lang.Compiler.Pipelines.Compile):
     def constructor():
-        # TODO: While in prototyping mode we abuse the Emitter instead of creating
-        #       customized transformation steps
-
         Insert(0, Steps.InitializeEntityNameMatcher())
         #InsertAfter(NormalizeTypeAndMemberDefinitions, NormalizeLiterals())
         Replace(IntroduceGlobalNamespaces, Steps.IntroduceNamespaces())
 
+        # Process safe member access operator
+        # TODO: Do not enable until we have a more solid implementation
+        #InsertBefore(Parsing, Steps.Preprocess())
+        #InsertAfter(Parsing, Steps.SafeMemberAccess())
+
         # Check for unsupported features
         InsertAfter(Parsing, Steps.UnsupportedFeatures())
         InsertAfter(MacroAndAttributeExpansion, Steps.UnsupportedFeatures())
-
-        #InsertBefore(NormalizeIterationStatements, NormalizeIterations())
-        Remove(NormalizeIterationStatements)
-        Remove(OptimizeIterationStatements)
 
         # Since JS is dynamic we don't need the additional tooling for duck types
         Remove(ExpandDuckTypedExpressions)
         # Same applies to Closures
         Remove(InjectCallableConversions)
         Remove(ProcessClosures)
+        # No need to cache/precompile regexp in Javascript
+        Remove(CacheRegularExpressionsInStaticFields)
 
-        # Disable generator processing
+        # Undo some of the staff performed by ProcessMethodBodies
+        InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.UndoProcessMethod())
+        # Override some of the stuff in the gigantic ProcessMethodBodies step
+        Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
+
+        # Relax boolean conversions
+        Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())
+
+        # Use a custom implementation for iterations
+        Remove(NormalizeIterationStatements)
+        Remove(OptimizeIterationStatements)
+        Add(Steps.NormalizeLoops())
+
+        # Adapt try/except statements
+        Add(Steps.ProcessTry())
+
+        # Support `goto`
+        Add(Steps.ProcessGoto())
+
+        # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 
-        #Add(NormalizeCallables())
-        #Add(PatchCallableConstruction())
-        #Add(InjectCasts())
-
-        Add(Steps.UndoProcessMethod())
-
-        Add(Steps.NormalizeLoops())
-        Add(Steps.ProcessGoto())
 
         #for step in self:
         #    print step
+
 
 class ProduceBoo(Compile):
     def constructor():
         Add(PrintBoo())
 
-class ProduceJs(Compile):
+
+class ProduceBooJs(Compile):
     def constructor():
-        Add(Steps.PrintJs())
+        #Add(PrintAst())
+        #Add(PrintBoo())
+        Add(Steps.PrintBooJs())

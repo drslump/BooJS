@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem.Core
@@ -8,5 +8,5 @@ class IntroduceNamespaces(IntroduceGlobalNamespaces):
         NameResolutionService.Reset()
         NameResolutionService.GlobalNamespace = NamespaceDelegator(
                                         NameResolutionService.GlobalNamespace,
-                                        SafeGetNamespace("Boojs.Macros"),
-                                        SafeGetNamespace("Boojs.Lang"))
+                                        SafeGetNamespace("BooJs.Macros"),
+                                        SafeGetNamespace("BooJs.Lang"))

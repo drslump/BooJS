@@ -1,4 +1,4 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
@@ -31,6 +31,8 @@ class ProcessGoto(AbstractTransformerCompilerStep):
             while true: pass 
         |]
         loop.Block.Statements = parent.Statements.PopRange(index+1)
+        # We need to break out of the loop when we reach the end :)
+        loop.Block.Statements.Add(BreakStatement())
 
         parent.Statements.Add(loop)
 

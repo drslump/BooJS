@@ -1,11 +1,16 @@
-namespace Boojs.Compiler
+﻿namespace BooJs.Compiler
 
 import System
+
+import Boo.Lang.Environments
+import Boo.Lang.Compiler
+import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.Ast
 
-import Boojs.Compiler
+import BooJs.Compiler.TypeSystem
 
-class BoojsCompiler:
+
+class BooJsCompiler:
 """ Implements our own compiler façade instead of using the original one.
 """
     [Getter(Parameters)]
@@ -22,34 +27,36 @@ class BoojsCompiler:
 
         context = CompilerContext(Parameters, unit)
         Parameters.Pipeline.Run(context)
+
         return context
 
     def Run():
         return Run(CompileUnit())
         
 
-def newBoojsCompiler():
-    return newBoojsCompiler(BoojsPipelines.ProduceJs())
+def newBooJsCompiler():
+    return newBooJsCompiler(Pipelines.ProduceBooJs())
 
-def newBoojsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
-    parameters = newBoojsCompilerParameters()
+def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
+    parameters = newBooJsCompilerParameters()
     parameters.Pipeline = pipeline
-    return BoojsCompiler(parameters)
+    return BooJsCompiler(parameters)
 
-def newBoojsCompilerParameters():
+def newBooJsCompilerParameters():
     # TODO: Do we need our custom TypeSystem provider?
-    #parameters = CompilerParameters(JavaReflectionTypeSystemProvider.SharedTypeSystemProvider, true)
-    parameters = CompilerParameters()
+    #parameters = CompilerParameters()
+    parameters = CompilerParameters(JsReflectionTypeSystemProvider.SharedTypeSystemProvider) #, true)
+
     # TODO: ???
     #parameters.References.Add(typeof(java.lang.Object).Assembly)
 
     # TODO: Why are we referencing the print macro here? To make them globally available?
-    parameters.References.Add(typeof(Boojs.Macros.PrintMacro).Assembly)
-    parameters.References.Add(typeof(Boojs.Lang.BuiltinsModule).Assembly)
+    parameters.References.Add(typeof(BooJs.Macros.PrintMacro).Assembly)
+    parameters.References.Add(typeof(BooJs.Lang.BuiltinsModule).Assembly)
 
     # TODO: Do we need this?
-    #parameters.Environment = DeferredEnvironment() {
-    #    TypeSystemServices: { JsTypeSystem() }
-    #}
+    parameters.Environment = DeferredEnvironment() {
+        TypeSystemServices: { JsTypeSystem() }
+    }
 
     return parameters

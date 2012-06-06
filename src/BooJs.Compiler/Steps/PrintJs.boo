@@ -1,24 +1,45 @@
-namespace Boojs.Compiler.Steps
+namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler
 
+import BooJs.Compiler.SourceMap
 
-class JsPrinterVisitor(Visitors.TextEmitter):
+
+class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     _context as CompilerContext
+    
+    srcmap as MapBuilder
 
     def constructor(writer as System.IO.TextWriter):
         super(writer)
         IndentText = '  '
 
+        srcmap = MapBuilder()
+
     def Initialize(context as CompilerContext):
         _context = context
 
-
     def Print(ast as CompileUnit):
         OnCompileUnit(ast)
+        
+        WriteLine '//@ sourceMappingURL=map.js.map'
+        print 'var map = ' + srcmap.ToString()
+
+    def WriteLine():
+        srcmap.NewLine()
+        super.WriteLine()
+        
+    def Write(str as string):
+        srcmap.Column += str.Length
+        super.Write(str)
+
+    def Map(node as Node):
+    """ Maps the given node lexical info to the current position in the generated file
+    """
+        srcmap.Segment(node)
 
     def OnBoolLiteralExpression(node as BoolLiteralExpression):
         Write( ('true' if node.Value else 'false') )
@@ -28,18 +49,13 @@ class JsPrinterVisitor(Visitors.TextEmitter):
 
     def OnModule(node as Module):
 
-        # HACK: ProcessMethodBodies step is too complex so we opt for reversing some 
+        # HACK: ProcessMethodBodies step is too complex so we opt for reversing some
         #       of the stuff it does instead of modifying it. Here we just ignore 
         #       any modules it generates to support 'dynamic' features at runtime
         if node.Name == 'CompilerGenerated':
             WriteLine
-            Write '--------------'
+            Write '/*** CompilerGenerated ***********************'
             WriteLine
-            Write ' CompiledGenerated'
-            WriteLine
-            Write '--------------'
-            WriteLine
-
 
         Visit(node.Namespace)
 
@@ -62,15 +78,17 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             WriteAttribute(attr, 'assembly: ')
             WriteLine()
 
+        if node.Name == 'CompilerGenerated':
+            WriteLine '*** /CompilerGenerated **********************/'
 
     def WriteLocals(locals as LocalCollection):
     """ Write locals ensuring they are not repeated """
         found = []
         for local in locals:
+            continue if local.Name == '$locals'
             continue if local.Name in found
             found.Push(local.Name)
             Visit local
-            WriteLine
 
     def OnMethod(m as Method):
 
@@ -83,6 +101,34 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             WriteIndented('// runtime')
             WriteLine()
 
+        if /^\$\w+\$closure\$\d+/.IsMatch(m.Name):
+            print 'Skipping closure method', m.Name
+            return
+
+
+        # HACK!!! Find assignments of $locals.$<name> to define these as local variables
+        # TODO: Improve the algorithm to support all cases
+        # TODO: Move to a separate step
+        def FindClosureLocals(block as Block):
+            for st in block.Statements:
+                if st isa Block:
+                    FindClosureLocals(st)
+                elif st isa Method:
+                    FindClosureLocals((st as Method).Body)
+                elif st isa BlockExpression:
+                    FindClosureLocals((st as BlockExpression).Body)
+                elif st isa ExpressionStatement:
+                    es = st as ExpressionStatement
+                    if es.Expression isa BinaryExpression:
+                        be = es.Expression as BinaryExpression
+                        if /^\$locals\.\$/.IsMatch(be.Left.ToString()):
+                            str = be.Left.ToString()
+                            parts = str.Split(char('.'))
+                            local = Local()
+                            local.Name = parts[1][1:]
+                            m.Locals.Add(local)
+
+        FindClosureLocals(m.Body)
 
         # HACK: If we detect the Main method we just output its statements
         if m.Name == 'Main':
@@ -108,6 +154,20 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         Visit node.Indices[0]
         Write ']'
 
+    def OnUnpackStatement(node as UnpackStatement):
+        WriteLine 'var __unpack;'
+
+        Write '__unpack = '
+        Visit node.Expression
+
+        idx = 0
+        for decl in node.Declarations:
+            Write ", $(decl.Name) = __unpack[$idx]"
+            idx++
+
+        WriteLine ';'
+
+
     def OnBlockExpression(node as BlockExpression):
     """ Javascript has native support for closures thus the conversion is very simple.
     """
@@ -121,9 +181,10 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         and  len(node.Body.Statements[0].ToString()) < 30:
             # TODO: When it's just one statement we should inject a return if not present
             #       Seems like Boo already does that :)
-            Write '{'
+            Write '{ '
+            # TODO: Avoid generating a new line
             Visit node.Body.Statements[0]
-            Write '}'
+            Write ' }'
         else:
             WriteOpenBrace
             Visit(node.Body.Statements)
@@ -145,24 +206,44 @@ class JsPrinterVisitor(Visitors.TextEmitter):
     def WriteCloseBrace():
         WriteCloseBrace(true)
 
+    def WriteAnnotation(str as string):
+        lines = str.Split("\n"[0])
+        if len(lines) == 1:
+            Write '/** ' + str + ' */'
+        else:
+            WriteLine '/**'
+            for ln in lines:
+                WriteIndented ' * '
+                Write ln
+                WriteLine
+            WriteIndented ' */'
+
+
     def OnLocal(node as Local):
-        ilocal = node.Entity as Boo.Lang.Compiler.TypeSystem.ITypedEntity
         # HACK: We should find a better way to compare the type. If it matches 
         #       the special global type (ie: jQuery as global) then we avoid defining
         #       it, which would shadow the global variable
+        #ilocal = node.Entity as Boo.Lang.Compiler.TypeSystem.ITypedEntity
         #if ilocal.Type.ToString() == 'Boojs.Lang.global':
         #    return
 
-        # TODO: Add type annotations
+        entity = node.Entity as TypeSystem.ITypedEntity
+
+        # TODO: Add proper type annotations
         WriteIndented
-        WriteLine "var $(node.Name);"
+        WriteAnnotation "@type {$(entity.Type)}"
+        Write " var $(node.Name);"
+        WriteLine
 
     def OnReferenceExpression(node as ReferenceExpression):
         # TODO: Check name for invalid chars?
-        Write(node.Name)
+        Map node
+        Write node.Name
 
     def OnDeclarationStatement(node as DeclarationStatement):
-        WriteIndented "var $(node.Declaration.Name)"
+        WriteIndented 'var '
+        Map node
+        Write node.Declaration.Name
         if node.Initializer:
             Write ' = '
             Visit node.Initializer
@@ -181,13 +262,10 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             Write keyword + ' ('
             Visit node.Condition
             Write ') '
-            if len(node.TrueBlock.Statements) > 1:
+            if len(node.TrueBlock.Statements):
                 WriteOpenBrace 
                 last_had_braces = true
                 Visit(node.TrueBlock.Statements)
-            elif len(node.TrueBlock.Statements) == 1:
-                last_had_braces = false
-                Visit(node.TrueBlock.Statements[0])
             else:
                 WritePass
 
@@ -206,6 +284,7 @@ class JsPrinterVisitor(Visitors.TextEmitter):
 
         if block:
             if last_had_braces:
+                last_had_braces = false
                 WriteCloseBrace false
                 WriteIndented ' else '
             else:
@@ -218,35 +297,70 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             elif len(block.Statements) == 1:
                 Visit block.Statements
             else:
-                WritePass
+                Write '{}'
+                WriteLine
 
         WriteCloseBrace if last_had_braces 
 
     def WritePass():
-        WriteLine '// pass'
+        WriteLine '"pass";'
 
     def OnConditionalExpression(node as ConditionalExpression):
     """ Convert to the ternary operator.
             (10 if true else 20)  -->  true ? 10 : 20
     """
-        Write '('
-        Visit node.Condition
-        Write ') ? '
-
-        parens = NeedsParensAround(node.TrueValue)
-        Write '(' if parens
-        Visit node.TrueValue
-        Write ')' if parens
+        WriteWithOptionalParens node.Condition
+        Write ' ? '
+        WriteWithOptionalParens node.TrueValue
         Write ' : '
+        WriteWithOptionalParens node.FalseValue
+        
+    def WriteWithOptionalParens(node as Node):
+        parens = NeedsParensAround(node)
+        if parens:
+            WriteWithParens(node)
+        else:
+            Visit node
 
-        parens = NeedsParensAround(node.FalseValue)
-        Write '(' if parens
-        Visit node.FalseValue
-        Write ')' if parens
+    def WriteWithParens(node as Node):
+        Write '('
+        Visit node
+        Write ')'
+
+
+    def OnTryStatement(node as TryStatement):
+
+        WriteIndented
+        Write 'try '
+        WriteOpenBrace
+        Visit node.ProtectedBlock
+
+        assert 1 == len(node.ExceptionHandlers)
+
+        hdl = node.ExceptionHandlers[0]
+        WriteCloseBrace false
+        Write " catch ($(hdl.Declaration.Name)) "
+        WriteOpenBrace
+
+        Visit hdl.Block
+
+        if node.EnsureBlock:
+            WriteCloseBrace false
+            Write ' finally '
+            WriteOpenBrace
+            Visit node.EnsureBlock
+
+        WriteCloseBrace
+
+
+    def OnListLiteralExpression(node as ListLiteralExpression):
+    """ The List type in Boo '[,,,]' is equivalent to the JS array
+    """
+        WriteDelimitedCommaSeparatedList('[', node.Items, ']')
 
     def OnArrayLiteralExpression(node as ArrayLiteralExpression):
-    """ Arrays in Boo are immutable but we convert them to plain JS arrays anyway
-    """ 
+    """ Arrays in Boo '(,,,)' are immutable but we convert them to plain JS arrays anyway
+    """
         WriteDelimitedCommaSeparatedList('[', node.Items, ']')
 
     def OnHashLiteralExpression(node as HashLiteralExpression):
@@ -282,20 +396,26 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         Write(closing)
 
     def OnLabelStatement(node as LabelStatement):
+        Map node
         WriteIndented "$(node.Name):"
 
     def OnGotoStatement(node as GotoStatement):
-        WriteIndented "continue $(node.Label.Name);"
+        WriteIndented
+        Map node
+        Write "continue $(node.Label.Name);"
         WriteLine
 
     def OnSelfLiteralExpression(node as SelfLiteralExpression):
+        Map node
         Write 'this'
 
     def OnCharLiteralExpression(node as CharLiteralExpression):
     """ Chars in JS are strings of length 1 """
+        Map node
         WriteStringLiteral(node.Value)
 
     def OnStringLiteralExpression(node as StringLiteralExpression):
+        Map node
         WriteStringLiteral(node.Value)
 
     def OnRELiteralExpression(node as RELiteralExpression):
@@ -317,16 +437,25 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         # Ignore white space
         re = /\s|\t/.Replace(re, '')
 
+        Map node
         Write "/$re/$mod"
 
     def OnIntegerLiteralExpression(node as IntegerLiteralExpression):
+        Map node
         Write(node.Value.ToString())
 
     def OnDoubleLiteralExpression(node as DoubleLiteralExpression):
+        Map node
         Write(node.Value.ToString("########0.0##########")) #, CultureInfo.InvariantCulture))
 
-
     def OnExpressionStatement(node as ExpressionStatement):
+        # Ignore the assignment of locals produced by closures instrumentation
+        if node.Expression isa BinaryExpression:
+            expr = node.Expression as BinaryExpression
+            if expr.Operator == BinaryOperatorType.Assign:
+                str = expr.Left.ToString()
+                return if str == '$locals'
+
         WriteIndented
         Visit node.Expression
         Visit node.Modifier
@@ -350,19 +479,16 @@ class JsPrinterVisitor(Visitors.TextEmitter):
                 Write concat_str if not first
                 WriteStringLiteral((arg as StringLiteralExpression).Value)
             else:
-      	        # TODO: Use parens around expressions if needed
+                # TODO: Use parens around expressions if needed
                 Write concat_str if not first
                 Visit(arg)
 
             first = false
 
         Write "].join('')" if use_join
-  
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         # TODO: Check if the property name is a valid javascript ident and if not use ['xxx'] syntax
-
-        raise "FOO"
 
         # If the target is the `global` object skip it
         if node.Target.NodeType == NodeType.ReferenceExpression:
@@ -370,10 +496,74 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             if target.Name == 'global':
                 Write node.Name
                 return
+            # Check if it's a class. If so skip it by now
+            # TODO: THIS DOESN'T WORK!!!
+            elif false and target.ExpressionType and target.ExpressionType.BaseType.IsClass:
+                Write node.Name
+                return
 
-        Visit node.Target
-        Write '.'
+        # Remove the $locals.$ prefix for closure variables
+        if node.Target.ToString() == '$locals':
+            Write node.Name[1:]
+            return
+
+        # Check if a node is bound to the main class
+        def RefsMainClass(node as Node):
+            if not node or not node.Entity:
+                return false
+
+            if not node.Entity isa TypeSystem.Internal.InternalClass:
+                return false
+
+            entity = node.Entity as TypeSystem.Internal.InternalClass
+            if not entity.IsClass or not entity.TypeDefinition:
+                return false
+
+            defnode = entity.TypeDefinition as ClassDefinition
+            if defnode.IsNested or not defnode.EnclosingModule:
+                return false
+
+            return true
+
+        # Checks if a node is bound to a builtin type
+        def RefsBuiltIn(node as Node):
+            if not node or not node.Entity:
+                return false
+
+            return node.Entity.EntityType == TypeSystem.EntityType.BuiltinFunction
+
+
+        if node.Target:
+            print 'TARGET: ', node.Target
+            print 'TARGET IsSynthetic', node.Target.IsSynthetic
+
+            entity = node.Target.Entity
+            if entity:
+                print 'TARGET Entity', entity
+                print 'TARGET Entity NodeType', entity.EntityType
+                #if entity isa TypeSystem.ITypedEntity:
+                #    typed = entity as TypeSystem.ITypedEntity
+                #    print 'TARGET IsModule', typed.IsModule
+                #    print 'TARGET IsClass', typed.IsClass
+                #    print 'TARGET IsFinal', typed.IsFinal
+                #    print 'TARGET TypeDefinition', typed.TypeDefinition  # Ast Node
+
+        # Skip the target if it's the MainClass injected by Boo
+        # TODO: Move to step
+        if not RefsMainClass(node.Target):
+            Visit node.Target
+            Write '.'
+
+        if RefsBuiltIn(node.Target):
+            print 'BUILT IN', node.Target
+
+        Map node
         Write node.Name
+
+        # System
+        # .IsSynthetic == false
+        # .Entity isa TypeSystem.Core.ResolvedNamespaces, TypeSystem.Core.AbstractNamespace
+        # .Entity.EntityType == Namespace
 
 
 
@@ -394,7 +584,7 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         */
 
 
-
+        
         # HACK: Boo converts the equality comparison to a runtime call for those atoms
         #       without an static type on the complex ProcessMethodBodies step.
         #       Instead of changing that step we undo the transformation since it's
@@ -429,6 +619,12 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             return
         elif tref =~ 'Boo.Lang.Runtime.RuntimeServices':
             raise "Found a RuntimeServices invocation: $tref"
+        elif tref =~ /^BooJs\.Lang\.BuiltinsModule\./:
+            # TODO: This is a HACK!!!
+            Write 'Boo.' + tref.Substring(len('BooJs.Lang.BuiltinsModule.')) + '('
+            WriteCommaSeparatedList node.Arguments
+            Write ')'
+            return
 
         # Revert: CompilerGenerated.__FooModule_foo$callable0$7_9__(xxx, __addressof__(FooModule.$foo$closure$1))
         if len(node.Arguments) == 2:
@@ -439,6 +635,12 @@ class JsPrinterVisitor(Visitors.TextEmitter):
                     arg = method.Arguments[0]
                     Write "/*CLOSURE: $arg*/"
 
+
+        # Convert: closure.Invoke() -> closure()
+        if node.Target isa MemberReferenceExpression:
+            target = node.Target as MemberReferenceExpression
+            if target.Name == 'Invoke' and target.ExpressionType isa Boo.Lang.Compiler.TypeSystem.Core.AnonymousCallableType:
+                node.Target = target.Target
 
         Visit node.Target
         Write '('
@@ -471,6 +673,8 @@ class JsPrinterVisitor(Visitors.TextEmitter):
     def OnRaiseStatement(node as RaiseStatement):
         WriteIndented
         Write 'throw '
+        if node.Exception isa MethodInvocationExpression:
+            Write 'new '
         Visit node.Exception
         WriteLine
 
@@ -485,38 +689,51 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         WriteCloseBrace
 
     def OnUnlessStatement(node as UnlessStatement):
-        parens = NeedsParensAround(node.Condition)
         WriteIndented 'if (! '
-        Write '(' if parens
-        Visit(node.Condition)
-        Write ')' if parens 
+        WriteWithOptionalParens node.Condition
         Write ') '
-
+        
         WriteOpenBrace
         Visit(node.Block)
         WriteCloseBrace
 
     def OnBreakStatement(node as BreakStatement):
-        WriteIndented 'break;'
+        WriteIndented
+        Map node
+        Write 'break;'
         WriteLine
 
     def OnContinueStatement(node as ContinueStatement):
-        WriteIndented 'continue;'
+        WriteIndented 
+        Map node
+        Write 'continue;'
         WriteLine
 
     def OnUnaryExpression(node as UnaryExpression):
+        # Make sure negation applies correctly to its operand
+        if node.Operator == UnaryOperatorType.LogicalNot:
+            Write '!('
+            Visit node.Operand
+            Write ')'
+            return
+
         Write '(' if NeedsParensAround(node)
-        
+
         isPostOp = AstUtil.IsPostUnaryOperator(node.Operator)
         Write GetUnaryOperatorText(node.Operator) if not isPostOp
+        parens = NeedsParensAround(node.Operand)
+        Write '(' if parens
         Visit node.Operand
+        Write ')' if parens
         Write GetUnaryOperatorText(node.Operator) if isPostOp
 
         Write ')' if NeedsParensAround(node)
 
     def GetUnaryOperatorText(op as UnaryOperatorType):
+        # TODO: In ProcessMethod.ExpandSimpleIncrementDecrement this is expanded
         if op == UnaryOperatorType.PostIncrement or op == UnaryOperatorType.Increment:
             return '++'
+        # TODO: In ProcessMethod.ExpandSimpleIncrementDecrement this is expanded
         elif op == UnaryOperatorType.PostDecrement or op == UnaryOperatorType.Decrement:
             return '--'
         elif op == UnaryOperatorType.UnaryNegation:
@@ -534,25 +751,50 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         else:
             raise 'Invalid operator "' + op + '"'
 
+    def BinaryAssign(node as BinaryExpression):
+        # Wrap in parens if it's an assigment inside an expression
+        parens = not node.ParentNode isa Statement
+        Write '(' if parens
+
+        Visit node.Left
+        Write ' = '
+        Visit node.Right
+
+        Write ')' if parens
+
+    def BinaryExponentiation(node as BinaryExpression):
+        Write 'Math.pow('
+        Visit node.Left
+        Write ', '
+        Visit node.Right
+        Write ')'
+
+    def BinaryMatch(node as BinaryExpression):
+        type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
+        if type.ToString() == 'BooJs.Lang.RegExp':
+            Visit node.Right
+            Write '.test('
+            Visit node.Left
+            Write ')'
+            return
+
+        # handle strings
+        Write '(-1 !== '
+        Visit node.Left
+        Write '.indexOf('
+        Visit node.Right
+        Write '))'
+
+
+
     def OnBinaryExpression(node as BinaryExpression):
 
         if node.Operator == BinaryOperatorType.Assign:
-            Visit node.Left
-            Write ' = '
-            Visit node.Right
+            BinaryAssign(node)
         elif node.Operator == BinaryOperatorType.Exponentiation:
-            Write 'Math.pow('
-            Visit node.Left
-            Write ', '
-            Visit node.Right
-            Write ')'
+            BinaryExponentiation(node)
         elif node.Operator == BinaryOperatorType.Match: # a =~ b
-            # TODO: If we have a runtime we can match regexp too
-            Write '(-1 !== '
-            Visit node.Left
-            Write '.indexOf('
-            Visit node.Right
-            Write '))'
+            BinaryMatch(node)
         elif node.Operator == BinaryOperatorType.NotMatch: # a !~ b
             # TODO: If we have a runtime we can match regexp too
             Write '(-1 === '
@@ -566,6 +808,38 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             Write ' in '
             Visit node.Right
             Write ')'
+        elif node.Operator == BinaryOperatorType.TypeTest: # a isa type -> typeof a === 'type'  OR  a instanceof type
+            # isa rhs is encoded in a typeof expression
+            if node.Right isa TypeofExpression \
+            and (node.Right as TypeofExpression).Type isa SimpleTypeReference:
+                # TODO: We need to convert type names to JS ones somewhere
+                # TODO: Shall we also check for instanceof Number, String, Array... ???
+                type = (node.Right as TypeofExpression).Type as SimpleTypeReference
+
+                if type.Name.IndexOf('Error') >= 0:
+                    Visit node.Left
+                    Write ' instanceof '
+                    Visit node.Right
+                else:
+                    Write 'typeof '
+                    Visit node.Left
+                    Write " === "
+                    if type.Name == 'bool':
+                        Write "'boolean'"
+                    elif type.Name == 'int' or type.Name == 'uint' or type.Name == 'double':
+                        Write "'number'"
+                    elif type.Name == 'void':
+                        Write "'undefined'"
+                    elif type.Name == 'callable':
+                        Write "'function'"
+                    else:
+                        Write "'$(type.Name)'"
+
+            else:
+                Visit node.Left
+                Write ' instanceof '
+                Visit node.Right
+
         else:
             parens = NeedsParensAround(node)
             Write '(' if parens
@@ -573,20 +847,27 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             Write " "
             Write GetBinaryOperatorText(node.Operator)
             Write " "
-            if node.Operator == BinaryOperatorType.TypeTest:
-                # isa rhs is encoded in a typeof expression
-                Visit( (node.Right as TypeofExpression).Type )
-            else: 
-                Visit node.Right
-
+            Visit node.Right
             Write ')' if parens
+
+    def OnSimpleTypeReference(node as SimpleTypeReference):
+        # TODO: Why is this happending?
+        if node.ToString() == 'System.Object' or node.ToString() == 'object':
+            print 'WARNING: SimpleTypeReference = ', node
+            return
+
+        if node.Name.IndexOf('BooJs.Lang.') == 0:
+            Write node.Name.Substring('BooJs.Lang.'.Length)
+        else:
+            Write node.Name
+
 
     def GetBinaryOperatorText(op as BinaryOperatorType):
 
         return '=' if op == BinaryOperatorType.Assign
         # Note: We use equality in value and type in JS
-        return '===' if op == BinaryOperatorType.Equality
-        return '!==' if op == BinaryOperatorType.Inequality
+        return '==' if op == BinaryOperatorType.Equality
+        return '!=' if op == BinaryOperatorType.Inequality
         return '+' if op == BinaryOperatorType.Addition
         return '-' if op == BinaryOperatorType.Subtraction
         return '*' if op == BinaryOperatorType.Multiply
@@ -638,7 +919,7 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         return false if t == NodeType.ArrayLiteralExpression
         return false if t == NodeType.MethodInvocationExpression
         return false if t == NodeType.UnaryExpression
-
+        
         # TODO: Not very sure about this
         if node.ParentNode:
             t = node.ParentNode.NodeType
@@ -683,8 +964,8 @@ class JsPrinterVisitor(Visitors.TextEmitter):
         for param in params:
             if i > 0:
                 Write(', ')
-            if param.IsParamArray:
-                Write('*')
+            #if param.IsParamArray:
+            #    Write('*')
             Visit(param)
             i++
         Write(ed)
@@ -699,24 +980,29 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             if p.IsParamArray: Write("*")
             Visit(p.Type);
         else:
+            Map(p)
             Write(p.Name);
             #WriteTypeReference(p.Type);
 
-
     def OnEnumDefinition(node as EnumDefinition):
         # TODO: Prefix with namespace
+        Write 'var '
+
+        Map node
         Write "$(node.FullName) = "
         WriteOpenBrace
+        first = true
         for member as EnumMember in node.Members:
-            if not member.Initializer:
-                raise 'Enum definition without an initializer value!'
-
+            assert member.Initializer != null, 'Enum definition without an initializer value!'
+            WriteLine ',' if not first
             WriteIndented
+            Map member
             Write member.Name
             Write ': '
             Visit member.Initializer
-            WriteLine
-
+            first = false
+            
+        WriteLine
         WriteCloseBrace
 
     def ___OnClassDefinition(node as ClassDefinition):
@@ -774,25 +1060,12 @@ class JsPrinterVisitor(Visitors.TextEmitter):
 
 
     def OnField(f as Field):
-        #WriteAttributes(f.Attributes, true);
-        #WriteModifiers(f);
-
-        if f.IsStatic:
-            Write f.FullName
-        else:
-            Write f.Name
-        #WriteTypeReference f.Type
-
-        if f.Initializer:
-            Write ' = '
-            Visit f.Initializer
-        else:
-            Write ' = null;'
-            
-        WriteLine
+        # Not supported
+        return
 
     def OnConstructor(node as Constructor):
-        OnMethod(node)
+        # Not supported
+        return
 
 
     def WriteTypeDefinition(keyword, node as TypeDefinition):
@@ -829,28 +1102,27 @@ class JsPrinterVisitor(Visitors.TextEmitter):
             Write 'pass'
 
     def OnExpressionPair(pair as ExpressionPair):
-        print pair
-        Visit(pair.First)
-        Write(": ")
-        Visit(pair.Second)
+        Visit pair.First
+        Write ': '
+        Visit pair.Second
 
     def IsCallableTypeReferenceParameter(p as ParameterDeclaration):
         parent = p.ParentNode
         return parent and parent.NodeType == NodeType.CallableTypeReference
 
     def WriteAttribute(attribute as Attribute, prefix as string):
-        WriteIndented("[")
+        WriteIndented '['
         Write(prefix) if prefix
         Write(attribute.Name)
         if attribute.Arguments.Count > 0 or attribute.NamedArguments.Count > 0:
-            Write("(")
+            Write('(')
             WriteCommaSeparatedList(attribute.Arguments)
             if attribute.NamedArguments.Count > 0:
                 if attribute.Arguments.Count > 0:
-                    Write(", ")
+                    Write(', ')
                 WriteCommaSeparatedList(attribute.NamedArguments)
-            Write(")")
-        Write("]")
+            Write ')'
+        Write ']'
 
     def WriteStringLiteral(text as string):
         WriteStringLiteral text, "'"
@@ -862,30 +1134,31 @@ class JsPrinterVisitor(Visitors.TextEmitter):
 
     def WriteStringContent(text as string, quote as string):
         for ch in text:
-            if ch == '\r':
+            str = ch.ToString()  # Convet to string from char
+            if str == '\r':
                 Write '\\r'
-            elif ch == '\n':
+            elif str == '\n':
                 Write '\\n'
-            elif ch == '\t':
+            elif str == '\t':
                 Write '\\t'
-            elif ch == '\0':
+            elif str == '\0':
                 Write '\\0'
-            elif ch == '\\':
+            elif str == '\\':
                 Write '\\\\'
-            elif ch == "'" and ch == quote:
+            elif str == "'" and str == quote:
                 Write "\\'"
-            elif ch == '"' and ch == quote:
+            elif str == '"' and str == quote:
                 Write '\\"'
             else:
-                Write(ch.ToString())
+                Write(str)
 
 
 
 
-class PrintJs(PrintBoo):
+class PrintBooJs(PrintBoo):
 
     override def Run():
-        visitor = JsPrinterVisitor(OutputWriter)
+        visitor = BooJsPrinterVisitor(OutputWriter)
         visitor.Initialize(Context)
         visitor.Print(CompileUnit);
 

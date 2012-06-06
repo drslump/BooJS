@@ -1,4 +1,4 @@
-namespace Boojs.Compiler
+namespace BooJs.Compiler
 
 import Boo.Lang.Compiler.Ast
 
