@@ -1,1 +1,0 @@
-Z:\www\boojs\src\Boojs.Compiler\obj\Debug\ResolveAssemblyReference.cache
