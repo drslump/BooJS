@@ -17,12 +17,8 @@ my_Number as Number = 100
 my_String as String = 'string'
 my_RegExp as RegExp = /foobar/i
 #my_Function as Function = {x as int| x * 2}
-my_Object as Object = null
-my_Object.prototype.foo = 'foo'
-my_Object(10, 20)
-
-if "hello" =~ my_RegExp:
-	pass
+my_Object as Object = {}
+my_Object.foo = 'foo'
 
 # Arrays
 my_array_int as (int) = (1,2,3)
@@ -42,10 +38,10 @@ my_bool = my_duck
 
 # Functions/Constructors
 my_func as Function
-my_func(10, 20)
+#my_func(10, 20)
 
 # Creating new instances with the new keyword
 my_obj as Object
-my_obj('foo')  # -> new my_obj('foo')
+#my_obj('foo')  # -> new my_obj('foo')
 # my_cons as Constructor
 # my_cons('foo')  # -> new my_cons('foo')

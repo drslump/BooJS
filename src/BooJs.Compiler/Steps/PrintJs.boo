@@ -70,14 +70,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         if node.Globals:
             Visit(node.Globals.Statements)
 
-        for attr in node.Attributes:
-            WriteAttribute(attr, 'module: ')
-            WriteLine();
-
-        for attr in node.AssemblyAttributes:
-            WriteAttribute(attr, 'assembly: ')
-            WriteLine()
-
         if node.Name == 'CompilerGenerated':
             WriteLine '*** /CompilerGenerated **********************/'
 
@@ -137,13 +129,10 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
 
         WriteCallableDefinitionHeader('function ', m)
-        if IsInterfaceMember(m):
-            WriteLine()
-        else:
-            WriteOpenBrace
-            WriteLocals(m.Locals)
-            Visit m.Body
-            WriteCloseBrace
+        WriteOpenBrace
+        WriteLocals(m.Locals)
+        Visit m.Body
+        WriteCloseBrace
 
     def OnSlicingExpression(node as SlicingExpression):
         if len(node.Indices) != 1:
@@ -366,7 +355,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def OnHashLiteralExpression(node as HashLiteralExpression):
     """ Hashes are plain Javascript objects
     """
-        is_short = len(node.Items) < 4
+        is_short = len(node.Items) < 3
         if is_short:
             Write '{'
         else:
@@ -423,7 +412,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         is that we ignore whitespace to allow the regexps to be somehow more readable while
         Boo's handling is to escape it as part of the match.
 
-            /foo|bar/i      ->  /foo|bar/i
+            / foo | bar /i  ->  /foo|bar/i
             @/ foo | bar /  ->  /foo|bar/i
     """
         re = node.Value
@@ -446,7 +435,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnDoubleLiteralExpression(node as DoubleLiteralExpression):
         Map node
-        Write(node.Value.ToString("########0.0##########")) #, CultureInfo.InvariantCulture))
+        Write(node.Value.ToString("########0.0##########"))
 
     def OnExpressionStatement(node as ExpressionStatement):
         # Ignore the assignment of locals produced by closures instrumentation
@@ -660,19 +649,12 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
 
     def OnReturnStatement(node as ReturnStatement):
-        WriteIndented
-
-        # Modifier needs to be first in JS
-        Visit node.Modifier if node.Modifier
-
-        Write 'return '
+        WriteIndented 'return '
         Visit node.Expression
-        Write ';'
-        WriteLine
+        WriteLine ';'
 
     def OnRaiseStatement(node as RaiseStatement):
-        WriteIndented
-        Write 'throw '
+        WriteIndented 'throw '
         if node.Exception isa MethodInvocationExpression:
             Write 'new '
         Visit node.Exception
@@ -683,16 +665,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Visit node.Condition
         Write ') '
         WriteOpenBrace
-
         Visit node.Block
-
         WriteCloseBrace
 
     def OnUnlessStatement(node as UnlessStatement):
         WriteIndented 'if (! '
         WriteWithOptionalParens node.Condition
         Write ') '
-        
         WriteOpenBrace
         Visit(node.Block)
         WriteCloseBrace
@@ -700,14 +679,12 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def OnBreakStatement(node as BreakStatement):
         WriteIndented
         Map node
-        Write 'break;'
-        WriteLine
+        WriteLine 'break;'
 
     def OnContinueStatement(node as ContinueStatement):
         WriteIndented 
         Map node
-        Write 'continue;'
-        WriteLine
+        WriteLine 'continue;'
 
     def OnUnaryExpression(node as UnaryExpression):
         # Make sure negation applies correctly to its operand
@@ -930,33 +907,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
         return true
 
-    def IsInterfaceMember(n as TypeMember):
-        return n.ParentNode and n.ParentNode.NodeType == NodeType.InterfaceDefinition
 
     def WriteCallableDefinitionHeader(keyword as string, node as CallableDefinition):
-        /*WriteAttributes(node.Attributes, true)*/
-        /*WriteOptionalModifiers(node)*/
-
         # TODO: Inspect params and return to generate type annotations for Closure
-
         WriteIndented keyword
-
-        em = node as IExplicitMember
-        if em:
-            Visit em.ExplicitInfo
-
-        Write node.Name 
-        if node.GenericParameters.Count > 0:
-            Write('[of ')
-            WriteCommaSeparatedList(node.GenericParameters)
-            Write(']')
-
+        Map node
+        Write node.Name
         WriteParameterList(node.Parameters, '(', ')')
-
-        if node.ReturnTypeAttributes.Count > 0:
-            Write ' '
-            #WriteAttributes(node.ReturnTypeAttributes, false)
-
 
     def WriteParameterList(params as ParameterDeclarationCollection, st, ed):
         Write(st)
@@ -964,25 +921,15 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         for param in params:
             if i > 0:
                 Write(', ')
-            #if param.IsParamArray:
-            #    Write('*')
             Visit(param)
             i++
         Write(ed)
 
     def OnParameterDeclaration(p as ParameterDeclaration):
-        /*WriteAttributes(p.Attributes, false)*/
+        if p.IsParamArray: Write("*")
+        Map(p)
+        Write(p.Name);
 
-        if p.IsByRef:
-            Write "ref "
-
-        if IsCallableTypeReferenceParameter(p):
-            if p.IsParamArray: Write("*")
-            Visit(p.Type);
-        else:
-            Map(p)
-            Write(p.Name);
-            #WriteTypeReference(p.Type);
 
     def OnEnumDefinition(node as EnumDefinition):
         # TODO: Prefix with namespace
@@ -1106,23 +1053,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ': '
         Visit pair.Second
 
-    def IsCallableTypeReferenceParameter(p as ParameterDeclaration):
-        parent = p.ParentNode
-        return parent and parent.NodeType == NodeType.CallableTypeReference
-
-    def WriteAttribute(attribute as Attribute, prefix as string):
-        WriteIndented '['
-        Write(prefix) if prefix
-        Write(attribute.Name)
-        if attribute.Arguments.Count > 0 or attribute.NamedArguments.Count > 0:
-            Write('(')
-            WriteCommaSeparatedList(attribute.Arguments)
-            if attribute.NamedArguments.Count > 0:
-                if attribute.Arguments.Count > 0:
-                    Write(', ')
-                WriteCommaSeparatedList(attribute.NamedArguments)
-            Write ')'
-        Write ']'
 
     def WriteStringLiteral(text as string):
         WriteStringLiteral text, "'"
