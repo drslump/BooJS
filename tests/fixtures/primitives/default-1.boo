@@ -1,5 +1,5 @@
+#IGNORE not supported
 """
-@IGNORE@ not supported
 """
 interface IInterface:
 	pass

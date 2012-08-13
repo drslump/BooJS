@@ -1,10 +1,11 @@
+#IGNORE single is not supported
 """
 1: success
 2: success
 4: success
 6: success
 """
-test as single = 0.0
+test as double = 0.0
 if test == 0:
 	print "1: success"	
 if test != 1:

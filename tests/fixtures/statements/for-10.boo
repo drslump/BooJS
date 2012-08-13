@@ -1,5 +1,5 @@
+#IGNORE
 """
-@IGNORE@
 foofoo
 foobar
 1

@@ -1,5 +1,5 @@
+#IGNORE Class not supported
 """
-@IGNORE@ Class not supported
 first
 second
 """

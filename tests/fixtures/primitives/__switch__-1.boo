@@ -1,5 +1,5 @@
+#IGNORE __switch__ is not supported
 """
-@IGNORE@ __switch__ is not supported
 """
 def foo(value as int):
 	__switch__(value, label1, label2, label3)

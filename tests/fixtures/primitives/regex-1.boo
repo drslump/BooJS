@@ -1,16 +1,17 @@
 s = "OK\nfoo\nbar"
 
-assert false == /ok/.match(s)
-assert false == /ok/g.match(s)
+# NOTE: In .Net the test method is called `match`
+assert false == /ok/.test(s)
+assert false == /ok/g.test(s)
 
-assert true == /ok/i.match(s)
-assert true == /^ok/i.match(s)
+assert true == /ok/i.test(s)
+assert true == /^ok/i.test(s)
 
-assert false == /^foo/.match(s)
-assert true == /^foo/m.match(s)
+assert false == /^foo/.test(s)
+assert true == /^foo/m.test(s)
 
-assert false == /^FOO/.match(s)
-assert true == /^FOO/mi.match(s)
+assert false == /^FOO/.test(s)
+assert true == /^FOO/mi.test(s)
 
-assert false == /foo.bar/.match(s)
-assert true == /foo.bar/s.match(s)
+assert false == /foo.bar/.test(s)
+assert true == /foo.bar/s.test(s)

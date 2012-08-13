@@ -1,5 +1,5 @@
+#IGNORE
 """
-@IGNORE@
 before
 GetEnumerator
 MoveNext

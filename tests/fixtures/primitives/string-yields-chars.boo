@@ -4,6 +4,7 @@ O
 O
 """
 for ch in "foo":
-	print char.ToUpper(ch)
+	#print char.ToUpper(ch)
+	print ch.toUpperCase()
 	
-[assembly: StrictMode]
+#[assembly: StrictMode]

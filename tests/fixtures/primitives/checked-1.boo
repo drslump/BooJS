@@ -1,5 +1,5 @@
+#IGNORE Checked arithmetic is not supported
 """
-@IGNORE@ Checked arithmetic is not supported
 j: OverflowException
 no exception and k is -2147483648
 l: OverflowException

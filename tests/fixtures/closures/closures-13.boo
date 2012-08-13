@@ -1,5 +1,5 @@
+#IGNORE Classes not supported
 """
-@IGNORE@ Classes not supported
 """
 
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests

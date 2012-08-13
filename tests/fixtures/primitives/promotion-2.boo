@@ -1,3 +1,4 @@
+#IGNORE In JS we always represent all numbers as Number 
 """
 _sbyte + _sbyte != System.SByte ==> System.Int32
 _sbyte + _byte != System.Byte ==> System.Int32

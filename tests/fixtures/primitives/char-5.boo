@@ -1,5 +1,5 @@
+#IGNORE Char type not supported yet
 """
-@IGNORE@ Char type not supported yet
 System.Char
 *
 B

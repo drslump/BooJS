@@ -10,5 +10,5 @@ def bar():
 	print "bar"
 	return "bar"
 	
-c = @(foo(), bar())
+c = @(foo(), a=1, bar())
 assert c == "bar"

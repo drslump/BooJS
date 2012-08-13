@@ -1,5 +1,5 @@
+#IGNORE char type is not supported
 """
-@IGNORE@ char type is not supported
 """
 def chr(value):
 	return cast(System.IConvertible, value).ToChar(null)

@@ -1,5 +1,5 @@
+#IGNORE unpacking in loops is overloaded to: for v, k in hash
 """
-@IGNORE@ unpacking in loops is overloaded to: for v, k in hash
 1, 2
 3, 4
 

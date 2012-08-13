@@ -1,4 +1,4 @@
-#ignore implicit casts for comparison operators still not implemented
+#IGNORE implicit casts for comparison operators still not implemented
 """
 f(42)
 """

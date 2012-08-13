@@ -1,5 +1,5 @@
+#IGNORE Decimal type not supported yet
 """
-@IGNORE@ Decimal type not supported yet
 """
 def toDecimal(d as decimal):
 	return d

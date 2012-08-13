@@ -1,4 +1,4 @@
-
+#IGNORE imports not supported yet
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 
 i0 as int = Constants.UnsignedInt

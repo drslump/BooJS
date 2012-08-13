@@ -1,5 +1,5 @@
+#IGNORE Checked/unchecked arithmetic is not supported
 """
-@IGNORE@ Checked/unchecked arithmetic is not supported
 -2147483648
 """
 unchecked:

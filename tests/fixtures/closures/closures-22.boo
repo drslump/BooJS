@@ -1,5 +1,5 @@
+#IGNORE loop generators not supported
 """
-@IGNORE@ loop generators not supported
 """
 closures = { return i } for i in range(3)
 	

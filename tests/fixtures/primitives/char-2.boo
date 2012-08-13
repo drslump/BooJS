@@ -1,5 +1,5 @@
+#IGNORE char type is not supported
 """
-@IGNORE@ char type is not supported
 """
 ch = cast(char, 97)
 assert ch.GetType() is char

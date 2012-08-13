@@ -1,5 +1,5 @@
+#IGNORE Generators not supported yet
 """
-@IGNORE@ Generators not supported yet
 before 1
 before 2
 in between

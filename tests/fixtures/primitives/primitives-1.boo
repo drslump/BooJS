@@ -1,3 +1,4 @@
+#IGNORE Data types comparisons are not available in JS runtime
 
 def same(expected, actual):
 	assert expected is actual

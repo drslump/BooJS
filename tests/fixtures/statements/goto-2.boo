@@ -1,5 +1,5 @@
+#IGNORE Forward gotos are not supported
 """
-@IGNORE@ Forward gotos are not supported
 1, 1
 home
 """

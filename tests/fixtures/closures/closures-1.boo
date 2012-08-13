@@ -1,5 +1,5 @@
+#IGNORE
 """
-@IGNORE@
 """
 import System
 

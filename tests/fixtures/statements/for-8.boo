@@ -1,5 +1,5 @@
+#IGNORE
 """
-@IGNORE@
 before first
 1
 before second

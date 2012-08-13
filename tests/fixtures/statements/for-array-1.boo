@@ -1,5 +1,5 @@
+#IGNORE Structs not supported yet
 """
-@IGNORE@ Structs not supported yet
 2, 4, 6
 """
 struct Foo:

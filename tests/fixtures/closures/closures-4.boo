@@ -1,5 +1,5 @@
+#IGNORE imports not supported yet
 """
-@IGNORE@
 before
 clicked!!!
 after
