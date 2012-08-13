@@ -416,18 +416,25 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             @/ foo | bar /  ->  /foo|bar/i
     """
         re = node.Value
-        mod = re[-1:]
-        if mod == '/':
-            re = re[1:-1]
-            mod = ''
-        else:
-            re = re[1:-2]
+
+        start = re.IndexOf('/')
+        stop = re.LastIndexOf('/')
+
+        mod = re[stop:]
+        re = re[start:stop]
 
         # Ignore white space
         re = /\s|\t/.Replace(re, '')
 
+        # Javascript does not support the single-line modifier (dot matches new lines).
+        # We emulate it by converting dots to the [\s\S] expression in the regex.
+        # NOTE: The algorithm will break when a dot is preceeded by an escaped back slash (\\.)
+        if mod.Contains('s'):
+            re = /(?<!\\)\./.Replace(re, '[\\s\\S]')
+            mod = mod.Replace('s', '')
+
         Map node
-        Write "/$re/$mod"
+        Write "$re$mod"
 
     def OnIntegerLiteralExpression(node as IntegerLiteralExpression):
         Map node
@@ -491,7 +498,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                 Write node.Name
                 return
 
-        # Remove the $locals.$ prefix for closure variables
+        # Remove the $locals.$ prefix from closure variables
         if node.Target.ToString() == '$locals':
             Write node.Name[1:]
             return
@@ -577,7 +584,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         # HACK: Boo converts the equality comparison to a runtime call for those atoms
         #       without an static type on the complex ProcessMethodBodies step.
         #       Instead of changing that step we undo the transformation since it's
-        #       much simple although very dirty :(
+        #       much simpler although very dirty :(
         # TODO: Although we keep this hack it should be moved to its own dedicated step
 
         def UndoOperatorInvocation(node as MethodInvocationExpression, operator as BinaryOperatorType):
@@ -630,6 +637,46 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             target = node.Target as MemberReferenceExpression
             if target.Name == 'Invoke' and target.ExpressionType isa Boo.Lang.Compiler.TypeSystem.Core.AnonymousCallableType:
                 node.Target = target.Target
+
+            # HACK: Dirty way to convert back hash access to use index based syntax instead of method calls
+            # TODO: Move this to a compiler step
+            elif target.Name == 'get_Item':
+                Visit target.Target
+                Write '['
+                Visit node.Arguments[0]
+                Write ']'
+                return
+            elif target.Name == 'set_Item':
+                Visit target.Target
+                Write '['
+                Visit node.Arguments[0]
+                Write '] = '
+                Visit node.Arguments[1]
+                return
+
+
+        # "Eval" calls take the form:
+        #
+        #    @( stmt1, stmt2, ...., return_stmt )
+        #
+        # so we can convert them to a self invoking anonymous function that returns the last
+        # argument.
+        #
+        # Note: New variables are declared in the enclosing scope not wrapped in the anonymous
+        #       function.
+        #
+        if '@' == node.Target.ToString():
+            Write '(function(){ '
+            # Execute statements passed as arguments
+            l = len(node.Arguments)
+            for i in range(l):
+                # Return the result of the last statement
+                if i == l-1:
+                    Write 'return '
+                Visit node.Arguments[i]
+                Write '; '
+            Write '})()'
+            return
 
         Visit node.Target
         Write '('
