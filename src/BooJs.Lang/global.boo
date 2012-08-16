@@ -90,6 +90,15 @@ class Number(ProtoObject):
     static def op_Implicit(value as uint) as Number:
         pass
 
+    def constructor(n as int):
+        pass
+
+    def constructor(n as uint):
+        pass
+
+    def constructor(n as double):
+        pass
+
     def toExponential() as string:
         pass
     def toFixed() as string:

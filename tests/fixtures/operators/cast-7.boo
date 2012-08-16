@@ -1,3 +1,4 @@
+#IGNORE enums not fully supported yet
 """
 Bar
 3

@@ -1,3 +1,4 @@
+#IGNORE classes not supported yet
 """
 Clone
 Dispose

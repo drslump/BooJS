@@ -86,6 +86,26 @@ Boo.reversed = function (list) {
 };
 
 
+Boo.cast = function (value, type) {
+    // TODO: This is an absolute hack!!!
+    type = type.toLowerCase();
+    if (type === 'int' || type === 'uint' || type === 'double') type = 'number';
+
+    if (typeof(value) === type)
+        return value;
+    else
+        throw new Error('Unable to cast from ' + typeof(value) + ' to ' + type);
+};
+
+Boo.trycast = function (value, type) {
+    try {
+        return Boo.cast(value, type);
+    } catch (e) {
+        return null;
+    }
+};
+
+
 
 
 

@@ -1,7 +1,6 @@
 """
 it was a string.
 it wasn't a string.
-
 """
 def test(reference):
 	s = reference as string
