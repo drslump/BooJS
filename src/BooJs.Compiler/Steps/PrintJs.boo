@@ -733,6 +733,22 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Map node
         WriteLine 'continue;'
 
+    def OnCastExpression(node as CastExpression):
+        print 'Cast: ', node
+        Write 'Boo.cast('
+        Visit node.Target
+        Write ', "'
+        Write node.Type.ToString()
+        Write '")'
+
+    def OnTryCastExpression(node as TryCastExpression):
+        # TODO: Don't we have to check if the cast needs special actions?
+        Write 'Boo.trycast('
+        Visit node.Target
+        Write ', "'
+        Write node.Type.ToString()
+        Write '")'
+
     def OnUnaryExpression(node as UnaryExpression):
         # Make sure negation applies correctly to its operand
         if node.Operator == UnaryOperatorType.LogicalNot:
@@ -973,7 +989,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write(ed)
 
     def OnParameterDeclaration(p as ParameterDeclaration):
-        if p.IsParamArray: Write("*")
+        #if p.IsParamArray: Write("*")
         Map(p)
         Write(p.Name);
 
