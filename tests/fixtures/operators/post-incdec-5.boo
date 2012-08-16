@@ -13,8 +13,13 @@ def hasSideEffect(index):
 	return index
 	
 i = (0,)
-print i[hasSideEffect(0)]++
-print i[hasSideEffect(0)]++
+# NOTE: originally idx variable wasn't used but the JS engine used in the test
+# harness does not support it.
+idx = hasSideEffect(0)
+print i[idx]++
+idx = hasSideEffect(0)
+print i[idx]++
 print i[0]
-print i[hasSideEffect(0)]--
+idx = hasSideEffect(0)
+print i[idx]--
 print i[0]

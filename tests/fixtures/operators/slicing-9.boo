@@ -4,6 +4,6 @@ o
 o
 """
 s = "foo"
-print(s.Chars[0])
-print(s.Chars[1])
-print(s.Chars[2])
+print(s[0])
+print(s[1])
+print(s[2])

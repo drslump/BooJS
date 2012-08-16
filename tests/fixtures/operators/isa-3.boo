@@ -1,3 +1,4 @@
+#IGNORE classes not supported yet
 """
 woot! foo is a string!
 0 is not a string :-(

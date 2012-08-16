@@ -5,7 +5,7 @@
 2
 1
 """
-i = decimal.Zero
+i = 0.0
 print i++
 print i++
 print i

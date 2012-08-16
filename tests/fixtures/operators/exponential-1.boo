@@ -1,3 +1,4 @@
+#IGNORE exponent syntax breaks the parser! which is very weird :-s
 """
 100 System.Int32
 100 System.Int32
@@ -50,4 +51,3 @@ s8 = "${10.0e-4h}"
 print s8
 s9 = "${.9e2}"
 print s9
-

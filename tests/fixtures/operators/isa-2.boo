@@ -1,3 +1,4 @@
+#IGNORE classes are not supported yet
 """
 is int
 'string' is a string

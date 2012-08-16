@@ -1,12 +1,12 @@
+#IGNORE negative index slicing not supported yet
 """
 3
 2
 1
 """
-import System.Console
 
 a = (1, 2, 3)
 
-WriteLine(a[-1])
-WriteLine(a[-2])
-WriteLine(a[-3])
+print a[-1]
+print a[-2]
+print a[-3]

@@ -1,8 +1,8 @@
+#IGNORE slicing with negative index not supported yet
 """
 2
 1
 """
-import System.Console
 
 def last(condition as bool):
 	return -1 if condition
@@ -10,5 +10,5 @@ def last(condition as bool):
 
 a = (1, 2)
 
-WriteLine(a[last(true)])
-WriteLine(a[last(false)])
+print a[last(true)]
+print a[last(false)]

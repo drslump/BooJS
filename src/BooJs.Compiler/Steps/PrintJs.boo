@@ -444,6 +444,21 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Map node
         Write(node.Value.ToString("########0.0##########"))
 
+
+
+    def OnTypeDefinition(node as TypeDefinition):
+        print 'TypeDefinition: ', node
+
+    def OnCallableDefinition(node as CallableDefinition):
+        print 'Callable Definition: ', node
+
+    def OnCallableTypeReference(node as CallableTypeReference):
+        print 'Callable Type Reference: ', node
+
+    def OnGenericTypeDefinitionReference(node as GenericTypeDefinitionReference):
+        print 'Generic Type Definition Reference: ', node
+
+
     def OnExpressionStatement(node as ExpressionStatement):
         # Ignore the assignment of locals produced by closures instrumentation
         if node.Expression isa BinaryExpression:
@@ -570,7 +585,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         print 'Target: ', node.Target.Entity
         entity as TypeSystem.IEntityWithParameters = node.Target.Entity
         if entity:
-            # TODO: Check varargs ?
+            # TODO: Check varargs varargsun
             i = 0
             for param as TypeSystem.IParameter in entity.GetParameters():
                 print 'Arg: ', node.Arguments[i]
@@ -612,6 +627,20 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
         elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetEnumerable':
             Visit node.Arguments[0]
+            return
+        elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetRange1':
+            # TODO: HACK! this call has been found in compiler generated code
+            Visit node.Arguments[0]
+            Write '.slice('
+            Visit node.Arguments[1]
+            Write ')'
+            return
+        elif tref == '__initobj__':
+            if len(node.Arguments) > 1:
+                Visit node.Arguments[0]
+                Write ' = '
+                Visit node.Arguments[1]
+                Write ';'
             return
         elif tref =~ 'Boo.Lang.Runtime.RuntimeServices':
             raise "Found a RuntimeServices invocation: $tref"
@@ -892,7 +921,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnSimpleTypeReference(node as SimpleTypeReference):
         # TODO: Why is this happending?
-        if node.ToString() == 'System.Object' or node.ToString() == 'object':
+        if node.ToString() == 'System.Object' or node.ToString() == 'object' or node.ToString() == 'System.MulticastDelegate':
             print 'WARNING: SimpleTypeReference = ', node
             return
 
@@ -1015,7 +1044,12 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteLine
         WriteCloseBrace
 
-    def ___OnClassDefinition(node as ClassDefinition):
+    def OnClassDefinition(node as ClassDefinition):
+        for member as TypeMember in node.Members:
+            Visit member
+
+        return
+
         Write "$(node.Name) = function()"
         WriteOpenBrace
 

@@ -9,6 +9,6 @@ def test(o):
 	print "null" if o is null
 	
 print "first"
-test(object())
+test({})
 print "second"
 test(null)
