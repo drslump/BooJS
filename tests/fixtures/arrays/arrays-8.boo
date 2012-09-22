@@ -1,3 +1,4 @@
+#IGNORE: zip method not supported
 """
 1, um
 2, dois

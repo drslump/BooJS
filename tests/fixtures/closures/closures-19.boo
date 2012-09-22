@@ -6,7 +6,7 @@ b = do ():
 	r as callable = { return a*c }
 	w as callable = { value | c = value }
 	return r, w
-	
+
 reader, writer = b()
 assert 8 == reader()
 
@@ -18,5 +18,3 @@ assert 15 == reader()
 
 writer(2)
 assert 10 == reader()
-
-

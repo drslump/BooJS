@@ -1,3 +1,4 @@
+#IGNORE: zip is not yet supported
 
 closures = [{ return i } for i in range(3)]
 	

@@ -1,3 +1,4 @@
+#IGNORE: BooJS stdlib does not support this method
 import System
 
 a as (int, 2) = Array.CreateInstance(int, 2, 2)

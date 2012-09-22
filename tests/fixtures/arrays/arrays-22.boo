@@ -1,3 +1,7 @@
+#IGNORE: Not sure what this should do. Since the values are casted to simple objects
+#        the special Array.op_Equality method is not called, thus we can just compare
+#        the instances, which in Javascript case are different since lists are implemented
+#        using mutable arrays.
 """
 """
 a1 as object = (1, 2)

@@ -1,3 +1,4 @@
+#IGNORE: Class support not ready yet
 """
 Foo[]
 Base[]

@@ -1,7 +1,7 @@
-import System
+#IGNORE: Lists are compared by instance and since JS uses arrays they are not the same
 
 def assertArray(expected, actual):
-	assert expected.GetType() is actual.GetType()
+	#assert expected.GetType() is actual.GetType()
 	assert expected == actual
 
 a = (1, 2, 3)

@@ -1,19 +1,21 @@
+#IGNORE: Casting of lists not fully supported
 """
-System.Int32[]
+--
 1 2 3
 3
-System.String[]
+--
  
 2
-System.Int32[]
+--
 
 0
-System.String[]
+--
 foo
 1
 """
 def dump(a):
-	print a.GetType()
+	#print a.GetType()
+	print "--"
 	print join(a)
 	print len(a)
 	

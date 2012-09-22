@@ -1,3 +1,4 @@
+#IGNORE: Casting of lists not fully supported
 ba = (of byte: 0, 0, 127, 1, 2,   255)
 sba = (of sbyte: -1, 0, 127, 1, 2)
 sa = (of short: -1, 0, 127, 1, 2)

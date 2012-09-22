@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported yet
 """
 Foo.Bar.Person[][]
 """

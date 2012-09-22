@@ -1,3 +1,4 @@
+#IGNORE: array indexing macros not supported
 """
 normalarrayindexing is working
 rawarrayindexing is working

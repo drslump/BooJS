@@ -4,6 +4,19 @@ var Boo = {};
 // Used as a unique indentifier when we want to stop iterating a generator
 var STOP = Boo.STOP = {};
 
+// Standard types
+Boo.Types = {
+    'void': 'void',
+    'bool': 'bool',
+    'duck': 'duck',
+    'string': 'string',
+    'object': 'object',
+    'int': 'int',
+    'uint': 'uint',
+    'double': 'double',
+    'callable': 'callable'
+};
+
 // Note: We don't use the native forEach method since it doesn't offer a clean way
 //       to stop/break the iteration.
 Boo.each = function (obj, iterator, context) {
@@ -88,13 +101,19 @@ Boo.reversed = function (list) {
 
 Boo.cast = function (value, type) {
     // TODO: This is an absolute hack!!!
-    type = type.toLowerCase();
-    if (type === 'int' || type === 'uint' || type === 'double') type = 'number';
+    var t = type, tof = typeof(value);
+    if (t === Boo.Types['int'] || t === Boo.Types['uint'] || t === Boo.Types['double']) t = 'number';
 
-    if (typeof(value) === type)
+    if (tof === t)
         return value;
+    else if (tof !== 'undefined' && t === 'object')
+        return value 
+    else if ((tof === 'undefined' || value === null) && t === 'number')
+        return 0;
+    else if ((tof === 'undefined' || value === null) && t === 'string')
+        return '';
     else
-        throw new Error('Unable to cast from ' + typeof(value) + ' to ' + type);
+        throw new Error('Unable to cast from ' + tof + ' to ' + type);
 };
 
 Boo.trycast = function (value, type) {
@@ -103,6 +122,37 @@ Boo.trycast = function (value, type) {
     } catch (e) {
         return null;
     }
+};
+
+// Converts any enumerable into an array, casting to a given type
+Boo.array = function(type, enumerable) {
+    var result = [];
+    if (typeof enumerable === 'number') {
+        enumerable = Array(enumerable);
+        for (var i=0, l=enumerable.length; i<l; i++) {
+            enumerable[i] = null;
+        }
+    }
+
+    Boo.each(enumerable, function(v){
+        result.push(Boo.cast(v, type));
+    });
+    return result;
+};
+
+Boo.op_Modulus = function(lhs, rhs) {
+    // Check if we should format a string
+    if (typeof lhs === 'string' && typeof rhs === 'object') {
+        return lhs.replace(/{(\d+)}/g, function(m, capt){
+            return rhs[capt];
+        });
+    } else {
+        return lhs % rhs;
+    }
+};
+
+Boo.op_Addition = function(lhs, rhs) {
+    return lhs + rhs;
 };
 
 
@@ -114,8 +164,20 @@ var BooJs = {};
 BooJs.Lang = {};
 
 BooJs.Lang.Array = {
-    op_Equality: function(x, y){
-        throw new Error('Implement equality function. Check assert libraries for proven implementations (ie: qunit)');
+    // Checks for equality between two arrays, comparing nested arrays but not objects
+    op_Equality: function(a, b){
+        if (a.length != b.length) return false;
+        for (var i=0; i<a.length; i++) {
+            if (a[i] === b[i]) continue;
+
+            // Check nested arrays
+            if (typeof a[i] === 'object' && typeof b[i] === 'object' && a[i].length && b[i].length) {
+                if (Boo.Lang.Array.op_Equality(a[i], b[i])) continue;
+            }
+
+            return false;
+        }
+        return true;
     },
     op_Member: function(itm, lst){
         return lst.indexOf(itm) !== -1;

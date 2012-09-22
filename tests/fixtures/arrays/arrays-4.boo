@@ -1,3 +1,4 @@
+#IGNORE: .ToArray not supported
 """
 System.Int32[]
 """

@@ -114,6 +114,10 @@ class String(ProtoObject):
 
     public length as uint
 
+    # Support formatting: '{0} {1}' % ('foo', 'bar')
+    static def op_Modulus(s as string, a as List) as List:
+        pass
+
     def charAt(idx as int) as string:
         pass
     def charCodeAt(idx as int) as int:

@@ -7,9 +7,7 @@ class Foo:
   bar as int
 */
 
-foo as duck
-
-foo?.bar
+a = 10
 
 /*
 

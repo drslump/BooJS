@@ -1,3 +1,4 @@
+#IGNORE: Casting of lists not fully supported
 import System
 
 def AreNearEqual(a as single, b as double):

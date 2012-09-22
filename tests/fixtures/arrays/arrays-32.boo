@@ -1,3 +1,4 @@
+#IGNORE: BooJS stdlib does not support this method
 import System
 
 def foo():

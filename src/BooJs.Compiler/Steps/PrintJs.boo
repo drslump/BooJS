@@ -82,6 +82,33 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             found.Push(local.Name)
             Visit local
 
+    def WriteBlockLocals(b as BlockExpression):
+    """ Find and write locals found in a block expression """
+        locals = LocalCollection()
+
+        def finder(stmts as StatementCollection):
+            for st in stmts:
+                if st isa Block:
+                    finder((st as Block).Statements)
+                elif st isa BlockExpression:
+                    finder((st as BlockExpression).Body.Statements)
+                elif st isa ExpressionStatement:
+                    # All this mess is to find out if we're declaring a local variable
+                    es = st as ExpressionStatement
+                    if es.Expression isa BinaryExpression:
+                        be = es.Expression as BinaryExpression
+                        if be.Operator == BinaryOperatorType.Assign:
+                            entity = be.Left.Entity
+                            if entity isa TypeSystem.Internal.InternalLocal:
+                                if (entity as TypeSystem.Internal.InternalLocal).IsExplicit:
+                                    local = Local()
+                                    local.Name = be.Left.ToString()
+                                    locals.Add(local)
+
+        finder(b.Body.Statements)
+        WriteLocals(locals)
+
+
     def OnMethod(m as Method):
 
         # Types are already resolved so we can just check if it was flagged as a generator 
@@ -102,6 +129,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         # TODO: Improve the algorithm to support all cases
         # TODO: Move to a separate step
         def FindClosureLocals(block as Block):
+            # TODO: Handle closures passed in as arguments to method calls
             for st in block.Statements:
                 if st isa Block:
                     FindClosureLocals(st)
@@ -113,12 +141,18 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                     es = st as ExpressionStatement
                     if es.Expression isa BinaryExpression:
                         be = es.Expression as BinaryExpression
-                        if /^\$locals\.\$/.IsMatch(be.Left.ToString()):
-                            str = be.Left.ToString()
-                            parts = str.Split(char('.'))
-                            local = Local()
-                            local.Name = parts[1][1:]
-                            m.Locals.Add(local)
+
+                        # Process closures assigned to variables
+                        if be.Right isa BlockExpression:
+                            FindClosureLocals((be.Right as BlockExpression).Body)
+
+                        if be.Operator == BinaryOperatorType.Assign:
+                            if /^\$locals\.\$/.IsMatch(be.Left.ToString()):
+                                str = be.Left.ToString()
+                                parts = str.Split(char('.'))
+                                local = Local()
+                                local.Name = parts[1][1:]
+                                m.Locals.Add(local)
 
         FindClosureLocals(m.Body)
 
@@ -144,14 +178,14 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ']'
 
     def OnUnpackStatement(node as UnpackStatement):
-        WriteLine 'var __unpack;'
+        # TODO: Move this to its own step
 
-        Write '__unpack = '
+        Write 'var __unpack = '
         Visit node.Expression
 
         idx = 0
         for decl in node.Declarations:
-            Write ", $(decl.Name) = __unpack[$idx]"
+            Write "; $(decl.Name) = __unpack[$idx]"
             idx++
 
         WriteLine ';'
@@ -166,17 +200,10 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
         if node.Body.IsEmpty:
             Write '{}'
-        elif len(node.Body.Statements) == 1 \
-        and  len(node.Body.Statements[0].ToString()) < 30:
-            # TODO: When it's just one statement we should inject a return if not present
-            #       Seems like Boo already does that :)
-            Write '{ '
-            # TODO: Avoid generating a new line
-            Visit node.Body.Statements[0]
-            Write ' }'
         else:
             WriteOpenBrace
-            Visit(node.Body.Statements)
+            WriteBlockLocals(node)
+            Visit node.Body.Statements
             WriteCloseBrace false
 
     def WriteOpenBrace():
@@ -220,13 +247,18 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
         # TODO: Add proper type annotations
         WriteIndented
-        WriteAnnotation "@type {$(entity.Type)}"
+        if entity:
+            WriteAnnotation "@type {$(entity.Type)}"
         Write " var $(node.Name);"
         WriteLine
 
     def OnReferenceExpression(node as ReferenceExpression):
         # TODO: Check name for invalid chars?
         Map node
+
+        if node.Entity isa Boo.Lang.Compiler.TypeSystem.Reflection.ExternalType:
+            Write 'Boo.Types.'
+
         Write node.Name
 
     def OnDeclarationStatement(node as DeclarationStatement):
@@ -507,6 +539,9 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             if target.Name == 'global':
                 Write node.Name
                 return
+            elif target.Name == 'BooJs.Lang.BuiltinsModule':
+                Write 'Boo.' + node.Name
+                return
             # Check if it's a class. If so skip it by now
             # TODO: THIS DOESN'T WORK!!!
             elif false and target.ExpressionType and target.ExpressionType.BaseType.IsClass:
@@ -625,6 +660,20 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_NotMember':
             UndoOperatorInvocation(node, BinaryOperatorType.NotMember)
             return
+        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Modulus':
+            Write 'Boo.op_Modulus('
+            Visit node.Arguments[0]
+            Write ', '
+            Visit node.Arguments[1]
+            Write ')'
+            return
+        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Addition':
+            Write 'Boo.op_Addition('
+            Visit node.Arguments[0]
+            Write ', '
+            Visit node.Arguments[1]
+            Write ')'
+            return
         elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetEnumerable':
             Visit node.Arguments[0]
             return
@@ -644,6 +693,12 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
         elif tref =~ 'Boo.Lang.Runtime.RuntimeServices':
             raise "Found a RuntimeServices invocation: $tref"
+        #elif tref == 'BooJs.Lang.BuiltinsModule.array':
+        #    Write 'Boo.array('
+        #    Visi"' + node.Arguments[0] + '", '
+        #    Visit node.Arguments[1]
+        #    Write ')'
+        #    return
         elif tref =~ /^BooJs\.Lang\.BuiltinsModule\./:
             # TODO: This is a HACK!!!
             Write 'Boo.' + tref.Substring(len('BooJs.Lang.BuiltinsModule.')) + '('
@@ -666,6 +721,14 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             target = node.Target as MemberReferenceExpression
             if target.Name == 'Invoke' and target.ExpressionType isa Boo.Lang.Compiler.TypeSystem.Core.AnonymousCallableType:
                 node.Target = target.Target
+
+            elif target.Name == 'Call' and target.ExpressionType isa TypeSystem.Core.AnonymousCallableType:
+                # Here the arguments are passed in as a list. We undo this to pass them normally.
+                node.Target = target.Target
+                for arg in (node.Arguments[0] as ArrayLiteralExpression).Items:
+                    node.Arguments.Add(arg)
+                node.Arguments.RemoveAt(0)
+
 
             # HACK: Dirty way to convert back hash access to use index based syntax instead of method calls
             # TODO: Move this to a compiler step
@@ -926,9 +989,9 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
 
         if node.Name.IndexOf('BooJs.Lang.') == 0:
-            Write node.Name.Substring('BooJs.Lang.'.Length)
+            Write 'Boo.Types.' + node.Name.Substring('BooJs.Lang.'.Length)
         else:
-            Write node.Name
+            Write 'Boo.Types.' + node.Name
 
 
     def GetBinaryOperatorText(op as BinaryOperatorType):

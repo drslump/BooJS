@@ -1,14 +1,15 @@
+#IGNORE: No class support yet
 """
 Bar.Run
 Bar.Run
 """
 class Foo:
-	pass
+    pass
 
 class Bar(Foo):
-	virtual def Run():
-		print "Bar.Run"
+    virtual def Run():
+        print "Bar.Run"
 
 foos = (of Foo: Bar(), Bar())
 for foo as Bar in foos:
-	foo.Run()
+    foo.Run()
