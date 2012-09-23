@@ -26,7 +26,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # No need to cache/precompile regexp in Javascript
         Remove(CacheRegularExpressionsInStaticFields)
 
-        # Undo some of the staff performed by ProcessMethodBodies
+        # Undo some of the stuff performed by ProcessMethodBodies
         InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.UndoProcessMethod())
         # Override some of the stuff in the gigantic ProcessMethodBodies step
         Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
@@ -38,6 +38,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Remove(NormalizeIterationStatements)
         Remove(OptimizeIterationStatements)
         Add(Steps.NormalizeLoops())
+
+        # Simplify the unpack operations
+        InsertAfter(NormalizeStatementModifiers, Steps.NormalizeUnpack())
 
         # Adapt try/except statements
         Add(Steps.ProcessTry())
