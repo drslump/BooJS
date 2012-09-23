@@ -7,5 +7,4 @@ item = "Foo"
 print(
 """public class ${item}
 {
-}
-""")
+}""")

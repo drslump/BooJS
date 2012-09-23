@@ -19,8 +19,8 @@ class ConsoleMock(ObjectInstance):
         PopulateFunctions()
 
     [JSFunction(Name:'log')]
-    def log(msg as string):
-        _output.Add(msg)
+    def log(*msg as (object)):
+        _output.Add(join(msg, ' '))
 
     def output():
         return _output.Join("\n")

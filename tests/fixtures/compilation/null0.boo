@@ -1,8 +1,5 @@
 """
 True
 """
-class Foo:
-	pass
-
-f as Foo = null
+f as String = null
 print f is null

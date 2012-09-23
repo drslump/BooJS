@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported yet
 """
 File.Name
 Person.Name

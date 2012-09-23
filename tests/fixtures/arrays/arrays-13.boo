@@ -1,9 +1,9 @@
 """
-true
-false
-false
-false
-true
+True
+False
+False
+False
+True
 """
 a1 = (1, 2)
 a2 = (2, 1)

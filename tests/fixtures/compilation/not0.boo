@@ -1,8 +1,8 @@
 """
-true
-false
-false
-true
+True
+False
+False
+True
 """
 
 print true

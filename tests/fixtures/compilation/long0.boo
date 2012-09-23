@@ -1,3 +1,4 @@
+#IGNORE: Type system not fully supported
 """
 System.Int64
 System.Int64

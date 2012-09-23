@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported yet
 """
 setter refused null.
 getter refused null.

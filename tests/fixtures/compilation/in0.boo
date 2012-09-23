@@ -1,8 +1,8 @@
 """
-true
-false
-true
-false
+True
+False
+True
+False
 """
 
 print 1 in (2, 3, 1)

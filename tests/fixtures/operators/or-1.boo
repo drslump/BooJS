@@ -2,7 +2,7 @@
 3
 foo
 bar
-true
+True
 1
 1
 """

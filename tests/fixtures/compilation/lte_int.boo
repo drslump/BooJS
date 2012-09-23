@@ -1,12 +1,12 @@
 """
-true
-false
-false
-false
-true
-false
-true
-true
+True
+False
+False
+False
+True
+False
+True
+True
 """
 a = 3
 b = 4

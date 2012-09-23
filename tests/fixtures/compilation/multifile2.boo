@@ -4,4 +4,4 @@
 9
 """
 for i in range(1, 4):
-	print square(i)
+	print i*i

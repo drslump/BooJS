@@ -1,12 +1,12 @@
 """
-true
-false
-true
-true
-true
-true
-true
-false
+True
+False
+True
+True
+True
+True
+True
+False
 """
 enum Level:
 

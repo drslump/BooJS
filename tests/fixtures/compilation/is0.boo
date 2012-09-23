@@ -1,12 +1,12 @@
 """
-true
-false
-false
-true
+True
+False
+False
+True
 """
 
-o1 = object()
-o2 = object()
+o1 = {}
+o2 = {}
 
 print o1 is o1
 print o1 is o2

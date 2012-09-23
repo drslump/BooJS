@@ -1,4 +1,4 @@
 """
-System.Text.RegularExpressions.Regex
+/foo/
 """
-print /foo/.GetType()
+print /foo/

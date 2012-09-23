@@ -1,13 +1,13 @@
 """
-false
-true
-false
-false
-true
-true
-true
-false
-true
+False
+True
+False
+False
+True
+True
+True
+False
+True
 """
 a = 3
 b = 4

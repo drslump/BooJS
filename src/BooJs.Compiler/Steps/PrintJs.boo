@@ -178,18 +178,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ']'
 
     def OnUnpackStatement(node as UnpackStatement):
-        # TODO: Move this to its own step
-
-        Write 'var __unpack = '
-        Visit node.Expression
-
-        idx = 0
-        for decl in node.Declarations:
-            Write "; $(decl.Name) = __unpack[$idx]"
-            idx++
-
-        WriteLine ';'
-
+        raise 'Unpack should be performed in its own step'
 
     def OnBlockExpression(node as BlockExpression):
     """ Javascript has native support for closures thus the conversion is very simple.
@@ -249,7 +238,17 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteIndented
         if entity:
             WriteAnnotation "@type {$(entity.Type)}"
-        Write " var $(node.Name);"
+            Write ' '
+
+        # Initialize value types to avoid them being 'undefined'
+        if entity and entity.Type.FullName in ('int', 'uint', 'double'):
+            Write "var $(node.Name) = 0;"
+        elif entity and entity.Type.FullName in ('bool'):
+            Write "var $(node.Name) = false;"
+        elif entity and entity.Type.FullName in ('string'):
+            Write "var $(node.Name) = '';"
+        else:
+            Write "var $(node.Name);"
         WriteLine
 
     def OnReferenceExpression(node as ReferenceExpression):
@@ -674,6 +673,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Visit node.Arguments[1]
             Write ')'
             return
+        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Multiply':
+            Write 'Boo.op_Multiply('
+            Visit node.Arguments[0]
+            Write ', '
+            Visit node.Arguments[1]
+            Write ')'
+            return
         elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetEnumerable':
             Visit node.Arguments[0]
             return
@@ -829,17 +835,17 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         print 'Cast: ', node
         Write 'Boo.cast('
         Visit node.Target
-        Write ', "'
-        Write node.Type.ToString()
-        Write '")'
+        Write ', '
+        Visit node.Type
+        Write ')'
 
     def OnTryCastExpression(node as TryCastExpression):
         # TODO: Don't we have to check if the cast needs special actions?
         Write 'Boo.trycast('
         Visit node.Target
-        Write ', "'
-        Write node.Type.ToString()
-        Write '")'
+        Write ', '
+        Visit node.Type
+        Write ')'
 
     def OnUnaryExpression(node as UnaryExpression):
         # Make sure negation applies correctly to its operand
@@ -902,6 +908,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
 
     def BinaryMatch(node as BinaryExpression):
+        /*
         type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
         if type.ToString() == 'BooJs.Lang.RegExp':
             Visit node.Right
@@ -916,7 +923,19 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write '.indexOf('
         Visit node.Right
         Write '))'
+        */
 
+        type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
+        if type.FullName == 'BooJs.Lang.RegExp':
+            Visit node.Right
+        else: #if type.FullName == 'String':
+            Write '(new RegExp('
+            Visit node.Right
+            Write '))'
+
+        Write '.test('
+        Visit node.Left
+        Write ')'
 
 
     def OnBinaryExpression(node as BinaryExpression):
@@ -989,7 +1008,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
 
         if node.Name.IndexOf('BooJs.Lang.') == 0:
-            Write 'Boo.Types.' + node.Name.Substring('BooJs.Lang.'.Length)
+            Write node.Name.Substring('BooJs.Lang.'.Length)
         else:
             Write 'Boo.Types.' + node.Name
 
@@ -1039,6 +1058,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         raise 'Operator $(op) is not implemented'
 
     def NeedsParensAround(node as Expression):
+        return true if node.ParentNode and node.ParentNode.NodeType == NodeType.MemberReferenceExpression  # (--1).toString()
         t = node.NodeType
         return false if t == NodeType.StringLiteralExpression
         return false if t == NodeType.CharLiteralExpression

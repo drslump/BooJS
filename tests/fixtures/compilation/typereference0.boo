@@ -1,3 +1,4 @@
+#IGNORE: Type system not fully supported
 """
 System.String[]
 System.String[]

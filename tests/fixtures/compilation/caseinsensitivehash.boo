@@ -1,3 +1,4 @@
+#IGNORE: Hash is not implemented
 """
 bar
 True

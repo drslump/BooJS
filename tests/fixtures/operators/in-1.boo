@@ -1,16 +1,16 @@
 """
-true
-true
-true
-true
-false
-false
-false
-false
-true
-true
-true
-true
+True
+True
+True
+True
+False
+False
+False
+False
+True
+True
+True
+True
 """
 l = [1, 2, 3]
 h = { 1: "1", 2: "2" }
