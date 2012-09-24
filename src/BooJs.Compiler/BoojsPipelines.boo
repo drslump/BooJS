@@ -51,6 +51,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Normalize closures
         Add(Steps.NormalizeClosures())
 
+        # Normalize method invocations
+        Add(Steps.NormalizeMethodInvocation())
+
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 

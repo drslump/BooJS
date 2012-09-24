@@ -124,7 +124,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             print 'Skipping closure method', m.Name
             return
 
-
         # HACK: If we detect the Main method we just output its statements
         if m.Name == 'Main':
             WriteLocals(m.Locals)
@@ -583,145 +582,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
 
-        # TODO: We can use something like this to know which overloaded method we are calling
-        /*
-        print 'Target: ', node.Target.Entity
-        entity as TypeSystem.IEntityWithParameters = node.Target.Entity
-        if entity:
-            # TODO: Check varargs varargsun
-            i = 0
-            for param as TypeSystem.IParameter in entity.GetParameters():
-                print 'Arg: ', node.Arguments[i]
-                print 'Param: ', param
-                print 'Param.Type: ', param.Type
-                i++
-        */
-
-
-        
-        # HACK: Boo converts the equality comparison to a runtime call for those atoms
-        #       without an static type on the complex ProcessMethodBodies step.
-        #       Instead of changing that step we undo the transformation since it's
-        #       much simpler although very dirty :(
-        # TODO: Although we keep this hack it should be moved to its own dedicated step
-
-        def UndoOperatorInvocation(node as MethodInvocationExpression, operator as BinaryOperatorType):
-            expr = BinaryExpression(node.LexicalInfo)
-            expr.Operator = operator
-            expr.Left = node.Arguments[0]
-            expr.Right = node.Arguments[1]
-            Visit expr
-
-        tref = node.Target.ToString()
-        if tref == 'Boo.Lang.Runtime.RuntimeServices.EqualityOperator':
-            UndoOperatorInvocation(node, BinaryOperatorType.Equality)
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Match':
-            UndoOperatorInvocation(node, BinaryOperatorType.Match)
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_NotMatch':
-            UndoOperatorInvocation(node, BinaryOperatorType.NotMatch)
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Member':
-            UndoOperatorInvocation(node, BinaryOperatorType.Member)
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_NotMember':
-            UndoOperatorInvocation(node, BinaryOperatorType.NotMember)
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Modulus':
-            Write 'Boo.op_Modulus('
-            Visit node.Arguments[0]
-            Write ', '
-            Visit node.Arguments[1]
-            Write ')'
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Addition':
-            Write 'Boo.op_Addition('
-            Visit node.Arguments[0]
-            Write ', '
-            Visit node.Arguments[1]
-            Write ')'
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.op_Multiply':
-            Write 'Boo.op_Multiply('
-            Visit node.Arguments[0]
-            Write ', '
-            Visit node.Arguments[1]
-            Write ')'
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetEnumerable':
-            Visit node.Arguments[0]
-            return
-        elif tref == 'Boo.Lang.Runtime.RuntimeServices.GetRange1':
-            # TODO: HACK! this call has been found in compiler generated code
-            Visit node.Arguments[0]
-            Write '.slice('
-            Visit node.Arguments[1]
-            Write ')'
-            return
-        elif tref == '__initobj__':
-            if len(node.Arguments) > 1:
-                Visit node.Arguments[0]
-                Write ' = '
-                Visit node.Arguments[1]
-                Write ';'
-            return
-        elif tref =~ 'Boo.Lang.Runtime.RuntimeServices':
-            raise "Found a RuntimeServices invocation: $tref"
-        #elif tref == 'BooJs.Lang.BuiltinsModule.array':
-        #    Write 'Boo.array('
-        #    Visi"' + node.Arguments[0] + '", '
-        #    Visit node.Arguments[1]
-        #    Write ')'
-        #    return
-        elif tref =~ /^BooJs\.Lang\.BuiltinsModule\./:
-            # TODO: This is a HACK!!!
-            Write 'Boo.' + tref.Substring(len('BooJs.Lang.BuiltinsModule.')) + '('
-            WriteCommaSeparatedList node.Arguments
-            Write ')'
-            return
-
-        # Revert: CompilerGenerated.__FooModule_foo$callable0$7_9__(xxx, __addressof__(FooModule.$foo$closure$1))
-        if len(node.Arguments) == 2:
-            arg = node.Arguments[1]
-            if arg.NodeType == NodeType.MethodInvocationExpression:
-                method as MethodInvocationExpression = arg
-                if '__addressof__' == method.Target.ToString():
-                    arg = method.Arguments[0]
-                    Write "/*CLOSURE: $arg*/"
-
-
-        # Convert: closure.Invoke() -> closure()
-        if node.Target isa MemberReferenceExpression:
-            target = node.Target as MemberReferenceExpression
-            if target.Name == 'Invoke' and target.ExpressionType isa Boo.Lang.Compiler.TypeSystem.Core.AnonymousCallableType:
-                node.Target = target.Target
-
-            elif target.Name == 'Call' and target.ExpressionType isa TypeSystem.Core.AnonymousCallableType:
-                # Here the arguments are passed in as a list. We undo this to pass them normally.
-                node.Target = target.Target
-                for arg in (node.Arguments[0] as ArrayLiteralExpression).Items:
-                    node.Arguments.Add(arg)
-                node.Arguments.RemoveAt(0)
-
-
-            # HACK: Dirty way to convert back hash access to use index based syntax instead of method calls
-            # TODO: Move this to a compiler step
-            elif target.Name == 'get_Item':
-                Visit target.Target
-                Write '['
-                Visit node.Arguments[0]
-                Write ']'
-                return
-            elif target.Name == 'set_Item':
-                Visit target.Target
-                Write '['
-                Visit node.Arguments[0]
-                Write '] = '
-                Visit node.Arguments[1]
-                return
-
-
         # "Eval" calls take the form:
         #
         #    @( stmt1, stmt2, ...., return_stmt )
@@ -801,7 +661,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteLine 'continue;'
 
     def OnCastExpression(node as CastExpression):
-        print 'Cast: ', node
         Write 'Boo.cast('
         Visit node.Target
         Write ', '
@@ -809,7 +668,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
 
     def OnTryCastExpression(node as TryCastExpression):
-        # TODO: Don't we have to check if the cast needs special actions?
         Write 'Boo.trycast('
         Visit node.Target
         Write ', '
@@ -877,23 +735,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
 
     def BinaryMatch(node as BinaryExpression):
-        /*
-        type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
-        if type.ToString() == 'BooJs.Lang.RegExp':
-            Visit node.Right
-            Write '.test('
-            Visit node.Left
-            Write ')'
-            return
-
-        # handle strings
-        Write '(-1 !== '
-        Visit node.Left
-        Write '.indexOf('
-        Visit node.Right
-        Write '))'
-        */
-
         type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
         if type.FullName == 'BooJs.Lang.RegExp':
             Visit node.Right
@@ -1152,7 +993,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write ".prototype.$(member.Name) = "
             Visit(member)
             WriteLine
-
 
 
     def OnField(f as Field):

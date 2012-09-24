@@ -45,7 +45,7 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
                             elif parent isa Method:
                                 params = (parent as Method).Parameters
                             else:
-                                raise 'Expected a parent Method or BlockExpression'
+                                raise 'Expected a parent node of type Method or BlockExpression'
 
                             if params.Contains({param as ParameterDeclaration| param.Name == name}):
                                 continue

@@ -155,6 +155,20 @@ Boo.array = function (type, enumerable) {
     return result;
 };
 
+// Makes sure a value is enumerable
+Boo.enumerable = function (value) {
+    if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
+        return value;
+    }
+
+    throw new Error('Unable to cast to enumerable the value "' + value + '"');
+};
+
+// Compares two values for equality
+Boo.op_Equality = function (lhs, rhs) {
+    return lhs === rhs;
+};
+
 // Perform the modulus operation on two operands
 Boo.op_Modulus = function (lhs, rhs) {
     // Check if we should format a string
