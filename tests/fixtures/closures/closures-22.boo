@@ -1,4 +1,4 @@
-#IGNORE loop generators not supported
+#IGNORE: List generators not supported yet
 """
 """
 closures = { return i } for i in range(3)

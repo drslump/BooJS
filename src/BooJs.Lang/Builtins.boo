@@ -27,8 +27,11 @@ def join(items as (object), separator as string) as string:
 def map(items as (object), callback as callable) as (object):
     pass
 
-#def zip(*arrays as (object)) as (object):
-#    pass
+def reduce(items as (object), callback as callable) as object:
+    pass
+
+def zip(*arrays as (object)) as (object):
+    pass
 
 def reversed(items as (object)) as (object):
     pass

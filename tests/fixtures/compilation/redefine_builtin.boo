@@ -1,5 +1,5 @@
 """
-map
+zip
 """
-map = "map"
-print map
+zip = "zip"
+print zip

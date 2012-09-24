@@ -29,10 +29,20 @@ Boo.each = function (obj, iterator, context) {
     if (obj === null || typeof obj === 'undefined') return;
     if (typeof obj === 'string') obj = obj.split('');
     if (obj.length === +obj.length) {
-        for (var i = 0, l = obj.length; i < l; i++) {
-            if (i in obj && iterator.call(context, obj[i], i, obj) === Boo.STOP) return;
+        var i, l = obj.length;
+        if (iterator.length === 1) {
+            // Single argument, pass the item as is
+            for (i = 0; i < l; i++) {
+                if (i in obj && iterator.call(context, obj[i]) === Boo.STOP) return;
+            }
+        } else {
+            // Multiple arguments, unpack the item as arguments
+            for (i = 0; i < l; i++) {
+                if (i in obj && iterator.apply(context, obj[i]) === Boo.STOP) return;
+            }
         }
     } else {
+        // For dictionaries we always pass the value and the key
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
                 if (iterator.call(context, obj[key], key, obj) === Boo.STOP) return;
@@ -95,6 +105,13 @@ Boo.join = function (list, sep) {
     return result.join(sep || ' ');
 };
 
+// Obtain a reversed version of the given array
+Boo.reversed = function (list) {
+    var result = Boo.cat([list]);
+    result.reverse();
+    return result;
+};
+
 // Calls a function for each element in the array
 Boo.map = function (list, callback) {
     var result = [];
@@ -104,38 +121,36 @@ Boo.map = function (list, callback) {
     return result;
 };
 
-// Obtain a reversed version of the given array
-Boo.reversed = function (list) {
-    var result = Boo.cat([list]);
-    result.reverse();
-    return result;
-};
-
-// Casts a value to the given type, raising an error if it's not possible
-Boo.cast = function (value, type) {
-    // TODO: This is an absolute hack!!!
-    var t = type, tof = typeof(value);
-    if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
-
-    if (tof === t)
-        return value;
-    else if (tof !== 'undefined' && t === 'object')
-        return value;
-    else if ((tof === 'undefined' || value === null) && t === 'number')
-        return 0;
-    else if ((tof === 'undefined' || value === null) && t === 'string')
-        return '';
-    else
-        throw new Error('Unable to cast from ' + tof + ' to ' + type);
-};
-
-// Casts a value to the given type, resulting in a null if it's not possible
-Boo.trycast = function (value, type) {
-    try {
-        return Boo.cast(value, type);
-    } catch (e) {
-        return null;
+// Reduces a list of items using a callback to a single one
+Boo.reduce = function (list, callback, value) {
+    if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
+    var i = 0, l = +this.length;
+ 
+    if (arguments.length < 3) {
+        if (l === 0) throw new TypeError("Array length is 0 and no third argument");
+        value = list[0];
+        i = 1;
     }
+ 
+    while (i < l) {
+        if (i in list) value = callback.call(undefined, value, list[i], i, list);
+        ++i;
+    }
+ 
+    return value;
+};
+
+// Builds a list of lists using one item from each given array
+Boo.zip = function (args) {
+    var shortest = args.length || Boo.reduce(args, function (a, b) {
+        return a.length < b.length ? a : b;
+    });
+
+    var i, result = [], fn = function (arg) { return arg[i]; };
+    for (i = 0; i < shortest; i++) {
+        result[i] = Boo.map(args, fn);
+    }
+    return result;
 };
 
 // Converts any enumerable into an array, casting to a given type
@@ -150,85 +165,122 @@ Boo.array = function (type, enumerable) {
     }
 
     Boo.each(enumerable, function (v) {
-        result.push(Boo.cast(v, type));
+        result.push(Boo.Lang.cast(v, type));
     });
     return result;
 };
 
-// Makes sure a value is enumerable
-Boo.enumerable = function (value) {
-    if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
-        return value;
-    }
 
-    throw new Error('Unable to cast to enumerable the value "' + value + '"');
-};
+// Runtime support library
+Boo.Lang = {
+    // Casts a value to the given type, raising an error if it's not possible
+    cast: function (value, type) {
+        // TODO: This is an absolute hack!!!
+        var t = type, tof = typeof(value);
+        if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
 
-// Compares two values for equality
-Boo.op_Equality = function (lhs, rhs) {
-    return lhs === rhs;
-};
+        if (tof === t)
+            return value;
+        else if (tof !== 'undefined' && t === 'object')
+            return value;
+        else if ((tof === 'undefined' || value === null) && t === 'number')
+            return 0;
+        else if ((tof === 'undefined' || value === null) && t === 'string')
+            return '';
+        else
+            throw new Error('Unable to cast from ' + tof + ' to ' + type);
+    },
 
-// Perform the modulus operation on two operands
-Boo.op_Modulus = function (lhs, rhs) {
-    // Check if we should format a string
-    if (typeof lhs === 'string' && typeof rhs === 'object') {
-        return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-            return rhs[capt];
-        });
-    } else {
-        return lhs % rhs;
-    }
-};
-
-// Perform an addition operation on two operands
-Boo.op_Addition = function (lhs, rhs) {
-    return lhs + rhs;
-};
-
-// Perform a multiply operations on two operands
-Boo.op_Multiply = function (lhs, rhs) {
-    // Handle string duplication
-    if (typeof lhs === 'number' && typeof rhs === 'string') {
-        var _ = lhs;
-        lhs = rhs;
-        rhs = _;
-    }
-    if (typeof lhs === 'string' && typeof rhs === 'number') {
-        var result = '';
-        while (rhs--) result += lhs;
-        return result;
-    }
-
-    return lhs * rhs;
-};
-
-
-var BooJs = {};
-BooJs.Lang = {};
-
-BooJs.Lang.Array = {
-    // Checks for equality between two arrays, comparing nested arrays but not objects
-    op_Equality: function (a, b) {
-        if (a.length !== b.length) return false;
-        for (var i = 0; i < a.length; i++) {
-            if (a[i] === b[i]) continue;
-
-            // Check nested arrays
-            if (typeof a[i] === 'object' && typeof b[i] === 'object' && a[i].length === +a[1].length) {
-                if (Boo.Lang.Array.op_Equality(a[i], b[i])) continue;
-            }
-
-            return false;
+    // Casts a value to the given type, resulting in a null if it's not possible
+    trycast: function (value, type) {
+        try {
+            return Boo.Lang.cast(value, type);
+        } catch (e) {
+            return null;
         }
-        return true;
     },
-    // Checks if an item exists inside an array
-    op_Member: function (itm, lst) {
-        return lst.indexOf(itm) !== -1;
+
+    // Makes sure a value is enumerable
+    enumerable: function (value) {
+        if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
+            return value;
+        }
+
+        throw new Error('Unable to cast to enumerable the value "' + value + '"');
     },
-    // Checks if an item does not exists inside an array
-    op_NotMember: function (itm, lst) {
-        return lst.indexOf(itm) === -1;
+
+    // Compares two values for equality
+    op_Equality: function (lhs, rhs) {
+        return lhs === rhs;
+    },
+
+    // Perform the modulus operation on two operands
+    op_Modulus: function (lhs, rhs) {
+        // Check if we should format a string
+        if (typeof lhs === 'string' && typeof rhs === 'object') {
+            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+                return rhs[capt];
+            });
+        } else {
+            return lhs % rhs;
+        }
+    },
+
+    // Perform an addition operation on two operands
+    op_Addition: function (lhs, rhs) {
+        return lhs + rhs;
+    },
+
+    // Perform a multiply operation on two operands
+    op_Multiply: function (lhs, rhs) {
+        // Handle string duplication
+        if (typeof lhs === 'number' && typeof rhs === 'string') {
+            var _ = lhs;
+            lhs = rhs;
+            rhs = _;
+        }
+        if (typeof lhs === 'string' && typeof rhs === 'number') {
+            var result = '';
+            while (rhs--) result += lhs;
+            return result;
+        }
+
+        return lhs * rhs;
+    },
+
+    // Perform a regexp match
+    op_Match: function (lhs, rhs) {
+        if (typeof rhs === 'string') rhs = new RegExp(rhs);
+        return rhs.test(lhs);
+    },
+    op_NotMatch: function (lhs, rhs) {
+        return !Boo.Lang.op_Match(lhs, rhs);
+    },
+
+    // Array type support functions
+    Array: {
+        // Checks for equality between two arrays, comparing nested arrays but not objects
+        op_Equality: function (a, b) {
+            if (a.length !== b.length) return false;
+            for (var i = 0; i < a.length; i++) {
+                if (a[i] === b[i]) continue;
+
+                // Check nested arrays
+                if (typeof a[i] === 'object' && typeof b[i] === 'object' && a[i].length === +a[1].length) {
+                    if (Boo.Lang.Array.op_Equality(a[i], b[i])) continue;
+                }
+
+                return false;
+            }
+            return true;
+        },
+        // Checks if an item exists inside an array
+        op_Member: function (itm, lst) {
+            return lst.indexOf(itm) !== -1;
+        },
+        // Checks if an item does not exists inside an array
+        op_NotMember: function (itm, lst) {
+            return lst.indexOf(itm) === -1;
+        }
     }
 };

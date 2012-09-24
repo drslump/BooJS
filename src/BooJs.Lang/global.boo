@@ -177,7 +177,12 @@ class Array(ProtoObject):
         pass
 
 
-    def push(*itm as (object)) as uint:
+    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
+    def push(itm as object) as uint:
+        pass
+    def push(itm1 as object, itm2 as object) as uint:
+        pass
+    def push(itm1 as object, itm2 as object, itm3 as object) as uint:
         pass
 
     def pop() as object:

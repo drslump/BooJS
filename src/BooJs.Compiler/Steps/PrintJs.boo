@@ -661,14 +661,14 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteLine 'continue;'
 
     def OnCastExpression(node as CastExpression):
-        Write 'Boo.cast('
+        Write 'Boo.Lang.cast('
         Visit node.Target
         Write ', '
         Visit node.Type
         Write ')'
 
     def OnTryCastExpression(node as TryCastExpression):
-        Write 'Boo.trycast('
+        Write 'Boo.Lang.trycast('
         Visit node.Target
         Write ', '
         Visit node.Type

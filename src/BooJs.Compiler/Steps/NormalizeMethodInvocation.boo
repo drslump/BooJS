@@ -43,11 +43,13 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
             name = target.Name
 
             if name == 'EqualityOperator':
-                target.Target = [| Boo |]
+                target.Target = [| Boo.Lang |]
                 target.Name = 'op_Equality'
 
             elif name == 'GetEnumerable':
-                ReplaceCurrentNode node.Arguments[0]
+                #ReplaceCurrentNode node.Arguments[0]
+                target.Target = [| Boo.Lang |]
+                target.Name = 'enumerable'
 
             elif name == 'GetRange1':
                 # HACK: This call has been only found in compiler generated support code
@@ -55,7 +57,7 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
 
             else:
                 # For any other runtime service method we assume it has been implemented in the runtime
-                target.Target = [| Boo |]
+                target.Target = [| Boo.Lang |]
 
         # Process BooJs builtins (BooJs.Lang.BuiltinsModule.xxx -> Boo.xxx)
         elif target.Target.ToString() == 'BooJs.Lang.BuiltinsModule':
@@ -86,4 +88,12 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
         # Replace the initilization of a reference with a simple assignment
         if target.Name == '__initobj__' and len(node.Arguments) > 1:
             ReplaceCurrentNode([| $(node.Arguments[0]) = $(node.Arguments[1]) |])
+
+        # Some methods are defined as simple ReferenceExpressions instead of MemberReferenceExpression chains
+        # Conversion: Boo.Lang.Runtime.RuntimeServices.xxx -> Boo.xxx
+        elif target.Name =~ /^Boo\.Lang\.Runtime\.RuntimeServices\./:
+            target.Name = 'Boo.Lang.' + target.Name[len('Boo.Lang.Runtime.RuntimeServices.'):]
+
+        elif target.Name =~ /^BooJs\.Lang\./:
+            target.Name = 'Boo.Lang.' + target.Name[len('BooJs.Lang.'):]
 

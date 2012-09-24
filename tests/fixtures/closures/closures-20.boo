@@ -1,4 +1,3 @@
-#IGNORE: zip is not yet supported
 
 closures = []
 for i in range(3):
