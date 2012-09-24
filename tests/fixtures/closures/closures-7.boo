@@ -1,5 +1,4 @@
 
-
 def adder(amount as int):
 	return { value as int | return amount+value }
 

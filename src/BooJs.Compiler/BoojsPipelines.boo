@@ -48,6 +48,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Support `goto`
         Add(Steps.ProcessGoto())
 
+        # Normalize closures
+        Add(Steps.NormalizeClosures())
+
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 

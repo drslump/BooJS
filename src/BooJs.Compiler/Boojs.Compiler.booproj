@@ -77,6 +77,7 @@
     <Compile Include="Steps\SafeMemberAccess.boo" />
     <Compile Include="Steps\Preprocess.boo" />
     <Compile Include="Steps\NormalizeUnpack.boo" />
+    <Compile Include="Steps\NormalizeClosures.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">

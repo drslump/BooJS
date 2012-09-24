@@ -125,37 +125,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return
 
 
-        # HACK!!! Find assignments of $locals.$<name> to define these as local variables
-        # TODO: Improve the algorithm to support all cases
-        # TODO: Move to a separate step
-        def FindClosureLocals(block as Block):
-            # TODO: Handle closures passed in as arguments to method calls
-            for st in block.Statements:
-                if st isa Block:
-                    FindClosureLocals(st)
-                elif st isa Method:
-                    FindClosureLocals((st as Method).Body)
-                elif st isa BlockExpression:
-                    FindClosureLocals((st as BlockExpression).Body)
-                elif st isa ExpressionStatement:
-                    es = st as ExpressionStatement
-                    if es.Expression isa BinaryExpression:
-                        be = es.Expression as BinaryExpression
-
-                        # Process closures assigned to variables
-                        if be.Right isa BlockExpression:
-                            FindClosureLocals((be.Right as BlockExpression).Body)
-
-                        if be.Operator == BinaryOperatorType.Assign:
-                            if /^\$locals\.\$/.IsMatch(be.Left.ToString()):
-                                str = be.Left.ToString()
-                                parts = str.Split(char('.'))
-                                local = Local()
-                                local.Name = parts[1][1:]
-                                m.Locals.Add(local)
-
-        FindClosureLocals(m.Body)
-
         # HACK: If we detect the Main method we just output its statements
         if m.Name == 'Main':
             WriteLocals(m.Locals)
