@@ -48,19 +48,12 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         print slice.Begin, slice.Begin.NodeType
 
 
-    def _OnUnpackStatement(node as UnpackStatement):
-    """ Boo allows to unpack enumerables into local variables: a, b, c = [1, 2, 3]
-    """
-        NotImplemented node, 'Unpack statements are not supported'
-
-
     def OnTimeSpanLiteralExpression(node as TimeSpanLiteralExpression):
     """ Literal timespan values ( 1s, 4d, 3h ...)
     """
         NotImplemented node, 'Timespan expressions are not supported'
 
-
-    def __OnYieldStatement(node as YieldStatement):
+    def OnYieldStatement(node as YieldStatement):
     """ Porting yield/generators to standard Javascript is very difficult and it's not
         clear that it could work in all cases. Only Firefox supports them natively thus
         one option could be to add a compiler flag to allow them.
