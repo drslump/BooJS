@@ -7,7 +7,7 @@
 var Boo = {};
 
 // Used as a unique indentifier when we want to stop iterating a generator
-Boo.STOP = {};
+Boo.STOP = { retval: undefined };
 
 // Standard types
 Boo.Types = {
@@ -44,6 +44,12 @@ Boo.each = function (obj, iterator, context) {
             }
         }
     }
+};
+
+// Signals an iterator to stop and return a value
+Boo.stop = function (retval) {
+    Boo.STOP.retval = retval;
+    throw Boo.STOP;
 };
 
 // Generator factory
@@ -252,12 +258,18 @@ Boo.Lang = {
         return !Boo.Lang.op_Match(lhs, rhs);
     },
 
+    // Formats an string based on the given params
+    // By default it replaces tokens like 'Hello {0} from {1}'
+    formatter: function (tpl, params) {
+        return tpl.replace(/\{(\d+)\}/g, function (m, capt) {
+            return params[capt];
+        });
+    },
+
     // String type support functions
     String: {
         op_Modulus: function (lhs, rhs) {
-            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-                return rhs[capt];
-            });
+            return Boo.Lang.formatter(lhs, rhs);
         }
     },
 
@@ -285,6 +297,10 @@ Boo.Lang = {
         // Checks if an item does not exists inside an array
         op_NotMember: function (itm, lst) {
             return lst.indexOf(itm) === -1;
+        },
+        // Perform addition between two arrays
+        op_Addition: function (lhs, rhs) {
+            return lhs.concat(rhs);
         }
     }
 };
