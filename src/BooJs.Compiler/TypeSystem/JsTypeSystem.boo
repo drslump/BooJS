@@ -38,8 +38,8 @@ class JsTypeSystem(TypeSystemServices):
         # The duck type
         AddPrimitiveType("duck", DuckType);
 
-        AddPrimitiveType("string", Map(JsLang.String))
-        AddPrimitiveType("String", Map(JsLang.String))
+        AddLiteralPrimitiveType("string", Map(JsLang.String))
+        #AddPrimitiveType("String", Map(JsLang.String))
 
         # Use .NET's primary object type
         AddPrimitiveType("object", ObjectType)

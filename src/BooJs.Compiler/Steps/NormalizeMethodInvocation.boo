@@ -30,13 +30,6 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                     Write "/*CLOSURE: $arg*/"
         */
 
-    private def UndoOperatorInvocation(node as MethodInvocationExpression, operator as BinaryOperatorType):
-        expr = BinaryExpression(node.LexicalInfo)
-        expr.Operator = operator
-        expr.Left = node.Arguments[0]
-        expr.Right = node.Arguments[1]
-        Visit expr
-
     private def NormalizeTarget(node as MethodInvocationExpression, target as MemberReferenceExpression):
         # Convert: Boo.Lang.RuntimeServices.xxx -> Boo.xxx
         if target.Target.ToString() == 'Boo.Lang.Runtime.RuntimeServices':
@@ -96,4 +89,16 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
 
         elif target.Name =~ /^BooJs\.Lang\./:
             target.Name = 'Boo.Lang.' + target.Name[len('BooJs.Lang.'):]
+
+        else:
+            # Some primitive types are not expanded so we need to check if we are handling a primitive
+            # type to replace it with the actual type defined ( string -> BooJs.Lang.String )
+            parts = target.Name.Split(char('.'))
+            if TypeSystemServices.IsPrimitive(parts[0]):
+                type = TypeSystemServices.ResolvePrimitive(parts[0])
+                if type isa TypeSystem.Reflection.ExternalType:
+                    parts[0] = (type as TypeSystem.Reflection.ExternalType).ActualType.FullName
+                    target.Name = join(parts, '.')
+                    # Execute again once we have replace the type name
+                    NormalizeTarget(node, target)
 

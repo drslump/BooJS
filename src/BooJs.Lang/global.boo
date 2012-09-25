@@ -109,20 +109,20 @@ class Number(ProtoObject):
 
 class String(ProtoObject):
 
-    self[index as int] as string:
+    self[index as int] as String:
          get: raise System.NotImplementedException()
 
     public length as uint
 
     # Support formatting: '{0} {1}' % ('foo', 'bar')
-    static def op_Modulus(s as string, a as List) as List:
+    static def op_Modulus(s as String, a as Array) as String:
         pass
 
-    def charAt(idx as int) as string:
+    def charAt(idx as int) as String:
         pass
     def charCodeAt(idx as int) as int:
         pass
-    def concat(str as string) as string:
+    def concat(str as string) as String:
         pass
     def indexOf(str as string) as int:
         pass
@@ -131,31 +131,31 @@ class String(ProtoObject):
 
     def match(re as System.Text.RegularExpressions.Regex) as bool:
         pass
-    def replace(re as System.Text.RegularExpressions.Regex, repl as string) as string:
+    def replace(re as System.Text.RegularExpressions.Regex, repl as string) as String:
         pass
-    def replace(substr as string, repl as string) as string:
+    def replace(substr as String, repl as String) as String:
         pass
-    def replace(re as System.Text.RegularExpressions.Regex, repl as callable) as string:
+    def replace(re as System.Text.RegularExpressions.Regex, repl as callable) as String:
         pass
-    def replace(substr as string, repl as callable) as string:
-        pass
-
-    def split(sep as string) as (string):
+    def replace(substr as String, repl as callable) as String:
         pass
 
-    def substr(start as uint, length as int) as string:
-        pass
-    def substring(start as uint, stop as int) as string:
+    def split(sep as String) as (String):
         pass
 
-    def toUpperCase():
-        return self
+    def substr(start as uint, length as int) as String:
+        pass
+    def substring(start as uint, stop as int) as String:
+        pass
 
-    def toLowerCase():
-        return self
+    def toUpperCase() as String:
+        pass
 
-    def trim():
-        return self
+    def toLowerCase() as String:
+        pass
+
+    def trim() as String:
+        pass
 
 
 class Array(ProtoObject):
