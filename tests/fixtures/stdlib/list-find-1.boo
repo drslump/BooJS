@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported yet
 class User:
 	[getter(Login)]
 	_login as string

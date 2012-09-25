@@ -1,8 +1,16 @@
 """
-System.ArgumentException
+4
+5
+Error
 """
-ltuae as duck = 42
+a = "hola"
+print len(a)
+
+b = [0,1,2,3,4]
+print len(b)
+
+c as duck
 try:
-	i = len(ltuae)
-except x:
-	print x.GetType()
+	print len(c)
+except:
+	print 'Error'

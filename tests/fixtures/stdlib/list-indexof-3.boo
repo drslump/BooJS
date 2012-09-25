@@ -1,3 +1,4 @@
+#IGNORE: Lists are compared by reference in BooJs
 a = [(1, 2), (3, 4), (5, 6)]
 
 assert 0 == a.indexOf((1, 2))
