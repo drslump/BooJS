@@ -79,8 +79,12 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
 
     private def NormalizeTarget(node as MethodInvocationExpression, target as ReferenceExpression):
         # Replace the initilization of a reference with a simple assignment
-        if target.Name == '__initobj__' and len(node.Arguments) > 1:
-            ReplaceCurrentNode([| $(node.Arguments[0]) = $(node.Arguments[1]) |])
+        if target.Name == '__initobj__':
+            if len(node.Arguments) > 1:
+                ReplaceCurrentNode([| $(node.Arguments[0]) = $(node.Arguments[1]) |])
+            else:
+                block = node.ParentNode.ParentNode as Block
+                block.Statements.Remove(node.ParentNode)
 
         # Some methods are defined as simple ReferenceExpressions instead of MemberReferenceExpression chains
         # Conversion: Boo.Lang.Runtime.RuntimeServices.xxx -> Boo.xxx

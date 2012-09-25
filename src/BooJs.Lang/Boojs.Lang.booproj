@@ -11,7 +11,7 @@
     <UsePartialTypes>false</UsePartialTypes>
     <AssemblyName>BooJs.Lang</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <BaseDirectory>..\BooJs.Lang</BaseDirectory>
+    <BaseDirectory>.</BaseDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,9 +40,9 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.boo" />
     <Compile Include="Builtins.boo" />
-    <Compile Include="..\BooJs.Lang\global.boo" />
-    <Compile Include="..\BooJs.Lang\Dom2.boo" />
-    <Compile Include="..\BooJs.Lang\Dom3.boo" />
-    <Compile Include="..\BooJs.Lang\jQuery.boo" />
+    <Compile Include="global.boo" />
+    <Compile Include="Dom2.boo" />
+    <Compile Include="Dom3.boo" />
+    <Compile Include="jQuery.boo" />
   </ItemGroup>
 </Project>

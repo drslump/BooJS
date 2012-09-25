@@ -54,12 +54,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
-      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
-      <Name>BooJs.Compiler</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="FixtureRunner.boo" />
     <Compile Include="OperatorsFixtures.boo" />
     <Compile Include="ArrayFixtures.boo" />
@@ -71,7 +65,12 @@
     <Compile Include="DuckTypingFixtures.boo" />
     <Compile Include="StdlibFixtures.boo" />
     <Compile Include="DevelFixtures.boo" />
-    <Compile Include="ParserFixtures.boo" />
-    <Compile Include="SemanticsFixtures.boo" />
+    <Compile Include="TypeSystemFixtures.boo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
+      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
+      <Name>BooJs.Compiler</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

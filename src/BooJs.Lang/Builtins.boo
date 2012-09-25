@@ -1,45 +1,43 @@
 namespace BooJs.Lang
 
-def range(stop as int) as (int):
-    return range(0, stop, 1)
 
-def range(start as int, stop as int) as (int):
-    return range(start, stop, 1)
+# NOTE: We need to use the Javascript compatible types instead of the primitive ones (int, string, object, ...)
 
-def range(start as int, stop as int, step as int) as (int):
+def range(stop as NumberInt) as (NumberInt):
+    pass
+def range(start as NumberInt, stop as NumberInt) as (NumberInt):
+    pass
+def range(start as NumberInt, stop as NumberInt, step as NumberInt) as (NumberInt):
     pass
 
 
-def print(*list as (object)) as void:
+def print(*list as (Proto)) as void:
     pass
 
-
-def cat(*list as (object)) as (object):
+def cat(*list as (Proto)) as Array:
 """ Concatenates the given enumerable arguments """
     pass
 
-def join(items as (object)):
-    return join(items, ' ')
-
-def join(items as (object), separator as string) as string:
+def join(items as (Proto), separator as String) as String:
+    pass
+def join(items as (Proto)) as String:
     pass
 
-def map(items as (object), callback as callable) as (object):
+def map(items as (Proto), callback as Function) as (Proto):
     pass
 
-def reduce(items as (object), callback as callable) as object:
+def reduce(items as (Proto), callback as Function) as Proto:
     pass
 
-def zip(*arrays as (object)) as (object):
+def zip(*arrays as (Proto)) as (Proto):
     pass
 
-def reversed(items as (object)) as (object):
+def reversed(items as (Proto)) as (Proto):
+    pass
+def reversed(items as String) as (Proto):
     pass
 
-def reversed(items as string) as (object):
-    pass
-
-def prompt(msg as string):
+def prompt(msg as String):
     pass
 
 
@@ -52,11 +50,9 @@ def prompt(msg as string):
 #def array(type as System.Type, num as int):
 #    pass
 
-def array(type as System.Type, enumerable as (object)) as Array:
+def array(type as System.Type, enumerable as (Proto)) as Array:
     pass
-
-def array(type as System.Type, num as int) as Array:
+def array(type as System.Type, num as NumberInt) as Array:
     pass
-
-def array(enumerable as (object)) as Array:
+def array(enumerable as (Proto)) as Array:
     pass

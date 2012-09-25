@@ -11,13 +11,23 @@ class JsReflectionTypeSystemProvider(ReflectionTypeSystemProvider):
     public static final SharedTypeSystemProvider = JsReflectionTypeSystemProvider()
 
     def constructor():
-        ReplaceMapping(System.String, JsLang.String)
+        # Define the base object type
+        MapTo(JsLang.Proto, JsObjectType(self, JsLang.Proto))
+
+        # Javascript's strings are mutable
+        MapTo(JsLang.String, JsObjectType(self, JsLang.String))
+
+        # Define numbers as value types
+        MapTo(JsLang.NumberInt, JsValueType(self, JsLang.NumberInt))
+        MapTo(JsLang.NumberUInt, JsValueType(self, JsLang.NumberUInt))
+        MapTo(JsLang.NumberDouble, JsValueType(self, JsLang.NumberDouble))
+
+
 
         # Boo's immutable Array and muttable List are converted to a JS muttable array
         ReplaceMapping(System.Array, JsLang.Array)
         ReplaceMapping(Boo.Lang.List, JsLang.Array)
 
-        ReplaceMapping(Boo.Lang.Hash, JsLang.Object)
         ReplaceMapping(System.Text.RegularExpressions.Regex, JsLang.RegExp)
 
     def ReplaceMapping(existing as System.Type, newType as System.Type):
@@ -26,37 +36,62 @@ class JsReflectionTypeSystemProvider(ReflectionTypeSystemProvider):
         return mapping
 
 
+class JsObjectType(ExternalType):
+     def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
+        super(provider, type)
+
+     override def IsAssignableFrom(other as IType) as bool:
+         external = other as ExternalType;
+         return external == null or external.ActualType != Types.Void;
+
+class JsValueType(ExternalType):
+    override IsValueType:
+        get: return true
+
+    def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
+        super(provider, type)
+
+
+
 class JsTypeSystem(TypeSystemServices):
 
+    override static ErrorEntity = JsLang.Error
+
     override ExceptionType:
-        get: return Map(JsLang.Error)
+         get: return Map(JsLang.Error)
 
     override protected def PreparePrimitives():
+        ObjectType = Map(JsLang.Proto)
+        StringType = Map(JsLang.String)
+        ArrayType = Map(JsLang.Array)
+        IntType = Map(JsLang.NumberInt)
+        UIntType = Map(JsLang.NumberUInt)
+        DoubleType = Map(JsLang.NumberDouble)
+        RegExpType = Map(JsLang.RegExp)
+        ICallableType = Map(JsLang.Function)
+
         AddPrimitiveType("void", VoidType)
-        AddPrimitiveType("bool", BoolType)
-
-        # The duck type
         AddPrimitiveType("duck", DuckType);
-
-        AddLiteralPrimitiveType("string", Map(JsLang.String))
-        #AddPrimitiveType("String", Map(JsLang.String))
-
-        # Use .NET's primary object type
         AddPrimitiveType("object", ObjectType)
-        # The JavaScript version uses a capital O
-        AddPrimitiveType("Object", Map(JsLang.Object))
+        AddPrimitiveType("array", ArrayType)
+        AddPrimitiveType("callable", ICallableType)
 
         # We just need a few types
-        AddPrimitiveType("int", IntType)
-        AddPrimitiveType("uint", UIntType)
-        AddPrimitiveType("double", DoubleType)
-        AddPrimitiveType("Number", Map(JsLang.Number))
-
-        AddPrimitiveType("callable", ICallableType)
-        AddPrimitiveType("Function", Map(JsLang.Function))
+        AddLiteralPrimitiveType("bool", BoolType)
+        AddLiteralPrimitiveType("int", IntType)
+        AddLiteralPrimitiveType("uint", UIntType)
+        AddLiteralPrimitiveType("double", DoubleType)
+        AddLiteralPrimitiveType("string", StringType)
+        AddLiteralPrimitiveType('regex', RegExpType)
 
         # TODO: Handle as a global type
         #AddPrimitiveType("Date", DateTimeType)
+
+    override protected def PrepareBuiltinFunctions():
+        AddBuiltin(BuiltinFunction.Len)
+        #AddBuiltin(BuiltinFunction.AddressOf);
+        #AddBuiltin(BuiltinFunction.Eval);
+        #AddBuiltin(BuiltinFunction.Switch);
 
     /*
     # We might need to replace more methods to take into account the new types

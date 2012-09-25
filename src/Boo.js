@@ -234,17 +234,15 @@ Boo.Lang = {
 
     // Perform a multiply operation on two operands
     op_Multiply: function (lhs, rhs) {
-        // Handle string duplication
-        if (typeof lhs === 'number' && typeof rhs === 'string') {
+        if (typeof lhs === 'number') {
             var _ = lhs;
             lhs = rhs;
             rhs = _;
         }
-        if (typeof lhs === 'string' && typeof rhs === 'number') {
-            var result = '';
-            while (rhs--) result += lhs;
-            return result;
-        }
+        if (typeof lhs === 'string' && typeof rhs === 'number')
+            return Boo.Lang.String.op_Multiply(lhs, rhs);
+        if (typeof lhs === 'object' && lhs.length === +lhs.length)
+            return Boo.Lang.Array.op_Multiply(rhs, lhs);
 
         return lhs * rhs;
     },
@@ -266,10 +264,40 @@ Boo.Lang = {
         });
     },
 
+    Proto: {
+        op_Addition: function (lhs, rhs) {
+            if (lhs === null || rhs === null)
+                return null;
+
+            // Check if we are handling an array
+            if (typeof lhs === 'object' && lhs.length === +lhs.length)
+                return Boo.Lang.Array.op_Addition(lhs, rhs);
+            
+            return lhs + rhs;
+        },
+        op_Multiply: function (lhs, rhs) {
+            if (lhs === null || rhs === null)
+                return null;
+
+            if (typeof lhs === 'string')
+                return Boo.Lang.String.op_Multiply(lhs, rhs);
+
+            if (typeof lhs === 'object' && lhs.length === +lhs.length)
+                return Boo.Lang.Array.op_Multiply(lhs, rhs);
+
+            return lhs * rhs;
+        }
+    },
+
     // String type support functions
     String: {
         op_Modulus: function (lhs, rhs) {
             return Boo.Lang.formatter(lhs, rhs);
+        },
+        op_Multiply: function (lhs, rhs) {
+            var result = '';
+            while (rhs--) result += lhs;
+            return result;
         }
     },
 
@@ -301,6 +329,14 @@ Boo.Lang = {
         // Perform addition between two arrays
         op_Addition: function (lhs, rhs) {
             return lhs.concat(rhs);
+        },
+        // Perform multiply on an array
+        op_Multiply: function (lhs, rhs) {
+            var result = [];
+            for (var i = 0; i < rhs; i++) {
+                result = result.concat(lhs);
+            }
+            return result;
         }
     }
 };

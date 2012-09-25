@@ -34,6 +34,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="Boo.Lang, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Boo.Lang.Parser, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.boo" />
@@ -80,18 +89,6 @@
     <ProjectReference Include="..\Boojs.Lang\BooJs.Lang.booproj">
       <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
       <Name>BooJs.Lang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang.Compiler\Boo.Lang.Compiler.csproj">
-      <Project>{7EAC855C-AB70-4CEB-9B9A-8B60712277E2}</Project>
-      <Name>Boo.Lang.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang\Boo.Lang.csproj">
-      <Project>{A359E52E-5E90-40F3-A5F0-257FE2D545EE}</Project>
-      <Name>Boo.Lang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang.Parser\Boo.Lang.Parser.csproj">
-      <Project>{BA0306B9-A10B-4D29-B219-0DFBE24741E8}</Project>
-      <Name>Boo.Lang.Parser</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

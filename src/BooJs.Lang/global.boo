@@ -1,9 +1,15 @@
 namespace BooJs.Lang
 
-class ProtoObject(System.Object):
+class Proto(System.Object):
 """
 Serves as base for all JS types
 """
+    static def op_Addition(lhs as Proto, rhs as Number) as Number:
+        pass
+        
+    static def op_Multiply(lhs as Proto, rhs as Number) as Number:
+        pass
+
     public prototype as Object
 
     def hasOwnProperty(key as string) as bool:
@@ -16,7 +22,7 @@ Serves as base for all JS types
         pass
 
 
-class Object(ProtoObject, Boo.Lang.IQuackFu):
+class Object(Proto, Boo.Lang.IQuackFu):
 """
 Models the Javascript Object type
 """
@@ -35,7 +41,7 @@ Models the Javascript Object type
         pass
 
 
-class Error(ProtoObject):
+class Error(Proto):
 
     public message as string
 
@@ -82,7 +88,11 @@ class URIError(Error):
 
 
 
-class Number(ProtoObject):
+class Number(Proto):
+
+    IsValueType:
+        get: return true
+
     static def op_Implicit(value as double) as Number:
         pass
     static def op_Implicit(value as int) as Number:
@@ -90,13 +100,9 @@ class Number(ProtoObject):
     static def op_Implicit(value as uint) as Number:
         pass
 
-    def constructor(n as int):
+    def constructor():
         pass
-
-    def constructor(n as uint):
-        pass
-
-    def constructor(n as double):
+    def constructor(n as Number):
         pass
 
     def toExponential() as string:
@@ -106,8 +112,17 @@ class Number(ProtoObject):
     def toPrecission() as string:
         pass
 
+class NumberInt(Number):
+    pass
 
-class String(ProtoObject):
+class NumberUInt(Number):
+    pass
+
+class NumberDouble(Number):
+    pass
+
+
+class String(Proto):
 
     self[index as int] as String:
          get: raise System.NotImplementedException()
@@ -158,7 +173,7 @@ class String(ProtoObject):
         pass
 
 
-class Array(ProtoObject):
+class Array(Proto):
 
     self[index as int] as object:
         get: pass
@@ -176,8 +191,14 @@ class Array(ProtoObject):
     static def op_Equality(x as Array, y as Array) as bool:
         pass
 
-    static def op_Addition(lhs as Array, rhs as Array):
+    static def op_Addition(lhs as Array, rhs as Array) as Array:
         pass
+
+    static def op_Multiply(lhs as Array, rhs as int) as Array:
+        pass
+
+    #static def op_Multiply(lhs as int, rhs as Array) as Array:
+    #    pass
 
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
@@ -283,7 +304,7 @@ class Array(ProtoObject):
         pass
 
 
-class RegExp(ProtoObject):
+class RegExp(Proto):
 
     public global as bool
     public ignoreCase as bool
@@ -304,7 +325,7 @@ class RegExp(ProtoObject):
         pass
 
 
-class Function(ProtoObject, ICallable):
+class Function(Proto, ICallable):
 
     # ICallable interface
     def Call(params as (object)):

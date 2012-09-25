@@ -181,7 +181,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write ' '
 
         # Initialize value types to avoid them being 'undefined'
-        if entity and entity.Type.FullName in ('int', 'uint', 'double'):
+        if entity and entity.Type.FullName in ('int', 'uint', 'double'): #TypeSystem.TypeSystemServices.IsNumber(entity.Type):  #.FullName in ('int', 'uint', 'double'):
             Write "var $(node.Name) = 0;"
         elif entity and entity.Type.FullName in ('bool'):
             Write "var $(node.Name) = false;"
