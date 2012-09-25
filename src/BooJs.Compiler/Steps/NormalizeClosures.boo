@@ -7,47 +7,55 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
 """
     Detect locals inside closures and assign them to the parent method
 """
+    _method as Method
+    _nodes = []
 
-    def OnMethod(m as Method):
-        # TODO: Improve the algorithm to support all cases
-        # TODO: Handle closures passed in as arguments to method calls
-        FindClosureLocals(m.Body, m)
+    def OnMethod(node as Method):
+        _method = node
+        _nodes.Push(node)
+        super(node)
+        _nodes.Pop()
 
-    private def FindClosureLocals(block as Block, method as Method):
-    """ Find assignments of \$locals.\$<name> to define these as local variables """
-        for st in block.Statements:
-            if st isa Block:
-                FindClosureLocals(st, method)
-            #elif st isa Method:
-            #    FindClosureLocals((st as Method).Body, st as Method)
-            elif st isa BlockExpression:
-                FindClosureLocals((st as BlockExpression).Body, method)
-            elif st isa ExpressionStatement:
-                es = st as ExpressionStatement
-                if es.Expression isa BinaryExpression:
-                    be = es.Expression as BinaryExpression
+    def OnBlockExpression(node as BlockExpression):
+        _nodes.Push(node)
+        super(node)
+        _nodes.Pop()
 
-                    # Process closures assigned to variables
-                    if be.Right isa BlockExpression:
-                        FindClosureLocals((be.Right as BlockExpression).Body, method)
+    def OnBinaryExpression(node as BinaryExpression):
+        if node.Operator == BinaryOperatorType.Assign:
+            name = node.Left.ToString()
+            if /^\$locals\.\$/.IsMatch(name):
+                name = name.Substring(len('$locals.$'))
 
-                    if be.Operator == BinaryOperatorType.Assign:
-                        name = be.Left.ToString()
-                        if /^\$locals\.\$/.IsMatch(name):
-                            name = name.Substring(len('$locals.$'))
+            exists = false
+            for n in _nodes:
+                if ExistsVariable(n, name):
+                    exists = true
+                    break
 
-                            # Check if it's been defined as a parameter to the method
-                            parent = block.ParentNode
-                            while parent and not parent isa BlockExpression and not parent isa Method:
-                                parent = parent.ParentNode
-                            if parent isa BlockExpression:
-                                params = (parent as BlockExpression).Parameters
-                            elif parent isa Method:
-                                params = (parent as Method).Parameters
-                            else:
-                                raise 'Expected a parent node of type Method or BlockExpression'
+            if not exists:
+                try:
+                    type = GetType(node.Left)
+                except:
+                    type = TypeSystemServices.ObjectType
+                CodeBuilder.DeclareLocal(_method, name, type)
 
-                            if params.Contains({param as ParameterDeclaration| param.Name == name}):
-                                continue
+        Visit node.Left
+        Visit node.Right
 
-                            CodeBuilder.DeclareLocal(method, name, GetType(be.Left))
+    private def ExistsVariable(node as Node, name) as bool:
+        if node isa BlockExpression:
+            params = (node as BlockExpression).Parameters
+            if params.Contains({param as ParameterDeclaration| param.Name == name}):
+                return true
+
+        if node isa Method:
+            params = (node as Method).Parameters
+            if params.Contains({param as ParameterDeclaration| param.Name == name}):
+                return true
+            locals = (node as Method).Locals
+            if locals.Contains({local as Local| local.Name == name}):
+                return true
+
+        return false
+

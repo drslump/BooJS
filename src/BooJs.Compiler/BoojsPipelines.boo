@@ -34,6 +34,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Relax boolean conversions
         Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())
 
+        # Normalize generator expressions
+        InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
+
         # Use a custom implementation for iterations
         Remove(NormalizeIterationStatements)
         Remove(OptimizeIterationStatements)
@@ -48,11 +51,11 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Support `goto`
         Add(Steps.ProcessGoto())
 
-        # Normalize closures
-        Add(Steps.NormalizeClosures())
-
         # Normalize method invocations
         Add(Steps.NormalizeMethodInvocation())
+
+        # Normalize closures
+        Add(Steps.NormalizeClosures())
 
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())

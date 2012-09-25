@@ -1,6 +1,6 @@
 namespace BooJs.Lang
 
-class ProtoObject:
+class ProtoObject(System.Object):
 """
 Serves as base for all JS types
 """
@@ -206,12 +206,20 @@ class Array(ProtoObject):
     def splice(index as int):
         return self
 
-    def unshift(*itm as (object)) as uint:
+    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
+    def unshift(itm1 as object) as uint:
+        pass
+    def unshift(itm1 as object, itm2 as object) as uint:
+        pass
+    def unshift(itm1 as object, itm2 as object, itm3 as object) as uint:
         pass
 
-
-
-    def concat(*itm as (Array)) as Array:
+    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
+    def concat(itm1 as Array) as Array:
+        pass
+    def concat(itm1 as Array, itm2 as Array) as Array:
+        pass
+    def concat(itm1 as Array, itm2 as Array, itm3 as Array) as Array:
         pass
 
     def join(sep as string) as string:

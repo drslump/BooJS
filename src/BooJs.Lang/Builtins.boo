@@ -36,6 +36,9 @@ def zip(*arrays as (object)) as (object):
 def reversed(items as (object)) as (object):
     pass
 
+def reversed(items as string) as (object):
+    pass
+
 def prompt(msg as string):
     pass
 

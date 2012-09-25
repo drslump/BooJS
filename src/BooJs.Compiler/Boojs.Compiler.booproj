@@ -79,6 +79,7 @@
     <Compile Include="Steps\NormalizeUnpack.boo" />
     <Compile Include="Steps\NormalizeClosures.boo" />
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />
+    <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">

@@ -82,33 +82,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             found.Push(local.Name)
             Visit local
 
-    def WriteBlockLocals(b as BlockExpression):
-    """ Find and write locals found in a block expression """
-        locals = LocalCollection()
-
-        def finder(stmts as StatementCollection):
-            for st in stmts:
-                if st isa Block:
-                    finder((st as Block).Statements)
-                elif st isa BlockExpression:
-                    finder((st as BlockExpression).Body.Statements)
-                elif st isa ExpressionStatement:
-                    # All this mess is to find out if we're declaring a local variable
-                    es = st as ExpressionStatement
-                    if es.Expression isa BinaryExpression:
-                        be = es.Expression as BinaryExpression
-                        if be.Operator == BinaryOperatorType.Assign:
-                            entity = be.Left.Entity
-                            if entity isa TypeSystem.Internal.InternalLocal:
-                                if (entity as TypeSystem.Internal.InternalLocal).IsExplicit:
-                                    local = Local()
-                                    local.Name = be.Left.ToString()
-                                    locals.Add(local)
-
-        finder(b.Body.Statements)
-        WriteLocals(locals)
-
-
     def OnMethod(m as Method):
 
         # Types are already resolved so we can just check if it was flagged as a generator 
@@ -159,7 +132,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write '{}'
         else:
             WriteOpenBrace
-            WriteBlockLocals(node)
             Visit node.Body.Statements
             WriteCloseBrace false
 
@@ -496,6 +468,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             first = false
 
         Write "].join('')" if use_join
+
+    def OnGeneratorExpression(node as GeneratorExpression):
+        # ( i*2 for i as int in range(3) )
+        iter = node.Iterator  # range(3)
+        expr = node.Expression  # i * 2
+        filtr = node.Filter  #
+        decls = node.Declarations  # [ 'i as int', ]
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         # TODO: Check if the property name is a valid javascript ident and if not use ['xxx'] syntax

@@ -1,8 +1,8 @@
 """
 """
-a = "spam", 42, object()
+a = "spam", 42, {}
 
 s as string, i as int, o = a
 assert "spam" == s
 assert 42 == i
-assert o is a[-1]
+assert o is a[2]

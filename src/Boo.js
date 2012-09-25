@@ -23,29 +23,24 @@ Boo.Types = {
     'callable': 'callable'
 };
 
-// Note: We don't use the native forEach method since it doesn't offer a clean way
-//       to stop/break the iteration.
+// Note: We don't use the native forEach method since this is custom tailored
+//       to the generated code. It handles unpacking and iteration stopage.
 Boo.each = function (obj, iterator, context) {
     if (obj === null || typeof obj === 'undefined') return;
     if (typeof obj === 'string') obj = obj.split('');
     if (obj.length === +obj.length) {
-        var i, l = obj.length;
-        if (iterator.length === 1) {
-            // Single argument, pass the item as is
-            for (i = 0; i < l; i++) {
-                if (i in obj && iterator.call(context, obj[i]) === Boo.STOP) return;
-            }
-        } else {
-            // Multiple arguments, unpack the item as arguments
-            for (i = 0; i < l; i++) {
-                if (i in obj && iterator.apply(context, obj[i]) === Boo.STOP) return;
-            }
+        // Mode is computed based on the following rules:
+        //   - If the callback only have one argument the value is passed as is
+        //   - If it has mode than one the argument is unpack (apply style invocation)
+        var i, l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
+        for (i = 0; i < l; i++) {
+            if (i in obj && iterator[mode](context, obj[i]) === Boo.STOP) return;
         }
     } else {
         // For dictionaries we always pass the value and the key
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
-                if (iterator.call(context, obj[key], key, obj) === Boo.STOP) return;
+                if (iterator.call(context, obj[key], key) === Boo.STOP) return;
             }
         }
     }
@@ -255,6 +250,15 @@ Boo.Lang = {
     },
     op_NotMatch: function (lhs, rhs) {
         return !Boo.Lang.op_Match(lhs, rhs);
+    },
+
+    // String type support functions
+    String: {
+        op_Modulus: function (lhs, rhs) {
+            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+                return rhs[capt];
+            });
+        }
     },
 
     // Array type support functions

@@ -81,13 +81,9 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
         while parent:
             if parent.NodeType == NodeType.Method:
                 # Check if we have already added it to the method Locals
-                found = false
-                for local in (parent as Method).Locals:
-                    if local.Name == name:
-                        found = true
-
-                if not found:
+                if not (parent as Method).Locals.Contains({local as Local| local.Name == name}):
                     CodeBuilder.DeclareLocal(parent, name, GetType(node))
+
                 break
 
             parent = parent.ParentNode

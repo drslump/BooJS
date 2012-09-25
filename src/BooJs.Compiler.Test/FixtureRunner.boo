@@ -107,9 +107,9 @@ class FixtureRunner:
             assert false, e.Message + "\n----------------------\n" + code
           except e as System.Exception:
             assert false, e.ToString() + "\n---------------------\n" + code
-
-          print '--------------------------------------------[output]-'
-          print console.output()
-          print '-----------------------------------------------------'
+          ensure:
+            print '--------------------------------------------[output]-'
+            print console.output()
+            print '-----------------------------------------------------'
 
           Assert.AreEqual(expected, console.output())

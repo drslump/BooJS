@@ -1,4 +1,4 @@
-#IGNORE
+#IGNORE: Enumerator iterating not supported
 """
 before first
 1

@@ -1,4 +1,4 @@
-#IGNORE
+#IGNORE: Type system not fully supported
 """
 foofoo
 foobar

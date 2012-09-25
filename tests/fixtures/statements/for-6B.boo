@@ -1,4 +1,4 @@
-#IGNORE
+#IGNORE: Classes not supported yet
 """
 before
 GetEnumerator
