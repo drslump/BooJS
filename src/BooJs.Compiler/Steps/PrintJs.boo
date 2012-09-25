@@ -781,6 +781,16 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                 Visit node.Right
 
         else:
+            # HACK: Why doesn't Boo does this automatically?
+            lefttype = TypeSystem.TypeSystemServices.GetExpressionType(node.Left)
+            if lefttype.FullName == 'BooJs.Lang.Array':
+                Write 'Boo.Lang.Array.op_Addition('
+                Visit node.Left
+                Write ', '
+                Visit node.Right
+                Write ')'
+                return
+
             parens = NeedsParensAround(node)
             Write '(' if parens
             Visit node.Left

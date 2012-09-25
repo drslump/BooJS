@@ -92,6 +92,18 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         # TODO: When using Boo.each() we need to convert a `continue` to a `return` and a
         #       `break` to a `return Boo.STOP`.
 
+        # TODO: In Boo.each() we need to replace return statements with raised exceptions
+        #       and wrap the execution with a try/except block:
+        #
+        #   for i in lst:
+        #       return i if cb(i)
+        #   ----
+        #   try:
+        #       Boo.each lst do (i):
+        #           Boo.stop(i) if cb(i)
+        #   except Boo.STOP as e:
+        #       return e.retval
+
         # Override unpacking
         if len(node.Declarations) >= 2:
             DesugarizeOrThenBlocks(node)

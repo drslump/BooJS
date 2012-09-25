@@ -176,6 +176,9 @@ class Array(ProtoObject):
     static def op_Equality(x as Array, y as Array) as bool:
         pass
 
+    static def op_Addition(lhs as Array, rhs as Array):
+        pass
+
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
     def push(itm as object) as uint:
