@@ -71,5 +71,7 @@
     <Compile Include="DuckTypingFixtures.boo" />
     <Compile Include="StdlibFixtures.boo" />
     <Compile Include="DevelFixtures.boo" />
+    <Compile Include="ParserFixtures.boo" />
+    <Compile Include="SemanticsFixtures.boo" />
   </ItemGroup>
 </Project>
