@@ -157,7 +157,11 @@ Boo.zip = function (args) {
 // Converts any enumerable into an array, casting to a given type
 // If the enumerable is a number an array with that many elements is created
 Boo.array = function (type, enumerable) {
-    var result = [];
+    if (arguments.length === 1) {
+        enumerable = type;
+        type = null;
+    }
+
     if (typeof enumerable === 'number') {
         enumerable = new Array(enumerable);
         for (var i = 0, l = enumerable.length; i < l; i++) {
@@ -165,8 +169,9 @@ Boo.array = function (type, enumerable) {
         }
     }
 
+    var result = [];
     Boo.each(enumerable, function (v) {
-        result.push(Boo.Lang.cast(v, type));
+        result.push(type ? Boo.Lang.cast(v, type) : v);
     });
     return result;
 };
@@ -268,24 +273,51 @@ Boo.Lang = {
         op_Addition: function (lhs, rhs) {
             if (lhs === null || rhs === null)
                 return null;
-
+            if (typeof lhs === 'object' && 'op_Addition' in lhs)
+                return lhs.op_Addition(lhs, rhs);
             // Check if we are handling an array
             if (typeof lhs === 'object' && lhs.length === +lhs.length)
                 return Boo.Lang.Array.op_Addition(lhs, rhs);
             
             return lhs + rhs;
         },
+        op_Subtraction: function (lhs, rhs) {
+            if (lhs === null || rhs === null)
+                return null;
+            if (typeof lhs === 'object' && 'op_Subtraction' in lhs)
+                return lhs.op_Subtraction(lhs, rhs);
+            // Check for array
+            if (typeof lhs === 'object' && lhs.length === +lhs.length)
+                throw new Error('Substraction operator not supported on arrays');
+            if (typeof lhs === 'string')
+                throw new Error('Substraction operator not supported on strings');
+
+            return lhs - rhs;
+        },
         op_Multiply: function (lhs, rhs) {
             if (lhs === null || rhs === null)
                 return null;
-
+            if (typeof lhs === 'object' && 'op_Multiply' in lhs)
+                return lhs.op_Multiply(lhs, rhs);
             if (typeof lhs === 'string')
                 return Boo.Lang.String.op_Multiply(lhs, rhs);
-
             if (typeof lhs === 'object' && lhs.length === +lhs.length)
                 return Boo.Lang.Array.op_Multiply(lhs, rhs);
 
             return lhs * rhs;
+        },
+        op_Division: function (lhs, rhs) {
+            if (lhs === null || rhs === null)
+                return null;
+            if (typeof lhs === 'object' && 'op_Division' in lhs)
+                return lhs.op_Division(lhs, rhs);
+            // Check for array
+            if (typeof lhs === 'object' && lhs.length === +lhs.length)
+                throw new Error('Division operator not supported on arrays');
+            if (typeof lhs === 'string')
+                throw new Error('Division operator not supported on strings');
+
+            return lhs - rhs;
         }
     },
 
@@ -304,14 +336,14 @@ Boo.Lang = {
     // Array type support functions
     Array: {
         // Checks for equality between two arrays, comparing nested arrays but not objects
-        op_Equality: function (a, b) {
-            if (a.length !== b.length) return false;
-            for (var i = 0; i < a.length; i++) {
-                if (a[i] === b[i]) continue;
+        op_Equality: function (lhs, rhs) {
+            if (lhs.length !== rhs.length) return false;
+            for (var i = 0; i < lhs.length; i++) {
+                if (lhs[i] === rhs[i]) continue;
 
                 // Check nested arrays
-                if (typeof a[i] === 'object' && typeof b[i] === 'object' && a[i].length === +a[1].length) {
-                    if (Boo.Lang.Array.op_Equality(a[i], b[i])) continue;
+                if (typeof lhs[i] === 'object' && typeof rhs[i] === 'object' && lhs[i].length === +lhs[1].length) {
+                    if (Boo.Lang.Array.op_Equality(lhs[i], rhs[i])) continue;
                 }
 
                 return false;

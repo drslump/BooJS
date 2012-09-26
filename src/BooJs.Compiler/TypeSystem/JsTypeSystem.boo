@@ -7,12 +7,33 @@ import BooJs.Lang as JsLang
 
 
 class JsReflectionTypeSystemProvider(ReflectionTypeSystemProvider):
+""" Configures the primitive types """
+
+    class JsObjectType(ExternalType):
+    """ Type wrapper for reference types """
+         def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
+            super(provider, type)
+
+         override def IsAssignableFrom(other as IType) as bool:
+             external = other as ExternalType;
+             return external == null or external.ActualType != Types.Void;
+
+    class JsValueType(ExternalType):
+    """ Type wrapper for value types """
+        override IsValueType:
+            get: return true
+
+        def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
+            super(provider, type)
 
     public static final SharedTypeSystemProvider = JsReflectionTypeSystemProvider()
 
     def constructor():
         # Define the base object type
         MapTo(JsLang.Proto, JsObjectType(self, JsLang.Proto))
+
+        # Define duck type
+        MapTo(JsLang.Duck, JsObjectType(self, JsLang.Duck))
 
         # Javascript's strings are mutable
         MapTo(JsLang.String, JsObjectType(self, JsLang.String))
@@ -22,34 +43,12 @@ class JsReflectionTypeSystemProvider(ReflectionTypeSystemProvider):
         MapTo(JsLang.NumberUInt, JsValueType(self, JsLang.NumberUInt))
         MapTo(JsLang.NumberDouble, JsValueType(self, JsLang.NumberDouble))
 
+        # Boo's immutable Array and mutable List are converted to a JS mutable array
+        MapTo(JsLang.Array, JsObjectType(self, JsLang.Array))
+        MapTo(Boo.Lang.List, JsObjectType(self, JsLang.Array))
 
-
-        # Boo's immutable Array and muttable List are converted to a JS muttable array
-        ReplaceMapping(System.Array, JsLang.Array)
-        ReplaceMapping(Boo.Lang.List, JsLang.Array)
-
-        ReplaceMapping(System.Text.RegularExpressions.Regex, JsLang.RegExp)
-
-    def ReplaceMapping(existing as System.Type, newType as System.Type):
-        mapping = Map(newType)
-        MapTo(existing, mapping)
-        return mapping
-
-
-class JsObjectType(ExternalType):
-     def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
-        super(provider, type)
-
-     override def IsAssignableFrom(other as IType) as bool:
-         external = other as ExternalType;
-         return external == null or external.ActualType != Types.Void;
-
-class JsValueType(ExternalType):
-    override IsValueType:
-        get: return true
-
-    def constructor(provider as IReflectionTypeSystemProvider, type as System.Type):
-        super(provider, type)
+        MapTo(JsLang.RegExp, JsObjectType(self, JsLang.RegExp))
+        MapTo(System.Text.RegularExpressions.Regex, JsObjectType(self, JsLang.RegExp))
 
 
 
@@ -61,6 +60,7 @@ class JsTypeSystem(TypeSystemServices):
          get: return Map(JsLang.Error)
 
     override protected def PreparePrimitives():
+        # Setup new defaults for primitive types
         ObjectType = Map(JsLang.Proto)
         StringType = Map(JsLang.String)
         ArrayType = Map(JsLang.Array)
@@ -69,14 +69,15 @@ class JsTypeSystem(TypeSystemServices):
         DoubleType = Map(JsLang.NumberDouble)
         RegExpType = Map(JsLang.RegExp)
         ICallableType = Map(JsLang.Function)
+        DuckType = Map(JsLang.Duck)
 
+        # Add primitive types
         AddPrimitiveType("void", VoidType)
         AddPrimitiveType("duck", DuckType);
         AddPrimitiveType("object", ObjectType)
-        AddPrimitiveType("array", ArrayType)
+        AddPrimitiveType("list", ArrayType)
         AddPrimitiveType("callable", ICallableType)
 
-        # We just need a few types
         AddLiteralPrimitiveType("bool", BoolType)
         AddLiteralPrimitiveType("int", IntType)
         AddLiteralPrimitiveType("uint", UIntType)

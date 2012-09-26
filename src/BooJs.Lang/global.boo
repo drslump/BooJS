@@ -6,98 +6,97 @@ Serves as base for all JS types
 """
     static def op_Addition(lhs as Proto, rhs as Number) as Number:
         pass
-        
+    static def op_Subtraction(lhs as Proto, rhs as Number) as Number:
+        pass
+    static def op_Subtraction(lhs as Proto, rhs as Proto) as Proto:
+        pass
     static def op_Multiply(lhs as Proto, rhs as Number) as Number:
         pass
-
-    public prototype as Object
-
-    def hasOwnProperty(key as string) as bool:
+    static def op_Division(lhs as Proto, rhs as Number) as Number:
         pass
+        
+    public prototype as Proto
 
-    def isPrototypeOf(obj as object) as bool:
-        pass
-
-    def toString() as string:
-        pass
-
-
-class Object(Proto, Boo.Lang.IQuackFu):
-"""
-Models the Javascript Object type
-"""
-    self[key as string] as object:
+    self[key as String] as Proto:
         get: pass
         set: pass
 
+    def hasOwnProperty(key as String) as bool:
+        pass
+
+    def isPrototypeOf(obj as Proto) as bool:
+        pass
+
+    def toString() as String:
+        pass
+
+
+class Duck(Proto, Boo.Lang.IQuackFu):
     # Implements QuackFu interface
-    def QuackGet(name as string, params as (object)) as object:
+    def QuackGet(name as String, params as (Proto)) as Proto:
         pass
 
-    def QuackSet(name as string, params as (object), value as object) as object:
+    def QuackSet(name as String, params as (Proto), value as Proto) as Proto:
         pass
 
-    def QuackInvoke(name as string, args as (object)) as object:
+    def QuackInvoke(name as String, args as (Proto)) as Proto:
         pass
 
 
 class Error(Proto):
 
-    public message as string
+    public message as String
 
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class EvalError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class RangeError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class ReferenceError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class SyntaxError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class TypeError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 class URIError(Error):
     def constructor():
         pass
-    def constructor(msg as string):
+    def constructor(msg as String):
         pass
 
 
 
 class Number(Proto):
 
-    IsValueType:
-        get: return true
-
-    static def op_Implicit(value as double) as Number:
+    static def op_Implicit(value as NumberDouble) as Number:
         pass
-    static def op_Implicit(value as int) as Number:
+    static def op_Implicit(value as NumberInt) as Number:
         pass
-    static def op_Implicit(value as uint) as Number:
+    static def op_Implicit(value as NumberUInt) as Number:
         pass
 
     def constructor():
@@ -105,11 +104,11 @@ class Number(Proto):
     def constructor(n as Number):
         pass
 
-    def toExponential() as string:
+    def toExponential() as String:
         pass
-    def toFixed() as string:
+    def toFixed() as String:
         pass
-    def toPrecission() as string:
+    def toPrecission() as String:
         pass
 
 class NumberInt(Number):
@@ -124,7 +123,7 @@ class NumberDouble(Number):
 
 class String(Proto):
 
-    self[index as int] as String:
+    self[index as NumberInt] as String:
          get: raise System.NotImplementedException()
 
     public length as uint
@@ -133,34 +132,34 @@ class String(Proto):
     static def op_Modulus(s as String, a as Array) as String:
         pass
 
-    def charAt(idx as int) as String:
+    def charAt(idx as NumberInt) as String:
         pass
-    def charCodeAt(idx as int) as int:
+    def charCodeAt(idx as NumberInt) as NumberInt:
         pass
-    def concat(str as string) as String:
+    def concat(str as String) as String:
         pass
-    def indexOf(str as string) as int:
+    def indexOf(str as String) as NumberInt:
         pass
-    def lastIndexOf(str as string) as int:
+    def lastIndexOf(str as String) as NumberInt:
         pass
 
-    def match(re as System.Text.RegularExpressions.Regex) as bool:
+    def match(re as RegExp) as bool:
         pass
-    def replace(re as System.Text.RegularExpressions.Regex, repl as string) as String:
+    def replace(re as RegExp, repl as String) as String:
         pass
     def replace(substr as String, repl as String) as String:
         pass
-    def replace(re as System.Text.RegularExpressions.Regex, repl as callable) as String:
+    def replace(re as RegExp, repl as Function) as String:
         pass
-    def replace(substr as String, repl as callable) as String:
+    def replace(substr as String, repl as Function) as String:
         pass
 
     def split(sep as String) as (String):
         pass
 
-    def substr(start as uint, length as int) as String:
+    def substr(start as NumberUInt, length as NumberInt) as String:
         pass
-    def substring(start as uint, stop as int) as String:
+    def substring(start as NumberUInt, stop as NumberInt) as String:
         pass
 
     def toUpperCase() as String:
@@ -174,13 +173,6 @@ class String(Proto):
 
 
 class Array(Proto):
-
-    self[index as int] as object:
-        get: pass
-        set: pass
-
-    public length as uint
-
 
     static def op_Member(item as object, arr as Array) as bool:
         return arr.indexOf(item) != -1
@@ -197,45 +189,47 @@ class Array(Proto):
     static def op_Multiply(lhs as Array, rhs as int) as Array:
         pass
 
-    #static def op_Multiply(lhs as int, rhs as Array) as Array:
-    #    pass
+    #self[index as NumberInt] as Proto:
+    #    get: pass
+    #    set: pass
 
-
-    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
-    def push(itm as object) as uint:
-        pass
-    def push(itm1 as object, itm2 as object) as uint:
-        pass
-    def push(itm1 as object, itm2 as object, itm3 as object) as uint:
-        pass
-
-    def pop() as object:
-        pass
-
-    def reverse():
-        return self
-
-    def shift() as object:
-        pass
-
-    def sort():
-        return self
-
-    def sort(comp as callable):
-        return self
-
-    def splice(index as int, cnt as int, *elems as (object)):
-        return self
-
-    def splice(index as int):
-        return self
+    public length as NumberUInt
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
-    def unshift(itm1 as object) as uint:
+    def push(itm as Proto) as NumberUInt:
         pass
-    def unshift(itm1 as object, itm2 as object) as uint:
+    def push(itm1 as Proto, itm2 as Proto) as NumberUInt:
         pass
-    def unshift(itm1 as object, itm2 as object, itm3 as object) as uint:
+    def push(itm1 as Proto, itm2 as Proto, itm3 as Proto) as NumberUInt:
+        pass
+
+    def pop() as Proto:
+        pass
+
+    def reverse() as Array:
+        return self
+
+    def shift() as Proto:
+        pass
+
+    def sort() as Array:
+        return self
+
+    def sort(comp as Function) as Array:
+        return self
+
+    def splice(index as NumberInt, cnt as NumberInt, *elems as (Proto)) as Array:
+        return self
+
+    def splice(index as NumberInt) as Array:
+        return self
+
+    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
+    def unshift(itm1 as Proto) as NumberUInt:
+        pass
+    def unshift(itm1 as Proto, itm2 as Proto) as NumberUInt:
+        pass
+    def unshift(itm1 as Proto, itm2 as Proto, itm3 as Proto) as NumberUInt:
         pass
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
@@ -246,61 +240,61 @@ class Array(Proto):
     def concat(itm1 as Array, itm2 as Array, itm3 as Array) as Array:
         pass
 
-    def join(sep as string) as string:
+    def join(sep as String) as String:
         pass
 
-    def slice(start as int, stop as int) as Array:
+    def slice(start as NumberInt, stop as NumberInt) as Array:
         pass
 
-    def slice(start as int) as Array:
+    def slice(start as NumberInt) as Array:
         pass
 
-    def indexOf(itm as object, start as int) as int:
+    def indexOf(itm as Proto, start as NumberInt) as NumberInt:
         pass
 
-    def indexOf(itm as object) as int:
+    def indexOf(itm as Proto) as NumberInt:
         pass
 
-    def lastIndexOf(itm as object, start as int) as int:
+    def lastIndexOf(itm as Proto, start as NumberInt) as NumberInt:
         pass
 
-    def lastIndexOf(itm as object) as int:
+    def lastIndexOf(itm as Proto) as NumberInt:
         pass
 
 
-    def filter(callback as callable, context as object) as Array:
+    def filter(callback as Function, context as Proto) as Array:
         pass
-    def filter(callback as callable) as Array:
-        pass
-
-    def forEach(callback as callable, context as object) as void:
-        pass
-    def forEach(callback as callable) as void:
+    def filter(callback as Function) as Array:
         pass
 
-    def every(callback as callable, context as object) as bool:
+    def forEach(callback as Function, context as Proto) as void:
         pass
-    def every(callback as callable) as bool:
-        pass
-
-    def map(callback as callable, context as object) as Array:
-        pass
-    def map(callback as callable) as Array:
+    def forEach(callback as Function) as void:
         pass
 
-    def some(callback as callable, context as object) as bool:
+    def every(callback as Function, context as Proto) as bool:
         pass
-    def some(callback as callable) as bool:
-        pass
-
-    def reduce(callback as callable, initialValue as object) as object:
-        pass
-    def reduce(callback as callable) as object:
+    def every(callback as Function) as bool:
         pass
 
-    def reduceRight(callback as callable, initialValue as object) as object:
+    def map(callback as Function, context as Proto) as Array:
         pass
-    def reduceRight(callback as callable) as object:
+    def map(callback as Function) as Array:
+        pass
+
+    def some(callback as Function, context as Proto) as bool:
+        pass
+    def some(callback as Function) as bool:
+        pass
+
+    def reduce(callback as Function, initialValue as Proto) as Proto:
+        pass
+    def reduce(callback as Function) as Proto:
+        pass
+
+    def reduceRight(callback as Function, initialValue as Proto) as Proto:
+        pass
+    def reduceRight(callback as Function) as Proto:
         pass
 
 
@@ -310,29 +304,26 @@ class RegExp(Proto):
     public ignoreCase as bool
     public lastIndex as bool
     public multiline as bool
-    public source as string
+    public source as String
 
-    def constructor(pattern as string, flags as string):
+    def constructor(pattern as String, flags as String):
         pass
 
-    def constructor(pattern as string):
+    def constructor(pattern as String):
         pass
 
-    def exec(str as string) as Array:
+    def exec(str as String) as Array:
         pass
 
-    def test(str as string) as bool:
+    def test(str as String) as bool:
         pass
 
 
 class Function(Proto, ICallable):
 
     # ICallable interface
-    def Call(params as (object)):
+    def Call(params as (Proto)):
         pass
-
-
-
 
 
 

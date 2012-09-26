@@ -50,7 +50,7 @@ def prompt(msg as String):
 #def array(type as System.Type, num as int):
 #    pass
 
-def array(type as System.Type, enumerable as (Proto)) as Array:
+def array(type as System.Type, enumerable as Array) as Array:
     pass
 def array(type as System.Type, num as NumberInt) as Array:
     pass
