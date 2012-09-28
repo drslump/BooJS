@@ -26,7 +26,7 @@ print ''
 print 'import NUnit.Framework'
 print ''
 print '[TestFixture]'
-print "class FixtureTestCasesFor$name:"
+print "class FixtureFor$name:"
 print ''
 
 for fname in Directory.GetFiles(path):
