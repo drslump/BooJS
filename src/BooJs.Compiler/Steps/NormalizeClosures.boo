@@ -27,6 +27,9 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
             if /^\$locals\.\$/.IsMatch(name):
                 name = name.Substring(len('$locals.$'))
 
+            name = name.Split(char('.'))[0]
+            name = name.Split(char('['))[0]
+
             exists = false
             for n in _nodes:
                 if ExistsVariable(n, name):

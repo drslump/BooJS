@@ -43,20 +43,18 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     return BooJsCompiler(parameters)
 
 def newBooJsCompilerParameters():
-    # TODO: Do we need our custom TypeSystem provider?
-    #parameters = CompilerParameters()
-    parameters = CompilerParameters(JsReflectionTypeSystemProvider.SharedTypeSystemProvider) #, true)
+    # Register our custom type system provider
+    params = CompilerParameters(JsReflectionTypeSystemProvider.SharedTypeSystemProvider)
 
-    # TODO: ???
-    #parameters.References.Add(typeof(java.lang.Object).Assembly)
+    # Load language runtime assemblies
+    params.References.Add(params.LoadAssembly('BooJs.Macros'))
+    params.References.Add(params.LoadAssembly('BooJs.Lang'))
+    # Load Boo.Lang.Compiler assembly (needed for Extension attribute for example)
+    params.References.Add(params.LoadAssembly('Boo.Lang.Compiler'))
 
-    # TODO: Why are we referencing the print macro here? To make them globally available?
-    parameters.References.Add(typeof(BooJs.Macros.PrintMacro).Assembly)
-    parameters.References.Add(typeof(BooJs.Lang.BuiltinsModule).Assembly)
-
-    # TODO: Do we need this?
-    parameters.Environment = DeferredEnvironment() {
+    # Setup the environment by setting our customized type system services
+    params.Environment = DeferredEnvironment() {
         TypeSystemServices: { JsTypeSystem() }
     }
 
-    return parameters
+    return params

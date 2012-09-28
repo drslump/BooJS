@@ -15,12 +15,13 @@ Boo.Types = {
     'bool': 'bool',
     'duck': 'duck',
     'string': 'string',
-    'String': 'string',
     'object': 'object',
     'int': 'int',
     'uint': 'uint',
     'double': 'double',
-    'callable': 'callable'
+    'callable': 'callable',
+    // HACK: Javascript global objects
+    'Math': Math
 };
 
 // Note: We don't use the native forEach method since this is custom tailored
@@ -79,6 +80,19 @@ Boo.range = function (start, stop, step) {
     }
 
     return values;
+};
+
+// Generate a list of pairs of key, value
+Boo.enumerate = function (enumerable) {
+    // Strings/Arrays can be solved using zip/range
+    if (enumerable.length === +enumerable.length)
+        return Boo.zip([Boo.range(enumerable.length), enumerable]);
+
+    var result = [];
+    Boo.each(enumerable, function (v, k) {
+        result.push([k, v]);
+    });
+    return result;
 };
 
 // Debug method to output information
@@ -325,6 +339,10 @@ Boo.Lang = {
     String: {
         op_Modulus: function (lhs, rhs) {
             return Boo.Lang.formatter(lhs, rhs);
+        },
+        // TODO: This method shouldn't be needed
+        op_Addition: function (lhs, rhs) {
+            return lhs + rhs;
         },
         op_Multiply: function (lhs, rhs) {
             var result = '';

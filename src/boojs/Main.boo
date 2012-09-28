@@ -34,6 +34,7 @@ def configureParams(cmdLine as CommandLine, params as BooJs.Compiler.CompilerPar
 
     params.Debug = true
     params.OutputAssembly = getOutputDirectory(cmdLine)
+    params.Ducky = cmdLine.Ducky
     if cmdLine.DebugCompiler:
         params.TraceLevel = System.Diagnostics.TraceLevel.Verbose
         Trace.Listeners.Add(TextWriterTraceListener(System.Console.Error))

@@ -19,8 +19,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         InsertAfter(MacroAndAttributeExpansion, Steps.UnsupportedFeatures())
 
         # Since JS is dynamic we don't need the additional tooling for duck types
-        Remove(ExpandDuckTypedExpressions)
-        # Same applies to Closures
+        #Remove(ExpandDuckTypedExpressions)
+        # Same applies to Closures (TODO: Are we sure?)
         Remove(InjectCallableConversions)
         Remove(ProcessClosures)
         # No need to cache/precompile regexp in Javascript

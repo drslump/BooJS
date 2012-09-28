@@ -47,7 +47,6 @@
     <Compile Include="Steps\Globals.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
     <Compile Include="Steps\InjectCasts.boo" />
-    <Compile Include="Steps\IntroduceBoojsNamespaces.boo" />
     <Compile Include="Steps\NormalizeCallables.boo" />
     <Compile Include="Steps\NormalizeIterations.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
@@ -71,6 +70,7 @@
     <Compile Include="Steps\NormalizeClosures.boo" />
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />
     <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
+    <Compile Include="Steps\IntroduceNamespaces.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">
