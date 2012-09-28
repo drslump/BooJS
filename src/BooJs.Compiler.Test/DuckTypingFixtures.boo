@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForDuck-typing:
+class FixtureForDucktyping:
 
   [Test]
   def test_duck_1():

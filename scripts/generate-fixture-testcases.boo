@@ -17,6 +17,7 @@ path = Path.GetFullPath(argv[1])
 
 name = Path.GetFileNameWithoutExtension(path)
 name = name[:1].ToUpper() + name[1:]
+name = name.Replace('-', '')
 
 print '"""'
 print "  Automatically generated!"
