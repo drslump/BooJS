@@ -1,7 +1,12 @@
+"""
+  Automatically generated!
+  Fixture test cases from /Users/drslump/www/boojs/tests/fixtures/devel
+"""
+
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForDevel:
+class FixtureForDevel:
 
   [Test]
   def test_one():
@@ -10,3 +15,4 @@ class FixtureTestCasesForDevel:
   [Test]
   def test_safe_member_access():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/devel/safe-member-access.boo')
+

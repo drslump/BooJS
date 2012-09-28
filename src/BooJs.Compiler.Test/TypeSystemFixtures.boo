@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForTypesystem:
+class FixtureForTypesystem:
 
   [Test]
   def test_double():

@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForStdlib:
+class FixtureForStdlib:
 
   [Test]
   def test_DynamicVariable_1():

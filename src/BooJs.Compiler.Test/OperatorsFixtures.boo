@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForOperators:
+class FixtureForOperators:
 
   [Test]
   def test_and_1():

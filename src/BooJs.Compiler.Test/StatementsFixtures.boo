@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForStatements:
+class FixtureForStatements:
 
   [Test]
   def test_break_1():
