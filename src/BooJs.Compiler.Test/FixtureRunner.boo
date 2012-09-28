@@ -37,13 +37,17 @@ class FixtureRunner:
 
     static def run(file as string):
 
+      comp = setupCompiler()
+      comp.Parameters.Ducky = false
+
       # Check if we want to ignore this fixture
       fp = StreamReader(file)
       while (line = fp.ReadLine()) != null:
         if line.IndexOf('#IGNORE') == 0:
           Assert.Ignore(line.Substring(len('#IGNORE')+1))
+        elif line.IndexOf('#DUCKY') == 0:
+          comp.Parameters.Ducky = true
 
-      comp = setupCompiler()
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))
 
