@@ -24,13 +24,13 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         super(node)
 
     override def ProcessBuiltinInvocation(node as MethodInvocationExpression, func as BuiltinFunction):
+        # Replace len(val) with val.length
         if func.FunctionType == BuiltinFunctionType.Len:
             target = node.Arguments[0]
             result = MemberReferenceExpression(node.LexicalInfo, target, 'length')
             #result.Entity = TypeSystemServices.IntType
             result.ExpressionType = TypeSystemServices.IntType
 
-            print 'LEN:', node, ' -> ', result
             node.ParentNode.Replace(node, result)
             return
 
@@ -39,12 +39,20 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
     override def BindBinaryExpression(node as BinaryExpression):
         # TODO: Improve this!
-        if node.Operator == BinaryOperatorType.Addition:
-            if GetExpressionType(node.Left) == GetExpressionType(node.Right):
-                return
+        #if node.Operator == BinaryOperatorType.Addition:
+        #    if GetExpressionType(node.Left) == GetExpressionType(node.Right):
+        #        return
 
         super(node)
 
+    override protected def CreateDefaultLocalInitializer(node as Node, local as IEntity) as Expression:
+        if local isa Internal.InternalLocal:
+            type as Reflection.ExternalType = (local as Internal.InternalLocal).Type
+            if type.ActualType == BooJs.Lang.Global:
+                # TODO: Refactor this to avoid inserting the expression
+                return [| __global_initializer_should_be_removed__ = null |]
+
+        return super(node, local)
 
     override def LeaveSlicingExpression(node as SlicingExpression):
         # Slicing over lists gets transformed to a method call

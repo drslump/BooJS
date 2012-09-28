@@ -1,6 +1,5 @@
 namespace BooJs.Lang
 
-
 # NOTE: We need to use the Javascript compatible types instead of the primitive ones (int, string, object, ...)
 
 def range(stop as NumberInt) as (NumberInt):
@@ -27,6 +26,8 @@ def map(items as (Proto), callback as Function) as (Proto):
     pass
 
 def reduce(items as (Proto), callback as Function) as Proto:
+    pass
+def reduce(items as (Proto), callback as Function, initial as Number) as Proto:
     pass
 
 def zip(*arrays as (Proto)) as (Proto):
@@ -56,3 +57,9 @@ def array(type as System.Type, num as NumberInt) as Array:
     pass
 def array(enumerable as (Proto)) as Array:
     pass
+
+
+# Allows to iterate accesing indices/keys
+def enumerate(enumerable as (Proto)) as Array:
+    pass
+

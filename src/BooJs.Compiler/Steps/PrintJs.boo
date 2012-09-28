@@ -124,6 +124,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def OnBlockExpression(node as BlockExpression):
     """ Javascript has native support for closures thus the conversion is very simple.
     """
+        if (node.ParentNode isa MethodInvocationExpression): Write '('
         Write 'function('
         if len(node.Parameters):
             WriteCommaSeparatedList(node.Parameters)
@@ -134,6 +135,8 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             WriteOpenBrace
             Visit node.Body.Statements
             WriteCloseBrace false
+        if (node.ParentNode isa MethodInvocationExpression): Write ')'
+
 
     def WriteOpenBrace():
         Write '{'
@@ -174,6 +177,10 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
         entity = node.Entity as TypeSystem.ITypedEntity
 
+        # Ignore declarations for Global variables
+        if entity and entity.Type.FullName in ('BooJs.Lang.Global'):
+            return
+
         # TODO: Add proper type annotations
         WriteIndented
         if entity:
@@ -201,6 +208,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write node.Name
 
     def OnDeclarationStatement(node as DeclarationStatement):
+        # TODO: Seems like this i s never used
         WriteIndented 'var '
         Map node
         Write node.Declaration.Name

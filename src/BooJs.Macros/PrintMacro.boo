@@ -9,8 +9,10 @@ macro print:
     yield log
 
 
-# TODO: Doesn't work :(
-macro require:
-    name = require.Arguments[0]
-    yield [| $name as global |]
+macro global:
+    for arg in global.Arguments:
+        if not arg isa ReferenceExpression:
+            raise System.ArgumentException("global argument must be an identifier")
 
+        decl = Declaration(Name: arg.ToString(), Type: SimpleTypeReference('Global'))
+        yield DeclarationStatement(Declaration: decl)

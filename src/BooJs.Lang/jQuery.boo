@@ -140,7 +140,7 @@ interface IjQuery(ICallable):
 
 
 
-abstract class jQuery(IjQuery):
+class jQuery(IjQuery):
     # Utilities (static)
     static def map(arr as (object), callback as callable) as (object):
         pass

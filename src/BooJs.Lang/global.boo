@@ -1,5 +1,6 @@
 namespace BooJs.Lang
 
+
 class Proto(System.Object):
 """
 Serves as base for all JS types
@@ -11,6 +12,8 @@ Serves as base for all JS types
     static def op_Subtraction(lhs as Proto, rhs as Proto) as Proto:
         pass
     static def op_Multiply(lhs as Proto, rhs as Number) as Number:
+        pass
+    static def op_Multiply(lhs as Proto, rhs as Proto) as Number:
         pass
     static def op_Division(lhs as Proto, rhs as Number) as Number:
         pass
@@ -91,22 +94,20 @@ class URIError(Error):
 
 
 class Number(Proto):
-
-    static def op_Implicit(value as NumberDouble) as Number:
-        pass
-    static def op_Implicit(value as NumberInt) as Number:
-        pass
-    static def op_Implicit(value as NumberUInt) as Number:
-        pass
-
     def constructor():
         pass
     def constructor(n as Number):
         pass
 
+    def toExponential(digits as NumberInt) as String:
+        pass
     def toExponential() as String:
         pass
+    def toFixed(decimals as NumberInt) as String:
+        pass
     def toFixed() as String:
+        pass
+    def toPrecission(decimals as NumberInt) as String:
         pass
     def toPrecission() as String:
         pass
@@ -123,14 +124,35 @@ class NumberDouble(Number):
 
 class String(Proto):
 
+    # Convert number to string automatically
+    static def op_Implicit(n as Number) as String:
+        pass
+
+    # Support formatting: '{0} {1}' % ('foo', 'bar')
+    static def op_Modulus(s as String, a as Array) as String:
+        pass
+        
+    # Support addition between strings (TODO: this method should never be called)
+    static def op_Addition(a as String, b as String) as String:
+        pass
+        
+    # Support multiply operator: 'foo' * 2 --> 'foofoo'
+    static def op_Multiply(s as String, a as NumberInt) as String:
+        pass
+        
+       
+    # Static methods   
+    static def fromCharCode(code as NumberInt) as String:
+        pass
+        
+        
+    # Instance members
+    
     self[index as NumberInt] as String:
          get: raise System.NotImplementedException()
 
     public length as uint
 
-    # Support formatting: '{0} {1}' % ('foo', 'bar')
-    static def op_Modulus(s as String, a as Array) as String:
-        pass
 
     def charAt(idx as NumberInt) as String:
         pass
@@ -219,6 +241,9 @@ class Array(Proto):
         return self
 
     def splice(index as NumberInt, cnt as NumberInt, *elems as (Proto)) as Array:
+        return self
+        
+    def splice(index as NumberInt, cnt as NumberInt) as Array:
         return self
 
     def splice(index as NumberInt) as Array:
@@ -322,15 +347,94 @@ class RegExp(Proto):
 class Function(Proto, ICallable):
 
     # ICallable interface
-    def Call(params as (Proto)):
+    def Call(params as (Proto)) as Proto:
         pass
 
 
 
+class Math(Proto):
 
+    # Euler's constant and the base of natural logarithms
+    static final E =  2.718
+    # Natural logarithm of 2
+    static final LN2 = 0.693
+    # Natural logarithm of 10
+    static final LN10 = 2.303
+    # Base 2 logarithm of E
+    static final LOG2E = 1.443
+    # Base 10 logarithm of E
+    static final LOG10E = 0.434
+    # Ratio of the circumference of a circle to its diameter
+    static final PI = 3.14159
+    # Square root of 1/2; equivalently, 1 over the square root of 2
+    static final SQRT1_2 = 0.707
+    # Square root of 2
+    static final SQRT2 = 1.414
 
+    static def abs(n as Number) as NumberInt:
+      pass
+      
+    static def acos(n as Number) as NumberDouble:
+      pass
+      
+    static def asin(n as Number) as NumberDouble:
+      pass
+    
+    static def atan(n as Number) as NumberDouble:
+      pass
+    
+    static def atan2(y as Number, x as Number) as NumberDouble:
+      pass
 
-class global(Boo.Lang.IQuackFu):
+    static def ceil(n as Number) as NumberInt:
+      pass
+
+    static def cos(n as Number) as NumberDouble:
+      pass
+
+    static def exp(n as Number) as NumberDouble:
+      pass
+      
+    static def floor(n as Number) as NumberInt:
+      pass
+      
+    static def log(n as Number) as NumberDouble:
+      pass
+      
+    # HACK: Emulate variable number of arguments
+    static def max(n1 as Number, n2 as Number) as NumberDouble:
+      pass
+    static def max(n1 as Number, n2 as Number, n3 as Number) as NumberDouble:
+      pass
+    static def max(n1 as Number, n2 as Number, n3 as Number, n4 as Number) as NumberDouble:
+      pass
+
+    # HACK: Emulate variable number of arguments
+    static def min(n1 as Number, n2 as Number) as NumberDouble:
+      pass
+    static def min(n1 as Number, n2 as Number, n3 as Number) as NumberDouble:
+      pass
+    static def min(n1 as Number, n2 as Number, n3 as Number, n4 as Number) as NumberDouble:
+      pass
+      
+    static def pow(base as Number, exp as Number) as NumberDouble:
+      pass
+      
+    static def random() as NumberDouble:
+      pass
+
+    static def round(n as Number) as NumberInt:
+      pass
+
+    static def sin(n as Number) as NumberDouble:
+      pass
+      
+    static def tan(n as Number) as NumberDouble:
+      pass
+      
+      
+      
+class Global(Duck):
 """ Special class/type to easily define variables without shadowing them """
 
     def QuackGet(name as string, params as (object)) as object:
@@ -342,3 +446,14 @@ class global(Boo.Lang.IQuackFu):
     def QuackInvoke(name as string, args as (object)) as object:
         pass
 
+
+
+# Global functions
+
+def parseInt(n as String, base as NumberInt) as NumberInt:
+    pass
+def parseInt(n as String) as NumberInt:
+    pass
+    
+def parseFloat(n as String) as NumberDouble:
+    pass
