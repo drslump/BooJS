@@ -1,7 +1,7 @@
 """
 0
 string null
-array null
+list null
 regex True
 object 2
 duck foo1
@@ -20,8 +20,8 @@ print 'string', d
 #print e
 
 # Arrays are mutable in Javascript thus it's init as null
-f as array
-print 'array', f
+f as list
+print 'list', f
 
 r as regex = /foo/
 print 'regex', r.test('foo')
