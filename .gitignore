@@ -1,0 +1,5 @@
+TestResult.xml
+test-results
+*.userprefs
+build/
+*.sublime-*
