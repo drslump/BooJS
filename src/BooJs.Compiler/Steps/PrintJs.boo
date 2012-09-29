@@ -533,21 +533,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             return node.Entity.EntityType == TypeSystem.EntityType.BuiltinFunction
 
 
-        if node.Target:
-            print 'TARGET: ', node.Target
-            print 'TARGET IsSynthetic', node.Target.IsSynthetic
-
-            entity = node.Target.Entity
-            if entity:
-                print 'TARGET Entity', entity
-                print 'TARGET Entity NodeType', entity.EntityType
-                #if entity isa TypeSystem.ITypedEntity:
-                #    typed = entity as TypeSystem.ITypedEntity
-                #    print 'TARGET IsModule', typed.IsModule
-                #    print 'TARGET IsClass', typed.IsClass
-                #    print 'TARGET IsFinal', typed.IsFinal
-                #    print 'TARGET TypeDefinition', typed.TypeDefinition  # Ast Node
-
         # Skip the target if it's the MainClass injected by Boo
         # TODO: Move to step
         if not RefsMainClass(node.Target):
