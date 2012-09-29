@@ -10,9 +10,8 @@ macro print:
 
 
 macro global:
-    for arg in global.Arguments:
+    for idx as int, arg in enumerate(global.Arguments):
         if not arg isa ReferenceExpression:
-            raise System.ArgumentException("global argument must be an identifier")
-
+            raise System.ArgumentException("global argument $(idx+1) must be an identifier")
         decl = Declaration(Name: arg.ToString(), Type: SimpleTypeReference('Global'))
         yield DeclarationStatement(Declaration: decl)
