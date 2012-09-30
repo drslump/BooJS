@@ -77,8 +77,10 @@
 		Name="CreateManifestResourceNames"
 		DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
 	>
+		<!--[drslump] THIS BREAKS THE BUILD UNDER MONO :-(
 		<CallTarget Targets="CreateManifestResourceNames_35" Condition="'$(MSBuildToolsVersion)' == '3.5'"/>
 		<CallTarget Targets="CreateManifestResourceNames_20" Condition="'$(MSBuildToolsVersion)' != '3.5'"/>
+		-->
 	</Target>
 	
 	<Target

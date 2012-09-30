@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,15 +7,16 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>BooJs</RootNamespace>
     <UsePartialTypes>false</UsePartialTypes>
+    <RootNamespace>BooJs</RootNamespace>
     <AssemblyName>boojs</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <OutputPath>..\..\build\Debug</OutputPath>
+    <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>false</ducky>
     <culture />
@@ -25,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <OutputPath>..\..\build\Release</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>false</ducky>
     <culture />
@@ -34,18 +35,8 @@
     <nostdlib>false</nostdlib>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="Boo.Lang.Useful, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Boo.Lang, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Boo.Lang.Compiler, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Boo.Lang.Parser, Version=2.0.9.5, Culture=neutral, PublicKeyToken=32c39770e9a21a67">
-      <Private>False</Private>
+    <Reference Include="Boo.Lang.Useful">
+      <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -53,18 +44,15 @@
     <Compile Include="AssemblyInfo.boo" />
     <Compile Include="CommandLine.boo" />
   </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Boojs.Lang\BooJs.Lang.booproj">
-      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
-      <Name>BooJs.Lang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">
+    <ProjectReference Include="..\BooJs.Macros\BooJs.Macros.booproj">
       <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
       <Name>BooJs.Macros</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BooJs.Compiler.Test\BooJs.Compiler.Test.booproj">
-      <Project>{EF0D7427-0168-48BF-A021-0956B9D1C22A}</Project>
-      <Name>BooJs.Compiler.Test</Name>
+    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
+      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
+      <Name>BooJs.Compiler</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

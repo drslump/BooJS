@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Test</RootNamespace>
     <AssemblyName>BooJs.Compiler.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,14 +35,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.core, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <Private>False</Private>
+    <Reference Include="Jurassic">
+      <HintPath>lib\Jurassic.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Parser">
+      <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang">
+      <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <Private>False</Private>
-    </Reference>
-    <Reference Include="Jurassic">
-      <HintPath>lib\Jurassic.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -59,30 +66,11 @@
     <Compile Include="TypeSystemFixtures.boo" />
     <Compile Include="ExamplesFixtures.boo" />
   </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
       <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
       <Name>BooJs.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang\Boo.Lang.csproj">
-      <Project>{A359E52E-5E90-40F3-A5F0-257FE2D545EE}</Project>
-      <Name>Boo.Lang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Boojs.Macros\BooJs.Macros.booproj">
-      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
-      <Name>BooJs.Macros</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Boojs.Lang\BooJs.Lang.booproj">
-      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
-      <Name>BooJs.Lang</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang.Compiler\Boo.Lang.Compiler.csproj">
-      <Project>{7EAC855C-AB70-4CEB-9B9A-8B60712277E2}</Project>
-      <Name>Boo.Lang.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\extras\boo\src\Boo.Lang.Parser\Boo.Lang.Parser.csproj">
-      <Project>{BA0306B9-A10B-4D29-B219-0DFBE24741E8}</Project>
-      <Name>Boo.Lang.Parser</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

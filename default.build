@@ -24,41 +24,43 @@
 			</fileset>
 		</copy>
 	</target>
-	
-	<target name="boojs" depends="copy-libs">
-		<booc target="library" output="${build.dir}/Boojs.Macros.dll"
+
+	<target name="compile" depends="copy-libs">
+		<booc target="library" output="${build.dir}/BooJs.Macros.dll"
 			  debug="true">
 			<sources basedir="src/Boojs.Macros">
 				<include name="*.boo" />
 			</sources>
 		</booc>
 		
-		<booc target="library" output="${build.dir}/Boojs.Lang.dll"
+		<booc target="library" output="${build.dir}/BooJs.Lang.dll"
 			  debug="true">
-			<sources basedir="src/Boojs.Lang">
+			<sources basedir="src/BooJs.Lang">
 				<include name="*.boo" />
 			</sources>
 		</booc>
 	
-		<booc target="library" output="${build.dir}/Boojs.Compiler.dll"
+		<booc target="library" output="${build.dir}/BooJs.Compiler.dll"
 			  debug="true">
-			<sources basedir="src/Boojs.Compiler">
+			<sources basedir="src/BooJs.Compiler">
 				<include name="**/*.boo" />
 			</sources>
 			<references basedir="${build.dir}">
 				<include name="Boo.Lang.Useful.dll" />
-				<include name="Boojs.Macros.dll" />
-				<include name="Boojs.Lang.dll" />
+				<include name="BooJs.Macros.dll" />
+				<include name="BooJs.Lang.dll" />
 			</references>
 		</booc>
-		
+	</target>
+	
+	<target name="boojs" depends="compile">
 		<booc target="exe" output="${build.dir}/boojs.exe"
 			  debug="true">
 			<sources basedir="src/boojs">
 				<include name="*.boo" />
 			</sources>
 			<references basedir="${build.dir}">
-				<include name="Boojs.Compiler.dll" />
+				<include name="BooJs.Compiler.dll" />
 			</references>
 		</booc>
 		
@@ -79,16 +81,20 @@
 		</exec>
 	</target>
 
-	<target name="test" depends="copy-libs">
-		<booc target="library" output="${build.dir}/Boojs.tests.dll">
-			<sources basedir="tests">
+	<target name="test" depends="copy-libs boojs">
+		<booc target="library" output="${build.dir}/BooJs.Compiler.Test.dll">
+			<sources basedir="src/BooJs.Compiler.Test">
 				<include name="*.boo" />
 			</sources>
+			<references>
+				<include name="src/BooJs.Compiler.Test/lib/Jurassic.dll" />
+			</references>
 		</booc>
-		<nunit2 verbose="true" failonerror="true">
+
+		<!-- nunit2 verbose="true" failonerror="true">
 			<formatter type="Plain" />
-		    <test assemblyname="${build.dir}/Boojs.tests.dll" />
-		</nunit2>
+		    <test assemblyname="${build.dir}/BooJs.Compiler.Test.dll" />
+		</nunit2 -->
 	</target>
 
 	<target name="clean">
