@@ -36,13 +36,13 @@ Serves as base for all JS types
 
 class Duck(Proto, Boo.Lang.IQuackFu):
     # Implements QuackFu interface
-    def QuackGet(name as String, params as (Proto)) as Proto:
+    def QuackGet(name as string, params as (object)) as object:
         pass
 
-    def QuackSet(name as String, params as (Proto), value as Proto) as Proto:
+    def QuackSet(name as string, params as (object), value as object) as object:
         pass
 
-    def QuackInvoke(name as String, args as (Proto)) as Proto:
+    def QuackInvoke(name as string, args as (object)) as object:
         pass
 
 
@@ -347,7 +347,7 @@ class RegExp(Proto):
 class Function(Proto, ICallable):
 
     # ICallable interface
-    def Call(params as (Proto)) as Proto:
+    def Call(params as (object)) as object:
         pass
 
 

@@ -2,14 +2,12 @@ import NUnit.Framework
 
 import System.IO(StreamReader)
 
-import Boo.Lang.Parser
-import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 
 # The JavaScript interpretter
-import Jurassic
-import Jurassic.Library
+import Jurassic(ScriptEngine, JavaScriptException, CompatibilityMode)
+import Jurassic.Library(ObjectInstance, JSFunctionAttribute)
 
 class ConsoleMock(ObjectInstance):
     _output = []
@@ -108,9 +106,9 @@ class FixtureRunner:
           try:
             engine.Execute(code)
           except e as JavaScriptException:
-            assert false, e.Message + "\n----------------------\n" + code
+            raise AssertionException(e.Message + "\n----------------------\n" + code)
           except e as System.Exception:
-            assert false, e.ToString() + "\n---------------------\n" + code
+            raise AssertionException(e.ToString() + "\n---------------------\n" + code)
           ensure:
             print '--------------------------------------------[output]-'
             print console.output()

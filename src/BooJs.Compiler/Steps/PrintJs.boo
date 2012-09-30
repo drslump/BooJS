@@ -479,10 +479,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnGeneratorExpression(node as GeneratorExpression):
         # ( i*2 for i as int in range(3) )
-        iter = node.Iterator  # range(3)
-        expr = node.Expression  # i * 2
-        filtr = node.Filter  #
-        decls = node.Declarations  # [ 'i as int', ]
+        raise 'Generator expressions should have been normalized in a previous step'
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         # TODO: Check if the property name is a valid javascript ident and if not use ['xxx'] syntax
@@ -924,14 +921,14 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Visit member
 
         return
+        /*
 
         Write "$(node.Name) = function()"
         WriteOpenBrace
 
         if len(node.BaseTypes):
-            Write '/* extends '
+            Write '// extends '
             WriteCommaSeparatedList(node.BaseTypes)
-            Write '*/'
             WriteLine
 
         statics = []
@@ -975,6 +972,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write ".prototype.$(member.Name) = "
             Visit(member)
             WriteLine
+        */
 
 
     def OnField(f as Field):
@@ -988,7 +986,8 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def WriteTypeDefinition(keyword, node as TypeDefinition):
         raise 'This is not yet implemented'
-
+        
+        /*
         #WriteAttributes(node.Attributes, true)
         #WriteModifiers(node)
         WriteIndented 
@@ -1018,7 +1017,8 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                 WriteLine()
         else:
             Write 'pass'
-
+        */
+        
     def OnExpressionPair(pair as ExpressionPair):
         Visit pair.First
         Write ': '

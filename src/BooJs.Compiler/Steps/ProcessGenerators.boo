@@ -174,12 +174,12 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         return unless _state
 
         raise 'For loops are not implemented for generators'
-
+        /*
         if node.OrBlock:
             raise 'Or blocks are not supported in generators'
         if node.ThenBlock:
             raise 'Then blocks are not supported in generators'
-
+        */
 
     def EnterWhileStatement(node as WhileStatement):
         # TODO: If there is no yield in the loop we can process it normally

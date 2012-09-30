@@ -28,22 +28,12 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         if func.FunctionType == BuiltinFunctionType.Len:
             target = node.Arguments[0]
             result = MemberReferenceExpression(node.LexicalInfo, target, 'length')
-            #result.Entity = TypeSystemServices.IntType
             result.ExpressionType = TypeSystemServices.IntType
 
             node.ParentNode.Replace(node, result)
             return
 
         super(node, func)
-
-
-    override def BindBinaryExpression(node as BinaryExpression):
-        # TODO: Improve this!
-        #if node.Operator == BinaryOperatorType.Addition:
-        #    if GetExpressionType(node.Left) == GetExpressionType(node.Right):
-        #        return
-
-        super(node)
 
     override protected def CreateDefaultLocalInitializer(node as Node, local as IEntity) as Expression:
         if local isa Internal.InternalLocal:

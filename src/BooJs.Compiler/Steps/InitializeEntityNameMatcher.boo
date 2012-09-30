@@ -5,7 +5,7 @@ import Boo.Lang.Compiler.TypeSystem
 
 class InitializeEntityNameMatcher(AbstractCompilerStep):
     override def Run():
-        # TODO: I assume this just means that in Java the first letter case is not checked?
+        # TODO: This is ported from Boojay, I assume this just means that in Java the first letter case is not checked?
         NameResolutionService.EntityNameMatcher = MatchIgnoringFirstLetterCase
     
     def MatchIgnoringFirstLetterCase(entity as IEntity, name as string):

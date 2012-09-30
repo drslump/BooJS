@@ -6,6 +6,7 @@ import BooJs.Compiler.Steps as Steps
 class Compile(Boo.Lang.Compiler.Pipelines.Compile):
     def constructor():
         Insert(0, Steps.InitializeEntityNameMatcher())
+
         #InsertAfter(NormalizeTypeAndMemberDefinitions, NormalizeLiterals())
         Replace(IntroduceGlobalNamespaces, Steps.IntroduceNamespaces())
 
@@ -15,14 +16,16 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         #InsertAfter(Parsing, Steps.SafeMemberAccess())
 
         # Check for unsupported features
-        InsertAfter(Parsing, Steps.UnsupportedFeatures())
-        InsertAfter(MacroAndAttributeExpansion, Steps.UnsupportedFeatures())
+        unsupported = Steps.UnsupportedFeatures()
+        InsertAfter(Parsing, unsupported)
+        InsertAfter(MacroAndAttributeExpansion, unsupported)
 
         # Since JS is dynamic we don't need the additional tooling for duck types
-        #Remove(ExpandDuckTypedExpressions)
+        Remove(ExpandDuckTypedExpressions)
         # Same applies to Closures (TODO: Are we sure?)
         Remove(InjectCallableConversions)
         Remove(ProcessClosures)
+
         # No need to cache/precompile regexp in Javascript
         Remove(CacheRegularExpressionsInStaticFields)
 
