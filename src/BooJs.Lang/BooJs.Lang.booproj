@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -17,6 +17,9 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <BooBinPath>..\..\lib</BooBinPath>
+    <SignAssembly>false</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -30,7 +33,7 @@
     <nostdlib>false</nostdlib>
     <NoStdLib>false</NoStdLib>
     <Ducky>false</Ducky>
-    <DefineConstants>TRACE;DEBUG;IGNOREKEYFILE,NET_2_0,MSBUILD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;IGNOREKEYFILE,MSBUILD</DefineConstants>
     <StartAction>Project</StartAction>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -46,7 +49,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>TRACE;DEBUG;IGNOREKEYFILE,NET_2_0,MSBUILD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;IGNOREKEYFILE,MSBUILD</DefineConstants>
     <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
@@ -62,8 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="..\..\lib\Boo.Lang.dll" />
-    <Reference Include="..\..\lib\Boo.Lang.Compiler.dll" />
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang">
+      <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>
