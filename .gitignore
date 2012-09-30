@@ -3,3 +3,6 @@ test-results
 *.userprefs
 build/
 *.sublime-*
+*.pidb
+src/**/bin/
+src/**/obj/
