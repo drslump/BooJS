@@ -21,7 +21,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         InsertAfter(MacroAndAttributeExpansion, unsupported)
 
         # Since JS is dynamic we don't need the additional tooling for duck types
-        Remove(ExpandDuckTypedExpressions)
+        #Remove(ExpandDuckTypedExpressions)
         # Same applies to Closures (TODO: Are we sure?)
         Remove(InjectCallableConversions)
         Remove(ProcessClosures)

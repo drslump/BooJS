@@ -29,6 +29,7 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
 
+    /*
     def OnSlicingExpression(node as SlicingExpression):
     """ Boo implements python style slicing, allowing to extract/replace ranges. JS does not have
         a direct syntax for it thus until we can work on converting the slices we flag this
@@ -46,7 +47,7 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
             NotImplemented node, 'Slicing with a negative index is not supported'
 
         print slice.Begin, slice.Begin.NodeType
-
+    */
 
     def OnTimeSpanLiteralExpression(node as TimeSpanLiteralExpression):
     """ Literal timespan values ( 1s, 4d, 3h ...)

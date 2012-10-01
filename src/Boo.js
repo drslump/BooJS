@@ -229,6 +229,32 @@ Boo.Lang = {
         throw new Error('Unable to cast to enumerable the value "' + value + '"');
     },
 
+    // Support for slicing
+    slice: function (value, begin, end, step) {
+        begin = begin || 0;
+        if (begin < 0) begin = value.length + begin;
+
+        // Index access
+        if (arguments.length === 2) {
+            return value.slice(begin, begin + 1)[0];
+        }
+
+        end = end || value.length;
+        if (end < 0) end = value.length + end;
+        step = step || (begin <= end ? 1 : -1);
+        if (begin < end && step === 1) {
+            return value.slice(begin, end);
+        }
+
+        var result = [];
+        if ((begin < end && step > 0) || (begin > end && step < 0)) {
+            for (var i = begin; (begin <= end && i < end) || (begin > end && i > end); i += step) {
+                result.push(value[i]);
+            }
+        }
+        return (typeof value === 'string') ? result.join('') : result;
+    },
+
     // Compares two values for equality
     op_Equality: function (lhs, rhs) {
         return lhs === rhs;

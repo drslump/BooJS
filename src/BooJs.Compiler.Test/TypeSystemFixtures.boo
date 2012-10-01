@@ -9,6 +9,10 @@ import NUnit.Framework
 class FixtureForTypesystem:
 
   [Test]
+  def test_block_expressions():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/block-expressions.boo')
+
+  [Test]
   def test_double():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/double.boo')
 
@@ -23,6 +27,10 @@ class FixtureForTypesystem:
   [Test]
   def test_numbers():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/numbers.boo')
+
+  [Test]
+  def test_slicing():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/slicing.boo')
 
   [Test]
   def test_string():

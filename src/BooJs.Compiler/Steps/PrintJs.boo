@@ -25,16 +25,19 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def Print(ast as CompileUnit):
         OnCompileUnit(ast)
         
-        WriteLine '//@ sourceMappingURL=map.js.map'
-        print 'var map = ' + srcmap.ToString()
+        #WriteLine '//@ sourceMappingURL=map.js.map'
+        #print 'var map = ' + srcmap.ToString()
+
+    protected def NotImplemented(node as Node, msg as string):
+        raise CompilerErrorFactory.NotImplemented(node, msg)
 
     def WriteLine():
         srcmap.NewLine()
-        super.WriteLine()
+        super()
         
     def Write(str as string):
         srcmap.Column += str.Length
-        super.Write(str)
+        super(str)
 
     def Map(node as Node):
     """ Maps the given node lexical info to the current position in the generated file
@@ -111,15 +114,44 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnSlicingExpression(node as SlicingExpression):
         if len(node.Indices) != 1:
-            raise 'Only one index is supported when slicing'
-
+            NotImplemented(node, 'Only one index is supported when slicing')
+            
+        
+        index = node.Indices[0]
+        
+        # Optimizations for simple cases
+        if not index.End and not index.Step and index.Begin isa IntegerLiteralExpression:
+            val = (index.Begin as IntegerLiteralExpression).Value
+            # Positive integers
+            if val >= 0:
+                Visit node.Target
+                Write "[$(index.Begin)]"
+                return
+            # Negative integers, only do this if the expression is a variable reference
+            elif node.Target isa ReferenceExpression or node.Target isa MemberReferenceExpression:
+                Visit node.Target
+                Write "["
+                Visit node.Target
+                Write ".length - $(-val)"
+                Write "]"
+                return
+                
+        Write "Boo.Lang.slice("
         Visit node.Target
-        Write '['
-        Visit node.Indices[0]
-        Write ']'
+        Write ", "
+        if index.Begin: Visit index.Begin
+        else: Write "null"
+        Write ", "
+        if index.End: Visit index.End
+        else: Write "null"
+        Write ", "
+        if index.Step: Visit index.Step
+        else: Write "null"
+        Write ")"
+          
 
     def OnUnpackStatement(node as UnpackStatement):
-        raise 'Unpack should be performed in its own step'
+         NotImplemented(node, 'Unpack should be performed in its own step')
 
     def OnBlockExpression(node as BlockExpression):
     """ Javascript has native support for closures thus the conversion is very simple.
@@ -422,21 +454,18 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def OnDoubleLiteralExpression(node as DoubleLiteralExpression):
         Map node
         Write(node.Value.ToString("########0.0##########"))
-
-
-
+        
     def OnTypeDefinition(node as TypeDefinition):
-        print 'TypeDefinition: ', node
+        NotImplemented(node, "TypeDefinition should be processed in previous steps")
 
     def OnCallableDefinition(node as CallableDefinition):
-        print 'Callable Definition: ', node
+        NotImplemented(node, "CallableDefinition should be processed in previous steps")
 
     def OnCallableTypeReference(node as CallableTypeReference):
-        print 'Callable Type Reference: ', node
+        NotImplemented(node, "CallableTypeReference should be processed in previous steps")
 
     def OnGenericTypeDefinitionReference(node as GenericTypeDefinitionReference):
-        print 'Generic Type Definition Reference: ', node
-
+        NotImplemented(node, "GenericTypeDefinitionReference should be processed in previous steps")
 
     def OnExpressionStatement(node as ExpressionStatement):
         # Ignore the assignment of locals produced by closures instrumentation
@@ -479,7 +508,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnGeneratorExpression(node as GeneratorExpression):
         # ( i*2 for i as int in range(3) )
-        raise 'Generator expressions should have been normalized in a previous step'
+        NotImplemented(node, 'Generator expressions should have been normalized in a previous step')
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         # TODO: Check if the property name is a valid javascript ident and if not use ['xxx'] syntax
@@ -654,16 +683,17 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write '(' if NeedsParensAround(node)
 
         isPostOp = AstUtil.IsPostUnaryOperator(node.Operator)
-        Write GetUnaryOperatorText(node.Operator) if not isPostOp
+        Write GetUnaryOperatorText(node) if not isPostOp
         parens = NeedsParensAround(node.Operand)
         Write '(' if parens
         Visit node.Operand
         Write ')' if parens
-        Write GetUnaryOperatorText(node.Operator) if isPostOp
+        Write GetUnaryOperatorText(node) if isPostOp
 
         Write ')' if NeedsParensAround(node)
 
-    def GetUnaryOperatorText(op as UnaryOperatorType):
+    def GetUnaryOperatorText(node as UnaryExpression):
+        op = node.Operator
         # TODO: In ProcessMethod.ExpandSimpleIncrementDecrement this is expanded
         if op == UnaryOperatorType.PostIncrement or op == UnaryOperatorType.Increment:
             return '++'
@@ -677,13 +707,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         elif op == UnaryOperatorType.OnesComplement:
             return '~'
         elif op == UnaryOperatorType.Explode:
-            raise 'Explode operator "*" is not supported'
+            NotImplemented(node, 'Explode operator "*" is not supported')
         elif op == UnaryOperatorType.AddressOf:
-            raise 'AddressOf operator "&" is not supported' 
+            NotImplemented(node, 'AddressOf operator "&" is not supported')
         elif op == UnaryOperatorType.Indirection:
-            raise 'Indirection operator "*" is not supported'
+            NotImplemented(node, 'Indirection operator "*" is not supported')
         else:
-            raise 'Invalid operator "' + op + '"'
+            NotImplemented(node, "Invalid operator \"$op\"")
 
     def BinaryAssign(node as BinaryExpression):
         # Wrap in parens if it's an assigment inside an expression
@@ -785,7 +815,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write '(' if parens
             Visit node.Left
             Write " "
-            Write GetBinaryOperatorText(node.Operator)
+            Write GetBinaryOperatorText(node)
             Write " "
             Visit node.Right
             Write ')' if parens
@@ -802,7 +832,8 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write 'Boo.Types.' + node.Name
 
 
-    def GetBinaryOperatorText(op as BinaryOperatorType):
+    def GetBinaryOperatorText(node as BinaryExpression):
+        op = node.Operator
 
         return '=' if op == BinaryOperatorType.Assign
         # Note: We use equality in value and type in JS
@@ -844,7 +875,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         return '<<=' if op == BinaryOperatorType.InPlaceShiftLeft
         return '>>=' if op == BinaryOperatorType.InPlaceShiftRight
 
-        raise 'Operator $(op) is not implemented'
+        NotImplemented(node, "Operator $(op) is not implemented")
 
     def NeedsParensAround(node as Expression):
         return true if node.ParentNode and node.ParentNode.NodeType == NodeType.MemberReferenceExpression  # (--1).toString()
@@ -975,54 +1006,18 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         */
 
 
-    def OnField(f as Field):
-        # Not supported
-        return
+    def OnField(node as Field):
+        #NotImplemented(node, "Field nodes not supported yet") 
+        pass
 
     def OnConstructor(node as Constructor):
-        # Not supported
-        return
+        #NotImplemented(node, "Constructor nodes not supported yet") 
+        pass
 
-
-    def WriteTypeDefinition(keyword, node as TypeDefinition):
-        raise 'This is not yet implemented'
-        
-        /*
-        #WriteAttributes(node.Attributes, true)
-        #WriteModifiers(node)
-        WriteIndented 
-        Write keyword
-        Write ' '
-
-        splice = node.ParentNode as SpliceTypeMember
-        if splice:
-            #WriteSplicedExpression(splice.NameExpression)
-            pass
-        else:
-            Write(node.Name)
-
-        #if len(node.GenericParameters):
-        #    WriteGenericParameterList(node.GenericParameters);
-
-        if len(node.BaseTypes):
-            Write("(")
-            WriteCommaSeparatedList(node.BaseTypes)
-            Write(")")
-
-        WriteLine(":")
-        if len(node.Members):
-            for member as TypeMember in node.Members:
-                print member.NodeType
-                Visit(member)
-                WriteLine()
-        else:
-            Write 'pass'
-        */
-        
-    def OnExpressionPair(pair as ExpressionPair):
-        Visit pair.First
+    def OnExpressionPair(node as ExpressionPair):
+        Visit node.First
         Write ': '
-        Visit pair.Second
+        Visit node.Second
 
 
     def WriteStringLiteral(text as string):
