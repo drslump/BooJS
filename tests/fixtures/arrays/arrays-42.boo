@@ -1,7 +1,6 @@
-#IGNORE: Casting of lists not fully supported
-ba = (of byte: 0, 0, 127, 1, 2,   255)
-sba = (of sbyte: -1, 0, 127, 1, 2)
-sa = (of short: -1, 0, 127, 1, 2)
+ba = (of uint: 0, 0, 127, 1, 2,   255)
+sba = (of int: -1, 0, 127, 1, 2)
+sa = (of double: -1, 0, 127, 1, 2)
 ia = (-1, 0, 127, 1, 2,   255)
 
 for i in range(5):

@@ -1,4 +1,3 @@
-#IGNORE slicing with negative index is not supported yet
 """
 third
 second

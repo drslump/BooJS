@@ -28,6 +28,12 @@ assert a >= b and b >= 2.5
 assert a == 10.5
 assert a != b
 
+# Implicit casting
+assert b*2 == 5
+assert b == '2.5'
+assert 'foo:' + b == 'foo:2.5'
+assert b + ':foo' == '2.5:foo'
+
 # Methods
 print 'toString', a.toString()
 print 'toFixed', a.toFixed(0)

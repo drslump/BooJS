@@ -4,4 +4,5 @@
 def foo():
 	return (,)
 
-print(len(foo()))
+l = len(foo())
+print(l)

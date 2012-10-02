@@ -1,4 +1,3 @@
-#IGNORE range slicing not supported
 a = "Gooooooooood niiiiiiiiight ding ding ding ding ding ding"
 assert "Go" == a[:2]
 assert "Go" == a[0:2]

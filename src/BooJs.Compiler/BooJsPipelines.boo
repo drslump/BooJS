@@ -37,7 +37,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Customize slicing expressions
         # HACK: MonoDevelop version of Boo doesn't have this step so the compilation fails
         #Replace(ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions())
-        InsertAfter(ExpandDuckTypedExpressions, Steps.ExpandComplexSlicingExpressions())
+        #InsertAfter(ExpandDuckTypedExpressions, Steps.ExpandComplexSlicingExpressions())
+        InsertAfter(MacroAndAttributeExpansion, Steps.ExpandComplexSlicingExpressions())
 
         # Relax boolean conversions
         Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())

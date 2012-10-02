@@ -1,4 +1,3 @@
-#IGNORE: negative slicing not supported
 a = (array(int, 2), array(int, 2))
 
 for i in range(len(a)):

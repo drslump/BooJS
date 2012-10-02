@@ -1,7 +1,6 @@
-#IGNORE: Casting of lists not fully supported
 """
 --
-1 2 3
+1 2 3.1
 3
 --
  
@@ -30,5 +29,4 @@ dump(a3)
 
 a4 = (of string: "foo")
 dump(a4)
-
 

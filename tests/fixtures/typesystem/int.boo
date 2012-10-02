@@ -28,6 +28,12 @@ assert a >= b and b >= 2
 assert a == 10
 assert a != b
 
+# Implicit casting
+assert a == 10.0
+assert a == '10'
+assert 'foo:' + a == 'foo:10'
+assert a + ':foo' == '10:foo'
+
 # Methods
 print 'toString', a.toString()
 

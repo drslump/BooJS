@@ -1,4 +1,3 @@
-#IGNORE: Negative slicing not supported yet
 a = array(typeof((int)), 2)
 a[0] = array(int, 2)
 a[1] = array(int, 2)

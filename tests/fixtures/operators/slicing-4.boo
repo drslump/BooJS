@@ -1,4 +1,3 @@
-#IGNORE slicing with negative index not supported yet
 """
 2
 1

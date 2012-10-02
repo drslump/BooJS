@@ -257,7 +257,7 @@ Boo.Lang = {
 
     // Compares two values for equality
     op_Equality: function (lhs, rhs) {
-        return lhs === rhs;
+        return lhs == rhs;
     },
 
     // Perform the modulus operation on two operands
@@ -416,3 +416,8 @@ Boo.Lang = {
         }
     }
 };
+
+// HACK: Alias the runtime helpers
+Boo.Types.RuntimeHelpers = Boo.Lang;
+
+

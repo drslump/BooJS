@@ -1,4 +1,3 @@
-#IGNORE range slicing not supported yet
 a = "12345"
 
 assert "123" == a[-10:3]

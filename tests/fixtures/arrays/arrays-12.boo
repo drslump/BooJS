@@ -1,4 +1,3 @@
-#IGNORE: Deconstructing array elements on iteration not supported
 """
 1
 2

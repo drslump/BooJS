@@ -1,10 +1,9 @@
-#IGNORE: Slicing with negative indices is not yet supported
 """
 s
 p
 m
 """
-a1 = "spam".ToCharArray()
+a1 = "spam".split('')
 print(a1[0])
 print(a1[1])
 print(a1[-1])
