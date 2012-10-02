@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "boojs", "boojs\boojs.booproj", "{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}"
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Macros", "BooJs.Macros\BooJs.Macros.booproj", "{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}"
@@ -15,6 +15,9 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug Net-1.1|Any CPU = Debug Net-1.1|Any CPU
+		Micro-Debug|Any CPU = Micro-Debug|Any CPU
+		Micro-Release|Any CPU = Micro-Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +47,16 @@ Global
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = None
 		$1.ResourceNamePolicy = FileFormatDefault
+		$0.TextStylePolicy = $2
+		$2.inheritsSet = null
+		$2.scope = text/x-boo
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.NoTabsAfterNonTabs = True
+		$3.RemoveTrailingWhitespace = True
+		$3.EolMarker = Unix
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Test</RootNamespace>
     <AssemblyName>BooJs.Compiler.Test</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <OldToolsVersion>3.5</OldToolsVersion>
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -22,6 +22,7 @@
     <nostdlib>false</nostdlib>
     <ConsolePause>false</ConsolePause>
     <genwarnings>false</genwarnings>
+    <DefineConstants />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -32,6 +33,7 @@
     <nostdlib>false</nostdlib>
     <ConsolePause>false</ConsolePause>
     <genwarnings>false</genwarnings>
+    <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,13 +43,13 @@
     <Reference Include="Boo.Lang.Parser">
       <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
     </Reference>
-    <Reference Include="Boo.Lang.Compiler">
-      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
-    </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -71,6 +73,14 @@
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
       <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
       <Name>BooJs.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
+      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
+      <Name>BooJs.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Macros\BooJs.Macros.booproj">
+      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
+      <Name>BooJs.Macros</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

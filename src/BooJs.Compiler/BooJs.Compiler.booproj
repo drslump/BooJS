@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,8 +9,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler</RootNamespace>
     <AssemblyName>BooJs.Compiler</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <BooBinPath>..\..\lib</BooBinPath>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <BooBinPath>..\..\lib\</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +22,7 @@
     <nostdlib>false</nostdlib>
     <ConsolePause>false</ConsolePause>
     <genwarnings>false</genwarnings>
+    <DefineConstants />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -32,25 +33,20 @@
     <nostdlib>false</nostdlib>
     <ConsolePause>false</ConsolePause>
     <genwarnings>false</genwarnings>
+    <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Boo.Lang.CodeDom">
-      <HintPath>..\..\lib\Boo.Lang.CodeDom.dll</HintPath>
-    </Reference>
-    <Reference Include="Boo.Lang.Compiler">
-      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
-    </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
     </Reference>
     <Reference Include="Boo.Lang.Extensions">
       <HintPath>..\..\lib\Boo.Lang.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Boo.Lang.PatternMatching">
-      <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
-    </Reference>
     <Reference Include="Boo.Lang.Parser">
       <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +95,7 @@
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />
     <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
     <Compile Include="Steps\IntroduceNamespaces.boo" />
+    <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

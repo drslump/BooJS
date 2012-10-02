@@ -50,7 +50,11 @@ class FixtureRunner:
       comp.Parameters.Input.Add(FileInput(file))
 
       result = comp.Run()
-      assert 0 == len(result.Errors), result.Errors.ToString(true) + result.CompileUnit.ToCodeString()
+      
+      if len(result.Errors):
+        print result.Errors.ToString()
+        print result.CompileUnit.ToCodeString()
+        raise result.Errors[0]
 
       module = result.CompileUnit.Modules[0]
       expected = module.Documentation or ''
@@ -90,9 +94,6 @@ class FixtureRunner:
         return self._engine
 
     static def runTest(code as string, expected as string):
-        print '---------------------------------------------[code]-'
-        print code
-
 
         # TODO: Check if we can reuse the same engine
         using engine = setupInterpreter():
@@ -105,13 +106,12 @@ class FixtureRunner:
 
           try:
             engine.Execute(code)
-          except e as JavaScriptException:
-            raise AssertionException(e.Message + "\n----------------------\n" + code)
-          except e as System.Exception:
-            raise AssertionException(e.ToString() + "\n---------------------\n" + code)
-          ensure:
+            Assert.AreEqual(expected, console.output())
+          except:
+            print '----------------------------------------------[code]-'
+            print code.Trim()
             print '--------------------------------------------[output]-'
             print console.output()
             print '-----------------------------------------------------'
+            raise
 
-          Assert.AreEqual(expected, console.output())
