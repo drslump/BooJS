@@ -4,8 +4,6 @@ unary -10.5 9.5 10.5 10.5 9.5
 exponent 357.250830999733
 toString 10.5
 toFixed 10
-expression 110.25
-expression 107.75
 """
 a as int = 10.5
 b = 2.5  # type inference
@@ -35,5 +33,5 @@ print 'toString', a.toString()
 print 'toFixed', a.toFixed(0)
 
 # Expression blocks
-{x| print('expression', x*x)}(a)
-print 'expression', {a*a}() - b 
+assert {x| x*x}(a) == 110.25
+assert {a*a}() - b == 107.75

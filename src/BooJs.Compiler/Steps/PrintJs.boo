@@ -16,7 +16,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def constructor(writer as System.IO.TextWriter):
         super(writer)
         IndentText = '  '
-
+        
         srcmap = MapBuilder()
 
     def Initialize(context as CompilerContext):
@@ -113,42 +113,10 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteCloseBrace
 
     def OnSlicingExpression(node as SlicingExpression):
-        if len(node.Indices) != 1:
-            NotImplemented(node, 'Only one index is supported when slicing')
-            
-        
-        index = node.Indices[0]
-        
-        # Optimizations for simple cases
-        if not index.End and not index.Step and index.Begin isa IntegerLiteralExpression:
-            val = (index.Begin as IntegerLiteralExpression).Value
-            # Positive integers
-            if val >= 0:
-                Visit node.Target
-                Write "[$(index.Begin)]"
-                return
-            # Negative integers, only do this if the expression is a variable reference
-            elif node.Target isa ReferenceExpression or node.Target isa MemberReferenceExpression:
-                Visit node.Target
-                Write "["
-                Visit node.Target
-                Write ".length - $(-val)"
-                Write "]"
-                return
-                
-        Write "Boo.Lang.slice("
         Visit node.Target
-        Write ", "
-        if index.Begin: Visit index.Begin
-        else: Write "null"
-        Write ", "
-        if index.End: Visit index.End
-        else: Write "null"
-        Write ", "
-        if index.Step: Visit index.Step
-        else: Write "null"
-        Write ")"
-          
+        Write '['
+        Visit node.Indices[0].Begin
+        Write ']'
 
     def OnUnpackStatement(node as UnpackStatement):
          NotImplemented(node, 'Unpack should be performed in its own step')

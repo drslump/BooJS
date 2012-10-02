@@ -4,8 +4,6 @@ unary -10 9 10 10 9
 exponent 100
 bitwise 2 8 -11 2 10 8
 toString 10
-expression 100
-expression 98
 """
 a as int = 10
 b = 2  # type inference
@@ -34,5 +32,5 @@ assert a != b
 print 'toString', a.toString()
 
 # Expression blocks
-{x| print('expression', x*x)}(a)
-print 'expression', {a*a}() - b 
+assert {x| x*x }(a) == 100
+assert {a*a}() - b == 98

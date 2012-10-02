@@ -26,8 +26,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         Visit CompileUnit
 
     override def EnterMethod(node as Method):
-        print "EnterMethod"
-
         # Types should be already resolved so we can just check if it was flagged as a generator 
         entity as InternalMethod = node.Entity
         if not entity.IsGenerator:
@@ -122,7 +120,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         _current = case.Body
 
     def OnExpressionStatement(node as ExpressionStatement):
-        print "OnExpressionStatement", node
         return unless _state
         Add(node)
 

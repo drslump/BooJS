@@ -34,6 +34,11 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Override some of the stuff in the gigantic ProcessMethodBodies step
         Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
 
+        # Customize slicing expressions
+        # HACK: MonoDevelop version of Boo doesn't have this step so the compilation fails
+        #Replace(ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions())
+        InsertAfter(ExpandDuckTypedExpressions, Steps.ExpandComplexSlicingExpressions())
+
         # Relax boolean conversions
         Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())
 
@@ -47,6 +52,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Simplify the unpack operations
         InsertAfter(NormalizeStatementModifiers, Steps.NormalizeUnpack())
+        
 
         # Adapt try/except statements
         Add(Steps.ProcessTry())

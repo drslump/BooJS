@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureTestCasesForArrays:
+class FixtureForArrays:
 
   [Test]
   def test_array_polymorphic_foreach():

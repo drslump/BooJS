@@ -13,5 +13,9 @@ assert a[idx] == 8
 idx = 5
 assert a[-idx] == 5
 
-
 assert a[1:3] == (1, 2)
+assert a[-3:] == (7, 8, 9)
+assert a[1:6:2] == (1,3,5)
+
+assert a[:2] == (0, 1) 
+assert a[-3::2] == (7, 9)

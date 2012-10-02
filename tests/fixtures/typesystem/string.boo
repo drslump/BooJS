@@ -5,8 +5,6 @@ formatting foo-bar
 True
 toUpperCase FOO
 charAt o
-expression foofoo
-expression foofoobar
 """
 a as string = 'foo'
 b = 'bar'  # Type inference
@@ -31,5 +29,5 @@ print 'toUpperCase', a.toUpperCase()
 print 'charAt', a.charAt(1)
 
 # Expression blocks
-{x as string| print('expression', x+x)}(a)
-print 'expression', {return cast(string, a+a)}()  # TODO: Inference not working!!!
+assert {x as string| x+x }(a) == 'foofoo'
+assert {cast(string, a+a)}() == 'foofoo'  # TODO: Inference not working!!!

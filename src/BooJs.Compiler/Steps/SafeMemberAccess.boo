@@ -22,26 +22,24 @@ class SafeMemberAccess(AbstractTransformerCompilerStep):
 
 
 Boo supports unicode letters as part of an identifier, we preprocess the source file
-replacing occurences of `?` followed by `.`, `[`, or `(` with an unicode equivalent
+replacing occurrences of `?` followed by `.`, `[`, or `(` with an unicode equivalent
 which we can easily detect here to convert the expression to use a ternary operator.
 """
 
     final public static UNICODE_CHAR = '\u0294'      # LATIN LETTER GLOTTAL STOP "ʔ"
 
-
     override def Run():
         if len(Errors) > 0:
             return
+
         Visit CompileUnit
 
-    def OnMemberReferenceExpression(node as MemberReferenceExpression):
+    def LeaveMemberReferenceExpression(node as MemberReferenceExpression):
         ReplaceCurrentNode( ApplyTernary(node) )
 
-
-    def OnReferenceExpression(node as ReferenceExpression):
+    def LeaveReferenceExpression(node as ReferenceExpression):
         if node.Name[-1:] == UNICODE_CHAR:
             node.Name = node.Name[:-1]
-
 
     protected def ApplyTernary(node as ReferenceExpression) as Expression:
 
@@ -55,5 +53,3 @@ which we can easily detect here to convert the expression to use a ternary opera
             return [| ($node if $n else null) |]
 
         return node
-
-
