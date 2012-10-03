@@ -35,7 +35,7 @@ class JsReflectionTypeSystemProvider(ReflectionTypeSystemProvider):
         # Define duck type
         MapTo(JsLang.Duck, JsObjectType(self, JsLang.Duck))
 
-        # Javascript's strings are mutable
+        # Strings are actually mutable
         MapTo(JsLang.String, JsObjectType(self, JsLang.String))
 
         # Define numbers as value types

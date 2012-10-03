@@ -86,7 +86,8 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
                 slice.Begin = [| $(node.Target).length - $val |]
                 return
 
-            mie = [| RuntimeHelpers.slice($(node.Target), $(slice.Begin)) |]
+            m = NameResolutionService.ResolveMethod(typeof(BooJs.Lang.RuntimeHelpers), 'slice')
+            mie = CodeBuilder.CreateMethodInvocation(m, node.Target, slice.Begin)
             if not IsNullOrOmitted(slice.End):
                 mie.Arguments.Add(slice.End)
             if not IsNullOrOmitted(slice.Step):

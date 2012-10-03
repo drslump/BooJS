@@ -168,17 +168,10 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
 
     def OnLocal(node as Local):
-        # HACK: We should find a better way to compare the type. If it matches 
-        #       the special global type (ie: jQuery as global) then we avoid defining
-        #       it, which would shadow the global variable
-        #ilocal = node.Entity as Boo.Lang.Compiler.TypeSystem.ITypedEntity
-        #if ilocal.Type.ToString() == 'Boojs.Lang.global':
-        #    return
-
         entity = node.Entity as TypeSystem.ITypedEntity
-
-        # Ignore declarations for Global variables
-        if entity and entity.Type.FullName in ('BooJs.Lang.Global'):
+        # We have flagged it in OverrideProcessMethodBodies
+        intlocal = entity as TypeSystem.Internal.InternalLocal
+        if intlocal and intlocal.OriginalDeclaration and intlocal.OriginalDeclaration.ContainsAnnotation('global'):
             return
 
         # TODO: Add proper type annotations
@@ -208,7 +201,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write node.Name
 
     def OnDeclarationStatement(node as DeclarationStatement):
-        # TODO: Seems like this i s never used
+        # TODO: Seems like this is never used
         WriteIndented 'var '
         Map node
         Write node.Declaration.Name

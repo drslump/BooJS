@@ -57,6 +57,7 @@
     <Compile Include="AssertMacro.boo" />
     <Compile Include="PrintMacro.boo" />
     <Compile Include="RequiredAttribute.boo" />
+    <Compile Include="GlobalMacro.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

@@ -35,14 +35,31 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
         super(node, func)
 
-    override protected def CreateDefaultLocalInitializer(node as Node, local as IEntity) as Expression:
-        if local isa Internal.InternalLocal:
-            type as Reflection.ExternalType = (local as Internal.InternalLocal).Type
-            if type.ActualType == BooJs.Lang.Global:
-                # TODO: Refactor this to avoid inserting the expression
-                return [| __global_initializer_should_be_removed__ = null |]
+    override def LeaveDeclarationStatement(node as DeclarationStatement):
+        decl = node.Declaration
+        if decl.ContainsAnnotation('global'):
+            if not decl.Type:
+                decl.Type = CodeBuilder.CreateTypeReference(decl.LexicalInfo, TypeSystemServices.DuckType)
 
-        return super(node, local)
+            type = GetType(decl.Type)
+            entity as Internal.InternalLocal = DeclareLocal(node, decl.Name, type, false)
+            entity.OriginalDeclaration = decl
+
+            if node.Initializer:
+                node.ReplaceBy(
+                    ExpressionStatement(
+                        CodeBuilder.CreateAssignment(
+                            node.LexicalInfo,
+                            CodeBuilder.CreateReference(entity),
+                            node.Initializer)
+                        )
+                    )
+            else:
+                (node.ParentNode as Block).Statements.Remove(node)
+
+            return
+
+        super(node)
 
     override def LeaveSlicingExpression(node as SlicingExpression):
         # Slicing over lists gets transformed to a method call

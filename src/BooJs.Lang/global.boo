@@ -191,7 +191,6 @@ class String(Proto):
         pass
 
 
-#class Array[of T](Proto):
 class Array(Proto):
 
     static def op_Member(item as object, arr as Array) as bool:
@@ -459,9 +458,9 @@ def parseFloat(n as String) as NumberDouble:
 
 class RuntimeHelpers:
     # Use generics to keep type information
-    static def slice[of T](list as T*, begin as Proto) as T:
+    static def slice[of T](list as T*, begin as Number) as T:
         pass
-    static def slice[of T](list as T*, begin as Proto, end as Proto) as T*:
+    static def slice[of T](list as T*, begin as Number, end as Number) as T*:
         pass
-    static def slice[of T](list as T*, begin as Proto, end as Proto, step as Proto) as T*:
+    static def slice[of T](list as T*, begin as Number, end as Number, step as Number) as T*:
         pass

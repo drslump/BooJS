@@ -17,6 +17,10 @@ class FixtureForTypesystem:
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/double.boo')
 
   [Test]
+  def test_globals():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/globals.boo')
+
+  [Test]
   def test_int():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/int.boo')
 

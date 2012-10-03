@@ -1,5 +1,6 @@
 namespace BooJs.Compiler.Steps
 
+import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 

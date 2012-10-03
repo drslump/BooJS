@@ -3,8 +3,13 @@ namespace BooJs.Macros
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 
-# TODO: What's this used for?
-class RequiredAttribute(AbstractAstAttribute):
+
+class GlobalAttribute(AbstractAstAttribute):
+""" Annotate a variable declaration as a global """
 
     override def Apply(node as Node):
-        pass
+        f = node as DeclarationStatement
+        if f is null:
+            InvalidNodeForAttribute('DeclarationStatement')
+            return
+        f.Annotate('global')
