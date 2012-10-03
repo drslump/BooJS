@@ -89,7 +89,6 @@
     <Compile Include="SourceMap\MapBuilder.boo" />
     <Compile Include="TypeSystem\JsTypeSystem.boo" />
     <Compile Include="Steps\SafeMemberAccess.boo" />
-    <Compile Include="Steps\Preprocess.boo" />
     <Compile Include="Steps\NormalizeUnpack.boo" />
     <Compile Include="Steps\NormalizeClosures.boo" />
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />

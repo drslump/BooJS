@@ -33,6 +33,10 @@ class FixtureForTypesystem:
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/numbers.boo')
 
   [Test]
+  def test_safe_member_access():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/safe-member-access.boo')
+
+  [Test]
   def test_slicing():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/slicing.boo')
 

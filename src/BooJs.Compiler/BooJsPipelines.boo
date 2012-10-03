@@ -11,9 +11,10 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Replace(IntroduceGlobalNamespaces, Steps.IntroduceNamespaces())
 
         # Process safe member access operator
-        # TODO: Do not enable until we have a more solid implementation
-        #InsertBefore(Parsing, Steps.Preprocess())
-        #InsertAfter(Parsing, Steps.SafeMemberAccess())
+        # NOTE: It must be added before and after the parsing step
+        safe_member = Steps.SafeMemberAccess()
+        InsertBefore(Parsing, safe_member)
+        InsertAfter(Parsing, safe_member)
 
         # Check for unsupported features
         unsupported = Steps.UnsupportedFeatures()
