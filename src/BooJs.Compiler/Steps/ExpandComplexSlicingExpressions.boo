@@ -2,11 +2,11 @@ namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler(CompilerErrorFactory)
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.Compiler.TypeSystem.Internal
-import Boo.Lang.Compiler.TypeSystem.Services
-import Boo.Lang.Environments
+import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
+import Boo.Lang.Compiler.TypeSystem(IType, IMethod)
+#import Boo.Lang.Compiler.TypeSystem.Internal
+import Boo.Lang.Compiler.TypeSystem.Services(TypeCompatibilityRules)
+#import Boo.Lang.Environments
 
 # MonoDevelop perfoms the compilation using its own Boo assemblies which do not contain this class
 # We have to replicate the whole class here to allow compilation from the IDE and from msbuild
@@ -86,7 +86,7 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
                 slice.Begin = [| $(node.Target).length - $val |]
                 return
 
-            m = NameResolutionService.ResolveMethod(typeof(BooJs.Lang.RuntimeHelpers), 'slice')
+            m as IMethod = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice')
             mie = CodeBuilder.CreateMethodInvocation(m, node.Target, slice.Begin)
             if not IsNullOrOmitted(slice.End):
                 mie.Arguments.Add(slice.End)

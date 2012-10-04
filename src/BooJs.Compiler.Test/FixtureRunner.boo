@@ -9,6 +9,7 @@ import BooJs.Compiler
 import Jurassic(ScriptEngine, JavaScriptException, CompatibilityMode)
 import Jurassic.Library(ObjectInstance, JSFunctionAttribute)
 
+
 class ConsoleMock(ObjectInstance):
     _output = []
 

@@ -86,8 +86,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Visit local
 
     def OnMethod(m as Method):
-
-        # Types are already resolved so we can just check if it was flagged as a generator 
+        # Types are already resolved so we can just check if it was flagged as a generator
         entity as TypeSystem.Internal.InternalMethod = m.Entity
         if entity.IsGenerator:
             print 'Generator'
@@ -480,7 +479,8 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             if target.Name == 'global':
                 Write node.Name
                 return
-            elif target.Name == 'BooJs.Lang.BuiltinsModule':
+            # TODO: Use proper detection via types
+            elif target.Name == 'BooJs.Lang.Builtins':
                 Write 'Boo.' + node.Name
                 return
             # Check if it's a class. If so skip it by now

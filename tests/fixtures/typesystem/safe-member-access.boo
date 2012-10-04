@@ -7,7 +7,6 @@ nullified
 nullified
 nullified
 """
-
 def ret(v):
 	return v
 def retret():

@@ -47,14 +47,14 @@ def newBooJsCompilerParameters():
     params = CompilerParameters(JsReflectionTypeSystemProvider.SharedTypeSystemProvider)
 
     # Load language runtime assemblies
-    params.References.Add(params.LoadAssembly('BooJs.Macros'))
     params.References.Add(params.LoadAssembly('BooJs.Lang'))
+    params.References.Add(params.LoadAssembly('BooJs.Macros'))
     # Load Boo.Lang.Compiler assembly (needed for Extension attribute for example)
     params.References.Add(params.LoadAssembly('Boo.Lang.Compiler'))
 
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { JsTypeSystem() }
+        TypeSystemServices: { JsTypeSystemServices() }
     }
 
     return params

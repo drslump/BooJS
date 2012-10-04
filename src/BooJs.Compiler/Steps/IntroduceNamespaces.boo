@@ -8,11 +8,9 @@ class IntroduceNamespaces(IntroduceGlobalNamespaces):
         NameResolutionService.Reset()
         NameResolutionService.GlobalNamespace = NamespaceDelegator(
             NameResolutionService.GlobalNamespace,
-            SafeGetNamespace('BooJs.Macros'),
             SafeGetNamespace('BooJs.Lang'),
-            SafeGetNamespace('Boo.Lang')
-        )
+            SafeGetNamespace('BooJs.Macros'),
+            TypeSystemServices.BuiltinsType)
 
         #SafeGetNamespace("Boo.Lang")
         #SafeGetNamespace("Boo.Lang.Extensions")
-        #TypeSystemServices.BuiltinsType

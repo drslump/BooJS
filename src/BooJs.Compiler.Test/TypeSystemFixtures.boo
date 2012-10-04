@@ -25,12 +25,20 @@ class FixtureForTypesystem:
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/int.boo')
 
   [Test]
+  def test_method_overloading():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/method-overloading.boo')
+
+  [Test]
   def test_native_types():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/native-types.boo')
 
   [Test]
   def test_numbers():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/numbers.boo')
+
+  [Test]
+  def test_range():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/range.boo')
 
   [Test]
   def test_safe_member_access():

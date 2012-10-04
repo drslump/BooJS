@@ -95,6 +95,7 @@
     <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
     <Compile Include="Steps\IntroduceNamespaces.boo" />
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
+    <Compile Include="Steps\MethodOverloading.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

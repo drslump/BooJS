@@ -32,6 +32,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Undo some of the stuff performed by ProcessMethodBodies
         InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.UndoProcessMethod())
+        # Apply modifications to support method overloading
+        InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.MethodOverloading())
         # Override some of the stuff in the gigantic ProcessMethodBodies step
         Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
 

@@ -21,6 +21,7 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
     override def EnterMethod(node as Method):
     """ Remove the injected \$locals variable
     """
+
         for local in node.Locals:
             if local.Name == '$locals':
                 node.Locals.Remove(local)

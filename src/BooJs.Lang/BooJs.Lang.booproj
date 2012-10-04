@@ -59,10 +59,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.boo" />
     <Compile Include="Builtins.boo" />
-    <Compile Include="global.boo" />
     <Compile Include="Dom2.boo" />
     <Compile Include="Dom3.boo" />
     <Compile Include="jQuery.boo" />
+    <Compile Include="Runtime\RuntimeServices.boo" />
+    <Compile Include="global.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -74,4 +75,7 @@
     </Reference>
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <ItemGroup>
+    <Folder Include="Runtime\" />
+  </ItemGroup>
 </Project>

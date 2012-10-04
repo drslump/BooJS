@@ -4,9 +4,13 @@ import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 
+import Boo.Lang.Environments
+
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally
 """
+    override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
+        super(context)
 
     override def LeaveUnaryExpression(node as UnaryExpression):
         # Increment/Decrement operators are resolved using a fairly complex eval. Since
@@ -36,6 +40,9 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         super(node, func)
 
     override def LeaveDeclarationStatement(node as DeclarationStatement):
+        # If the declaration has been annotated as global via the `global` macro
+        # we must avoid generating a declaration for it, either removing it
+        # or just setting a value to it if the used supplied an initializer
         decl = node.Declaration
         if decl.ContainsAnnotation('global'):
             if not decl.Type:

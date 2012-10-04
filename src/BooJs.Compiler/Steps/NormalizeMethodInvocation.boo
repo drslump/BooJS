@@ -27,7 +27,7 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                 method as MethodInvocationExpression = arg
                 if '__addressof__' == method.Target.Name:
                     arg = method.Arguments[0]
-                    Write "/*CLOSURE: $arg*/"
+                    Write "/ *CLOSURE: $arg* /"
         */
 
     private def NormalizeTarget(node as MethodInvocationExpression, target as MemberReferenceExpression):
@@ -53,7 +53,8 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                 target.Target = [| Boo.Lang |]
 
         # Process BooJs builtins (BooJs.Lang.BuiltinsModule.xxx -> Boo.xxx)
-        elif target.Target.ToString() == 'BooJs.Lang.BuiltinsModule':
+        # TODO: Use proper detection via types
+        elif target.Target.ToString() == 'BooJs.Lang.Builtins':
             target.Target = [| Boo |]
 
         # Convert: closure.Invoke() -> closure()

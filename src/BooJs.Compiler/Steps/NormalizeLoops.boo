@@ -341,7 +341,8 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             return null
 
         m = node.Iterator as MethodInvocationExpression
-        if m.Target.ToString() != 'Boojs.Lang.BuiltinsModule.range':
+        # TODO: Use proper detection via types
+        if m.Target.ToString() != 'BooJs.Lang.Builtins.range':
             return null
         if len(m.Arguments) != 1:
             return null
