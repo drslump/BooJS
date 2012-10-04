@@ -91,8 +91,8 @@
     <Compile Include="Steps\IntroduceNamespaces.boo" />
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
     <Compile Include="Steps\MethodOverloading.boo" />
-    <Compile Include="TypeSystem\ReflectionTypeSystemProvider.boo" />
-    <Compile Include="TypeSystem\TypeSystemServices.boo" />
+    <Compile Include="TypeSystem\ReflectionProvider.boo" />
+    <Compile Include="TypeSystem\Services.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

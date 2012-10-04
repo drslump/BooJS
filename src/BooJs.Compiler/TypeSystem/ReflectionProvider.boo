@@ -6,12 +6,12 @@ import Boo.Lang.Compiler.TypeSystem.Reflection.ReflectionTypeSystemProvider as B
 
 import BooJs.Lang
 
-class ReflectionTypeSystemProvider(BooProvider):
+class ReflectionProvider(BooProvider):
 """ Configures the primitive types """
 
     internal class JsRefType(ExternalType):
     """ Type wrapper for reference types """
-         def constructor(provider as ReflectionTypeSystemProvider, type as System.Type):
+         def constructor(provider as ReflectionProvider, type as System.Type):
             super(provider, type)
 
          override def IsAssignableFrom(other as IType) as bool:
@@ -23,7 +23,7 @@ class ReflectionTypeSystemProvider(BooProvider):
         override IsValueType:
             get: return true
 
-        def constructor(provider as ReflectionTypeSystemProvider, type as System.Type):
+        def constructor(provider as ReflectionProvider, type as System.Type):
             super(provider, type)
 
         override def IsAssignableFrom(other as IType) as bool:
@@ -44,7 +44,7 @@ class ReflectionTypeSystemProvider(BooProvider):
 
 
 
-    public static final SharedTypeSystemProvider = ReflectionTypeSystemProvider()
+    public static final SharedTypeSystemProvider = ReflectionProvider()
 
     def constructor():
         # Define the base object type

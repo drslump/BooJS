@@ -1,6 +1,6 @@
 namespace BooJs.Lang.Runtime
 
-class RuntimeServices:
+class Services:
     # Use generics to keep type information
     static def slice[of T](list as T*, begin as int) as T:
         pass

@@ -62,7 +62,6 @@
     <Compile Include="Dom2.boo" />
     <Compile Include="Dom3.boo" />
     <Compile Include="jQuery.boo" />
-    <Compile Include="Runtime\RuntimeServices.boo" />
     <Compile Include="Globals\Array.boo" />
     <Compile Include="Globals\Number.boo" />
     <Compile Include="Globals\String.boo" />
@@ -75,6 +74,7 @@
     <Compile Include="Macros\AssertMacro.boo" />
     <Compile Include="Macros\PrintMacro.boo" />
     <Compile Include="Macros\GlobalMacro.boo" />
+    <Compile Include="Runtime\Services.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -6,7 +6,7 @@ import Boo.Lang.Compiler.TypeSystem.TypeSystemServices as BooServices
 import BooJs.Lang
 
 
-class TypeSystemServices(BooServices):
+class Services(BooServices):
 
     override static ErrorEntity = Globals.Error
 
@@ -25,7 +25,7 @@ class TypeSystemServices(BooServices):
         ICallableType = Map(Globals.Function)
         DuckType = Map(Builtins.Duck)
 
-        RuntimeServicesType = Map(Runtime.RuntimeServices)
+        RuntimeServicesType = Map(Runtime.Services)
         BuiltinsType = Map(Builtins)
 
 

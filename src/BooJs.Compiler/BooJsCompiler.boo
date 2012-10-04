@@ -7,7 +7,7 @@ import Boo.Lang.Compiler
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.Ast
 
-import BooJs.Compiler.TypeSystem
+import BooJs.Compiler.TypeSystem as BooJsTypeSystem
 
 
 class BooJsCompiler:
@@ -44,17 +44,16 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
 
 def newBooJsCompilerParameters():
     # Register our custom type system provider
-    params = CompilerParameters(ReflectionTypeSystemProvider.SharedTypeSystemProvider)
+    params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider)
 
     # Load language runtime assemblies
     params.References.Add(params.LoadAssembly('BooJs.Lang'))
-    params.References.Add(params.LoadAssembly('BooJs.Macros'))
     # Load Boo.Lang.Compiler assembly (needed for Extension attribute for example)
     params.References.Add(params.LoadAssembly('Boo.Lang.Compiler'))
 
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { TypeSystemServices() }
+        TypeSystemServices: { BooJsTypeSystem.Services() }
     }
 
     return params
