@@ -11,7 +11,6 @@
     <RootNamespace>BooJs</RootNamespace>
     <AssemblyName>boojs</AssemblyName>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -49,10 +48,6 @@
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\BooJs.Macros\BooJs.Macros.booproj">
-      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
-      <Name>BooJs.Macros</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
       <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
       <Name>BooJs.Compiler</Name>

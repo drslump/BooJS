@@ -50,10 +50,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BooJs.Macros\BooJs.Macros.booproj">
-      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
-      <Name>BooJs.Macros</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
       <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
       <Name>BooJs.Lang</Name>
@@ -87,7 +83,6 @@
     <Compile Include="Steps\ProcessTry.boo" />
     <Compile Include="SourceMap\Base64VLQ.boo" />
     <Compile Include="SourceMap\MapBuilder.boo" />
-    <Compile Include="TypeSystem\JsTypeSystem.boo" />
     <Compile Include="Steps\SafeMemberAccess.boo" />
     <Compile Include="Steps\NormalizeUnpack.boo" />
     <Compile Include="Steps\NormalizeClosures.boo" />
@@ -96,6 +91,8 @@
     <Compile Include="Steps\IntroduceNamespaces.boo" />
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
     <Compile Include="Steps\MethodOverloading.boo" />
+    <Compile Include="TypeSystem\ReflectionTypeSystemProvider.boo" />
+    <Compile Include="TypeSystem\TypeSystemServices.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

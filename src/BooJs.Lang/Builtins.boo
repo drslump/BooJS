@@ -1,8 +1,18 @@
 namespace BooJs.Lang
 
-# NOTE: We need to use the Javascript compatible types instead of the primitive ones (int, string, object, ...)
-
 class Builtins:
+
+    class Duck(Object, Boo.Lang.IQuackFu):
+        # Implements QuackFu interface
+        def QuackGet(name as string, params as (object)) as object:
+            pass
+
+        def QuackSet(name as string, params as (object), value as object) as object:
+            pass
+
+        def QuackInvoke(name as string, args as (object)) as object:
+            pass
+
 
     static Version as string
 
@@ -16,7 +26,7 @@ class Builtins:
     static def print(*list as (object)) as void:
         pass
 
-    static def cat(*list as (object)) as Array:
+    static def cat(*list as (object)) as (object):
     """ Concatenates the given enumerable arguments """
         pass
 
@@ -42,7 +52,7 @@ class Builtins:
         pass
 
     # TODO: Do we need this?
-    static def prompt(msg as String):
+    static def prompt(msg as string):
         pass
 
 
@@ -55,15 +65,15 @@ class Builtins:
     #def array(type as System.Type, num as int):
     #    pass
 
-    static def array(type as System.Type, enumerable as (object)) as Array:
+    static def array(type as System.Type, enumerable as (object)) as (object): #Array:
         pass
-    static def array(type as System.Type, num as int) as Array:
+    static def array(type as System.Type, num as int) as (object): #Array
         pass
-    static def array(enumerable as (object)) as Array:
+    static def array(enumerable as (object)) as (object): #Array:
         pass
 
 
     # Allows to iterate accesing indices/keys
-    static def enumerate(enumerable as (object)) as Array:
+    static def enumerate(enumerable as (object)) as (object): #Array:
         pass
 

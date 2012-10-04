@@ -1,5 +1,5 @@
 """
-0 1 2x
+0 1 2
 """
 
 def bar(x as int) as (int):

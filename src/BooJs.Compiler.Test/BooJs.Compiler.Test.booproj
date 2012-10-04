@@ -78,9 +78,5 @@
       <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
       <Name>BooJs.Lang</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BooJs.Macros\BooJs.Macros.booproj">
-      <Project>{4FEAC342-EC91-4CAF-BF65-44D7B839FA1C}</Project>
-      <Name>BooJs.Macros</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -63,7 +63,18 @@
     <Compile Include="Dom3.boo" />
     <Compile Include="jQuery.boo" />
     <Compile Include="Runtime\RuntimeServices.boo" />
-    <Compile Include="global.boo" />
+    <Compile Include="Globals\Array.boo" />
+    <Compile Include="Globals\Number.boo" />
+    <Compile Include="Globals\String.boo" />
+    <Compile Include="Globals\Object.boo" />
+    <Compile Include="Globals\Error.boo" />
+    <Compile Include="Globals\RegExp.boo" />
+    <Compile Include="Globals\Function.boo" />
+    <Compile Include="Globals\Math.boo" />
+    <Compile Include="Globals\functions.boo" />
+    <Compile Include="Macros\AssertMacro.boo" />
+    <Compile Include="Macros\PrintMacro.boo" />
+    <Compile Include="Macros\GlobalMacro.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,5 +88,7 @@
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Runtime\" />
+    <Folder Include="Globals\" />
+    <Folder Include="Macros\" />
   </ItemGroup>
 </Project>

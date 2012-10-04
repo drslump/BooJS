@@ -44,7 +44,7 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
 
 def newBooJsCompilerParameters():
     # Register our custom type system provider
-    params = CompilerParameters(JsReflectionTypeSystemProvider.SharedTypeSystemProvider)
+    params = CompilerParameters(ReflectionTypeSystemProvider.SharedTypeSystemProvider)
 
     # Load language runtime assemblies
     params.References.Add(params.LoadAssembly('BooJs.Lang'))
@@ -54,7 +54,7 @@ def newBooJsCompilerParameters():
 
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { JsTypeSystemServices() }
+        TypeSystemServices: { TypeSystemServices() }
     }
 
     return params
