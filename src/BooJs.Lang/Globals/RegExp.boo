@@ -3,6 +3,11 @@ namespace BooJs.Lang.Globals
 
 class RegExp(Object):
 
+    internal class ExecResult(Array):
+        public index as int
+        public input as string
+
+
     public global as bool
     public ignoreCase as bool
     public lastIndex as bool
@@ -15,11 +20,10 @@ class RegExp(Object):
     def constructor(pattern as string):
         pass
 
-    def exec(str as string) as Array:
+    def exec(str as string) as ExecResult:
         pass
 
     def test(str as string) as bool:
         pass
-
 
 

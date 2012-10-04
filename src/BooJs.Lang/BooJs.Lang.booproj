@@ -75,6 +75,9 @@
     <Compile Include="Macros\PrintMacro.boo" />
     <Compile Include="Macros\GlobalMacro.boo" />
     <Compile Include="Runtime\Services.boo" />
+    <Compile Include="Globals\Boolean.boo" />
+    <Compile Include="Globals\Date.boo" />
+    <Compile Include="Globals\JSON.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

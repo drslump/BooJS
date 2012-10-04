@@ -17,6 +17,11 @@ class Array(Object):
     static def op_Multiply(lhs as Array, rhs as int) as Array:
         pass
 
+
+    # TODO: Ecma 5th?
+    static def isArray(arg as object) as bool:
+        pass
+
     #self[index as int] as object:
     #    get: pass
     #    set: pass

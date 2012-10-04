@@ -56,6 +56,11 @@ class ReflectionProvider(BooProvider):
 
         # Strings are actually mutable
         MapTo(Globals.String, JsRefType(self, Globals.String))
+        MapTo(System.String, JsRefType(self, Globals.String))
+
+        # Booleans are value types
+        MapTo(Globals.Boolean, JsValueType(self, Globals.Boolean))
+        MapTo(System.Boolean, JsValueType(self, Globals.Boolean))
 
         # Define numbers as value types
         type as object = JsValueType(self, Globals.NumberInt)

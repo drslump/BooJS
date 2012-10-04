@@ -68,16 +68,3 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
         super(node)
 
-    override def LeaveSlicingExpression(node as SlicingExpression):
-        # Slicing over lists gets transformed to a method call
-        print 'SLICING A:', node, node.NodeType
-
-        super(node)
-
-        #if node.Target isa MemberReferenceExpression:
-        #    target = node.Target as MemberReferenceExpression
-        #    if target.Name == 'Item':
-        #        node.Target = target.Target
-
-        print 'SLICING B:', node, node.NodeType
-

@@ -90,10 +90,12 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
         # Some methods are defined as simple ReferenceExpressions instead of MemberReferenceExpression chains
         # Conversion: Boo.Lang.Runtime.RuntimeServices.xxx -> Boo.xxx
         elif target.Name =~ /^Boo\.Lang\.Runtime\.RuntimeServices\./:
-            target.Name = 'Boo.Lang.' + target.Name[len('Boo.Lang.Runtime.RuntimeServices.'):]
+            #target.Name = 'Boo.Lang.' + target.Name[len('Boo.Lang.Runtime.RuntimeServices.'):]
+            pass
 
         elif target.Name =~ /^BooJs\.Lang\./:
-            target.Name = 'Boo.Lang.' + target.Name[len('BooJs.Lang.'):]
+            #target.Name = 'Boo.Lang.' + target.Name[len('BooJs.Lang.'):]
+            pass
 
         else:
             # Some primitive types are not expanded so we need to check if we are handling a primitive

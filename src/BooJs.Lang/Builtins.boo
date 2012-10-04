@@ -14,7 +14,8 @@ class Builtins:
             pass
 
 
-    static Version as string
+    static public BOO_RUNTIME_VERSION = '0.0.1'
+    static public BOO_COMPILER_VERSION = 'Boo 0.9.5.5'
 
     static def range(stop as int) as (int):
         pass
