@@ -1,5 +1,8 @@
 namespace BooJs.Lang
 
+import BooJs.Lang.Globals
+
+
 class Builtins:
 
     class Duck(Object, Boo.Lang.IQuackFu):
@@ -35,6 +38,10 @@ class Builtins:
         pass
     static def join(items as (object)) as string:
         pass
+    static def join(items as Array, separator as string) as string:
+        pass
+    static def join(items as Array) as string:
+        pass
 
     static def map(items as (object), callback as callable) as (object):
         pass
@@ -50,10 +57,6 @@ class Builtins:
     static def reversed(items as (object)) as (object):
         pass
     static def reversed(items as string) as (object):
-        pass
-
-    # TODO: Do we need this?
-    static def prompt(msg as string):
         pass
 
 

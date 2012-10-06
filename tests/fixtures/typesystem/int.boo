@@ -1,5 +1,6 @@
 """
 arithmetic 12 8 20 5 0
+division 3
 unary -10 9 10 10 9
 exponent 100
 bitwise 2 8 -11 2 10 8
@@ -10,6 +11,7 @@ b = 2  # type inference
 
 # Arithmetic
 print 'arithmetic', a + b, a - b, a * b, a / b, a % b
+print 'division', a / 3
 
 # Unary
 print 'unary', -a, --a, ++a, a--, a++
@@ -38,5 +40,5 @@ assert a + ':foo' == '10:foo'
 print 'toString', a.toString()
 
 # Expression blocks
-assert {x| x*x }(a) == 100
+assert {x as int| x*x }(a) == 100
 assert {a*a}() - b == 98

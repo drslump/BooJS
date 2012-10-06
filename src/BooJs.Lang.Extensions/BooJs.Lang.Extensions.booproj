@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BooJs.Lang.Extensions</RootNamespace>
+    <AssemblyName>BooJs.Lang.Extensions</AssemblyName>
+    <BooBinPath>..\..\lib</BooBinPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants />
+    <ErrorReport>prompt</ErrorReport>
+    <culture />
+    <nostdlib>false</nostdlib>
+    <ConsolePause>false</ConsolePause>
+    <genwarnings>false</genwarnings>
+    <ducky>false</ducky>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <OutputPath>bin\Release</OutputPath>
+    <DefineConstants />
+    <ErrorReport>prompt</ErrorReport>
+    <culture />
+    <nostdlib>false</nostdlib>
+    <ConsolePause>false</ConsolePause>
+    <genwarnings>false</genwarnings>
+    <ducky>false</ducky>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Boo.Lang">
+      <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="JsRewrite.boo" />
+    <Compile Include="JsAlias.boo" />
+  </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+</Project>

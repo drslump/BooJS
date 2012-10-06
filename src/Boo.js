@@ -190,6 +190,82 @@ Boo.array = function (type, enumerable) {
     return result;
 };
 
+// Runtime support for slicing
+Boo.slice = function (value, begin, end, step) {
+    begin = begin || 0;
+    if (begin < 0) begin = value.length + begin;
+
+    // Index access
+    if (arguments.length === 2) {
+        return value.slice(begin, begin + 1)[0];
+    }
+
+    end = end || value.length;
+    if (end < 0) end = value.length + end;
+    step = step || (begin <= end ? 1 : -1);
+    if (begin < end && step === 1) {
+        return value.slice(begin, end);
+    }
+
+    var result = [];
+    if ((begin < end && step > 0) || (begin > end && step < 0)) {
+        for (var i = begin; (begin <= end && i < end) || (begin > end && i > end); i += step) {
+            result.push(value[i]);
+        }
+    }
+    return (typeof value === 'string') ? result.join('') : result;
+};
+
+// Runtime support for String type
+Boo.String = {
+    op_Modulus: function (lhs, rhs) {
+        return Boo.Lang.formatter(lhs, rhs);
+    },
+    op_Multiply: function (lhs, rhs) {
+        var result = new Array(rhs);
+        while (rhs--) result[rhs] = lhs;
+        return result.join('');
+    }
+};
+
+// Runtime support for Array type
+Boo.Array = {
+    // Checks for equality between two arrays, comparing nested arrays but not objects
+    op_Equality: function (lhs, rhs) {
+        if (lhs.length !== rhs.length) return false;
+        for (var i = 0; i < lhs.length; i++) {
+            if (lhs[i] === rhs[i]) continue;
+
+            // Check nested arrays
+            if (typeof lhs[i] === 'object' && typeof rhs[i] === 'object' && lhs[i].length === +lhs[1].length) {
+                if (Boo.Array.op_Equality(lhs[i], rhs[i])) continue;
+            }
+
+            return false;
+        }
+        return true;
+    },
+    // Checks if an item exists inside an array
+    op_Member: function (itm, lst) {
+        return lst.indexOf(itm) !== -1;
+    },
+    // Checks if an item does not exists inside an array
+    op_NotMember: function (itm, lst) {
+        return lst.indexOf(itm) === -1;
+    },
+    // Perform addition between two arrays
+    op_Addition: function (lhs, rhs) {
+        return lhs.concat(rhs);
+    },
+    // Perform multiply on an array
+    op_Multiply: function (lhs, rhs) {
+        var result = [];
+        for (var i = 0; i < rhs; i++) {
+            result = result.concat(lhs);
+        }
+        return result;
+    }
+};
 
 // Runtime support library
 Boo.Lang = {
@@ -229,31 +305,6 @@ Boo.Lang = {
         throw new Error('Unable to cast to enumerable the value "' + value + '"');
     },
 
-    // Support for slicing
-    slice: function (value, begin, end, step) {
-        begin = begin || 0;
-        if (begin < 0) begin = value.length + begin;
-
-        // Index access
-        if (arguments.length === 2) {
-            return value.slice(begin, begin + 1)[0];
-        }
-
-        end = end || value.length;
-        if (end < 0) end = value.length + end;
-        step = step || (begin <= end ? 1 : -1);
-        if (begin < end && step === 1) {
-            return value.slice(begin, end);
-        }
-
-        var result = [];
-        if ((begin < end && step > 0) || (begin > end && step < 0)) {
-            for (var i = begin; (begin <= end && i < end) || (begin > end && i > end); i += step) {
-                result.push(value[i]);
-            }
-        }
-        return (typeof value === 'string') ? result.join('') : result;
-    },
 
     // Compares two values for equality
     op_Equality: function (lhs, rhs) {
@@ -358,61 +409,6 @@ Boo.Lang = {
                 throw new Error('Division operator not supported on strings');
 
             return lhs - rhs;
-        }
-    },
-
-    // String type support functions
-    String: {
-        op_Modulus: function (lhs, rhs) {
-            return Boo.Lang.formatter(lhs, rhs);
-        },
-        // TODO: This method shouldn't be needed
-        op_Addition: function (lhs, rhs) {
-            return lhs + rhs;
-        },
-        op_Multiply: function (lhs, rhs) {
-            var result = '';
-            while (rhs--) result += lhs;
-            return result;
-        }
-    },
-
-    // Array type support functions
-    Array: {
-        // Checks for equality between two arrays, comparing nested arrays but not objects
-        op_Equality: function (lhs, rhs) {
-            if (lhs.length !== rhs.length) return false;
-            for (var i = 0; i < lhs.length; i++) {
-                if (lhs[i] === rhs[i]) continue;
-
-                // Check nested arrays
-                if (typeof lhs[i] === 'object' && typeof rhs[i] === 'object' && lhs[i].length === +lhs[1].length) {
-                    if (Boo.Lang.Array.op_Equality(lhs[i], rhs[i])) continue;
-                }
-
-                return false;
-            }
-            return true;
-        },
-        // Checks if an item exists inside an array
-        op_Member: function (itm, lst) {
-            return lst.indexOf(itm) !== -1;
-        },
-        // Checks if an item does not exists inside an array
-        op_NotMember: function (itm, lst) {
-            return lst.indexOf(itm) === -1;
-        },
-        // Perform addition between two arrays
-        op_Addition: function (lhs, rhs) {
-            return lhs.concat(rhs);
-        },
-        // Perform multiply on an array
-        op_Multiply: function (lhs, rhs) {
-            var result = [];
-            for (var i = 0; i < rhs; i++) {
-                result = result.concat(lhs);
-            }
-            return result;
         }
     }
 };

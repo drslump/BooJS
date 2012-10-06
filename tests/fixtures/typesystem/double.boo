@@ -5,7 +5,8 @@ exponent 357.250830999733
 toString 10.5
 toFixed 10
 """
-a as int = 10.5
+
+a as double = 10.5
 b = 2.5  # type inference
 
 # Arithmetic
@@ -39,5 +40,5 @@ print 'toString', a.toString()
 print 'toFixed', a.toFixed(0)
 
 # Expression blocks
-assert {x| x*x}(a) == 110.25
+assert {x as double| x*x}(a) == 110.25
 assert {a*a}() - b == 107.75

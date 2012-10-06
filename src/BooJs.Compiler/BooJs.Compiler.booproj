@@ -48,11 +48,18 @@
     <Reference Include="Boo.Lang.Compiler">
       <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.PatternMatching">
+      <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
       <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
       <Name>BooJs.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Lang.Extensions\BooJs.Lang.Extensions.booproj">
+      <Project>{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}</Project>
+      <Name>BooJs.Lang.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

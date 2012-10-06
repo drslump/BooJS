@@ -2,11 +2,11 @@ namespace BooJs.Lang.Globals
 
 class Number(Object):
 
-    static public NaN as double
-    static public MAX_VALUE as double
-    static public MIN_VALUE as double
-    static public NEGATIVE_INFINITY as double
-    static public POSITIVE_INFINITY as double
+    static final NaN as double
+    static final MAX_VALUE as double
+    static final MIN_VALUE as double
+    static final NEGATIVE_INFINITY as double
+    static final POSITIVE_INFINITY as double
 
 
     def constructor():
@@ -33,7 +33,7 @@ class Number(Object):
 class NumberInt(Number):
     pass
 
-class NumberUInt(Number):
+class NumberUInt(NumberInt):
     pass
 
 class NumberDouble(Number):

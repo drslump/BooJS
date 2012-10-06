@@ -101,7 +101,7 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
             # Some primitive types are not expanded so we need to check if we are handling a primitive
             # type to replace it with the actual type defined ( string -> BooJs.Lang.String )
             parts = target.Name.Split(char('.'))
-            if TypeSystemServices.IsPrimitive(parts[0]):
+            if false and TypeSystemServices.IsPrimitive(parts[0]):
                 type = TypeSystemServices.ResolvePrimitive(parts[0])
                 if type isa TypeSystem.Reflection.ExternalType:
                     parts[0] = (type as TypeSystem.Reflection.ExternalType).ActualType.FullName

@@ -2,26 +2,6 @@ namespace BooJs.Lang.Globals
 
 class Array(Object):
 
-    static def op_Member(item as object, arr as Array) as bool:
-        return arr.indexOf(item) != -1
-
-    static def op_NotMember(item as object, arr as Array) as bool:
-        return arr.indexOf(item) == -1
-
-    static def op_Equality(x as Array, y as Array) as bool:
-        pass
-
-    static def op_Addition(lhs as Array, rhs as Array) as Array:
-        pass
-
-    static def op_Multiply(lhs as Array, rhs as int) as Array:
-        pass
-
-
-    # TODO: Ecma 5th?
-    static def isArray(arg as object) as bool:
-        pass
-
     #self[index as int] as object:
     #    get: pass
     #    set: pass
@@ -132,6 +112,13 @@ class Array(Object):
         pass
     def reduceRight(callback as callable) as object:
         pass
+
+
+    # Ecma 5th edition
+
+    static def isArray(arg as object) as bool:
+        pass
+
 
 
 

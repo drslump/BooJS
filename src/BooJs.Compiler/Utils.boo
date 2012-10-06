@@ -10,3 +10,6 @@ def booJsCompile(unit as CompileUnit):
 def log(message as string):
     using f = System.IO.File.AppendText("/tmp/boojs.txt"):
         f.WriteLine(message)
+
+
+

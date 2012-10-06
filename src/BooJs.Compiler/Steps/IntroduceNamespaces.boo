@@ -11,5 +11,6 @@ class IntroduceNamespaces(IntroduceGlobalNamespaces):
             NameResolutionService.GlobalNamespace,
             SafeGetNamespace('BooJs.Lang.Globals'),
             SafeGetNamespace('BooJs.Lang.Macros'),
+            SafeGetNamespace('BooJs.Lang'),  # TODO: Do we actually need this ?
             TypeSystemServices.BuiltinsType
         )

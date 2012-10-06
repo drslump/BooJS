@@ -36,22 +36,41 @@
     <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="Jurassic">
       <HintPath>lib\Jurassic.dll</HintPath>
-    </Reference>
-    <Reference Include="Boo.Lang.Parser">
-      <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
     </Reference>
     <Reference Include="Boo.Lang">
       <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.Parser">
+      <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang.Compiler">
       <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Extensions">
+      <HintPath>..\..\lib\Boo.Lang.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.PatternMatching">
+      <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
+      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
+      <Name>BooJs.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
+      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
+      <Name>BooJs.Lang</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Lang.Extensions\BooJs.Lang.Extensions.booproj">
+      <Project>{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}</Project>
+      <Name>BooJs.Lang.Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixtureRunner.boo" />
@@ -69,14 +88,4 @@
     <Compile Include="ExamplesFixtures.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
-      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
-      <Name>BooJs.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
-      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
-      <Name>BooJs.Lang</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

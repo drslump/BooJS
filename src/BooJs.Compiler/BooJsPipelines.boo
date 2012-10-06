@@ -3,6 +3,11 @@ namespace BooJs.Compiler.Pipelines
 import Boo.Lang.Compiler.Steps
 import BooJs.Compiler.Steps as Steps
 
+import Boo.Lang.Compiler.Services
+import Boo.Lang.Environments
+
+
+
 class Compile(Boo.Lang.Compiler.Pipelines.Compile):
     def constructor():
         Insert(0, Steps.InitializeEntityNameMatcher())
@@ -88,3 +93,4 @@ class ProduceBooJs(Compile):
         #Add(PrintAst())
         #Add(PrintBoo())
         Add(Steps.PrintBooJs())
+

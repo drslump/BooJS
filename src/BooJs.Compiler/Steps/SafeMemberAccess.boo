@@ -4,6 +4,7 @@ import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.IO
+import Boo.Lang.PatternMatching
 
 
 class SafeMemberAccess(AbstractTransformerCompilerStep):
@@ -95,6 +96,21 @@ The algorithm for the code generation is roughly this:
         last as duck
         target = expr
         while target:
+            /*
+            match target:
+                case ReferenceExpression():
+                    prev = (target as MemberReferenceExpression).Target
+                    last.Target = prev
+
+                    repl = ApplyTernary(prev)
+                    return [| ($expr if $repl is not null else null) |].withLexicalInfoFrom(expr)
+                case MemberReferenceExpression() | MethodInvocationExpression() | SlicingExpression():
+                    last = target
+                    target = (target as duck).Target
+                otherwise:
+                    target = null
+            */
+
             if target isa ReferenceExpression:
                 refexp = target as ReferenceExpression
                 if refexp and refexp.Name == UNICODE_CHAR.ToString():

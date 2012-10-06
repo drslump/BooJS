@@ -9,6 +9,32 @@ import Boo.Lang.Environments
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally
 """
+
+    class Pmb(IQuackFu):
+    """ Uses reflection to call private methods in the ancestor class ProcessMethodBodies via a
+        IQuackFu api.
+    """
+        pmb = typeof(ProcessMethodBodies)
+        instance as ProcessMethodBodies
+        def constructor(instance):
+            self.instance = instance
+
+        def QuackGet(prop as string, args as (object)):
+            pass
+        def QuackSet(prop as string, args as (object), val as object):
+            pass
+        def QuackInvoke(method as string, params as (object)) as object:
+            types = array(System.Type, param.GetType() for param in params)
+            mi = pmb.GetMethod(method, BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance,
+                               null, types, null)
+            if not mi:
+                raise 'Private method {0} not found' % method
+            return mi.Invoke(instance, params)
+
+    # Obtain an instance to call ProcessMethodBodies private methods
+    pmb = Pmb(self)
+
+
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
 
@@ -67,4 +93,25 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
             return
 
         super(node)
+
+    override protected def BindBinaryExpression(node as BinaryExpression):
+        # Boo would directly allow all arithmetic on number types. We have to
+        # specifically process those that are not valid in javascript
+
+        ltype = GetExpressionType(node.Left)
+        rtype = GetExpressionType(node.Right)
+
+        if node.Operator == BinaryOperatorType.Exponentiation:
+            #pmb.BindNullableOperation(node)
+            if not pmb.ResolveOperator(node):
+                pmb.InvalidOperatorForTypes(node)
+        elif node.Operator == BinaryOperatorType.Division and \
+             TypeSystemServices.IsIntegerNumber(ltype) and \
+             TypeSystemServices.IsIntegerNumber(rtype):
+
+             #pmb.BindNullableOperator(node)
+             if not pmb.ResolveOperator(node):
+                pmb.InvalidOperatorForTypes(node)
+        else:
+            super(node)
 

@@ -1,12 +1,10 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler(CompilerErrorFactory)
+import Boo.Lang.Compiler(CompilerErrorFactory, CompilerContext)
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
 import Boo.Lang.Compiler.TypeSystem(IType, IMethod)
-#import Boo.Lang.Compiler.TypeSystem.Internal
 import Boo.Lang.Compiler.TypeSystem.Services(TypeCompatibilityRules)
-#import Boo.Lang.Environments
 
 # MonoDevelop perfoms the compilation using its own Boo assemblies which do not contain this class
 # We have to replicate the whole class here to allow compilation from the IDE and from msbuild
@@ -26,8 +24,21 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
     def OnConstructor(node as Constructor):
         _currentMethod = node
         super(node)
-        
-    
+
+
+    _slice1 as IMethod
+    _slice2 as IMethod
+    _slice3 as IMethod
+
+    def Initialize(context as CompilerContext):
+        super(context)
+
+        # Resolve the slice methods and cache them
+        _slice1 = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice1')
+        _slice2 = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice2')
+        _slice3 = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice3')
+
+
     # Implement Boo 0.9.6's AstNodePredicates
     def IsComplexSlicing(node as SlicingExpression) as bool:
         return node.Indices.Contains({idx| IsComplexSlice(idx)})
@@ -86,12 +97,17 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
                 slice.Begin = [| $(node.Target).length - $val |]
                 return
 
-            m as IMethod = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice')
-            mie = CodeBuilder.CreateMethodInvocation(m, node.Target, slice.Begin)
-            if not IsNullOrOmitted(slice.End):
-                mie.Arguments.Add(slice.End)
-            if not IsNullOrOmitted(slice.Step):
+            # Find the slice method in runtime services and create an invocation to it
+            if IsNullOrOmitted(slice.End) and IsNullOrOmitted(slice.Step):
+                mie = CodeBuilder.CreateMethodInvocation(_slice1, node.Target, slice.Begin)
+            elif IsNullOrOmitted(slice.Step):
+                mie = CodeBuilder.CreateMethodInvocation(_slice2, node.Target, slice.Begin, slice.End)
+            else:
+                mie = CodeBuilder.CreateMethodInvocation(_slice3, node.Target, slice.Begin, slice.End)
                 mie.Arguments.Add(slice.Step)
+
+            # TODO: This should be already done by CreateMethodInvocation
+            mie.LexicalInfo = node.LexicalInfo
 
             node.ParentNode.Replace(node, mie)
         else:

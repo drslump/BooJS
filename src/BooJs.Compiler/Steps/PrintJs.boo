@@ -1,8 +1,9 @@
 namespace BooJs.Compiler.Steps
 
+import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler
+import Boo.Lang.PatternMatching
 
 import BooJs.Compiler.SourceMap
 
@@ -190,9 +191,21 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write "var $(node.Name);"
         WriteLine
 
+    protected def GetAttribute[of T(System.Attribute)](node as Node) as T:
+        entity = node.Entity as TypeSystem.IExternalEntity
+        return (GetAttribute[of T](entity) if entity else null as T)
+
+    protected def GetAttribute[of T(System.Attribute)](entity as TypeSystem.IExternalEntity) as T:
+        return System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(T))
+
     def OnReferenceExpression(node as ReferenceExpression):
         # TODO: Check name for invalid chars?
-        Map node
+        attr = GetAttribute[of BooJs.Lang.Extensions.JsAliasAttribute](node)
+
+        if attr:
+            Map node
+            Write attr.Value
+            return
 
         if node.Entity isa Boo.Lang.Compiler.TypeSystem.Reflection.ExternalType:
             Write 'Boo.Types.'
@@ -314,12 +327,12 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
 
     def OnListLiteralExpression(node as ListLiteralExpression):
-    """ The List type in Boo '[,,,]' is equivalent to the JS array
+    """ The List type in Boo '[,]' is equivalent to the JS array
     """
         WriteDelimitedCommaSeparatedList('[', node.Items, ']')
 
     def OnArrayLiteralExpression(node as ArrayLiteralExpression):
-    """ Arrays in Boo '(,,,)' are immutable but we convert them to plain JS arrays anyway
+    """ Arrays in Boo '(,)' are immutable but we convert them to plain JS arrays anyway
     """
         WriteDelimitedCommaSeparatedList('[', node.Items, ']')
 
@@ -473,26 +486,24 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         # TODO: Check if the property name is a valid javascript ident and if not use ['xxx'] syntax
 
-        # If the target is the `global` object skip it
-        if node.Target.NodeType == NodeType.ReferenceExpression:
-            target = node.Target as ReferenceExpression
-            if target.Name == 'global':
-                Write node.Name
-                return
-            # TODO: Use proper detection via types
-            elif target.Name == 'BooJs.Lang.Builtins':
+
+        if node.ContainsAnnotation('JsName'):
+            print 'ANNOTATION'
+            Map node
+            Write node['JsName']
+
+        match node.Target:
+            # TODO: Is this actually used? Use proper detection via types?
+            case [| BooJs.Lang.Builtins |]:
                 Write 'Boo.' + node.Name
                 return
-            # Check if it's a class. If so skip it by now
-            # TODO: THIS DOESN'T WORK!!!
-            elif false and target.ExpressionType and target.ExpressionType.BaseType.IsClass:
-                Write node.Name
+            # Convert from `$locals.$variable` to `variable`
+            case ReferenceExpression(Name:'$locals'):
+                Write node.Name[1:]
                 return
+            otherwise:
+                pass
 
-        # Remove the $locals.$ prefix from closure variables
-        if node.Target.ToString() == '$locals':
-            Write node.Name[1:]
-            return
 
         # Check if a node is bound to the main class
         def RefsMainClass(node as Node):
@@ -540,6 +551,22 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
+
+        attr = GetAttribute[of BooJs.Lang.Extensions.JsRewriteAttribute](node.Target)
+        if attr:
+            print 'Rewriting... ', attr.Value
+            Map node
+            parts = /(\$\d+)/.Split(attr.Value)
+            for part in parts:
+                if /^\$\d+$/.IsMatch(part):
+                    idx = int.Parse(part[1:])
+                    if idx < 1 or idx > len(node.Arguments):
+                        # TODO: Use compiler error
+                        raise 'Invalid argument index {0}' % (idx,)
+                    Visit node.Arguments[idx-1]
+                else:
+                    Write part
+            return
 
         # "Eval" calls take the form:
         #
@@ -687,13 +714,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
         Write ')' if parens
 
-    def BinaryExponentiation(node as BinaryExpression):
-        Write 'Math.pow('
-        Visit node.Left
-        Write ', '
-        Visit node.Right
-        Write ')'
-
     def BinaryMatch(node as BinaryExpression):
         type = TypeSystem.TypeSystemServices.GetExpressionType(node.Right)
         if type.FullName == 'BooJs.Lang.RegExp':
@@ -710,6 +730,36 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnBinaryExpression(node as BinaryExpression):
 
+        match node:
+            case [| $a = $b |]:
+                BinaryAssign(node)
+            case [| $a =~ $b |]:
+                BinaryMatch(node)
+            case [| $a !~ $b |]:
+                Write '!'
+                BinaryMatch(node)
+            case [| $a not in $b |]:
+                Write '!('
+                Visit node.Left
+                Write ' in '
+                Visit node.Right
+                Write ')'
+            # TODO: It seems that we cannot match this expression
+            #case [| $a isa $b |]:
+            #    Visit node.Left
+            #    Write ' instanceof '
+            #    Visit node.Right
+            otherwise:
+                parens = NeedsParensAround(node)
+                Write '(' if parens
+                Visit node.Left
+                Write " "
+                Write GetBinaryOperatorText(node)
+                Write " "
+                Visit node.Right
+                Write ')' if parens
+
+        /*
         if node.Operator == BinaryOperatorType.Assign:
             BinaryAssign(node)
         elif node.Operator == BinaryOperatorType.Exponentiation:
@@ -780,18 +830,13 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
             Write " "
             Visit node.Right
             Write ')' if parens
+        */
 
     def OnSimpleTypeReference(node as SimpleTypeReference):
-        # TODO: Why is this happending?
-        if node.ToString() == 'System.Object' or node.ToString() == 'object' or node.ToString() == 'System.MulticastDelegate':
-            print 'WARNING: SimpleTypeReference = ', node
-            return
-
         if node.Name.IndexOf('BooJs.Lang.') == 0:
             Write node.Name.Substring('BooJs.Lang.'.Length)
         else:
             Write 'Boo.Types.' + node.Name
-
 
     def GetBinaryOperatorText(node as BinaryExpression):
         op = node.Operator
