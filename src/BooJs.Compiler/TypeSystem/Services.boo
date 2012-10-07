@@ -1,6 +1,6 @@
 namespace BooJs.Compiler.TypeSystem
 
-import Boo.Lang.Compiler.TypeSystem(BuiltinFunction)
+import Boo.Lang.Compiler.TypeSystem(BuiltinFunction, IType)
 import Boo.Lang.Compiler.TypeSystem.TypeSystemServices as BooServices
 
 import BooJs.Lang
@@ -22,7 +22,7 @@ class Services(BooServices):
         UIntType = Map(Globals.NumberUInt)
         DoubleType = Map(Globals.NumberDouble)
         RegExpType = Map(Globals.RegExp)
-        ICallableType = Map(Globals.Function)
+        ICallableType = Map(ICallable) #Map(Globals.Function)
         DuckType = Map(Builtins.Duck)
 
         RuntimeServicesType = Map(Runtime.Services)
@@ -48,7 +48,6 @@ class Services(BooServices):
         #AddBuiltin(BuiltinFunction.AddressOf);
         #AddBuiltin(BuiltinFunction.Eval);
         #AddBuiltin(BuiltinFunction.Switch);
-
 
 
     /*

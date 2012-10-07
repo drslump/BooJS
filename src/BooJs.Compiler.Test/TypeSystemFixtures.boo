@@ -25,6 +25,10 @@ class FixtureForTypesystem:
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/int.boo')
 
   [Test]
+  def test_jquery():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/jquery.boo')
+
+  [Test]
   def test_method_overloading():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/method-overloading.boo')
 

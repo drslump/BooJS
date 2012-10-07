@@ -1,6 +1,28 @@
 namespace BooJs.Lang.Globals
 
+import BooJs.Lang.Extensions
+
 class Array(Object):
+
+    [JsAlias('Boo.Array.op_Equality')]
+    static def op_Equality(lhs as Array, rhs as Array) as bool:
+        pass
+    [JsAlias('Boo.Array.op_Equality')]
+    static def op_Equality(lhs as object*, rhs as object*) as bool:
+        pass
+    [JsAlias('Boo.Array.op_Member')]
+    static def op_Member(lhs as Array, rhs as object) as bool:
+        pass
+    [JsRewrite('!Boo.Array.op_Member($1, $2)')]
+    static def op_NotMember(lhs as Array, rhs as object) as bool:
+        pass
+    [JsAlias('Boo.Array.op_Addition')]
+    static def op_Addition(lhs as Array, rhs as Array) as Array:
+        pass
+    [JsAlias('Boo.Array.op_Multiply')]
+    static def op_Multiply(lhs as Array, rhs as int) as Array:
+        pass
+
 
     #self[index as int] as object:
     #    get: pass

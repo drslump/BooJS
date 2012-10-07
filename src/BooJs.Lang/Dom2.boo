@@ -5,7 +5,6 @@ Ref: http://www.w3.org/TR/DOM-Level-2-Core/idl-definitions.html
 """
 namespace BooJs.Lang.Dom2
 
-
 interface Node:
     /*
     static final ELEMENT_NODE as ushort                = 1

@@ -3,6 +3,7 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem.Core
 
+
 class IntroduceNamespaces(IntroduceGlobalNamespaces):
 
     override def Run():
@@ -14,3 +15,4 @@ class IntroduceNamespaces(IntroduceGlobalNamespaces):
             SafeGetNamespace('BooJs.Lang'),  # TODO: Do we actually need this ?
             TypeSystemServices.BuiltinsType
         )
+

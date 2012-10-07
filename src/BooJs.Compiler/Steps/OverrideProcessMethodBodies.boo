@@ -3,8 +3,10 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
+import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity)
 
 import Boo.Lang.Environments
+import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally
@@ -37,6 +39,42 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
+
+    #override protected def ProcessInvocationOnUnknownCallableExpression(node as MethodInvocationExpression):
+    #    print node
+    override def OnMethodInvocationExpression(node as MethodInvocationExpression):
+
+        super(node)
+
+        # HACK: The ICallable interface declares a generic Call method with object arguments
+        #       and return type. In order to support jQuery style APIs we detect the ICallable
+        #       trying to modify it by using a better match among the methods named Call in
+        #       the declarting type.
+        target = node.Target as MemberReferenceExpression
+        if target and target.Entity == MethodCache.ICallable_Call:
+            # Find the original declaring type and fetch all its Call methods
+            type = target.Target.ExpressionType as Reflection.ExternalType
+            methods = List[of IMethod]()
+            for member in type.GetMembers():
+                if member isa ExternalMethod and member.Name == 'Call':
+                    methods.Add(member)
+
+            # Resolve the best match among the Call methods for the given params
+            args = (node.Arguments[0] as ArrayLiteralExpression).Items
+            resolved as ExternalMethod = CallableResolutionService.ResolveCallableReference(args, methods.ToArray())
+            if resolved:
+                BindExpressionType(node, resolved.ReturnType)
+                BindExpressionType(node.Target, resolved.Type)
+
+        # Detect invokes for internal callables
+        if target and target.Entity:
+            targetType = target.Entity as Internal.InternalMethod
+            if targetType:
+                invoke as IMethod = ResolveMethod(targetType.DeclaringType, 'Invoke')
+                if invoke is targetType:
+                    node.Target = target.Target
+
+        return
 
     override def LeaveUnaryExpression(node as UnaryExpression):
         # Increment/Decrement operators are resolved using a fairly complex eval. Since

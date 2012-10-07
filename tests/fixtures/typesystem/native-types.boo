@@ -1,7 +1,7 @@
 """
 0
 string null
-list null
+Array null
 regex True
 object 2
 duck foo1
@@ -16,11 +16,8 @@ print a + b + c
 d as string
 print 'string', d
 
-#e as List  # List type is not supported, only mutable arrays
-#print e
-
 # Arrays are mutable in Javascript thus it's init as null
-f as list
+f as Array
 print 'list', f
 
 r as regex = /foo/

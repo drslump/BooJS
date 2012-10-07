@@ -57,21 +57,36 @@ class jQuery(ICallable):
     selector as string:
         get: pass
 
+    def constructor():
+        pass
+    def constructor(expr_or_html as string):
+        pass
+    def constructor(expression as string, context as jQuery):
+        pass
+    def constructor(html as string, document as DOM.Document):
+        pass
+    def constructor(element as DOM.Element):
+        pass
+    def constructor(elements as (DOM.Element)):
+        pass
+    def constructor(callback as callable):
+        pass
 
     # Callable interface
     def Call(args as (object)) as object:
+        return args[0] cast jQuery
+    # callable methods for BooJs
+    def Call(expr_or_html as string) as jQuery:
         pass
-    def Call(expression as string, context as jQuery) as jQuery: 
+    def Call(expression as string, context as jQuery) as jQuery:
         pass
-    def Call(expr_or_html as string) as jQuery: 
+    def Call(html as string, document as DOM.Document) as jQuery:
         pass
-    def Call(html as string, document as DOM.Document) as jQuery: 
+    def Call(element as DOM.Element) as jQuery:
         pass
-    def Call(element as DOM.Element) as jQuery: 
+    def Call(elements as (DOM.Element)) as jQuery:
         pass
-    def Call(elements as (DOM.Element)) as jQuery: 
-        pass
-    def Call(callback as callable) as jQuery: 
+    def Call(callback as callable) as jQuery:
         pass
 
     # Core - Accessors
@@ -80,8 +95,11 @@ class jQuery(ICallable):
     def index(subject as DOM.Element) as int: 
         pass
 
-    def each(callback as callable) as jQuery: 
+    #def each(callback as callable(object)) as jQuery:
+    #    pass
+    def each(callback as callable) as jQuery:
         pass
+
 
     def size() as uint: 
         pass
@@ -264,3 +282,4 @@ class jQuery(ICallable):
         pass
 
     # .......
+

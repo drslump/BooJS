@@ -100,6 +100,7 @@
     <Compile Include="Steps\MethodOverloading.boo" />
     <Compile Include="TypeSystem\ReflectionProvider.boo" />
     <Compile Include="TypeSystem\Services.boo" />
+    <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

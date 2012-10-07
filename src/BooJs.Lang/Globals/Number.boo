@@ -1,5 +1,7 @@
 namespace BooJs.Lang.Globals
 
+import BooJs.Lang.Extensions
+
 class Number(Object):
 
     static final NaN as double
@@ -8,11 +10,6 @@ class Number(Object):
     static final NEGATIVE_INFINITY as double
     static final POSITIVE_INFINITY as double
 
-
-    def constructor():
-        pass
-    def constructor(n as double):
-        pass
 
     def toExponential(digits as int) as string:
         pass
@@ -30,11 +27,43 @@ class Number(Object):
     def toString(radix as int) as string:
         pass
 
+
 class NumberInt(Number):
-    pass
+    # Handle integer divisions
+    [JsRewrite('parseInt($1 / $2)')]
+    static def op_Division(lhs as int, rhs as int) as int:
+        pass
+    # Exponentiation
+    [JsRewrite('Math.pow($1, $2)')]
+    static def op_Exponentiation(lhs as int, rhs as int) as int:
+        pass
+
+    [JsRewrite('Boo.String.op_Multiply($2, $1)')]
+    static def op_Multiply(lhs as int, rhs as string) as string:
+        pass
+
+    def constructor():
+        pass
+
+    def constructor(n as object):
+        pass
 
 class NumberUInt(NumberInt):
-    pass
+    def constructor():
+        pass
+
+    def constructor(n as object):
+        pass
+
 
 class NumberDouble(Number):
-    pass
+    # Exponentiation
+    [JsRewrite('Math.pow($1, $2)')]
+    static def op_Exponentiation(lhs as double, rhs as double) as double:
+        pass
+
+    def constructor():
+        pass
+    # TODO: We might want to be more strict on this calling a runtime method
+    def constructor(n as object):
+        pass

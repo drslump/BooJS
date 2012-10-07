@@ -4,7 +4,9 @@
 
 /*jshint indent:4 lastsemic:false curly:false */
 
-var Boo = {};
+var Boo = {
+    BOO_RUNTIME_VERSION: '0.0.1'
+};
 
 // Used as a unique indentifier when we want to stop iterating a generator
 Boo.STOP = { retval: undefined };
@@ -19,9 +21,7 @@ Boo.Types = {
     'int': 'int',
     'uint': 'uint',
     'double': 'double',
-    'callable': 'callable',
-    // HACK: Javascript global objects
-    'Math': Math
+    'callable': 'callable'
 };
 
 // Note: We don't use the native forEach method since this is custom tailored
@@ -216,10 +216,99 @@ Boo.slice = function (value, begin, end, step) {
     return (typeof value === 'string') ? result.join('') : result;
 };
 
+
+// Casts a value to the given type, raising an error if it's not possible
+Boo.cast = function (value, type) {
+    // TODO: This is an absolute hack!!!
+    var t = type, tof = typeof(value);
+    if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
+
+    if (tof === t)
+        return value;
+    else if (tof !== 'undefined' && t === 'object')
+        return value;
+    else if ((tof === 'undefined' || value === null) && t === 'number')
+        return 0;
+    else if ((tof === 'undefined' || value === null) && t === 'string')
+        return '';
+    else
+        throw new Error('Unable to cast from ' + tof + ' to ' + type);
+};
+
+// Casts a value to the given type, resulting in a null if it's not possible
+Boo.trycast = function (value, type) {
+    try {
+        return Boo.Lang.cast(value, type);
+    } catch (e) {
+        return null;
+    }
+};
+
+// Makes sure a value is enumerable
+Boo.enumerable = function (value) {
+    if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
+        return value;
+    }
+
+    throw new Error('Unable to cast to enumerable the value "' + value + '"');
+};
+
+
+////////// Operators /////////////////////////////////////////////////
+
+// Compares two values for equality
+Boo.op_Equality = function (lhs, rhs) {
+    return lhs == rhs;
+};
+
+// Perform the modulus operation on two operands
+Boo.op_Modulus = function (lhs, rhs) {
+    // Check if we should format a string
+    if (typeof lhs === 'string' && typeof rhs === 'object') {
+        return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+            return rhs[capt];
+        });
+    } else {
+        return lhs % rhs;
+    }
+};
+
+// Perform an addition operation on two operands
+Boo.op_Addition = function (lhs, rhs) {
+    return lhs + rhs;
+};
+
+// Perform a multiply operation on two operands
+Boo.op_Multiply = function (lhs, rhs) {
+    if (typeof lhs === 'number') {
+        var _ = lhs;
+        lhs = rhs;
+        rhs = _;
+    }
+    if (typeof lhs === 'string' && typeof rhs === 'number')
+        return Boo.Lang.String.op_Multiply(lhs, rhs);
+    if (typeof lhs === 'object' && lhs.length === +lhs.length)
+        return Boo.Lang.Array.op_Multiply(rhs, lhs);
+
+    return lhs * rhs;
+};
+
+// Perform a regexp match
+Boo.op_Match = function (lhs, rhs) {
+    if (typeof rhs === 'string') rhs = new RegExp(rhs);
+    return rhs.test(lhs);
+};
+Boo.op_NotMatch = function (lhs, rhs) {
+    return !Boo.op_Match(lhs, rhs);
+};
+
+
 // Runtime support for String type
 Boo.String = {
     op_Modulus: function (lhs, rhs) {
-        return Boo.Lang.formatter(lhs, rhs);
+        return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+            return rhs[capt];
+        });
     },
     op_Multiply: function (lhs, rhs) {
         var result = new Array(rhs);
@@ -266,154 +355,3 @@ Boo.Array = {
         return result;
     }
 };
-
-// Runtime support library
-Boo.Lang = {
-    // Casts a value to the given type, raising an error if it's not possible
-    cast: function (value, type) {
-        // TODO: This is an absolute hack!!!
-        var t = type, tof = typeof(value);
-        if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
-
-        if (tof === t)
-            return value;
-        else if (tof !== 'undefined' && t === 'object')
-            return value;
-        else if ((tof === 'undefined' || value === null) && t === 'number')
-            return 0;
-        else if ((tof === 'undefined' || value === null) && t === 'string')
-            return '';
-        else
-            throw new Error('Unable to cast from ' + tof + ' to ' + type);
-    },
-
-    // Casts a value to the given type, resulting in a null if it's not possible
-    trycast: function (value, type) {
-        try {
-            return Boo.Lang.cast(value, type);
-        } catch (e) {
-            return null;
-        }
-    },
-
-    // Makes sure a value is enumerable
-    enumerable: function (value) {
-        if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
-            return value;
-        }
-
-        throw new Error('Unable to cast to enumerable the value "' + value + '"');
-    },
-
-
-    // Compares two values for equality
-    op_Equality: function (lhs, rhs) {
-        return lhs == rhs;
-    },
-
-    // Perform the modulus operation on two operands
-    op_Modulus: function (lhs, rhs) {
-        // Check if we should format a string
-        if (typeof lhs === 'string' && typeof rhs === 'object') {
-            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-                return rhs[capt];
-            });
-        } else {
-            return lhs % rhs;
-        }
-    },
-
-    // Perform an addition operation on two operands
-    op_Addition: function (lhs, rhs) {
-        return lhs + rhs;
-    },
-
-    // Perform a multiply operation on two operands
-    op_Multiply: function (lhs, rhs) {
-        if (typeof lhs === 'number') {
-            var _ = lhs;
-            lhs = rhs;
-            rhs = _;
-        }
-        if (typeof lhs === 'string' && typeof rhs === 'number')
-            return Boo.Lang.String.op_Multiply(lhs, rhs);
-        if (typeof lhs === 'object' && lhs.length === +lhs.length)
-            return Boo.Lang.Array.op_Multiply(rhs, lhs);
-
-        return lhs * rhs;
-    },
-
-    // Perform a regexp match
-    op_Match: function (lhs, rhs) {
-        if (typeof rhs === 'string') rhs = new RegExp(rhs);
-        return rhs.test(lhs);
-    },
-    op_NotMatch: function (lhs, rhs) {
-        return !Boo.Lang.op_Match(lhs, rhs);
-    },
-
-    // Formats an string based on the given params
-    // By default it replaces tokens like 'Hello {0} from {1}'
-    formatter: function (tpl, params) {
-        return tpl.replace(/\{(\d+)\}/g, function (m, capt) {
-            return params[capt];
-        });
-    },
-
-    Proto: {
-        op_Addition: function (lhs, rhs) {
-            if (lhs === null || rhs === null)
-                return null;
-            if (typeof lhs === 'object' && 'op_Addition' in lhs)
-                return lhs.op_Addition(lhs, rhs);
-            // Check if we are handling an array
-            if (typeof lhs === 'object' && lhs.length === +lhs.length)
-                return Boo.Lang.Array.op_Addition(lhs, rhs);
-            
-            return lhs + rhs;
-        },
-        op_Subtraction: function (lhs, rhs) {
-            if (lhs === null || rhs === null)
-                return null;
-            if (typeof lhs === 'object' && 'op_Subtraction' in lhs)
-                return lhs.op_Subtraction(lhs, rhs);
-            // Check for array
-            if (typeof lhs === 'object' && lhs.length === +lhs.length)
-                throw new Error('Substraction operator not supported on arrays');
-            if (typeof lhs === 'string')
-                throw new Error('Substraction operator not supported on strings');
-
-            return lhs - rhs;
-        },
-        op_Multiply: function (lhs, rhs) {
-            if (lhs === null || rhs === null)
-                return null;
-            if (typeof lhs === 'object' && 'op_Multiply' in lhs)
-                return lhs.op_Multiply(lhs, rhs);
-            if (typeof lhs === 'string')
-                return Boo.Lang.String.op_Multiply(lhs, rhs);
-            if (typeof lhs === 'object' && lhs.length === +lhs.length)
-                return Boo.Lang.Array.op_Multiply(lhs, rhs);
-
-            return lhs * rhs;
-        },
-        op_Division: function (lhs, rhs) {
-            if (lhs === null || rhs === null)
-                return null;
-            if (typeof lhs === 'object' && 'op_Division' in lhs)
-                return lhs.op_Division(lhs, rhs);
-            // Check for array
-            if (typeof lhs === 'object' && lhs.length === +lhs.length)
-                throw new Error('Division operator not supported on arrays');
-            if (typeof lhs === 'string')
-                throw new Error('Division operator not supported on strings');
-
-            return lhs - rhs;
-        }
-    }
-};
-
-// HACK: Alias the runtime helpers
-Boo.Types.RuntimeHelpers = Boo.Lang;
-
-

@@ -10,6 +10,6 @@ d as double = 0.10
 print i + u + d
 print i * u + d
 
-# Check implicit conversion from string
+# Check conversion from string
 s as string = '5'
-print u * s + d
+print u * (s cast int) + d

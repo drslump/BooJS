@@ -16,7 +16,9 @@ class ReflectionProvider(BooProvider):
 
          override def IsAssignableFrom(other as IType) as bool:
              external = other as ExternalType;
-             return false if external is null
+             return true if external is null
+             return true if external is other
+             return true if external.IsAssignableFrom(other)
              return external.ActualType != Types.Void;
 
     internal class JsValueType(ExternalType):
