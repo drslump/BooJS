@@ -2,6 +2,7 @@ TestResult.xml
 test-results
 *.userprefs
 build/
+vendors/
 *.sublime-*
 *.pidb
 src/**/bin/
