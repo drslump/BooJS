@@ -50,6 +50,8 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         #       and return type. In order to support jQuery style APIs we detect the ICallable
         #       trying to modify it by using a better match among the methods named Call in
         #       the declarting type.
+        # TODO: Perhaps it's better to keep ICallable implementation as is and use an attribute
+        #       or a custom interface to signal this behaviour.
         target = node.Target as MemberReferenceExpression
         if target and target.Entity == MethodCache.ICallable_Call:
             # Find the original declaring type and fetch all its Call methods
@@ -67,6 +69,9 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
                 BindExpressionType(node.Target, resolved.Type)
 
         # Detect invokes for internal callables
+        # TODO: We could move this to a custom step in order to allow it to be optional
+        #       In debug mode we might want to dispatch via our runtime to detect and
+        #       properly report errors.
         if target and target.Entity:
             targetType = target.Entity as Internal.InternalMethod
             if targetType:
