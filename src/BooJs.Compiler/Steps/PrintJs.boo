@@ -468,12 +468,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         if intlocal and intlocal.OriginalDeclaration and intlocal.OriginalDeclaration.ContainsAnnotation('global'):
             return
 
-        # TODO: Add proper type annotations
-        WriteIndented
-        if entity:
-            WriteAnnotation "@type {$(entity.Type)}"
-            Write ' '
-
         # Initialize value types to avoid them being 'undefined'
         if entity and entity.Type.FullName in ('int', 'uint', 'double'): #TypeSystem.TypeSystemServices.IsNumber(entity.Type):  #.FullName in ('int', 'uint', 'double'):
             Write "var $(node.Name) = 0;"
