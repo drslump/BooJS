@@ -1,2 +1,2 @@
 #!/bin/sh
-env mono --debug build/boojs.exe -verbose "$@"
+env mono --debug src/boojs/bin/Debug/boojs.exe -verbose "$@"
