@@ -54,14 +54,15 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Normalize generator expressions
         InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
 
+
         # Use a custom implementation for iterations
+        InsertBefore(NormalizeIterationStatements, Steps.NormalizeLoops())
         Remove(NormalizeIterationStatements)
         Remove(OptimizeIterationStatements)
-        Add(Steps.NormalizeLoops())
 
         # Simplify the unpack operations
         InsertAfter(NormalizeStatementModifiers, Steps.NormalizeUnpack())
-        
+
 
         # Adapt try/except statements
         Add(Steps.ProcessTry())
@@ -78,9 +79,11 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 
+        # Prepare the AST to be printed
+        Add(Steps.CleanupAst())
 
-        #for step in self:
-        #    print step
+
+        #for step in self: print step
 
 
 class ProduceBoo(Compile):

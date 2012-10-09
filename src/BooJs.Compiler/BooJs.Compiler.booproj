@@ -101,6 +101,7 @@
     <Compile Include="TypeSystem\ReflectionProvider.boo" />
     <Compile Include="TypeSystem\Services.boo" />
     <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
+    <Compile Include="Steps\CleanupAst.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

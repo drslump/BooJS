@@ -79,6 +79,7 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
                 if invoke is targetType:
                     node.Target = target.Target
 
+
         return
 
     override def LeaveUnaryExpression(node as UnaryExpression):
@@ -148,6 +149,7 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
             #pmb.BindNullableOperation(node)
             if not pmb.ResolveOperator(node):
                 pmb.InvalidOperatorForTypes(node)
+        # Handle integer division
         elif node.Operator == BinaryOperatorType.Division and \
              TypeSystemServices.IsIntegerNumber(ltype) and \
              TypeSystemServices.IsIntegerNumber(rtype):

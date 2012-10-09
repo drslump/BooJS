@@ -1,9 +1,12 @@
 namespace BooJs.Compiler.Steps
 
 import System
+import Boo.Lang.Environments
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem
+import Boo.Lang.Compiler(CompilerContext)
+import BooJs.Compiler.TypeSystem.RuntimeMethodCache as RuntimeMethodCache
 
 class NormalizeLoops(AbstractTransformerCompilerStep):
 """
@@ -16,6 +19,16 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     # If set to true uses a runtime helper to perform the iteration
     SIMPLE_LOOPS = true
+
+    [getter(MethodCache)]
+    private _methodCache as RuntimeMethodCache
+
+    private ReturnValueType as IType
+
+    def Initialize(context as CompilerContext):
+        super(context)
+        _methodCache = EnvironmentProvision[of RuntimeMethodCache]()
+        ReturnValueType = TypeSystemServices.Map(BooJs.Lang.Builtins.ReturnValue)
 
     override def Run():
         if len(Errors) > 0:
@@ -85,16 +98,6 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             ---
             Boo.each(obj, {v,k| ...}, self)
     """
-        # Visit the loop block to process nested loops
-        # TODO: This doesn't play nice with nested loops in Boo.each
-        #Visit node.Block
-
-        # TODO: When using Boo.each() we need to convert a `continue` to a `return` and a
-        #       `break` to a `return Boo.STOP`.
-
-        # TODO: In Boo.each() we need to replace return statements with raised exceptions
-        #       and wrap the execution with a try/except block:
-        #
         #   for i in lst:
         #       return i if cb(i)
         #   ----
@@ -104,28 +107,86 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         #   except Boo.STOP as e:
         #       return e.retval
 
-        # Override unpacking
-        if len(node.Declarations) >= 2:
+        # Simplified form
+        if SIMPLE_LOOPS:
+            # Handle nested loops
+            # TODO: Is this needed?
+            #Visit node.Block
+
             DesugarizeOrThenBlocks(node)
-            ProcessContinueBreak(node.Block)
+            has_return = ProcessContinueBreakReturn(node.Block)
+
+            # TODO: Unlike Boo, the loop declarations are bound to the loop scope
+            callback = BlockExpression(Body: node.Block)
+            for decl in node.Declarations:
+                param = ParameterDeclaration(decl.Name, decl.Type, LexicalInfo: decl.LexicalInfo)
+                callback.Parameters.Add(param)
+
+            # Use the runtime helper to iterate
+            each = CodeBuilder.CreateMethodReference(MethodCache.Each)
+            mie = [| $each($(node.Iterator), $callback) |]
+
+            if has_return:
+                ex = CodeBuilder.CreateReference(ReturnValueType)
+                block = [|
+                    try:
+                        $mie
+                    except __re as $ex:
+                        return __re.value
+                    except:
+                        raise
+                |]
+
+                ReplaceCurrentNode block
+            else:
+                ReplaceCurrentNode [|
+                    $mie
+                |]
+
+            return
+
+            /*
+            stmts = StatementCollection()
+
+            callback = BlockExpression(Body: node.Block)
+            for i, decl as Declaration in enumerate(node.Declarations):
+                # Variable declarations in loops are owned by the parent scope
+                stmts.Add(DeclarationStatement(Declaration:decl))
+                # Boo runtime needs to know how many declarations via Function.length
+                callback.Parameters.Add(ParameterDeclaration(Name: '$' + i))
+
+                # Assign the callable argument to the outer variable declaration
+                assign = CodeBuilder.CreateAssignment(ReferenceExpression(Name: decl.Name), ReferenceExpression(Name:'$' + i))
+                callback.Body.Statements.Insert(0, ExpressionStatement(assign))
+
+
+            mie = CodeBuilder.CreateMethodInvocation(node.LexicalInfo, MethodCache.Each, node.Iterator, callback)
+            #mie = [| Boo.each( $(node.Iterator), $callback ) |].withLexicalInfoFrom(node)
+            stmts.Add(ExpressionStatement(mie))
+
+            ReplaceCurrentNode Block(Statements: stmts)
+            return
+            */
+
+            /*
+            decl = ReferenceExpression(Name:node.Declarations[0].Name)
+            loop = [|
+                Block:
+                    Boo.each( $(node.Iterator) ) do( $decl ):
+                        $(node.Block)
+            |].Body
+            */
+
+        # Override unpacking
+        elif len(node.Declarations) >= 2:
+            DesugarizeOrThenBlocks(node)
+            ProcessContinueBreakReturn(node.Block)
 
             decl1 = ReferenceExpression(Name: node.Declarations[0].Name)
             decl2 = ReferenceExpression(Name: node.Declarations[1].Name)
             loop = [|
                 Block:
                     Boo.each( $(node.Iterator) ) do( $decl1, $decl2 ):
-                        $(node.Block)
-            |].Body
-
-        # Simplified form
-        elif SIMPLE_LOOPS:
-            DesugarizeOrThenBlocks(node)
-            ProcessContinueBreak(node.Block)
-
-            decl = ReferenceExpression(Name:node.Declarations[0].Name)
-            loop = [|
-                Block:
-                    Boo.each( $(node.Iterator) ) do( $decl ):
                         $(node.Block)
             |].Body
 
@@ -225,7 +286,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
         loop = [|
             $_ref = $iter
-            while ($decl = $_ref.next()) is not Boo.STOP:
+            while ($decl = $_ref.next()) is not STOP:
                 $block
         |]
 
@@ -288,26 +349,43 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         return ReferenceExpression(Name:name)
 
 
-    def ProcessContinueBreak(node as Block):
+    def ProcessContinueBreakReturn(node as Block) as bool:
     """ Replaces the continue keyword with a return and the break one with a return of Boo.STOP
     """
-        return if not node
+        return false if not node
+
+        has_return = false
         for st in node.Statements:
             if st.NodeType == NodeType.ContinueStatement:
                 node.Statements.Replace(st, [| return |])
             elif st.NodeType == NodeType.BreakStatement:
-                node.Statements.Replace(st, [| return Boo.STOP |])
+                boo = CodeBuilder.CreateTypedReference('Boo', TypeSystemServices.BuiltinsType)
+                node.Statements.Replace(st, [| return $boo.STOP |])
+            elif st.NodeType == NodeType.ReturnStatement:
+                ret = st as ReturnStatement
+                ex = CodeBuilder.CreateReference(ReturnValueType)
+                node.Statements.Replace(st, [| raise $ex($(ret.Expression)) |])
+                has_return = true
             elif st.NodeType == NodeType.Block:
-                ProcessContinueBreak(st)
+                if ProcessContinueBreakReturn(st):
+                    has_return = true
             elif st.NodeType == NodeType.IfStatement:
-                ProcessContinueBreak((st as IfStatement).TrueBlock)
-                ProcessContinueBreak((st as IfStatement).FalseBlock)
+                if ProcessContinueBreakReturn((st as IfStatement).TrueBlock):
+                    has_return = true
+                if ProcessContinueBreakReturn((st as IfStatement).FalseBlock):
+                    has_return = true
             elif st.NodeType == NodeType.ForStatement:
-                ProcessContinueBreak((st as ForStatement).OrBlock)
-                ProcessContinueBreak((st as ForStatement).ThenBlock)
+                if ProcessContinueBreakReturn((st as ForStatement).OrBlock):
+                    has_return = true
+                if ProcessContinueBreakReturn((st as ForStatement).ThenBlock):
+                    has_return = true
             elif st.NodeType == NodeType.WhileStatement:
-                ProcessContinueBreak((st as WhileStatement).OrBlock)
-                ProcessContinueBreak((st as WhileStatement).ThenBlock)
+                if ProcessContinueBreakReturn((st as WhileStatement).OrBlock):
+                    has_return = true
+                if ProcessContinueBreakReturn((st as WhileStatement).ThenBlock):
+                    has_return = true
+
+        return has_return
 
     def ProcessBreakForThenFlag(node as Block, flag as string):
     """ Signals the use of the break keyword by setting a flag

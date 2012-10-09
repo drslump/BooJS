@@ -10,7 +10,6 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
         ( i*2 for i in range(3) )
         ---
         { __gen = []; for i in range(3): __gen.push(i*2); return __gen }()
-
 """
     def LeaveGeneratorExpression(node as GeneratorExpression):
         # ( i*2 for i as int in range(3) )  =>  ( expression for declarations in iterator if filter )
@@ -22,21 +21,20 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
         if not node.Filter:
             loop.Block = [|
                 block:
-                    __gen.push($(node.Expression))
+                    _gen.push($(node.Expression))
             |].Body
         else:
             loop.Block = [|
                 block:
-                    __gen.push($(node.Expression)) if $(node.Filter.Condition)
+                    _gen.push($(node.Expression)) if $(node.Filter.Condition)
             |].Body
 
         # Build the body of the anonymous function
         body = [|
             block:
-                __gen as Array = []
                 $loop
-                return __gen
+                return _gen
         |].Body
 
         # Replace the generator expression with the result of executing the anonymous function
-        ReplaceCurrentNode([| { $(body) }() |])
+        ReplaceCurrentNode([| { _gen as Array | $(body) }([]) |])

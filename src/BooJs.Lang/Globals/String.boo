@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Globals
 
+import System.Collections.Generic(IEnumerable)
 import BooJs.Lang.Extensions
 
 class String(Object):
@@ -7,11 +8,11 @@ class String(Object):
     static def op_Explicit(value as String) as NumberInt:
         pass
 
-    [JsRewrite('$1 == $2')]
+    [JsTransform($0 == $1)]
     static def op_Equality(lhs as string, rhs as string) as bool:
         pass
 
-    [JsRewrite('$1 + $2')]
+    [JsTransform($0 + $1)]
     static def op_Addition(lhs as string, rhs as string) as string:
         pass
 
@@ -21,9 +22,11 @@ class String(Object):
         pass
     # Formatting: '{0} {1}' % ('foo', 'bar')
     [JsAlias('Boo.String.op_Modulus')]
-    static def op_Modulus(lhs as string, rhs as object*) as string:
+    static def op_Modulus(lhs as string, rhs as (object)) as string:
         pass
-
+    [JsAlias('Boo.String.op_Modulus')]
+    static def op_Modulus(lhs as string, rhs as Array) as string: #IEnumerable):
+        pass
 
     # Static methods
 

@@ -3,6 +3,7 @@ import NUnit.Framework
 import System.IO(StreamReader)
 
 import Boo.Lang.Compiler.IO
+import Boo.Lang.Compiler(CompilerError)
 import BooJs.Compiler
 
 # The JavaScript interpretter
@@ -53,7 +54,11 @@ class FixtureRunner:
       result = comp.Run()
       
       if len(result.Errors):
-        print result.Errors.ToString()
+        for err as Boo.Lang.Compiler.CompilerError in result.Errors:
+            li = err.LexicalInfo
+            name = System.IO.Path.GetFileName(li.FileName)
+            print "$name:$(li.Line),$(li.Column) $(err.Code): $(err.Message)"
+        print '-----------------------------------------------------'
         print result.CompileUnit.ToCodeString()
         raise result.Errors[0]
 
@@ -108,7 +113,7 @@ class FixtureRunner:
           try:
             engine.Execute(code)
             Assert.AreEqual(expected, console.output())
-          except:
+          except ex:
             print '----------------------------------------------[code]-'
             print code.Trim()
             print '--------------------------------------------[output]-'

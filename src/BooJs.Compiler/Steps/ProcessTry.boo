@@ -76,14 +76,17 @@ class ProcessTry(AbstractTransformerCompilerStep):
             # except as Exception
             elif hdl.Declaration and hdl.Declaration.Type:
                 cond.Condition = [| __e isa $(hdl.Declaration.Type) |]
+            else:
+                cond.Condition = [| true |]
+
+            # Add the statements to the condition
+            cond.TrueBlock = hdl.Block
+            block = cond.FalseBlock = Block()
 
             # except a == b
             if hdl.FilterCondition:
                 cond.Condition = [| $(cond.Condition) and $(hdl.FilterCondition) |]
 
-            # Add the statements to the condition
-            cond.TrueBlock = hdl.Block
-            block = cond.FalseBlock = Block()
 
         # If none of the conditions match include the failure block
         if node.FailureBlock:
@@ -102,3 +105,8 @@ class ProcessTry(AbstractTransformerCompilerStep):
         Visit node.ProtectedBlock
         Visit node.ExceptionHandlers
         Visit node.EnsureBlock
+
+    def OnRaiseStatement(node as RaiseStatement):
+        if not node.Exception:
+            node.Exception = [| __e |]
+

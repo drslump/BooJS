@@ -35,7 +35,12 @@ class RuntimeMethodCache(AbstractCompilerComponent): #(BooRuntimeMethodCache):
 
     RuntimeEnumerable as IMethod:
         get: return CachedMethod('enumerable', {
-            Methods.Of[of object, object, bool](RuntimeServices.Equality)
+            Methods.Of[of object, object*](RuntimeServices.Enumerable)
+        })
+
+    Each as IMethod:
+        get: return CachedMethod('each', {
+            Methods.Of[of object*, ICallable, object](RuntimeServices.Each)
         })
 
 

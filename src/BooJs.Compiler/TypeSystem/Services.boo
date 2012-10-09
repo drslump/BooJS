@@ -17,7 +17,10 @@ class Services(BooServices):
         # Setup new defaults for primitive types
         ObjectType = Map(Globals.Object)
         StringType = Map(Globals.String)
+
         ArrayType = Map(Globals.Array)
+        ListType = Map(Globals.Array)
+
         IntType = Map(Globals.NumberInt)
         UIntType = Map(Globals.NumberUInt)
         DoubleType = Map(Globals.NumberDouble)

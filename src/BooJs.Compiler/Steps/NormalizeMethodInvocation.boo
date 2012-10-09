@@ -38,8 +38,16 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                 mie = CodeBuilder.CreateMethodInvocation(MethodCache.RuntimeEquality, node.Arguments[0], node.Arguments[1])
                 ReplaceCurrentNode mie
                 return
+            # Handle enumerables
             elif target.Entity is BooMethodCache.RuntimeServices_GetEnumerable:
                 mie = CodeBuilder.CreateMethodInvocation(MethodCache.RuntimeEnumerable, node.Arguments[0])
+                ReplaceCurrentNode mie
+                return
+            # Removes ICallable `.Call`
+            elif target.Entity is BooMethodCache.ICallable_Call:
+                t_target = (target as MemberReferenceExpression).Target
+                node.Target = t_target
+                return
 
             # Retarget builtins
             elif target.Entity and TypeSystemServices.IsBuiltin(target.Entity):

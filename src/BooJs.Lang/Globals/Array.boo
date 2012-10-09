@@ -13,7 +13,7 @@ class Array(Object):
     [JsAlias('Boo.Array.op_Member')]
     static def op_Member(lhs as Array, rhs as object) as bool:
         pass
-    [JsRewrite('!Boo.Array.op_Member($1, $2)')]
+    [JsTransform('!Boo.Array.op_Member($1, $2)')]
     static def op_NotMember(lhs as Array, rhs as object) as bool:
         pass
     [JsAlias('Boo.Array.op_Addition')]
@@ -24,9 +24,9 @@ class Array(Object):
         pass
 
 
-    #self[index as int] as object:
-    #    get: pass
-    #    set: pass
+    self[index as int] as object:
+        get: pass
+        set: pass
 
     public length as uint
 

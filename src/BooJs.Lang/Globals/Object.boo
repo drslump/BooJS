@@ -5,7 +5,6 @@ class Object(System.Object):
 """
 Serves as base for all JS types
 """
-
     public prototype as Object
 
     self[key as string] as object:

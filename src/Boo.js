@@ -9,7 +9,11 @@ var Boo = {
 };
 
 // Used as a unique indentifier when we want to stop iterating a generator
-Boo.STOP = { retval: undefined };
+Boo.STOP = {};
+// Used to return a value while iterating a generator
+Boo.ReturnValue = function (v) {
+    this.value = v;
+};
 
 // Standard types
 Boo.Types = {

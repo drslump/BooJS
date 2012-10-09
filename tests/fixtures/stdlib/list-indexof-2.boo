@@ -1,5 +1,5 @@
 a = [5, 4, 3, 2, 1]
-	
+
 def find(lst, cb as callable):
 	for i in lst:
 		return i if cb(i)
