@@ -36,14 +36,15 @@ class Base64VLQ:
         1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
         2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
     """
-        if value < 0:
+        if value <= 0:
             return ((-value) << 1) + 1
         else:
             return (value << 1) + 0
 
 
-    static def encode(value as int):
+    static def encode(value as int) as string:
     """ Returns the base 64 VLQ encoded value """
+        #return CHARMAP[0].ToString() if not value
         encoded = ""
         value = toSigned(value)
         while value > 0:
@@ -55,5 +56,4 @@ class Base64VLQ:
 
             assert digit >= 0 and digit < CHARMAP.Length
             encoded += CHARMAP[digit]
-
         return encoded

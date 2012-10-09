@@ -7,6 +7,8 @@ class SourceMapTest:
 
     [Test]
     def base64_encoding():
+        assert Base64VLQ.encode(0) == 'B'
+
         assert Base64VLQ.encode(1) == 'C'
         assert Base64VLQ.encode(10) == 'U'
         assert Base64VLQ.encode(100) == 'oG'
@@ -17,3 +19,12 @@ class SourceMapTest:
         assert Base64VLQ.encode(10000000) == 'goriT'
         assert Base64VLQ.encode(100000000) == 'gww3+F'
         assert Base64VLQ.encode(1000000000) == 'gglrz7B'
+
+        assert Base64VLQ.encode(-1) == 'D'
+        assert Base64VLQ.encode(-10) == 'V'
+        assert Base64VLQ.encode(-100) == 'pG'
+        assert Base64VLQ.encode(-1000) == 'x+B'
+        assert Base64VLQ.encode(-10000) == 'hxT'
+
+
+

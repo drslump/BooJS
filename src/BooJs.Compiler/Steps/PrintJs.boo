@@ -25,14 +25,19 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def Initialize(context as CompilerContext):
         _context = context
+        for inp in context.Parameters.Input:
+            srcmap.AddSource(inp.Name)
 
     def Print(ast as CompileUnit):
+        Line = 0
         OnCompileUnit(ast)
 
-        Line = 0
-
-        #WriteLine '//@ sourceMappingURL=map.js.map'
-        #print 'var map = ' + srcmap.ToString()
+        if not len(_context.Errors):
+            WriteLine '//@ sourceMappingURL=map.js.map'
+            WriteLine '/*'
+            Write srcmap.ToString()
+            WriteLine
+            WriteLine '*/'
 
     protected def NotImplemented(node as Node, msg as string):
         raise CompilerErrorFactory.NotImplemented(node, msg)
