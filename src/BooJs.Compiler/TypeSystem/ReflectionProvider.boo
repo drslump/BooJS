@@ -33,18 +33,6 @@ class ReflectionProvider(BooProvider):
             # TODO: Properly understand all this and refactor it nicely
             result = super(other)
             return result
-            if not result:
-                ext = other as ExternalType
-                if ext:
-                    if ActualType == typeof(Globals.NumberInt):
-                        if ext.ActualType in (System.Int16, System.Int32, System.Int64):
-                            return true
-                    elif ActualType == typeof(Globals.NumberUInt):
-                        if ext.ActualType in (System.UInt16, System.UInt32, System.UInt64):
-                            return true
-
-            return result
-
 
 
     public static final SharedTypeSystemProvider = ReflectionProvider()

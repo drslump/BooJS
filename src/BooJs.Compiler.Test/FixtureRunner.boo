@@ -3,7 +3,6 @@ import NUnit.Framework
 import System.IO(StreamReader)
 
 import Boo.Lang.Compiler.IO
-import Boo.Lang.Compiler(CompilerError)
 import BooJs.Compiler
 
 # The JavaScript interpretter

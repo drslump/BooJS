@@ -4,7 +4,6 @@ import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.IO
-import Boo.Lang.PatternMatching
 
 
 class SafeMemberAccess(AbstractTransformerCompilerStep):

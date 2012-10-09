@@ -2,11 +2,10 @@ namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity)
+import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity, IMethod,
+                                    Reflection, Internal,
+                                    BuiltinFunction, BuiltinFunctionType)
 
-import Boo.Lang.Environments
-import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally

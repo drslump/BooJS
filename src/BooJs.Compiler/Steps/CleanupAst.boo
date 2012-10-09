@@ -3,7 +3,6 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.IO(StringInput)
 
 import Boo.Lang.Environments
 import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache

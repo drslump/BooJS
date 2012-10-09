@@ -6,7 +6,6 @@ import Boo.Lang.Environments
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem(TypeSystemServices)
-import Boo.Lang.Compiler.TypeSystem.Services(RuntimeMethodCache)
 
 import BooJs.Compiler.TypeSystem as BooJsTypeSystem
 

@@ -9,24 +9,11 @@ import System.Reflection
 
 import Boo.Lang.Compiler.Util
 import Boo.Lang.Compiler(AbstractCompilerComponent)
-
 import Boo.Lang.Compiler.TypeSystem(IMethod, IMethodBase, IConstructor)
-import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache
 
 import BooJs.Lang.Runtime.Services as RuntimeServices
 
-class RuntimeMethodCache(AbstractCompilerComponent): #(BooRuntimeMethodCache):
-
-    #RuntimeServices_EqualityOperator as IMethod:
-    #    get: return CachedMethod('RuntimeServices_EqualityOperator', {
-    #        Methods.Of[of object, object, bool](RuntimeServices.Equality) #as IMethodBase
-    #    })
-    # HACK: Boo converts property getters to this method name, since we can't overload
-    #       non virtual properties we do this to shadow them
-    new def get_RuntimeServices_EqualityOperator() as IMethod:
-        return CachedMethod('RuntimeServices_EqualityOperator', {
-            Methods.Of[of object, object, bool](RuntimeServices.Equality) #as IMethodBase
-        })
+class RuntimeMethodCache(AbstractCompilerComponent):
 
     RuntimeEquality as IMethod:
         get: return CachedMethod('op_Equality', {

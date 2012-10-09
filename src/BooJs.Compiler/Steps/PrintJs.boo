@@ -5,7 +5,6 @@ import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.PatternMatching
 
-import BooJs.Lang.Extensions
 import BooJs.Compiler.SourceMap
 
 
