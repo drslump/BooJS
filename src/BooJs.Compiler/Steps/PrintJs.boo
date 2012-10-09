@@ -31,7 +31,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Line = 0
         OnCompileUnit(ast)
 
-        if not len(_context.Errors):
+        if false and not len(_context.Errors):
             WriteLine '//@ sourceMappingURL=map.js.map'
             WriteLine '/*'
             Write srcmap.ToString()
