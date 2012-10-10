@@ -31,15 +31,15 @@ class Date(Object):
         pass
     def constructor(year as int, month as int):
         pass
-    def constructor(year as int, mont as int, day as int):
+    def constructor(year as int, month as int, day as int):
         pass
-    def constructor(year as int, mont as int, day as int, hours as int):
+    def constructor(year as int, month as int, day as int, hours as int):
         pass
-    def constructor(year as int, mont as int, day as int, hours as int, minutes as int):
+    def constructor(year as int, month as int, day as int, hours as int, minutes as int):
         pass
-    def constructor(year as int, mont as int, day as int, hours as int, minutes as int, seconds as int):
+    def constructor(year as int, month as int, day as int, hours as int, minutes as int, seconds as int):
         pass
-    def constructor(year as int, mont as int, day as int, hours as int, minutes as int, seconds as int, ms as int):
+    def constructor(year as int, month as int, day as int, hours as int, minutes as int, seconds as int, ms as int):
         pass
 
 
@@ -87,42 +87,94 @@ class Date(Object):
         pass
     def getTimezoneOffset() as int:
         pass
+
     def setTime(time as int) as void:
         pass
+
     def setMilliseconds(ms as int) as void:
         pass
+
     def setUTCMilliseconds(ms as int) as void:
         pass
 
-    # TODO: Make oveloads for optionals
-    def setSeconds(sec as int, ms_optional as int) as void:
+    def setSeconds(sec as int, ms as int) as void:
         pass
-    def setUTCSeconds(sec as int, ms_optional as int) as void:
+    def setSeconds(sec as int) as void:
         pass
-    def setMinutes(min as int, sec_opt as int, ms_opt as int) as void:
+
+    def setUTCSeconds(sec as int, ms as int) as void:
         pass
-    def setUTCMinutes(min as int, sec_opt as int, ms_opt as int) as void:
+    def setUTCSeconds(sec as int) as void:
         pass
-    def setHours(hours as int, min_opt as int, sec_opt as int, ms_opt as int) as void:
+
+    def setMinutes(min as int, sec as int, ms as int) as void:
         pass
-    def setUTCHours(hours as int, min_opt as int, sec_opt as int, ms_opt as int) as void:
+    def setMinutes(min as int, sec as int) as void:
         pass
+    def setMinutes(min as int) as void:
+        pass
+
+    def setUTCMinutes(min as int, sec as int, ms as int) as void:
+        pass
+    def setUTCMinutes(min as int, sec as int) as void:
+        pass
+    def setUTCMinutes(min as int) as void:
+        pass
+
+    def setHours(hours as int, min as int, sec as int, ms as int) as void:
+        pass
+    def setHours(hours as int, min as int, sec as int) as void:
+        pass
+    def setHours(hours as int, min as int) as void:
+        pass
+    def setHours(hours as int) as void:
+        pass
+
+    def setUTCHours(hours as int, min as int, sec as int, ms as int) as void:
+        pass
+    def setUTCHours(hours as int, min as int, sec as int) as void:
+        pass
+    def setUTCHours(hours as int, min as int) as void:
+        pass
+    def setUTCHours(hours as int) as void:
+        pass
+
     def setDate(date_ as int) as void:
         pass
+
     def setUTCDate(date_ as int) as void:
         pass
-    def setMonth(month as int, date_opt as int) as void:
+
+    def setMonth(month as int, day as int) as void:
         pass
-    def setUTCMonth(month as int, date_opt as int) as void:
+    def setMonth(month as int) as void:
         pass
-    def setFullYear(year as int, month_opt as int, date_opt as int) as void:
+
+    def setUTCMonth(month as int, day as int) as void:
         pass
-    def setUTCFullYear(year as int, month_opt as int, date_opt as int) as void:
+    def setUTCMonth(month as int) as void:
         pass
+
+    def setFullYear(year as int, month as int, day as int) as void:
+        pass
+    def setFullYear(year as int, month as int) as void:
+        pass
+    def setFullYear(year as int) as void:
+        pass
+
+    def setUTCFullYear(year as int, month as int, day as int) as void:
+        pass
+    def setUTCFullYear(year as int, month as int) as void:
+        pass
+    def setUTCFullYear(year as int) as void:
+        pass
+
     def toUTCString() as string:
         pass
+
     def toISOString() as string:
         pass
+
     def toJSON(key_opt as object) as string:
         pass
 

@@ -4,37 +4,41 @@ import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
-# TODO: Is this actually used/needed?
 class NormalizeLiterals(AbstractTransformerCompilerStep):
+
+    static public final INTERPOLATION_MAX_ITEMS = 3
     
-    override def Run():
+    def Run():
         Visit CompileUnit
-    
-    override def LeaveExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
-        code = [| java.lang.StringBuilder() |]
-        for e in node.Expressions:
-            code = [| $code.append($e) |]
-        ReplaceCurrentNode([| $code.toString() |])
-        
-    override def LeaveHashLiteralExpression(node as HashLiteralExpression):
-        resultingHash = uniqueReference()
-        code = [| @($resultingHash = Boojay.Lang.Hash($(len(node.Items)))) |]
-        for pair in node.Items:
-            code.Arguments.Add([| $resultingHash.put($(pair.First), $(pair.Second)) |])
-        code.Arguments.Add(resultingHash)
-        ReplaceCurrentNode code
-        
-    override def LeaveListLiteralExpression(node as ListLiteralExpression):
-        
-        if AstUtil.IsListGenerator(node):
-            return
-            
-        temp = uniqueReference()
-        code = [| @($temp = Boojay.Lang.List($(len(node.Items)))) |]
-        for item in node.Items:
-            code.Arguments.Add([| $temp.add($item) |])
-        code.Arguments.Add(temp)
-        
-        code.LexicalInfo = node.LexicalInfo
-        ReplaceCurrentNode(code)
-    
+
+    protected def IsEmptyString(node as Expression):
+        str = node as StringLiteralExpression
+        return str and str.Value == ''
+
+    def LeaveExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
+    """ We build either as string concatenation or as a literal array and then join it to form the string
+            "foo \$bar" => 'foo' + bar
+            "foo \$bar \$baz" -> ['foo', bar, ' ', baz].join('')
+    """
+        items = node.Expressions
+
+        # Trim the expression
+        while IsEmptyString(items.First): items.Remove(items.First)
+        while IsEmptyString(items.Last): items.Remove(items.Last)
+
+        if len(items) < INTERPOLATION_MAX_ITEMS:
+            repl = items.First
+            items.Remove(items.First)
+            while items.First:
+                repl = [| $repl + $(items.First) |]
+                items.Remove(items.First)
+        else:
+            repl = [| $(ArrayLiteralExpression(Items: items)).join('') |]
+
+        ReplaceCurrentNode repl
+
+    def OnTimeSpanLiteralExpression(node as TimeSpanLiteralExpression):
+    """ Convert timestan literal values to milliseconds
+    """
+        ReplaceCurrentNode IntegerLiteralExpression(Value: node.Value.TotalMilliseconds)
+

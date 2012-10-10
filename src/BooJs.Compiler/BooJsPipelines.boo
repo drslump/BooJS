@@ -50,6 +50,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Normalize generator expressions
         InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
 
+        # Normalize literals
+        InsertAfter(NormalizeTypeAndMemberDefinitions, Steps.NormalizeLiterals())
 
         # Use a custom implementation for iterations
         InsertBefore(NormalizeIterationStatements, Steps.NormalizeLoops())
@@ -58,7 +60,6 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Simplify the unpack operations
         InsertAfter(NormalizeStatementModifiers, Steps.NormalizeUnpack())
-
 
         # Adapt try/except statements
         Add(Steps.ProcessTry())

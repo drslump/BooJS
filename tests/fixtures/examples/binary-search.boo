@@ -1,5 +1,5 @@
 def binary_search_recursive(a as (int), value as int, lo as int, hi as int) as int:
-    return null if hi < lo
+    return -1 if hi < lo
     mid = Math.floor((lo+hi)/2)
     if a[mid] > value:
         return binary_search_recursive(a, value, lo, mid-1)

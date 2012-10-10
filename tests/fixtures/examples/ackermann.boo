@@ -8,7 +8,7 @@
 def ack1(m as int, n as int) as int:
   return (n+1 if m == 0 else ack1(m-1, (1 if n == 0 else ack1(m, n-1))))
 
-def ack2(m, n) as int:
+def ack2(m as int, n as int) as int:
     return n + 1 if not m
     return ack2(m-1, 1) if not n
     return ack2(m-1, ack2(m, n-1))

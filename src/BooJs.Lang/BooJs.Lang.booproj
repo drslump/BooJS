@@ -78,6 +78,7 @@
     <Compile Include="Globals\Boolean.boo" />
     <Compile Include="Globals\Date.boo" />
     <Compile Include="Globals\JSON.boo" />
+    <Compile Include="Globals\Hash.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

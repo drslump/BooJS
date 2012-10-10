@@ -9,7 +9,7 @@ def soundex(s as string) as string:
         'r': 6
     }
 
-    a = s.toLowerCase().split('')
+    a as (string) = s.toLowerCase().split('')
     f as string = a.shift()
     r = ''
  

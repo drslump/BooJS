@@ -55,25 +55,26 @@ class ReflectionProvider(BooProvider):
 
         # Define numbers as value types
         type as IType = JsValueType(self, Globals.NumberInt)
-        for t in (System.SByte, System.Int16, System.Int32, System.Int64, Globals.NumberInt):
+        for t in (System.Int64, System.Int32, /* System.Int16, System.SByte,*/ Globals.NumberInt):
             MapTo(t, type)
 
         type = JsValueType(self, Globals.NumberUInt)
-        for t in (System.Byte, System.UInt16, System.UInt32, System.UInt64, Globals.NumberUInt):
+        for t in (System.UInt64, System.UInt32, /* System.UInt16, System.Byte,*/ Globals.NumberUInt):
             MapTo(t, type)
 
         type = JsValueType(self, Globals.NumberDouble)
-        for t in (System.Single, System.Double, Globals.NumberDouble):
+        for t in (System.Double, /*System.Single,*/ Globals.NumberDouble):
             MapTo(t, type)
 
         # Boo's immutable Array and mutable List are converted to a JS mutable array
         type = JsRefType(self, Globals.Array)
-        #type = Core.ArrayType(JsRefType(self, Globals.Array), 1)
         MapTo(Globals.Array, type)
         MapTo(Boo.Lang.List, type)
+
+        type = JsRefType(self, Globals.Hash)
+        MapTo(Globals.Hash, type)
+        MapTo(Boo.Lang.Hash, type)
 
         type = JsRefType(self, Globals.RegExp)
         MapTo(Globals.RegExp, type)
         MapTo(System.Text.RegularExpressions.Regex, type)
-
-

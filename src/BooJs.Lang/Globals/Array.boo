@@ -30,6 +30,11 @@ class Array(Object):
 
     public length as uint
 
+    def constructor():
+        pass
+    def constructor(n as int):
+        pass
+
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
     def push(itm as object) as uint:
         pass

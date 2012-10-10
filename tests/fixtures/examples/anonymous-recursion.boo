@@ -3,7 +3,7 @@
 """
 def fibo(n as int) as int:
     # We need to declare it before it can be used inside the closure
-    fn as callback = null
+    fn as callable(int) as int = null
     fn = {n as int| return (1 if n < 2 else fn(n-1) + fn(n-2)) }
     return (null if n < 0 else fn(n))
 

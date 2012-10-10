@@ -68,6 +68,13 @@ class CleanupAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode [| Boo.$(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
             return
 
+        # Members of the module are placed in the top scope
+        ientity = node.Entity as TypeSystem.IMember
+        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.IsFinal:
+            name = node.Name.Split(char('.'))[-1]
+            ReplaceCurrentNode [| $(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
+            return
+
         # TODO: Check name for invalid chars?
 
 
@@ -123,3 +130,8 @@ class CleanupAst(AbstractTransformerCompilerStep):
         ifst.TrueBlock = node.Block
 
         ReplaceCurrentNode ifst
+
+    def OnImport(node as Import):
+    """ Ignore namespace imports
+    """
+        RemoveCurrentNode

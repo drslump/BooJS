@@ -1,8 +1,6 @@
 namespace BooJs.Lang
 
 import BooJs.Lang.Globals
-import BooJs.Lang.Extensions
-
 
 class Builtins:
 
@@ -27,11 +25,11 @@ class Builtins:
 
     static public final STOP = 'STOP'
 
-    static def range(stop as int) as (int):
+    static def range(stop as int) as int*:
         pass
-    static def range(start as int, stop as int) as (int):
+    static def range(start as int, stop as int) as int*:
         pass
-    static def range(start as int, stop as int, step as int) as (int):
+    static def range(start as int, stop as int, step as int) as int*:
         pass
 
     static def print(*list as (object)) as void:

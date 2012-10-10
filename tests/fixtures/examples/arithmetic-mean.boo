@@ -2,9 +2,9 @@
 loop: 3
 """
 
-def mean(lst as list):
+def mean(lst as int*):
 	sum = 0
-	for itm as int in lst:
+	for itm in lst:
 		sum += itm
 	return (sum / len(lst) if len(lst) else 0)
  

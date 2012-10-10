@@ -6,6 +6,7 @@ regex True
 object 2
 duck foo1
 """
+
 # Numbers are always initialized as 0
 a as int
 b as uint

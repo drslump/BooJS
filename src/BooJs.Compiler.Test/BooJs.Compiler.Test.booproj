@@ -86,6 +86,7 @@
     <Compile Include="DevelFixtures.boo" />
     <Compile Include="TypeSystemFixtures.boo" />
     <Compile Include="ExamplesFixtures.boo" />
+    <Compile Include="BoojayFixtures.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

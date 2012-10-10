@@ -1,12 +1,12 @@
-def arithmetic_mean(lst as list) as double:
-    sum = reduce(lst, {a,b| a+b}, 0)
+def arithmetic_mean(lst as (double)) as double:
+    sum = reduce(lst, {a as double, b as double| a+b}, 0)
     return sum / len(lst)
  
-def geometic_mean(lst as list) as double:
-    product = reduce(lst, {a,b| a*b}, 1)
+def geometic_mean(lst as double*) as double:
+    product = reduce(lst, {a as double, b as double| a*b}, 1)
     return Math.pow(product, 1/len(lst))
  
-def harmonic_mean(lst as list) as double:
+def harmonic_mean(lst as double*) as double:
     sum as double = reduce(lst, {a as int, b as int| a+1/b}, 0)
     return len(lst) / sum
  

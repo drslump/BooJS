@@ -7,10 +7,6 @@ Serves as base for all JS types
 """
     public prototype as Object
 
-    self[key as string] as object:
-        get: pass
-        set: pass
-
     def hasOwnProperty(key as string) as bool:
         pass
 

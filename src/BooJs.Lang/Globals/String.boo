@@ -1,6 +1,5 @@
 namespace BooJs.Lang.Globals
 
-import System.Collections.Generic(IEnumerable)
 import BooJs.Lang.Extensions
 
 class String(Object):

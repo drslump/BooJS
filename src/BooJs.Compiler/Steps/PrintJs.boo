@@ -521,10 +521,6 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write ')'
 
     def OnExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
-    """ We build either as string concatenation or as a literal array and then join it to form the string
-            "foo \$bar" => 'foo' + bar
-            "foo \$bar \$baz" -> ['foo', bar, ' ', baz].join('')
-    """
         use_join = len(node.Expressions) > 3
         concat_str = (', ' if use_join else ' + ')
     
@@ -570,6 +566,11 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                 Write '; '
             Write '})()'
             return
+
+        # Use new for constructors
+        entity = node.Target.Entity as TypeSystem.IConstructor
+        if entity:
+            Write 'new '
 
         Visit node.Target
         Write '('

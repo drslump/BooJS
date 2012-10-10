@@ -1,13 +1,13 @@
 """
 Next number = 1, SMA_3 = 1, SMA_5 = 1
-Next number = 2, SMA_3 = 1.5, SMA_5 = 1.5
+Next number = 2, SMA_3 = 1, SMA_5 = 1
 Next number = 3, SMA_3 = 2, SMA_5 = 2
-Next number = 4, SMA_3 = 3, SMA_5 = 2.5
+Next number = 4, SMA_3 = 3, SMA_5 = 2
 Next number = 5, SMA_3 = 4, SMA_5 = 3
-Next number = 5, SMA_3 = 4.666666666666667, SMA_5 = 3.8
-Next number = 4, SMA_3 = 4.666666666666667, SMA_5 = 4.2
-Next number = 3, SMA_3 = 4, SMA_5 = 4.2
-Next number = 2, SMA_3 = 3, SMA_5 = 3.8
+Next number = 5, SMA_3 = 4, SMA_5 = 3
+Next number = 4, SMA_3 = 4, SMA_5 = 4
+Next number = 3, SMA_3 = 4, SMA_5 = 4
+Next number = 2, SMA_3 = 3, SMA_5 = 3
 Next number = 1, SMA_3 = 2, SMA_5 = 3
 """
 def simple_moving_averager(period as int):

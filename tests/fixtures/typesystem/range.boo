@@ -2,8 +2,16 @@
 0 1 2
 continue 2
 break 0
-return 11@
+return 11
 """
+
+for i in range(3):
+	if typeof(int) == 10:
+		print '10'
+
+raise 'foo'
+
+
 def loop_with_return():
 	for i in range(3):
 		return i if i > 0
@@ -22,4 +30,3 @@ for i in range(3):
 	print 'break', i
 
 print 'return', loop_with_return() + 10
-
