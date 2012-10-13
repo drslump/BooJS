@@ -1,5 +1,7 @@
 # BooJs
 
+![BooJs logo](raw.github.com/drslump/BooJS/master/extra/logo.png)
+
 Javascript backend for [Boo](http://boo.codehaus.org).
 
 You should read [Boo's manifesto](http://boo.codehaus.org/BooManifesto.pdf) to 
