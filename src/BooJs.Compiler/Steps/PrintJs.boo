@@ -212,7 +212,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
 
         ns = (node.Namespace.Name if node.Namespace else '')
-        Write "Boo.module('$ns', ["
+        Write "Boo.define('$ns', ["
         if len(deps):
             Write "'" + join(deps, "', '") + "'"
         Write '], function('

@@ -4,14 +4,14 @@
 
 /*jshint indent:4 lastsemic:false curly:false */
 
-(function (exports) {
+(function (exports, undefined) {
     // Short alias for hasOwnProperty
     function hop(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
     }
 
     // Map of typeof and Object.toString values
-    var typeof_lookup = {
+    var type_lookup = {
         'undefined': 'Null',
         'boolean': 'Boolean',
         'number': 'Number',
@@ -31,10 +31,10 @@
     //  - Objects without primitives are reported as Object (except for Array and RegExp)
     function typeOf(v) {
         var t = typeof(v);
-        if (t in typeof_lookup) return typeof_lookup[t];
+        if (t in type_lookup) return type_lookup[t];
         // Check using Object.toString
         t = Object.prototype.toString.call(v);
-        return typeof_lookup(t) || 'Object';
+        return type_lookup[t] || 'Object';
     }
     // Checks if the type of a value is the one given (multiple expected supported)
     function typeIs(v, expected) {
@@ -74,9 +74,15 @@
     // intentionally very naive, expecting all dependencies to be
     // already loaded in the correct order. It can be overriden
     // to support on demand loading using RequireJs or CommonJs.
-    Boo.module = function (name, deps, factory) {
+    Boo.define = function (name, deps, factory) {
         var i, dep, args, member, module,
             refs = [];
+
+        // Support function signature without dependencies
+        if (!typeIs(deps, 'Array')) {
+            factory = deps;
+            deps = [];
+        }
 
         // The first time we know about the module add it to the waiting list
         if (!hop(mod_defined, name)) {
@@ -92,7 +98,7 @@
                 args = mod_waiting[dep];
                 delete mod_waiting[dep];
                 mod_defined[dep] = mod_defined[dep] || null;
-                Boo.module.apply(this, args);
+                Boo.define.apply(this, args);
             }
 
             // The module should now be available
@@ -117,6 +123,28 @@
                 mod_defined[name + '.' + member] = module[member];
             }
         }
+    };
+
+    // AMD style dependency retriever. It should be used to access Boo generated
+    // types from Javascript code. Boo does not generate global variables for the
+    // defined types so you need to obtain a reference to them thru this function.
+    Boo.require = function (deps, callback) {
+        // Single argument just obtains a previously defined module
+        if (arguments.length === 1) {
+            if (hop(mod_defined, deps))
+                return mod_defined[deps];
+            throw new Error('Module ' + deps + ' not found');
+        }
+
+        // Collect all dependencies
+        var i, args = [];
+        for (i = 0; i < deps.length; i++) {
+            if (!hop(mod_defined, deps[i]))
+                throw new Error('Module ' + deps[i] + ' not found');
+            args[i] = mod_defined[deps[i]];
+        }
+
+        callback.apply(undefined, args);
     };
 
 

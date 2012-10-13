@@ -1,6 +1,7 @@
 import NUnit.Framework
 
 import System.IO(StreamReader)
+import System.Reflection(Assembly)
 
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
@@ -49,6 +50,9 @@ class FixtureRunner:
 
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))
+
+      # Add the test runner assembly so we can resolve imports for supporting types
+      comp.Parameters.References.Add(Assembly.GetExecutingAssembly())
 
       result = comp.Run()
 
