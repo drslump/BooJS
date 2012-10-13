@@ -3,13 +3,13 @@ Male: 0
 Female: 1
 """
 
-import BooJs.Compiler.Test.Support as AliasNamespace
-import BooJs.Compiler.Test.Support(Gender, Card)
-import BooJs.Compiler.Test.Support.Gender as AliasType
-import BooJs.Compiler.Test.Support(Gender, Card) as AliasGroup
+import BooJs.Tests.Support as AliasNamespace
+import BooJs.Tests.Support(Gender, Card)
+import BooJs.Tests.Support.Gender as AliasType
+import BooJs.Tests.Support(Gender, Card) as AliasGroup
 # The following is not supported by Boo :()
-#import BooJs.Compiler.Test.Support(Gender as G, Card as C)
-#import BooJs.Compiler.Test.Support(Gender as G, Card as C) AliasAliases
+#import BooJs.Tests.Support(Gender as G, Card as C)
+#import BooJs.Tests.Support(Gender as G, Card as C) AliasAliases
 
 # Use this function to avoid automatic constant folding
 def v(value) as int:

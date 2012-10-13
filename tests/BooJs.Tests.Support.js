@@ -1,4 +1,4 @@
-Boo.module('BooJs.Compiler.Test.Support', [], function () {
+Boo.define('BooJs.Tests.Support', [], function () {
 
     this.Gender = {
         Male: 0,
