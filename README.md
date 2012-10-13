@@ -48,18 +48,18 @@ The compiler works in Windows, Mac and Linux using the .Net or Mono runtimes.
 
 ## Roadmap
 
-  - Imperative idioms - 90%
-  - Functional idioms - 70%
+  - Imperative idioms - 95%
+  - Functional idioms - 80%
   - Closures (annonymous functions) - 75%
   - Classes
-  - Namespaces and packaging
+  - Namespaces and packaging - 30%
   - Method overloading - 20%
-  - Operator overloading - 75%
+  - Operator overloading - 95%
   - Events (Delegation / Observer pattern)
-  - Source Maps - 40%
+  - Source Maps - 60%
   - Meta-programming (Macros, Syntactic attributes) - 50%
   - Preprocessor - 10%
-  - Type hinted interfaces for common Javascript APIs (DOM, jQuery, HTML5...) 25%
+  - Type hinted interfaces for common Javascript APIs (DOM, jQuery, HTML5...) 50%
   - Reduce the size of the runtime by making the compiler more intelligent
   - Generators - 10%
   - Support for optional and named params
