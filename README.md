@@ -1,6 +1,6 @@
 # BooJs
 
-![BooJs logo](http://raw.github.com/drslump/BooJS/master/extras/logo.png)
+![BooJs logo](https://raw.github.com/drslump/boojs/master/extras/logo.png)
 
 Javascript backend for [Boo](http://boo.codehaus.org).
 
