@@ -106,7 +106,7 @@ class FixtureRunner:
             self._engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
 
             # Load tests support types
-            self._engine.ExecuteFile('/Users/drslump/www/boojs/tests/BooJs.Compiler.Test.Support.js')
+            self._engine.ExecuteFile('/Users/drslump/www/boojs/tests/BooJs.Tests.Support.js')
 
         return self._engine
 

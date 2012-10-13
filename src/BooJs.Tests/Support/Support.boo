@@ -1,4 +1,4 @@
-namespace BooJs.Compiler.Test.Support
+namespace BooJs.Tests.Support
 
 enum Gender:
     Male

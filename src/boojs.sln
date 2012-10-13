@@ -5,7 +5,7 @@ Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "boojs", "boojs\boojs.boopro
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler", "BooJs.Compiler\BooJs.Compiler.booproj", "{576D8BA6-B55E-4984-853E-387133D3EC48}"
 EndProject
-Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler.Test", "BooJs.Compiler.Test\BooJs.Compiler.Test.booproj", "{EF0D7427-0168-48BF-A021-0956B9D1C22A}"
+Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Tests", "BooJs.Tests\BooJs.Tests.booproj", "{EF0D7427-0168-48BF-A021-0956B9D1C22A}"
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Lang", "BooJs.Lang\BooJs.Lang.booproj", "{D910050A-F1F8-4773-9E34-8252BBE1CDFE}"
 EndProject
