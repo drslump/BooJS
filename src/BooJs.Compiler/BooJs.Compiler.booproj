@@ -74,7 +74,6 @@
     <Compile Include="Steps\Globals.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
     <Compile Include="Steps\InjectCasts.boo" />
-    <Compile Include="Steps\NormalizeCallables.boo" />
     <Compile Include="Steps\NormalizeIterations.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
     <Compile Include="Steps\NormalizeLoops.boo" />
@@ -95,13 +94,14 @@
     <Compile Include="Steps\NormalizeClosures.boo" />
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />
     <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
-    <Compile Include="Steps\IntroduceNamespaces.boo" />
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
     <Compile Include="Steps\MethodOverloading.boo" />
     <Compile Include="TypeSystem\ReflectionProvider.boo" />
     <Compile Include="TypeSystem\Services.boo" />
     <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
     <Compile Include="Steps\CleanupAst.boo" />
+    <Compile Include="Steps\ExpandDuckTypedExpressions.boo" />
+    <Compile Include="Steps\IntroduceGlobalNamespaces.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SourceMap\" />

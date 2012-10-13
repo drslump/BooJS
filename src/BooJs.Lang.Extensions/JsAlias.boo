@@ -2,7 +2,7 @@ namespace BooJs.Lang.Extensions
 
 import System
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method | AttributeTargets.Field, Inherited:false, AllowMultiple:false)]
+[AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Field, Inherited:false, AllowMultiple:false)]
 class JsAliasAttribute(System.Attribute):
 """ Allows to manually alias the annotated member to some custom string
 

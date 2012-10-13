@@ -4,14 +4,15 @@ import BooJs.Lang.Extensions
 
 class String(Object):
     # IMPORTANT: Boo requires explicit/implicit operators to use the actual types
+    [JsTransform( parseInt($1) )]
     static def op_Explicit(value as String) as NumberInt:
         pass
 
-    [JsTransform($0 == $1)]
+    [JsTransform($1 == $2)]
     static def op_Equality(lhs as string, rhs as string) as bool:
         pass
 
-    [JsTransform($0 + $1)]
+    [JsTransform($1 + $2)]
     static def op_Addition(lhs as string, rhs as string) as string:
         pass
 

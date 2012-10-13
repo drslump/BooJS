@@ -41,4 +41,4 @@ print 'toString', a.toString()
 
 # Expression blocks
 assert {x as int| x*x }(a) == 100
-assert {a*a}() - b == 98
+assert {a * a}() - b == 98

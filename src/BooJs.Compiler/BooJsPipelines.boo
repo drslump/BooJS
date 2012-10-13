@@ -6,10 +6,10 @@ import BooJs.Compiler.Steps as Steps
 
 class Compile(Boo.Lang.Compiler.Pipelines.Compile):
     def constructor():
+        # TODO: Do we need this?
         Insert(0, Steps.InitializeEntityNameMatcher())
 
-        #InsertAfter(NormalizeTypeAndMemberDefinitions, NormalizeLiterals())
-        Replace(IntroduceGlobalNamespaces, Steps.IntroduceNamespaces())
+        Replace(IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces())
 
         # Process safe member access operator
         # NOTE: It must be added before and after the parsing step
@@ -22,11 +22,16 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         InsertAfter(Parsing, unsupported)
         InsertAfter(MacroAndAttributeExpansion, unsupported)
 
-        # Since JS is dynamic we don't need the additional tooling for duck types
-        #Remove(ExpandDuckTypedExpressions)
-        # Same applies to Closures (TODO: Are we sure?)
-        Remove(InjectCallableConversions)
+        Replace(ExpandDuckTypedExpressions, Steps.ExpandDuckTypedExpressions())
+
+        # TODO: Not sure we need this. It just seems to convert closure blocks
+        #       to compiler generated classes.
         Remove(ProcessClosures)
+
+        # TODO: Not sure we need this. The nodes should be already bound to the
+        #       correct values, this only seems to be needed to support the
+        #       additional instrumentation used by Boo to support callables.
+        Remove(InjectCallableConversions)
 
         # No need to cache/precompile regexp in Javascript
         Remove(CacheRegularExpressionsInStaticFields)
@@ -39,10 +44,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
 
         # Customize slicing expressions
-        # HACK: MonoDevelop version of Boo doesn't have this step so the compilation fails
-        #Replace(ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions())
+        Replace(ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions())
         #InsertAfter(ExpandDuckTypedExpressions, Steps.ExpandComplexSlicingExpressions())
-        InsertAfter(MacroAndAttributeExpansion, Steps.ExpandComplexSlicingExpressions())
+        #InsertAfter(MacroAndAttributeExpansion, Steps.ExpandComplexSlicingExpressions())
 
         # Relax boolean conversions
         Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())

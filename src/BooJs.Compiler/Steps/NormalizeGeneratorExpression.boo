@@ -37,4 +37,4 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
         |].Body
 
         # Replace the generator expression with the result of executing the anonymous function
-        ReplaceCurrentNode([| { _gen as Array | $(body) }([]) |])
+        ReplaceCurrentNode([| {_gen as (object)| $(body) }([]) |])

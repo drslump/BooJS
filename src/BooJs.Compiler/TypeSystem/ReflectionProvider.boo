@@ -45,6 +45,10 @@ class ReflectionProvider(BooProvider):
         # Define duck type
         MapTo(Builtins.Duck, JsRefType(self, Builtins.Duck))
 
+        # Define ICallable type
+        MapTo(Builtins.ICallable, JsRefType(self, Builtins.ICallable))
+        MapTo(Boo.Lang.ICallable, JsRefType(self, Builtins.ICallable))
+
         # Strings are actually mutable
         MapTo(Globals.String, JsRefType(self, Globals.String))
         MapTo(System.String, JsRefType(self, Globals.String))
@@ -71,8 +75,8 @@ class ReflectionProvider(BooProvider):
         MapTo(Globals.Array, type)
         MapTo(Boo.Lang.List, type)
 
-        type = JsRefType(self, Globals.Hash)
-        MapTo(Globals.Hash, type)
+        type = JsRefType(self, Builtins.Hash)
+        MapTo(Builtins.Hash, type)
         MapTo(Boo.Lang.Hash, type)
 
         type = JsRefType(self, Globals.RegExp)

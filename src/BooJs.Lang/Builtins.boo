@@ -1,14 +1,20 @@
 namespace BooJs.Lang
 
 import BooJs.Lang.Globals
+import BooJs.Lang.Extensions
 
 class Builtins:
 
-    static public final BOO_RUNTIME_VERSION = '0.0.1'
-    static public final BOO_COMPILER_VERSION = 'Boo 0.9.5.5'
+    [JsAlias("'%%COMPILER_VERSION%%'")]
+    static public final BOO_COMPILER_VERSION = '%%COMPILER_VERSION%%'
+    static public final BOO_RUNTIME_VERSION = 'defined in boo.js'
+
+    static public final STOP = 'STOP'
+
 
     class Duck(Object, Boo.Lang.IQuackFu):
-        # Implements QuackFu interface
+    """ Implementes the IQuackFu interface
+    """
         def QuackGet(name as string, params as (object)) as object:
             pass
 
@@ -18,12 +24,55 @@ class Builtins:
         def QuackInvoke(name as string, args as (object)) as object:
             pass
 
-    class ReturnValue(Error):
+
+    interface ICallable:
+    """ Define the ICallable interface
+    """
+        def Call(args as (object)) as object
+
+
+    class Hash(Object):
+    """ Simple hash/dictionary based on Javascript's object
+    """
+        self[key as string] as object:
+            get: pass
+            set: pass
+
+        [JsAlias('Boo.Hash')]
+        def constructor():
+            pass
+        [JsAlias('Boo.Hash')]
+        def constructor(items as object*):
+            pass
+
+        def keys() as (string):
+            pass
+
+        def values() as (object):
+            pass
+
+        [JsTransform('Boo.enumerate($0)')]
+        def items() as ((object)):
+            pass
+
+
+    class AssertionError(Error):
+    """ BooJs specific error to signal failures in assertions
+    """
+        [JsAlias('Boo.AssertionError')]
+        def constructor():
+            pass
+        [JsAlias('Boo.AssertionError')]
+        def constructor(msg as string):
+            pass
+
+
+    class ReturnValue:
         public value as object
         def constructor(val as object):
             value = val
 
-    static public final STOP = 'STOP'
+
 
     static def range(stop as int) as int*:
         pass

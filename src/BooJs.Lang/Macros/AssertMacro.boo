@@ -4,5 +4,7 @@ import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 
 macro assert:
-    condition, = assert.Arguments
-    yield [| raise $(condition.ToCodeString()) if not $condition |]
+    cond, = assert.Arguments
+    message = cond.ToCodeString()
+    #message += " ($(cond.LexicalInfo.FileName):$(cond.LexicalInfo.Line))"
+    yield [| raise BooJs.Lang.Builtins.AssertionError($message) if not $cond |]

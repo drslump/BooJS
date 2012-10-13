@@ -51,15 +51,22 @@ class FixtureRunner:
       comp.Parameters.Input.Add(FileInput(file))
 
       result = comp.Run()
-      
+
+      if len(result.Warnings):
+        for warn as Boo.Lang.Compiler.CompilerWarning in result.Warnings:
+            li = warn.LexicalInfo
+            name = System.IO.Path.GetFileName(li.FileName)
+            print "$(warn.Code) $(warn.Message) [$name:$(li.Line),$(li.Column)]"
+
       if len(result.Errors):
         for err as Boo.Lang.Compiler.CompilerError in result.Errors:
             li = err.LexicalInfo
             name = System.IO.Path.GetFileName(li.FileName)
-            print "$name:$(li.Line),$(li.Column) $(err.Code): $(err.Message)"
+            print "$(err.Code): $(err.Message) [$name:$(li.Line),$(li.Column)]"
         print '-----------------------------------------------------'
         print result.CompileUnit.ToCodeString()
         raise result.Errors[0]
+
 
       module = result.CompileUnit.Modules[0]
       expected = module.Documentation or ''
@@ -95,6 +102,11 @@ class FixtureRunner:
 
             # Load runtime
             self._engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.js')
+            # Patch the runtime to be compatible with Jurassic
+            self._engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
+
+            # Load tests support types
+            self._engine.ExecuteFile('/Users/drslump/www/boojs/tests/BooJs.Compiler.Test.Support.js')
 
         return self._engine
 
@@ -113,10 +125,20 @@ class FixtureRunner:
             engine.Execute(code)
             Assert.AreEqual(expected, console.output())
           except ex:
+            jsex = ex as Jurassic.JavaScriptException
+            if jsex:
+                jsobj = jsex.ErrorObject as Jurassic.Library.ObjectInstance
+                if jsobj and jsobj.HasProperty('boo_filename'):
+                  print join(('Exception: "', ex.Message, '" at ',
+                          jsobj.GetPropertyValue('boo_filename'), ':',
+                          jsobj.GetPropertyValue('boo_line')
+                      ), '')
+
             print '----------------------------------------------[code]-'
             print code.Trim()
             print '--------------------------------------------[output]-'
             print console.output()
             print '-----------------------------------------------------'
+
             raise
 

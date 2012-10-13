@@ -97,12 +97,24 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         super(node)
 
     override def ProcessBuiltinInvocation(node as MethodInvocationExpression, func as BuiltinFunction):
-        # Replace len(val) with val.length
+        # Handle len(val)
         if func.FunctionType == BuiltinFunctionType.Len:
+            result as Expression
             target = node.Arguments[0]
-            result = MemberReferenceExpression(node.LexicalInfo, target, 'length')
-            result.ExpressionType = TypeSystemServices.IntType
 
+            # Check if the target has a 'length' property
+            exptype = target.ExpressionType as Reflection.ExternalType
+            if exptype:
+                field = NameResolutionService.ResolveMember(exptype, 'length', Boo.Lang.Compiler.TypeSystem.EntityType.Field)
+                if field:
+                    result = MemberReferenceExpression(node.LexicalInfo, target, 'length')
+                    result.ExpressionType = TypeSystemServices.IntType
+                    node.ParentNode.Replace(node, result)
+                    return
+
+            # Otherwise use a runtime helper
+            lenfn = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'Len')
+            result = CodeBuilder.CreateMethodInvocation(lenfn, target)
             node.ParentNode.Replace(node, result)
             return
 

@@ -25,7 +25,7 @@ class Services(BooServices):
         UIntType = Map(Globals.NumberUInt)
         DoubleType = Map(Globals.NumberDouble)
         RegExpType = Map(Globals.RegExp)
-        ICallableType = Map(ICallable) #Map(Globals.Function)
+        ICallableType = Map(Builtins.ICallable) #Map(Globals.Function)
         DuckType = Map(Builtins.Duck)
 
         RuntimeServicesType = Map(Runtime.Services)

@@ -35,7 +35,7 @@ class CleanupAst(AbstractTransformerCompilerStep):
     protected def IsBuiltin(node as Node) as bool:
         entity = node.Entity as TypeSystem.Reflection.ExternalType
         return false if not entity
-        return true if TypeSystemServices.IsBuiltin(entity)
+        return true if entity.Type is TypeSystemServices.BuiltinsType
         return entity.DeclaringType == TypeSystemServices.BuiltinsType
 
 
@@ -44,6 +44,34 @@ class CleanupAst(AbstractTransformerCompilerStep):
 
         _methodCache = EnvironmentProvision[of RuntimeMethodCache]()
         _booMethodCache = EnvironmentProvision[of BooRuntimeMethodCache]()
+
+    def EnterModule(node as Module):
+        if node.Name == 'CompilerGenerated':
+            RemoveCurrentNode()
+            return false
+
+        return true
+
+    def EnterClassDefinition(node as ClassDefinition):
+        if node.Name == 'CompilerGeneratedExtensions':
+            RemoveCurrentNode()
+            return false
+        return true
+
+    def EnterMethod(node as Method):
+        # Filter locals to remove duplicates
+        found = ['$locals']
+        remove = List[of Local]()
+        for local in node.Locals:
+            if local.Name in found:
+                remove.Push(local)
+            else:
+                found.Push(local.Name)
+
+        for local in remove:
+            node.Locals.Remove(local)
+
+        return true
 
     def OnExpressionStatement(node as ExpressionStatement):
         # Ignore the assignment of locals produced by closures instrumentation
@@ -131,7 +159,3 @@ class CleanupAst(AbstractTransformerCompilerStep):
 
         ReplaceCurrentNode ifst
 
-    def OnImport(node as Import):
-    """ Ignore namespace imports
-    """
-        RemoveCurrentNode

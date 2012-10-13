@@ -4,358 +4,553 @@
 
 /*jshint indent:4 lastsemic:false curly:false */
 
-var Boo = {
-    BOO_RUNTIME_VERSION: '0.0.1'
-};
+(function (exports) {
+    // Short alias for hasOwnProperty
+    function hop(obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+    }
 
-// Used as a unique indentifier when we want to stop iterating a generator
-Boo.STOP = {};
-// Used to return a value while iterating a generator
-Boo.ReturnValue = function (v) {
-    this.value = v;
-};
-
-// Standard types
-Boo.Types = {
-    'void': 'void',
-    'bool': 'bool',
-    'duck': 'duck',
-    'string': 'string',
-    'object': 'object',
-    'int': 'int',
-    'uint': 'uint',
-    'double': 'double',
-    'callable': 'callable'
-};
-
-// Note: We don't use the native forEach method since this is custom tailored
-//       to the generated code. It handles unpacking and iteration stopage.
-Boo.each = function (obj, iterator, context) {
-    if (obj === null || typeof obj === 'undefined') return;
-    if (typeof obj === 'string') obj = obj.split('');
-    if (obj.length === +obj.length) {
-        // Mode is computed based on the following rules:
-        //   - If the callback only have one argument the value is passed as is
-        //   - If it has mode than one the argument is unpack (apply style invocation)
-        var i, l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
-        for (i = 0; i < l; i++) {
-            if (i in obj && iterator[mode](context, obj[i]) === Boo.STOP) return;
+    // Map of typeof and Object.toString values
+    var typeof_lookup = {
+        'undefined': 'Null',
+        'boolean': 'Boolean',
+        'number': 'Number',
+        'string': 'String',
+        'function': 'Function',
+        '[object Null]': 'Null',
+        '[object Boolean]': 'Boolean',
+        '[object String]': 'String',
+        '[object Number]': 'Number',
+        '[object Array]': 'Array',
+        '[object Function]': 'Function',
+        '[object RegExp]': 'RegExp'
+    };
+    // Tells the type of a variable according to the following rules:
+    //  - Undefineds are reported as null
+    //  - Nulls are reported as Null
+    //  - Objects without primitives are reported as Object (except for Array and RegExp)
+    function typeOf(v) {
+        var t = typeof(v);
+        if (t in typeof_lookup) return typeof_lookup[t];
+        // Check using Object.toString
+        t = Object.prototype.toString.call(v);
+        return typeof_lookup(t) || 'Object';
+    }
+    // Checks if the type of a value is the one given (multiple expected supported)
+    function typeIs(v, expected) {
+        var i, t = typeOf(v);
+        for (i = 1; i < arguments.length; i++) {
+            if (t === arguments[i]) return true;
         }
-    } else {
-        // For dictionaries we always pass the value and the key
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                if (iterator.call(context, obj[key], key) === Boo.STOP) return;
+        return false;
+    }
+
+    // Main namespace
+    var Boo = {
+            BOO_RUNTIME_VERSION: '0.0.1'
+        },
+        // Used as a unique indentifier when we want to stop iterating a generator
+        STOP = Boo.STOP = {};
+
+    // Used to return a value while iterating a generator
+    Boo.ReturnValue = function (v) {
+        this.value = v;
+    };
+
+    // Assertion error
+    Boo.AssertionError = function (message) {
+        this.name = 'AssertionError';
+        this.message = message;
+    };
+    Boo.AssertionError.prototype = new Error();
+    Boo.AssertionError.prototype.constructor = Boo.AssertionError;
+
+    // State for the module loader
+    var mod_waiting = {},
+        mod_defined = {};
+
+    // AMD style module loader. All Boo modules (files) wrap their
+    // contents in a call to this function. This implementation is
+    // intentionally very naive, expecting all dependencies to be
+    // already loaded in the correct order. It can be overriden
+    // to support on demand loading using RequireJs or CommonJs.
+    Boo.module = function (name, deps, factory) {
+        var i, dep, args, member, module,
+            refs = [];
+
+        // The first time we know about the module add it to the waiting list
+        if (!hop(mod_defined, name)) {
+            mod_waiting[name] = [name, deps, factory];
+        }
+
+        // Evaluate dependencies
+        for (i = 0; i < deps.length; i++) {
+            dep = deps[i];
+
+            // If the dependency is waiting to be resolved, do it now
+            if (hop(mod_waiting, dep)) {
+                args = mod_waiting[dep];
+                delete mod_waiting[dep];
+                mod_defined[dep] = mod_defined[dep] || null;
+                Boo.module.apply(this, args);
+            }
+
+            // The module should now be available
+            if (!hop(mod_defined, dep)) {
+                delete mod_waiting[dep];
+                throw new Error('Unable to load module ' + dep);
+            }
+
+            // Set the dependency as a reference
+            refs[i] = mod_defined[dep];
+        }
+
+        // Execute the module and pass references to its dependencies
+        module = factory.apply(mod_defined[name] || {}, refs);
+        mod_defined[name] = module;
+        delete mod_waiting[name];
+
+        // Register public members
+        // TODO: Handle nested levels
+        for (member in module) {
+            if (hop(module, member) && /^(object|function)$/.test(typeof(module[member]))) {
+                mod_defined[name + '.' + member] = module[member];
             }
         }
-    }
-};
+    };
 
-// Signals an iterator to stop and return a value
-Boo.stop = function (retval) {
-    Boo.STOP.retval = retval;
-    throw Boo.STOP;
-};
 
-// Generator factory
-Boo.generator = function (closure) {
-    return {next: closure};
-};
+    // Raises an exception annotating it with its location in the boo source
+    // In debug mode the compiler will route all raise statements thru this
+    // function, reporting the boo source filename and line where it was raised
+    Boo.raise = function (error, filename, line) {
+        error.boo_filename = filename;
+        error.boo_line = line;
+        throw error;
+    };
 
-// Similar to Python's range function this will return an array of integers
-// based on the given parameters.
-Boo.range = function (start, stop, step) {
-    if (arguments.length === 2) {
-        step = start < stop ? 1 : -1;
-    } else if (arguments.length === 1) {
-        stop = start;
-        start = 0;
-        step = 1;
-    }
+    // Note: We don't use the native forEach method since this is custom tailored
+    //       to the generated code. It handles unpacking and iteration stopage.
+    var each = Boo.each = function (obj, iterator, context) {
+        if (obj === null || typeof obj === 'undefined') return;
+        if (typeof obj === 'string') obj = obj.split('');
+        if (obj.length === +obj.length) {
+            // Mode is computed based on the following rules:
+            //   - If the callback only has one argument the value is passed as is
+            //   - If it has more than one the argument is unpacked (apply style invocation)
+            var i, l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
+            for (i = 0; i < l; i++) {
+                if (i in obj && iterator[mode](context, obj[i]) === STOP) return;
+            }
+        } else {
+            // For dictionaries we always pass the value and the key
+            for (var key in obj) {
+                if (hop(obj, key)) {
+                    if (iterator.call(context, obj[key], key) === STOP) return;
+                }
+            }
+        }
+    };
 
-    var values = [];
-    if (step > 0 && start >= stop || step < 0 && start <= stop) {
+    // Generator factory
+    //exports.generator = function (closure) {
+    //    return {next: closure};
+    //};
+
+    // Similar to Python's range function this will return an array of integers
+    // based on the given parameters.
+    var range = Boo.range = function (start, stop, step) {
+        if (arguments.length === 2) {
+            step = start < stop ? 1 : -1;
+        } else if (arguments.length === 1) {
+            stop = start;
+            start = 0;
+            step = 1;
+        }
+
+        var values = [];
+        if (step > 0 && start >= stop || step < 0 && start <= stop) {
+            return values;
+        }
+
+        while (step > 0 ? start < stop : start > stop) {
+            values.push(start);
+            start += step;
+        }
+
         return values;
-    }
+    };
 
-    while (step > 0 ? start < stop : start > stop) {
-        values.push(start);
-        start += step;
-    }
+    // Generate a list of pairs of key, value
+    var enumerate = Boo.enumerate = function (enumerable) {
+        // Strings/Arrays can be solved using zip/range
+        if (enumerable.length === +enumerable.length)
+            return zip([range(enumerable.length), enumerable]);
 
-    return values;
-};
-
-// Generate a list of pairs of key, value
-Boo.enumerate = function (enumerable) {
-    // Strings/Arrays can be solved using zip/range
-    if (enumerable.length === +enumerable.length)
-        return Boo.zip([Boo.range(enumerable.length), enumerable]);
-
-    var result = [];
-    Boo.each(enumerable, function (v, k) {
-        result.push([k, v]);
-    });
-    return result;
-};
-
-// Debug method to output information
-Boo.print = function (args) {
-    if (typeof console !== undefined && console.log) {
-        console.log.apply(console, args);
-    }
-};
-
-// Concatenates the elements of the arrays given as argument
-Boo.cat = function (args) {
-    var values = [],
-        add = function (v) { values.push(v); };
-
-    for (var i = 0, l = args.length; i < l; i++) {
-        Boo.each(args[i], add);
-    }
-
-    return values;
-};
-
-// Generates a string concatenating the elements in the array
-Boo.join = function (list, sep) {
-    var result = Boo.cat([list]);
-    return result.join(sep || ' ');
-};
-
-// Obtain a reversed version of the given array
-Boo.reversed = function (list) {
-    var result = Boo.cat([list]);
-    result.reverse();
-    return result;
-};
-
-// Calls a function for each element in the array
-Boo.map = function (list, callback) {
-    var result = [];
-    Boo.each(list, function (v) {
-        result.push(callback(v));
-    });
-    return result;
-};
-
-// Reduces a list of items using a callback to a single one
-Boo.reduce = function (list, callback, value) {
-    if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
-    var i = 0, l = +this.length;
- 
-    if (arguments.length < 3) {
-        if (l === 0) throw new TypeError("Array length is 0 and no third argument");
-        value = list[0];
-        i = 1;
-    }
- 
-    while (i < l) {
-        if (i in list) value = callback.call(undefined, value, list[i], i, list);
-        ++i;
-    }
- 
-    return value;
-};
-
-// Builds a list of lists using one item from each given array
-Boo.zip = function (args) {
-    var shortest = args.length || Boo.reduce(args, function (a, b) {
-        return a.length < b.length ? a : b;
-    });
-
-    var i, result = [], fn = function (arg) { return arg[i]; };
-    for (i = 0; i < shortest; i++) {
-        result[i] = Boo.map(args, fn);
-    }
-    return result;
-};
-
-// Converts any enumerable into an array, casting to a given type
-// If the enumerable is a number an array with that many elements is created
-Boo.array = function (type, enumerable) {
-    if (arguments.length === 1) {
-        enumerable = type;
-        type = null;
-    }
-
-    if (typeof enumerable === 'number') {
-        enumerable = new Array(enumerable);
-        for (var i = 0, l = enumerable.length; i < l; i++) {
-            enumerable[i] = null;
-        }
-    }
-
-    var result = [];
-    Boo.each(enumerable, function (v) {
-        result.push(type ? Boo.Lang.cast(v, type) : v);
-    });
-    return result;
-};
-
-// Runtime support for slicing
-Boo.slice = function (value, begin, end, step) {
-    begin = begin || 0;
-    if (begin < 0) begin = value.length + begin;
-
-    // Index access
-    if (arguments.length === 2) {
-        return value.slice(begin, begin + 1)[0];
-    }
-
-    end = end || value.length;
-    if (end < 0) end = value.length + end;
-    step = step || (begin <= end ? 1 : -1);
-    if (begin < end && step === 1) {
-        return value.slice(begin, end);
-    }
-
-    var result = [];
-    if ((begin < end && step > 0) || (begin > end && step < 0)) {
-        for (var i = begin; (begin <= end && i < end) || (begin > end && i > end); i += step) {
-            result.push(value[i]);
-        }
-    }
-    return (typeof value === 'string') ? result.join('') : result;
-};
-
-
-// Casts a value to the given type, raising an error if it's not possible
-Boo.cast = function (value, type) {
-    // TODO: This is an absolute hack!!!
-    var t = type, tof = typeof(value);
-    if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
-
-    if (tof === t)
-        return value;
-    else if (tof !== 'undefined' && t === 'object')
-        return value;
-    else if ((tof === 'undefined' || value === null) && t === 'number')
-        return 0;
-    else if ((tof === 'undefined' || value === null) && t === 'string')
-        return '';
-    else
-        throw new Error('Unable to cast from ' + tof + ' to ' + type);
-};
-
-// Casts a value to the given type, resulting in a null if it's not possible
-Boo.trycast = function (value, type) {
-    try {
-        return Boo.Lang.cast(value, type);
-    } catch (e) {
-        return null;
-    }
-};
-
-// Makes sure a value is enumerable
-Boo.enumerable = function (value) {
-    if (typeof value === 'string' || typeof value === 'object' && value.length === +value.length) {
-        return value;
-    }
-
-    throw new Error('Unable to cast to enumerable the value "' + value + '"');
-};
-
-
-////////// Operators /////////////////////////////////////////////////
-
-// Compares two values for equality
-Boo.op_Equality = function (lhs, rhs) {
-    return lhs == rhs;
-};
-
-// Perform the modulus operation on two operands
-Boo.op_Modulus = function (lhs, rhs) {
-    // Check if we should format a string
-    if (typeof lhs === 'string' && typeof rhs === 'object') {
-        return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-            return rhs[capt];
-        });
-    } else {
-        return lhs % rhs;
-    }
-};
-
-// Perform an addition operation on two operands
-Boo.op_Addition = function (lhs, rhs) {
-    return lhs + rhs;
-};
-
-// Perform a multiply operation on two operands
-Boo.op_Multiply = function (lhs, rhs) {
-    if (typeof lhs === 'number') {
-        var _ = lhs;
-        lhs = rhs;
-        rhs = _;
-    }
-    if (typeof lhs === 'string' && typeof rhs === 'number')
-        return Boo.Lang.String.op_Multiply(lhs, rhs);
-    if (typeof lhs === 'object' && lhs.length === +lhs.length)
-        return Boo.Lang.Array.op_Multiply(rhs, lhs);
-
-    return lhs * rhs;
-};
-
-// Perform a regexp match
-Boo.op_Match = function (lhs, rhs) {
-    if (typeof rhs === 'string') rhs = new RegExp(rhs);
-    return rhs.test(lhs);
-};
-Boo.op_NotMatch = function (lhs, rhs) {
-    return !Boo.op_Match(lhs, rhs);
-};
-
-
-// Runtime support for String type
-Boo.String = {
-    op_Modulus: function (lhs, rhs) {
-        return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-            return rhs[capt];
-        });
-    },
-    op_Multiply: function (lhs, rhs) {
-        var result = new Array(rhs);
-        while (rhs--) result[rhs] = lhs;
-        return result.join('');
-    }
-};
-
-// Runtime support for Array type
-Boo.Array = {
-    // Checks for equality between two arrays, comparing nested arrays but not objects
-    op_Equality: function (lhs, rhs) {
-        if (lhs.length !== rhs.length) return false;
-        for (var i = 0; i < lhs.length; i++) {
-            if (lhs[i] === rhs[i]) continue;
-
-            // Check nested arrays
-            if (typeof lhs[i] === 'object' && typeof rhs[i] === 'object' && lhs[i].length === +lhs[1].length) {
-                if (Boo.Array.op_Equality(lhs[i], rhs[i])) continue;
-            }
-
-            return false;
-        }
-        return true;
-    },
-    // Checks if an item exists inside an array
-    op_Member: function (itm, lst) {
-        return lst.indexOf(itm) !== -1;
-    },
-    // Checks if an item does not exists inside an array
-    op_NotMember: function (itm, lst) {
-        return lst.indexOf(itm) === -1;
-    },
-    // Perform addition between two arrays
-    op_Addition: function (lhs, rhs) {
-        return lhs.concat(rhs);
-    },
-    // Perform multiply on an array
-    op_Multiply: function (lhs, rhs) {
         var result = [];
-        for (var i = 0; i < rhs; i++) {
-            result = result.concat(lhs);
+        each(enumerable, function (v, k) {
+            result.push([k, v]);
+        });
+        return result;
+    };
+
+    // Debug method to output information
+    Boo.print = function (args) {
+        if (typeof console !== undefined && console.log) {
+            console.log.apply(console, args);
+        }
+    };
+
+    // Concatenates the elements of the arrays given as argument
+    var cat = Boo.cat = function (args) {
+        var values = [],
+            add = function (v) { values.push(v); };
+
+        for (var i = 0, l = args.length; i < l; i++) {
+            each(args[i], add);
+        }
+
+        return values;
+    };
+
+    // Generates a string concatenating the elements in the array
+    Boo.join = function (list, sep) {
+        var result = cat([list]);
+        return result.join(sep || ' ');
+    };
+
+    // Obtain a reversed version of the given array
+    Boo.reversed = function (list) {
+        var result = cat([list]);
+        result.reverse();
+        return result;
+    };
+
+    // Calls a function for each element in the array
+    var map = Boo.map = function (list, callback) {
+        var result = [];
+        each(list, function (v) {
+            result.push(callback(v));
+        });
+        return result;
+    };
+
+    // Reduces a list of items using a callback to a single one
+    var reduce = Boo.reduce = function (list, callback, value) {
+        if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
+        var i = 0, l = +this.length;
+     
+        if (arguments.length < 3) {
+            if (l === 0) throw new TypeError("Array length is 0 and no third argument");
+            value = list[0];
+            i = 1;
+        }
+     
+        while (i < l) {
+            if (i in list) value = callback.call(undefined, value, list[i], i, list);
+            ++i;
+        }
+     
+        return value;
+    };
+
+    // Builds a list of lists using one item from each given array
+    var zip = Boo.zip = function (args) {
+        var shortest = args.length || reduce(args, function (a, b) {
+            return a.length < b.length ? a : b;
+        });
+
+        var i, result = [], fn = function (arg) { return arg[i]; };
+        for (i = 0; i < shortest; i++) {
+            result[i] = map(args, fn);
         }
         return result;
-    }
-};
+    };
+
+    // Converts any enumerable into an array, casting to a given type
+    // If the enumerable is a number an array with that many elements is created
+    Boo.array = function (type, enumerable) {
+        if (arguments.length === 1) {
+            enumerable = type;
+            type = null;
+        }
+
+        if (typeIs(enumerable, 'Number')) {
+            enumerable = new Array(enumerable);
+            for (var i = 0, l = enumerable.length; i < l; i++) {
+                enumerable[i] = null;
+            }
+        }
+
+        var result = [];
+        each(enumerable, function (v) {
+            result.push(type ? cast(v, type) : v);
+        });
+        return result;
+    };
+
+    // Runtime support for slicing on arrays
+    Boo.slice = function (value, begin, end, step) {
+        begin = begin || 0;
+        if (begin < 0) begin = value.length + begin;
+
+        // Index access
+        if (arguments.length === 2) {
+            return value.slice(begin, begin + 1)[0];
+        }
+
+        end = end || value.length;
+        if (end < 0) end = value.length + end;
+        step = step || (begin <= end ? 1 : -1);
+        if (begin < end && step === 1) {
+            return value.slice(begin, end);
+        }
+
+        var result = [];
+        if ((begin < end && step > 0) || (begin > end && step < 0)) {
+            for (var i = begin; (begin <= end && i < end) || (begin > end && i > end); i += step) {
+                result.push(value[i]);
+            }
+        }
+        return (typeof value === 'string') ? result.join('') : result;
+    };
+
+    // Casts a value to the given type, raising an error if it's not possible
+    var cast = Boo.cast = function (value, type) {
+        // TODO: This is an absolute hack!!!
+        var t = type, tof = typeof(value);
+        if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
+
+        if (tof === t)
+            return value;
+        else if (tof !== 'undefined' && t === 'object')
+            return value;
+        else if ((tof === 'undefined' || value === null) && t === 'number')
+            return 0;
+        else if ((tof === 'undefined' || value === null) && t === 'string')
+            return '';
+        else
+            throw new Error('Unable to cast from ' + tof + ' to ' + type);
+    };
+
+    // Casts a value to the given type, resulting in a null if it's not possible
+    Boo.trycast = function (value, type) {
+        try {
+            return cast(value, type);
+        } catch (e) {
+            return null;
+        }
+    };
+
+    // Makes sure a value is enumerableo
+    // TODO: When do we need this?
+    Boo.enumerable = function (value) {
+        if (typeIs(value, 'String', 'Array')) {
+            return value;
+        }
+
+        throw new Error('Unable to cast to enumerable the value "' + value + '" with type ' + typeOf(value));
+    };
+
+    // Obtains the length of a value
+    Boo.len = function (value) {
+        if (value.length === +value.length) {
+            return value.length;
+        }
+        if (value !== null && typeof value === 'object') {
+            if (typeof value.length === 'function') {
+                return value.length();
+            }
+            var k, length = 0;
+            for (k in value) {
+                if (hop(value, k)) {
+                    length++;
+                }
+            }
+            return length;
+        }
+        throw new Error('Unable to obtain length for value');
+    };
+
+
+    ////////// Operators /////////////////////////////////////////////////
+
+    // Compares two values for equality
+    Boo.op_Equality = function (lhs, rhs) {
+        return lhs == rhs;
+    };
+
+    // Perform the modulus operation on two operands
+    Boo.op_Modulus = function (lhs, rhs) {
+        // Check if we should format a string
+        if (typeIs(lhs, 'String') && typeIs(rhs, 'Array')) {
+            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+                return rhs[capt];
+            });
+        } else {
+            return lhs % rhs;
+        }
+    };
+
+    // Perform an addition operation on two operands
+    Boo.op_Addition = function (lhs, rhs) {
+        return lhs + rhs;
+    };
+
+    // Perform a multiply operation on two operands
+    Boo.op_Multiply = function (lhs, rhs) {
+        if (typeIs(lhs, 'Number')) {
+            var _ = lhs;
+            lhs = rhs;
+            rhs = _;
+        }
+        if (typeIs(lhs, 'String') && typeIs(rhs, 'Number'))
+            return Boo.String.op_Multiply(lhs, rhs);
+        if (typeIs(lhs, 'Array'))
+            return Boo.Array.op_Multiply(rhs, lhs);
+
+        return lhs * rhs;
+    };
+
+    // Perform a regexp match
+    Boo.op_Match = function (lhs, rhs) {
+        // TODO: A string shall mean substring search instead of regexp?
+        if (typeIs(rhs, 'string')) rhs = new RegExp(rhs);
+        return rhs.test(lhs);
+    };
+    Boo.op_NotMatch = function (lhs, rhs) {
+        return !Boo.op_Match(lhs, rhs);
+    };
+
+
+    // Runtime support for String type
+    Boo.String = {
+        op_Modulus: function (lhs, rhs) {
+            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
+                return rhs[capt];
+            });
+        },
+        op_Multiply: function (lhs, rhs) {
+            var result = new Array(rhs);
+            while (rhs--) result[rhs] = lhs;
+            return result.join('');
+        }
+    };
+
+    // Runtime support for Array type
+    Boo.Array = {
+        // Checks for equality between two arrays, comparing nested arrays but not objects
+        op_Equality: function (lhs, rhs) {
+            if (lhs.length !== rhs.length) return false;
+            for (var i = 0; i < lhs.length; i++) {
+                if (lhs[i] == rhs[i]) continue;
+                // Check nested arrays
+                if (typeIs(lhs[i], 'Array') && typeIs(rhs[i], 'Array') && Boo.Array.op_Equality(lhs[i], rhs[i]))
+                    continue;
+
+                return false;
+            }
+            return true;
+        },
+        // Checks if an item exists inside an array
+        op_Member: function (itm, lst) {
+            return lst.indexOf(itm) !== -1;
+        },
+        // Checks if an item does not exists inside an array
+        op_NotMember: function (itm, lst) {
+            return lst.indexOf(itm) === -1;
+        },
+        // Perform addition between two arrays
+        op_Addition: function (lhs, rhs) {
+            return lhs.concat(rhs);
+        },
+        // Perform multiply on an array
+        op_Multiply: function (lhs, rhs) {
+            var i, result = [];
+            for (i = 0; i < rhs; i++) {
+                result = result.concat(lhs);
+            }
+            return result;
+        }
+    };
+
+    Boo.Duck = {
+        invoke: function (target, method, args) {
+            if (!target || typeof target[method] !== 'function') {
+                throw new Error('Method ' + method + ' not found in target ' + target.toString());
+            }
+            return target[method].apply(target, args);
+        },
+        set: function (target, property, value) {
+            if (!target) {
+                throw new Error('Target not found when setting property ' + property);
+            }
+            target[property] = value;
+        },
+        get: function (target, property) {
+            if (!target) {
+                throw new Error('Target not found when getting property ' + property);
+            }
+            var value = target[property];
+            return typeof value === 'undefined' ? null : value;
+        },
+        binary: function (op, lhs, rhs) {
+            var lhs_t = typeOf(lhs),
+                rhs_t = typeOf(rhs);
+
+            switch (op) {
+            case 'op_Addition':
+                return Boo.op_Addition(lhs, rhs);
+            case 'op_Subtraction':
+                return Boo.op_Subtraction(lhs, rhs);
+            case 'op_Multiply':
+                return Boo.op_Multiply(lhs, rhs);
+            default:
+                throw new Error('Unsupported binary operator (' + op + ') for duck types');
+            }
+        }
+    };
+
+    // Constructor for hashes
+    Boo.Hash = function (items) {
+        // Make sure we call it as a constructor
+        if (!(this instanceof Boo.Hash)) {
+            return new Boo.Hash(items);
+        }
+
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                this[items[i][0]] = items[i][1];
+            }
+        }
+    };
+
+    // Obtains the keys of an object
+    Boo.Hash.prototype.keys = function () {
+        var result = [], enumerated = enumerate(this);
+        for (var i = 0, l = enumerated.length; i < l; i++) {
+            result.push(enumerated[i][0]);
+        }
+        return result;
+    };
+
+    // Obtains the values of an object
+    Boo.Hash.prototype.values = function () {
+        var result = [], enumerated = enumerate(this);
+        for (var i = 0, l = enumerated.length; i < l; i++) {
+            result.push(enumerated[i][1]);
+        }
+        return result;
+    };
+
+    // TODO: This should be handled by the compiler!
+    Boo.Hash.prototype.get_Item = function (key) {
+        return this[key];
+    };
+    Boo.Hash.prototype.set_Item = function (key, value) {
+        this[key] = value;
+    };
+
+
+    exports.Boo = Boo;
+})(this);

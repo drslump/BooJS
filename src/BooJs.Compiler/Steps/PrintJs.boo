@@ -179,29 +179,69 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
 
     def OnModule(node as Module):
 
-        # HACK: ProcessMethodBodies step is too complex so we opt for reversing some
-        #       of the stuff it does instead of modifying it. Here we just ignore 
-        #       any modules it generates to support 'dynamic' features at runtime
-        if node.Name == 'CompilerGenerated':
-            WriteLine
-            Write '/*** CompilerGenerated ***********************'
-            WriteLine
+        deps = List of string()
+        refs = List of string()
+        extr = {}
 
-        Visit(node.Namespace)
+        for imp in node.Imports:
+            mie = imp.Expression as MethodInvocationExpression
+            if mie:
+                for alias in mie.Arguments:
+                    trycast = alias as TryCastExpression
+                    if trycast:
+                        deps.Add(imp.Namespace + '.' + trycast.Target)
+                        if imp.Alias:
+                            refs.Add(imp.Alias + '_' + trycast.Type.ToString())
+                        else:
+                            refs.Add(trycast.Type.ToString())
+                    else:
+                        deps.Add(imp.Namespace + '.' + alias.ToString())
+                        if imp.Alias:
+                            refs.Add(imp.Alias + '_' + alias.ToString())
+                            extr[imp.Alias] = extr[imp.Alias] or []
+                            (extr[imp.Alias] as List).Add(alias.ToString())
+                        else:
+                            refs.Add(alias.ToString())
+            else:
+                if not imp.Alias:
+                    print 'Wildcard import (' + imp.Expression + ') not supported'
+                else:
+                    deps.Add(imp.Namespace)
+                    refs.Add(imp.Alias.ToString())
+                    #print "define('${node.Namespace.Name}', ['${imp.Alias}'], function(${imp.Alias}){})"
 
-        if node.Imports.Count > 0:
-            Visit(node.Imports)
-            WriteLine()
+
+        ns = (node.Namespace.Name if node.Namespace else '')
+        Write "Boo.module('$ns', ["
+        if len(deps):
+            Write "'" + join(deps, "', '") + "'"
+        Write '], function('
+        if len(refs):
+            Write join(refs, ", ")
+        Write ')'
+        WriteOpenBrace
+
+        # TODO: Instead of creating new vars modify the references to these values.
+        for itm in extr:
+            WriteIndented 'var ' + itm.Key + ' = '
+            WriteOpenBrace
+            for i as int, v in enumerate(itm.Value):
+                WriteIndented v + ': ' + itm.Key + '_' + v
+                if i < len(itm.Value)-1: WriteLine ','
+                else: WriteLine
+            WriteCloseBrace
+            WriteLine ';'
+
 
         for member in node.Members:
             Visit(member)
             WriteLine()
 
         if node.Globals:
-            Visit(node.Globals) #.Statements)
+            Visit(node.Globals)
 
-        if node.Name == 'CompilerGenerated':
-            WriteLine '*** /CompilerGenerated **********************/'
+        WriteCloseBrace
+        WriteLine ');'
 
     def OnClassDefinition(node as ClassDefinition):
         for member as TypeMember in node.Members:
@@ -413,11 +453,20 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Visit node.Expression
 
     def OnRaiseStatement(node as RaiseStatement):
-        WriteIndented 'throw '
-        # TODO: We should make sure it's a constructor
-        if node.Exception isa MethodInvocationExpression:
-            Write 'new '
-        Visit node.Exception
+        if _context.Parameters.Debug:
+            WriteIndented 'Boo.raise('
+            # TODO: We should make sure it's a constructor
+            if node.Exception isa MethodInvocationExpression:
+                Write 'new '
+            Visit node.Exception
+            lex = node.Exception.LexicalInfo
+            Write ", '$(lex.FileName)', $(lex.Line))"
+        else:
+            WriteIndented 'throw '
+            # TODO: We should make sure it's a constructor
+            if node.Exception isa MethodInvocationExpression:
+                Write 'new '
+            Visit node.Exception
 
 
     #### Statements #########################################################
@@ -542,7 +591,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         Write "].join('')" if use_join
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
-        return if ApplyTransform(node, node.Arguments.ToArray())
+        return if ApplyTransform(node, node.Target, node.Arguments.ToArray())
 
         # "Eval" calls take the form:
         #
@@ -768,7 +817,7 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
         WriteLine ';'
 
 
-    def ApplyTransform(node as Node, args as (Node)) as bool:
+    def ApplyTransform(node as Node, target as Node, args as (Node)) as bool:
         return false if not node.ContainsAnnotation('JsTransform')
 
         Map node
@@ -779,22 +828,23 @@ class BooJsPrinterVisitor(Visitors.TextEmitter):
                 if idx < 0 or idx > len(args):
                     # TODO: Use compiler error
                     raise 'Invalid argument index {0}' % (idx,)
-                Visit args[idx]
+                if idx == 0:
+                    mre = target as MemberReferenceExpression
+                    if mre:
+                        Visit mre.Target
+                    else:
+                        Visit target
+                else:
+                    Visit args[idx-1]
             else:
                 Write part
         return true
 
     def WriteLocals(locals as LocalCollection):
-    """ Write locals ensuring they are not repeated """
-        # TODO: Filter locals in Clean step
-        found = []
         for local in locals:
-            continue if local.Name == '$locals'
-            continue if local.Name in found
-            found.Push(local.Name)
             Visit local
-
-        WriteLine if len(found)
+            WriteIndented
+        WriteLine if len(locals)
 
     def WriteOpenBrace():
         Write '{'

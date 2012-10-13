@@ -30,4 +30,4 @@ print 'charAt', a.charAt(1)
 
 # Expression blocks
 assert {x as string| x+x }(a) == 'foofoo'
-assert {cast(string, a+a)}() == 'foofoo'  # TODO: Inference not working!!!
+assert { a + a }() == 'foofoo'
