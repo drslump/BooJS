@@ -1,84 +1,84 @@
 namespace BooJs.Compiler.SourceMap
 
-import Boo.Lang.Compiler.Ast
 
 class MapBuilder:
 
     final static VERSION = 3
 
-    [Property(Column)]
-    column = 0
+    [Property(SourceRoot)]
+    sourceRoot as string
 
     [Property(File)]
     file as string
 
-    [Property(SourceRoot)]
-    sourceRoot as string
-
-    sources as List[of string]
-    names as List[of string]
-    mappings as List[of string]
-
-    segments as List[of string]
+    sources = List[of string]()
+    names = List[of string]()
+    mappings = List[of string]()
+    segments = List[of string]()
 
     last_source as int
     last_target_column as int
+    last_target_line as int
     last_name as int
     last_source_column as int
     last_source_line as int
 
-    def constructor():
-        sources = List[of string]()
-        names = List[of string]()
-        mappings = List[of string]()
-        segments = List[of string]()
+    def Map(source as string, sline as int, scolumn as int, tline as int, tcolumn as int, ident as string):
+        # Adjust lines
+        while last_target_line < tline:
+            last_target_line++
+            if len(segments):
+                mappings.Add(segments.Join(','))
+                segments.Clear()
+                last_target_column = 0
+            else:
+                mappings.Add('')
 
-    def AddSource(source as string):
-        sources.Add(source)
-
-    def NewLine():
-        column = last_target_column = 0
-        if len(segments):
-            mappings.Add(segments.Join(','))
-            segments.Clear()
-        else:
-            mappings.Add('')
-
-    def Segment(node as Node):
-        # Extract the name from the node if suitable
-        if node isa ReferenceExpression:
-            name = (node as ReferenceExpression).Name
-            if name:
-                names.AddUnique(name)
-            Segment(node.LexicalInfo, name)
-        else:
-            Segment(node.LexicalInfo, null)
-
-    def Segment(lex as LexicalInfo, name as string):
         # The generated column
-        segment = Base64VLQ.encode(column - last_source_column)
-        last_target_column = column
+        segment = Base64VLQ.encode(tcolumn - last_target_column)
+        last_target_column = tcolumn
 
         # The source file
-        idx = sources.IndexOf(lex.FileName)
+        sources.AddUnique(source)
+        idx = sources.IndexOf(source)
         segment += Base64VLQ.encode(idx - last_source)
         last_source = idx
 
         # The source line and column
-        segment += Base64VLQ.encode((lex.Line-1) - last_source_line)
-        last_source_line = lex.Line - 1
-        segment += Base64VLQ.encode((lex.Column-1) - last_source_column)
-        last_source_column = lex.Column - 1
+        segment += Base64VLQ.encode(sline - last_source_line)
+        last_source_line = sline
+        segment += Base64VLQ.encode(scolumn - last_source_column)
+        last_source_column = scolumn
 
-        if name:
-            idx = names.IndexOf(name)
+        if ident:
+            names.AddUnique(ident)
+            idx = names.IndexOf(ident)
             segment += Base64VLQ.encode(idx - last_name)
             last_name = idx
 
         segments.Add(segment)
 
 
-    def ToString():
+    def ToHash():
+        # Make sure we have added all the segments
+        if len(segments):
+            mappings.Add(segments.Join(','))
+
+        h = {
+            'version': VERSION,
+            'file': file,
+            'sourceRoot': sourceRoot,
+            'sources': sources,
+            'names': names,
+            'mappings': mappings.Join(';')
+        }
+        return h
+
+    def ToJSON():
+        # Make sure we have added all the segments
+        if len(segments):
+            mappings.Add(segments.Join(','))
+
         return """
             {
                 "version": $(VERSION),

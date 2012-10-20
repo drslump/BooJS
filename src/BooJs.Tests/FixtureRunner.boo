@@ -81,7 +81,7 @@ class FixtureRunner:
 
     static def setupCompiler():
         if not _comp:
-            pipeline = Pipelines.ProduceBooJs()
+            pipeline = Pipelines.ProduceJs()
             _comp = newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true
 
@@ -105,12 +105,17 @@ class FixtureRunner:
             self._engine.SetGlobalValue('console', console)
 
             # Load runtime
-            self._engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.js')
+            stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('Boo.js')
+            reader = System.IO.StreamReader(stream)
+            self._engine.Execute(reader.ReadToEnd())
+
             # Patch the runtime to be compatible with Jurassic
             self._engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
 
             # Load tests support types
-            self._engine.ExecuteFile('/Users/drslump/www/boojs/tests/BooJs.Tests.Support.js')
+            stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('BooJs.Tests.Support.js')
+            reader = System.IO.StreamReader(stream)
+            self._engine.Execute(reader.ReadToEnd())
 
         return self._engine
 

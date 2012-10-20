@@ -35,7 +35,7 @@ class BooJsCompiler:
         
 
 def newBooJsCompiler():
-    return newBooJsCompiler(Pipelines.ProduceBooJs())
+    return newBooJsCompiler(Pipelines.ProduceJs())
 
 def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     parameters = newBooJsCompilerParameters()

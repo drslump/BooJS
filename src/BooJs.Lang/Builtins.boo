@@ -5,7 +5,7 @@ import BooJs.Lang.Extensions
 
 class Builtins:
 
-    [JsAlias("'%%COMPILER_VERSION%%'")]
+    [Transform( '%%COMPILER_VERSION%%' )]
     static public final BOO_COMPILER_VERSION = '%%COMPILER_VERSION%%'
     static public final BOO_RUNTIME_VERSION = 'defined in boo.js'
 
@@ -38,10 +38,10 @@ class Builtins:
             get: pass
             set: pass
 
-        [JsAlias('Boo.Hash')]
+        [Transform( Boo.Hash() )]
         def constructor():
             pass
-        [JsAlias('Boo.Hash')]
+        [Transform( Boo.Hash($1) )]
         def constructor(items as object*):
             pass
 
@@ -51,7 +51,7 @@ class Builtins:
         def values() as (object):
             pass
 
-        [JsTransform('Boo.enumerate($0)')]
+        [Transform( Boo.enumerate($0) )]
         def items() as ((object)):
             pass
 
@@ -59,10 +59,10 @@ class Builtins:
     class AssertionError(Error):
     """ BooJs specific error to signal failures in assertions
     """
-        [JsAlias('Boo.AssertionError')]
+        [Transform( Boo.AssertionError() )]
         def constructor():
             pass
-        [JsAlias('Boo.AssertionError')]
+        [Transform( Boo.AssertionError($1) )]
         def constructor(msg as string):
             pass
 
@@ -96,7 +96,6 @@ class Builtins:
     #    pass
     #static def join(items as Array) as string:
     #    pass
-
     static def map(items as (object), callback as callable) as (object):
         pass
 

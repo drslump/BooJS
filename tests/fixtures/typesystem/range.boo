@@ -4,7 +4,6 @@ continue 2
 break 0
 return 11
 """
-
 def loop_with_return():
 	for i in range(3):
 		return i if i > 0
@@ -12,6 +11,8 @@ def loop_with_return():
 res = []
 for i in range(3):
 	res.push(i)
+
+.res.push(10)
 print join(res, ' ')
 
 for i in range(3):

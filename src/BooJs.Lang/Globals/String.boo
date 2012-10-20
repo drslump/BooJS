@@ -4,27 +4,27 @@ import BooJs.Lang.Extensions
 
 class String(Object):
     # IMPORTANT: Boo requires explicit/implicit operators to use the actual types
-    [JsTransform( parseInt($1) )]
+    [Transform( parseInt($1) )]
     static def op_Explicit(value as String) as NumberInt:
         pass
 
-    [JsTransform($1 == $2)]
+    [Transform($1 == $2)]
     static def op_Equality(lhs as string, rhs as string) as bool:
         pass
 
-    [JsTransform($1 + $2)]
+    [Transform($1 + $2)]
     static def op_Addition(lhs as string, rhs as string) as string:
         pass
 
     # Multiply operator: 'foo' * 2 --> 'foofoo'
-    [JsAlias('Boo.String.op_Multiply')]
+    [Transform( Boo.String.op_Multiply($1, $2) )]
     static def op_Multiply(lhs as string, rhs as int) as string:
         pass
     # Formatting: '{0} {1}' % ('foo', 'bar')
-    [JsAlias('Boo.String.op_Modulus')]
+    [Transform( Boo.String.op_Modulus($1, $2) )]
     static def op_Modulus(lhs as string, rhs as (object)) as string:
         pass
-    [JsAlias('Boo.String.op_Modulus')]
+    [Transform( Boo.String.op_Modulus($1, $2) )]
     static def op_Modulus(lhs as string, rhs as Array) as string: #IEnumerable):
         pass
 

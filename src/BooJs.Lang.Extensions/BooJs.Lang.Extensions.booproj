@@ -43,9 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsRewrite.boo" />
-    <Compile Include="JsAlias.boo" />
-    <Compile Include="JsTransform.boo" />
+    <Compile Include="Transform.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

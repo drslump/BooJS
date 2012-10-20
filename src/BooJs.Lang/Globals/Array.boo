@@ -4,22 +4,22 @@ import BooJs.Lang.Extensions
 
 class Array(Object):
 
-    [JsAlias('Boo.Array.op_Equality')]
+    [Transform( Boo.Array.op_Equality($1, $2) )]
     static def op_Equality(lhs as Array, rhs as Array) as bool:
         pass
-    [JsAlias('Boo.Array.op_Equality')]
+    [Transform( Boo.Array.op_Equality($1, $2) )]
     static def op_Equality(lhs as object*, rhs as object*) as bool:
         pass
-    [JsAlias('Boo.Array.op_Member')]
+    [Transform( Boo.Array.op_Member($1, $2) )]
     static def op_Member(lhs as Array, rhs as object) as bool:
         pass
-    [JsTransform('!Boo.Array.op_Member($1, $2)')]
+    [Transform( not Boo.Array.op_Member($1, $2) )]
     static def op_NotMember(lhs as Array, rhs as object) as bool:
         pass
-    [JsAlias('Boo.Array.op_Addition')]
+    [Transform( Boo.Array.op_Addition($1, $2) )]
     static def op_Addition(lhs as Array, rhs as Array) as Array:
         pass
-    [JsAlias('Boo.Array.op_Multiply')]
+    [Transform( Boo.Array.op_Multiply($1, $2) )]
     static def op_Multiply(lhs as Array, rhs as int) as Array:
         pass
 
@@ -145,7 +145,4 @@ class Array(Object):
 
     static def isArray(arg as object) as bool:
         pass
-
-
-
 

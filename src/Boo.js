@@ -74,7 +74,7 @@
     // intentionally very naive, expecting all dependencies to be
     // already loaded in the correct order. It can be overriden
     // to support on demand loading using RequireJs or CommonJs.
-    Boo.define = function (name, deps, factory) {
+    Boo.define = function (name, deps, factory, sourcemap) {
         var i, dep, args, member, module,
             refs = [];
 
@@ -147,6 +147,9 @@
         callback.apply(undefined, args);
     };
 
+    // Registers a source map. Does nothing by default.
+    Boo.sourcemap = function (srcmap) {
+    };
 
     // Raises an exception annotating it with its location in the boo source
     // In debug mode the compiler will route all raise statements thru this

@@ -30,15 +30,15 @@ class Number(Object):
 
 class NumberInt(Number):
     # Handle integer divisions
-    [JsTransform( parseInt($1 / $2) )]
+    [Transform( parseInt($1 / $2) )]
     static def op_Division(lhs as int, rhs as int) as int:
         pass
     # Exponentiation
-    [JsTransform( Math.pow($1, $2) )]
+    [Transform( Math.pow($1, $2) )]
     static def op_Exponentiation(lhs as int, rhs as int) as int:
         pass
 
-    [JsTransform( Boo.String.op_Multiply($2, $1) )]
+    [Transform( Boo.String.op_Multiply($2, $1) )]
     static def op_Multiply(lhs as int, rhs as string) as string:
         pass
 
@@ -57,7 +57,7 @@ class NumberUInt(NumberInt):
 
 
 class NumberDouble(Number):
-    [JsTransform( Math.pow($1, $2) )]
+    [Transform( Math.pow($1, $2) )]
     static def op_Exponentiation(lhs as double, rhs as double) as double:
         pass
 

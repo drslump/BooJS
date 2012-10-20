@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler</RootNamespace>
     <AssemblyName>BooJs.Compiler</AssemblyName>
-    <OldToolsVersion>3.5</OldToolsVersion>
     <BooBinPath>..\..\lib\</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,6 +49,12 @@
     </Reference>
     <Reference Include="Boo.Lang.PatternMatching">
       <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
+    </Reference>
+    <Reference Include="Jurassic">
+      <HintPath>..\BooJs.Tests\lib\Jurassic.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.Useful">
+      <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -99,13 +104,27 @@
     <Compile Include="TypeSystem\ReflectionProvider.boo" />
     <Compile Include="TypeSystem\Services.boo" />
     <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
-    <Compile Include="Steps\CleanupAst.boo" />
     <Compile Include="Steps\ExpandDuckTypedExpressions.boo" />
     <Compile Include="Steps\IntroduceGlobalNamespaces.boo" />
+    <Compile Include="Steps\MozillaAst.boo" />
+    <Compile Include="Mozilla\Serializer.boo" />
+    <Compile Include="Mozilla\Visitor.boo" />
+    <Compile Include="Mozilla\Printer.boo" />
+    <Compile Include="Mozilla\SourceMapPrinter.boo" />
+    <Compile Include="Mozilla\JsPrinter.boo" />
+    <Compile Include="Visitors\MozillaAstVisitor.boo" />
+    <Compile Include="Steps\PrintAst.boo" />
+    <Compile Include="Mozilla\AstPrinter.boo" />
+    <Compile Include="Steps\PrepareAst.boo" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SourceMap\" />
-    <Folder Include="TypeSystem\" />
+    <EmbeddedResource Include="resources\escodegen.js">
+      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+      <LogicalName>escodegen.js</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <ItemGroup>
+    <Folder Include="Visitors\" />
+  </ItemGroup>
 </Project>

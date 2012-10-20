@@ -25,7 +25,7 @@ def parseCommandLine(argv as (string)):
         return null
 
 def selectPipeline(cmdLine as CommandLine):
-    return Pipelines.ProduceBooJs()
+    return Pipelines.ProduceJs()
     
 def configureParams(cmdLine as CommandLine, params as BooJs.Compiler.CompilerParameters):
     for fname in cmdLine.SourceFiles():

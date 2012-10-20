@@ -10,7 +10,6 @@
     <RootNamespace>BooJs.Lang</RootNamespace>
     <UsePartialTypes>false</UsePartialTypes>
     <AssemblyName>BooJs.Lang</AssemblyName>
-    <OldToolsVersion>3.5</OldToolsVersion>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <Strict>False</Strict>

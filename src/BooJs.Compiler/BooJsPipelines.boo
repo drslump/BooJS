@@ -81,8 +81,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 
         # Prepare the AST to be printed
-        Add(Steps.CleanupAst())
-
+        Add(Steps.PrepareAst())
 
         #for step in self: print step
 
@@ -91,10 +90,12 @@ class ProduceBoo(Compile):
     def constructor():
         Add(PrintBoo())
 
-
-class ProduceBooJs(Compile):
+class ProduceJs(Compile):
     def constructor():
-        #Add(PrintAst())
-        #Add(PrintBoo())
-        Add(Steps.PrintBooJs())
+        Add(Steps.MozillaAst())
+        Add(Steps.PrintJs())
 
+class ProduceAst(Compile):
+    def constructor():
+        Add(Steps.MozillaAst())
+        Add(Steps.PrintAst())

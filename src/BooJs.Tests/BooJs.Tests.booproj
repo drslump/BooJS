@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Test</RootNamespace>
     <AssemblyName>BooJs.Compiler.Test</AssemblyName>
-    <OldToolsVersion>3.5</OldToolsVersion>
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -92,5 +91,17 @@
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Support\" />
+    <Folder Include="resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Boo.js">
+      <Link>resources\Boo.js</Link>
+      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+      <LogicalName>Boo.js</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\BooJs.Tests.Support.js">
+      <LogicalName>BooJs.Tests.Support.js</LogicalName>
+      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
