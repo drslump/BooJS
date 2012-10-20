@@ -8,4 +8,6 @@ import BooJs.Lang.Runtime.Services as RuntimeServices
 class ExpandDuckTypedExpressions(BooStep):
 
     override def GetDuckTypingServicesType() as IType:
+    """ Override the Runtime Services class
+    """
         return TypeSystemServices.Map(typeof(RuntimeServices))

@@ -37,7 +37,7 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         ReplaceCurrentNode repl
 
     def OnTimeSpanLiteralExpression(node as TimeSpanLiteralExpression):
-    """ Convert timestan literal values to milliseconds
+    """ Convert timespan literal values to milliseconds
     """
         ReplaceCurrentNode IntegerLiteralExpression(Value: node.Value.TotalMilliseconds)
 

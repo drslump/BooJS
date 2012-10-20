@@ -6,10 +6,6 @@ import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
 import Boo.Lang.Compiler.TypeSystem(IType, IMethod)
 import Boo.Lang.Compiler.TypeSystem.Services(TypeCompatibilityRules)
 
-# MonoDevelop perfoms the compilation using its own Boo assemblies which do not contain this class
-# We have to replicate the whole class here to allow compilation from the IDE and from msbuild
-#import Boo.Lang.Compiler.Steps.ExpandComplexSlicingExpressions as BooStep
-
 
 class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
 

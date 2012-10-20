@@ -10,7 +10,6 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
 
     Note: This step should be placed just after parsing and just after expanding macros
 """
-    
     override def Run():
         if len(Errors) > 0:
             return
@@ -20,7 +19,7 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         Error( CompilerErrorFactory.NotImplemented(node, msg) )
 
     def OnStructDefinition(node as StructDefinition):
-    """ Boo's struct a value type like strings or integers that works as a class. It means 
+    """ Boo's struct is a value type like integers that works as a class. It means
         that when declaring it an instance is created and when passing it to a function a 
         copy is made instead of passing a reference.
         Javascript doesn't have any similar type so the conversion is not trivial. Perhaps
@@ -28,26 +27,6 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         type.
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
-
-    /*
-    def OnSlicingExpression(node as SlicingExpression):
-    """ Boo implements python style slicing, allowing to extract/replace ranges. JS does not have
-        a direct syntax for it thus until we can work on converting the slices we flag this
-        feature as unsupported
-    """
-        if len(node.Indices) != 1:
-            NotImplemented node, 'Only one index is supported when slicing'
-
-        slice = node.Indices[0]
-        if not slice.Begin or slice.End or slice.Step:
-            NotImplemented node, 'Range slicing is not supported'
-
-        if slice.Begin isa UnaryExpression and \
-           (slice.Begin as UnaryExpression).Operator == UnaryOperatorType.UnaryNegation:
-            NotImplemented node, 'Slicing with a negative index is not supported'
-
-        print slice.Begin, slice.Begin.NodeType
-    */
 
     def OnYieldStatement(node as YieldStatement):
     """ Porting yield/generators to standard Javascript is very difficult and it's not
@@ -64,5 +43,3 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         them using a runtime.
     """
         NotImplemented node, 'Event is not implemented in Boojs'
-
-

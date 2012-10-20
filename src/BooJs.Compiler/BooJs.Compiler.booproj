@@ -74,21 +74,16 @@
     <Compile Include="CompilerContext.boo" />
     <Compile Include="CompilerParameters.boo" />
     <Compile Include="CompilerPipeline.boo" />
-    <Compile Include="Utils.boo" />
     <Compile Include="Mozilla\Ast.boo" />
     <Compile Include="Steps\Globals.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
-    <Compile Include="Steps\InjectCasts.boo" />
-    <Compile Include="Steps\NormalizeIterations.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
     <Compile Include="Steps\NormalizeLoops.boo" />
-    <Compile Include="Steps\PatchCallableConstruction.boo" />
     <Compile Include="Steps\PrintJs.boo" />
     <Compile Include="Steps\ProcessGenerators.boo" />
     <Compile Include="Steps\ProcessGoto.boo" />
     <Compile Include="Steps\UndoProcessMethod.boo" />
     <Compile Include="Steps\UnsupportedFeatures.boo" />
-    <Compile Include="Steps\Macros\WatchMacro.boo" />
     <Compile Include="Steps\InjectImplicitBooleanConversions.boo" />
     <Compile Include="Steps\OverrideProcessMethodBodies.boo" />
     <Compile Include="Steps\ProcessTry.boo" />
@@ -126,5 +121,6 @@
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Visitors\" />
+    <Folder Include="Steps\Macros\" />
   </ItemGroup>
 </Project>

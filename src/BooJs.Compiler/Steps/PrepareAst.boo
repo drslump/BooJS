@@ -229,24 +229,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
         Visit mie
         ReplaceCurrentNode mie
 
-    def OnExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
-    """ If the interpolation only has one variable use string concatenation. Otherwise wrap the
-        expressions in a list and use join() to get the final result
-    """
-        if len(node.Expressions) > 3:
-            list = ListLiteralExpression(LexicalInfo: node.LexicalInfo)
-            list.Items = node.Expressions
-            mie = [| $(list).join('') |]
-            Visit mie
-            ReplaceCurrentNode mie
-        else:
-            sum = node.Expressions[0]
-            node.Expressions.RemoveAt(0)
-            for expr in node.Expressions:
-                sum = [| $(sum) + expr |]
-            Visit sum
-            ReplaceCurrentNode sum
-
     def OnCharLiteralExpression(node as CharLiteralExpression):
     """ There is no char type in BooJs. char('c') and char(int) are converted to a string of length 1
     """

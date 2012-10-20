@@ -10,10 +10,10 @@ class IntroduceGlobalNamespaces(BooStep):
         NameResolutionService.Reset()
 
         NameResolutionService.GlobalNamespace = NamespaceDelegator(
-            NameResolutionService.GlobalNamespace,  # TODO: Do we need this for Boo.Lang ??
+            NameResolutionService.GlobalNamespace,
             SafeGetNamespace('BooJs.Lang.Globals'),
             SafeGetNamespace('BooJs.Lang.Macros'),
-            SafeGetNamespace('BooJs.Lang'),  # TODO: Do we actually need this ?
+            SafeGetNamespace('BooJs.Lang'),
             TypeSystemServices.BuiltinsType
         )
 

@@ -39,8 +39,6 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
 
-    #override protected def ProcessInvocationOnUnknownCallableExpression(node as MethodInvocationExpression):
-    #    print node
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
 
         super(node)
@@ -77,9 +75,6 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
                 invoke as IMethod = ResolveMethod(targetType.DeclaringType, 'Invoke')
                 if invoke is targetType:
                     node.Target = target.Target
-
-
-        return
 
     override def LeaveUnaryExpression(node as UnaryExpression):
         # Increment/Decrement operators are resolved using a fairly complex eval. Since
@@ -157,7 +152,6 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         rtype = GetExpressionType(node.Right)
 
         if node.Operator == BinaryOperatorType.Exponentiation:
-            #pmb.BindNullableOperation(node)
             if not pmb.ResolveOperator(node):
                 pmb.InvalidOperatorForTypes(node)
         # Handle integer division
@@ -165,7 +159,6 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
              TypeSystemServices.IsIntegerNumber(ltype) and \
              TypeSystemServices.IsIntegerNumber(rtype):
 
-             #pmb.BindNullableOperator(node)
              if not pmb.ResolveOperator(node):
                 pmb.InvalidOperatorForTypes(node)
         else:

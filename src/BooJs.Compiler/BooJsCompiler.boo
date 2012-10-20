@@ -38,22 +38,17 @@ def newBooJsCompiler():
     return newBooJsCompiler(Pipelines.ProduceJs())
 
 def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
-    parameters = newBooJsCompilerParameters()
-    parameters.Pipeline = pipeline
-    return BooJsCompiler(parameters)
-
-def newBooJsCompilerParameters():
     # Register our custom type system provider
     params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider)
+    # Setup the environment by setting our customized type system services
+    params.Environment = DeferredEnvironment() {
+        TypeSystemServices: { BooJsTypeSystem.Services() }
+    }
 
     # Load language runtime assemblies
     params.References.Add(params.LoadAssembly('BooJs.Lang'))
     # Load Boo.Lang.Compiler assembly (needed for Extension attribute for example)
     params.References.Add(params.LoadAssembly('Boo.Lang.Compiler'))
 
-    # Setup the environment by setting our customized type system services
-    params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { BooJsTypeSystem.Services() }
-    }
-
-    return params
+    params.Pipeline = pipeline
+    return BooJsCompiler(params)

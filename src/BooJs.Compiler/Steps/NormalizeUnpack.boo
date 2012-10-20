@@ -24,9 +24,7 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
         unpack = ReferenceExpression(Name: '__unpack')
         stmt = ExpressionStatement(Expression: [| $unpack = $(node.Expression) |])
         stmts.Insert(idx++, stmt)
-        i = 0
-        for decl in node.Declarations:
+        for i as int, decl as Declaration in enumerate(node.Declarations):
             refe = ReferenceExpression(Name: decl.Name)
             stmt = ExpressionStatement(Expression: [| $refe = $unpack[$i] |])
             stmts.Insert(idx++, stmt)
-            i++
