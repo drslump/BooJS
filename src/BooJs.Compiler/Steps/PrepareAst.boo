@@ -1,8 +1,5 @@
 namespace BooJs.Compiler.Steps
 
-import System.Xml.Serialization(XmlSerializer)
-import System.IO(StringReader)
-
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
@@ -71,6 +68,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
         Visit node.Expression
 
     def OnReferenceExpression(node as ReferenceExpression):
+        if TransformAttribute.HasAttribute(node):
+            ReplaceCurrentNode TransformAttribute.Resolve(node, null)
+            return
+
         # Check for builtins references
         if IsBuiltin(node):
             name = node.Name.Split(char('.'))[-1]
@@ -85,6 +86,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
             return
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
+        if TransformAttribute.HasAttribute(node):
+            ReplaceCurrentNode TransformAttribute.Resolve(node, null)
+            return
+
         # Convert from `$locals.$variable` to `variable`
         if node.Target.ToString() == '$locals':
             refexp = ReferenceExpression(node.Name[1:], LexicalInfo: node.LexicalInfo)

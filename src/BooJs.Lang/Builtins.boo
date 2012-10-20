@@ -59,10 +59,8 @@ class Builtins:
     class AssertionError(Error):
     """ BooJs specific error to signal failures in assertions
     """
-        [Transform( Boo.AssertionError() )]
         def constructor():
             pass
-        [Transform( Boo.AssertionError($1) )]
         def constructor(msg as string):
             pass
 

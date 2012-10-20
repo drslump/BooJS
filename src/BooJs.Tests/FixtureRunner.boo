@@ -37,8 +37,12 @@ class FixtureRunner:
 
     static def run(file as string):
 
+      timer = System.Diagnostics.Stopwatch()
+
       comp = setupCompiler()
       comp.Parameters.Ducky = false
+
+      print 'Setup: ', timer.ElapsedMilliseconds
 
       # Check if we want to ignore this fixture
       fp = StreamReader(file)
@@ -54,7 +58,11 @@ class FixtureRunner:
       # Add the test runner assembly so we can resolve imports for supporting types
       comp.Parameters.References.Add(Assembly.GetExecutingAssembly())
 
+      timer.Restart()
+
       result = comp.Run()
+
+      print 'Compilation: ', timer.ElapsedMilliseconds
 
       if len(result.Warnings):
         for warn as Boo.Lang.Compiler.CompilerWarning in result.Warnings:

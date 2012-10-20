@@ -12,7 +12,6 @@ res = []
 for i in range(3):
 	res.push(i)
 
-.res.push(10)
 print join(res, ' ')
 
 for i in range(3):

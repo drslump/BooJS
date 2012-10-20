@@ -111,8 +111,7 @@ class JsPrinter(Printer):
 
     virtual def OnArrayExpression(node as ArrayExpression):
         Write '['
-        Parens Precedence.Sequence:
-            WriteCommaSeparatedList node.elements
+        WriteCommaSeparatedList node.elements
         Write ']'
 
     virtual def OnObjectExpression(node as ObjectExpression):
@@ -135,18 +134,20 @@ class JsPrinter(Printer):
         Write 'function '
         Visit node.id
         Write '('
-        Visit node.params
+        WriteCommaSeparatedList node.params
         Write ') '
         Visit node.body
         Trim
 
     virtual def OnBlockStatement(node as BlockStatement):
+        PrecedenceStack.Add(Precedence.None)
         WriteLine '{'
         Indent
         Visit(node.body)
         Dedent
         WriteIndented '}'
         WriteLine
+        PrecedenceStack.Pop()
 
     virtual def OnFunctionDeclaration(node as FunctionDeclaration):
         WriteIndented 'function '
@@ -265,11 +266,25 @@ class JsPrinter(Printer):
 
     virtual def OnCallExpression(node as CallExpression):
         Parens Precedence.Call:
-            Visit node.callee
-        Write '('
-        WriteCommaSeparatedList(node.arguments)
-        Write ')'
+            # Make sure self-callable functions are defined as expressions
+            if node.callee isa FunctionExpression:
+                Write '('
+                Visit node.callee
+                Write ')'
+            else:
+                Visit node.callee
+            Write '('
+            WriteCommaSeparatedList(node.arguments)
+            Write ')'
 
+    virtual def OnNewExpression(node as NewExpression):
+        Parens Precedence.New:
+            Write 'new '
+            Visit node._constructor
+            if len(node.arguments):
+                Write '('
+                WriteCommaSeparatedList(node.arguments)
+                Write ')'
 
     virtual def OnThrowStatement(node as ThrowStatement):
         WriteIndented 'throw '

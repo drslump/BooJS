@@ -7,8 +7,6 @@ abstract class Printer(Visitor):
 """
     Abstract printer for the Mozilla AST
 """
-
-
     enum Precedence:
         None
         Sequence
@@ -44,7 +42,9 @@ abstract class Printer(Visitor):
     protected _line = 0
     protected _column = 0
 
+    [getter(PrecedenceStack)]
     protected _precedenceStack = List[of Precedence]()
+
     protected _binaryPrecedence = {
         '=': Precedence.Assignment,
         '||': Precedence.LogicalOR,

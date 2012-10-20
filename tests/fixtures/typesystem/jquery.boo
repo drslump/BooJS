@@ -1,4 +1,4 @@
-import jQuery
+import jQuery(jQuery)
 
 jQuery('.foo').each({itm| print itm})
 
