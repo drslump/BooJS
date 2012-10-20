@@ -1,6 +1,6 @@
-namespace BooJs.Lang.jQuery
+namespace BooJs.Lang.Api
 
-import BooJs.Lang.Dom2 as DOM
+import BooJs.Lang.Api.Dom2 as DOM
 
 class jQuery(ICallable):
     # Utilities (static)

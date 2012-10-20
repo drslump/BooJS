@@ -58,9 +58,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.boo" />
     <Compile Include="Builtins.boo" />
-    <Compile Include="Dom2.boo" />
-    <Compile Include="Dom3.boo" />
-    <Compile Include="jQuery.boo" />
     <Compile Include="Globals\Array.boo" />
     <Compile Include="Globals\Number.boo" />
     <Compile Include="Globals\String.boo" />
@@ -77,6 +74,9 @@
     <Compile Include="Globals\Boolean.boo" />
     <Compile Include="Globals\Date.boo" />
     <Compile Include="Globals\JSON.boo" />
+    <Compile Include="Api\Dom2.boo" />
+    <Compile Include="Api\Dom3.boo" />
+    <Compile Include="Api\jQuery.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -91,6 +91,7 @@
     <Folder Include="Runtime\" />
     <Folder Include="Globals\" />
     <Folder Include="Macros\" />
+    <Folder Include="Api\" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
