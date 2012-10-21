@@ -41,6 +41,9 @@
     <Reference Include="Boo.Lang.Compiler">
       <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.Parser">
+      <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Transform.boo" />

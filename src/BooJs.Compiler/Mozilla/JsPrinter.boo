@@ -153,7 +153,7 @@ class JsPrinter(Printer):
         WriteIndented 'function '
         Visit node.id
         Write ' ('
-        Visit node.params
+        WriteCommaSeparatedList node.params
         Write ') '
         Visit node.body
 

@@ -91,11 +91,12 @@ class PrepareAst(AbstractTransformerCompilerStep):
             return
 
         # Convert from `$locals.$variable` to `variable`
-        if node.Target.ToString() == '$locals':
-            refexp = ReferenceExpression(node.Name[1:], LexicalInfo: node.LexicalInfo)
-            Visit refexp
-            ReplaceCurrentNode refexp
-            return
+        if node.Target.NodeType == NodeType.ReferenceExpression:
+            if (node.Target as ReferenceExpression).Name == '$locals':
+                refexp = ReferenceExpression(node.Name[1:], LexicalInfo: node.LexicalInfo)
+                Visit refexp
+                ReplaceCurrentNode refexp
+                return
 
         # Members of the module are placed in the top scope
         ientity = node.Target.Entity as TypeSystem.Internal.AbstractInternalType

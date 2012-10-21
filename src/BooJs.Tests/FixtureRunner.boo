@@ -90,6 +90,17 @@ class FixtureRunner:
     static def setupCompiler():
         if not _comp:
             pipeline = Pipelines.ProduceJs()
+            #pipeline = Pipelines.ProduceAst()
+            #pipeline = Pipelines.ProduceBoo()
+
+            timer = System.Diagnostics.Stopwatch()
+            pipeline.BeforeStep += { pipeline, args |
+                timer.Restart()
+            }
+            pipeline.AfterStep += def(pipeline, args):
+                if timer.ElapsedMilliseconds > 50:
+                    print 'Slow Step {0}: {1}ms' % (args.Step.GetType().Name, timer.ElapsedMilliseconds)
+
             _comp = newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true
 

@@ -50,9 +50,6 @@
     <Reference Include="Boo.Lang.PatternMatching">
       <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
     </Reference>
-    <Reference Include="Jurassic">
-      <HintPath>..\BooJs.Tests\lib\Jurassic.dll</HintPath>
-    </Reference>
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
@@ -111,6 +108,7 @@
     <Compile Include="Steps\PrintAst.boo" />
     <Compile Include="Mozilla\AstPrinter.boo" />
     <Compile Include="Steps\PrepareAst.boo" />
+    <Compile Include="Steps\ExpandVarArgsMethodInvocation.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

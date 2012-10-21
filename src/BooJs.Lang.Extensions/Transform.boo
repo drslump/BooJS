@@ -1,11 +1,10 @@
 namespace BooJs.Lang.Extensions
 
 import System
-import System.IO(StringReader)
-import System.Xml.Serialization(XmlSerializer)
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
+import Boo.Lang.Parser(BooParser)
 
 
 [AttributeUsage(AttributeTargets.All ^ AttributeTargets.Assembly)]
@@ -78,28 +77,26 @@ class TransformAttribute(AbstractAstAttribute):
         if expr.NodeType not in supported:
             raise 'Transforms to type {0} are not supported' % (expr.NodeType, )
 
-        # Serialize the expression
-        serializer = XmlSerializer(expr.GetType())
-        writer = System.IO.StringWriter()
-        serializer.Serialize(writer, expr)
-
         # Attach an attribute with the serialization
         attr = Ast.Attribute()
         attr.Name = self.GetType().FullName + '.TransformAsmAttribute'
         attr.Arguments.Add(StringLiteralExpression(expr.NodeType.ToString()))
-        attr.Arguments.Add(StringLiteralExpression(writer.ToString()))
+        attr.Arguments.Add(StringLiteralExpression(expr.ToCodeString()))
 
         anode.Attributes.Add(attr)
 
-    static def HasAttribute(node as Node):
+
+    static def HasAttribute(node as Node) as bool:
         entity = node.Entity as TypeSystem.IExternalEntity
-        return entity and System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(TransformAsmAttribute))
+        if entity and entity.MemberInfo:
+            attr = System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(TransformAsmAttribute), false)
+        return attr is not null
 
     static def Deserialize(node as Node) as Node:
         entity = node.Entity as TypeSystem.IExternalEntity
         raise 'Node does not contain the transform attribute metadata' if not entity
 
-        attr = System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(TransformAsmAttribute))
+        attr = System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(TransformAsmAttribute), false)
         return Deserialize(attr)
 
     static def Deserialize(attr as TransformAsmAttribute) as Node:
@@ -107,10 +104,12 @@ class TransformAttribute(AbstractAstAttribute):
         if not type or type not in supported:
             raise 'Unsupported Transform serialized node type: {0}' % (attr.Type,)
 
-        # Deserialize the expression
-        serializer = XmlSerializer(supported[type] as Type)
-        reader = StringReader(attr.Ast)
-        return serializer.Deserialize(reader)
+        # TODO: Cache deserialization results
+
+        # Use Boo's Parser to obtain an AST back from the attribute
+        cu = BooParser.ParseString('code', attr.Ast)
+        st as ExpressionStatement = cu.Modules[0].Globals.FirstStatement
+        return st.Expression
 
     static def Resolve(ast as Node, target as Expression, args as ExpressionCollection) as Node:
         # Parse the expression replacing placeholders
@@ -120,5 +119,4 @@ class TransformAttribute(AbstractAstAttribute):
 
     static def Resolve(target as Expression, args as ExpressionCollection) as Node:
         ast = Deserialize(target)
-        Resolve(ast, target, args)
-        return ast
+        return Resolve(ast, target, args)

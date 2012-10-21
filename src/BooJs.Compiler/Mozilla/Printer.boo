@@ -140,11 +140,11 @@ abstract class Printer(Visitor):
         Write(format, *args)
 
     def WriteLine(s as string):
-        WriteIndented(s)
+        Write(s)
         WriteLine()
 
     def WriteLine(format as string, *args as (object)):
-        WriteIndented(format, *args)
+        Write(format, *args)
         WriteLine()
 
     def WriteCommaSeparatedList[of T(INode)](items as T*):

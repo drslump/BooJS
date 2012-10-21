@@ -24,6 +24,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         Replace(ExpandDuckTypedExpressions, Steps.ExpandDuckTypedExpressions())
 
+        Replace(ExpandVarArgsMethodInvocations, Steps.ExpandVarArgsMethodInvocations())
+
         # TODO: Not sure we need this. It just seems to convert closure blocks
         #       to compiler generated classes.
         Remove(ProcessClosures)
