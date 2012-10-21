@@ -5,8 +5,6 @@
 2000-01-01T03:00:00.000Z
 1999-12-28T12:00:00.000Z
 """
-import Boo.Lang
-
 [Extension] def op_Addition(date as Date, ms as int) as Date:
     return Date(date.getTime() + ms)
 

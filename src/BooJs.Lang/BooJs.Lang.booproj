@@ -77,6 +77,7 @@
     <Compile Include="Api\Dom2.boo" />
     <Compile Include="Api\Dom3.boo" />
     <Compile Include="Api\jQuery.boo" />
+    <Compile Include="Macros\ExtensionAttribute.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
