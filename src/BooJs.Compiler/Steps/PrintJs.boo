@@ -3,7 +3,7 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Steps(AbstractCompilerStep)
 
 import BooJs.Compiler.CompilerContext as JsContext
-import BooJs.Compiler.Mozilla(JsPrinter)
+import BooJs.Compiler.Mozilla(JsPrinter, SourceMapPrinter)
 
 
 class PrintJs(AbstractCompilerStep):
@@ -11,7 +11,8 @@ class PrintJs(AbstractCompilerStep):
     override def Run():
         return if len(Errors)
 
-        printer = JsPrinter(OutputWriter)
+        #printer = JsPrinter(OutputWriter)
+        printer = SourceMapPrinter(OutputWriter)
         unit = (Context as JsContext).MozillaUnit
         printer.Visit(unit)
 

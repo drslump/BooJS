@@ -114,6 +114,11 @@ class JsPrinter(Printer):
         WriteCommaSeparatedList node.elements
         Write ']'
 
+    virtual def OnSequenceExpression(node as SequenceExpression):
+        Write '('
+        WriteCommaSeparatedList node.expressions
+        Write ')'
+
     virtual def OnObjectExpression(node as ObjectExpression):
         if not len(node.properties):
             Write '{}'
@@ -144,6 +149,8 @@ class JsPrinter(Printer):
         WriteLine '{'
         Indent
         Visit(node.body)
+        Trim
+        WriteLine
         Dedent
         WriteIndented '}'
         WriteLine
@@ -156,6 +163,7 @@ class JsPrinter(Printer):
         WriteCommaSeparatedList node.params
         Write ') '
         Visit node.body
+        WriteLine
 
     virtual def OnReturnStatement(node as ReturnStatement):
         WriteIndented 'return '
@@ -194,8 +202,9 @@ class JsPrinter(Printer):
         Visit node.consequent
         if node.alternate:
             Trim
-            WriteIndented ' else '
+            Write ' else '
             Visit node.alternate
+        WriteLine
 
     virtual def OnExpressionStatement(node as ExpressionStatement):
         WriteIndented
@@ -226,6 +235,7 @@ class JsPrinter(Printer):
         Parens precedence:
             if node.prefix:
                 Write node.operator
+                Write ' ' if node.operator == 'typeof'
             Visit node.argument
             if not node.prefix:
                 Write node.operator
@@ -292,13 +302,21 @@ class JsPrinter(Printer):
         WriteLine ';'
 
     virtual def OnTryStatement(node as TryStatement):
-        Write 'try '
+        WriteIndented 'try '
         Visit node.block
         Trim
         Visit node.handlers
         Trim
-        Write ' finally '
-        Visit node.finalizer
+        if node.finalizer:
+            Write ' finally '
+            Visit node.finalizer
+        WriteLine
+
+    virtual def OnCatchClause(node as CatchClause):
+        Write ' catch ('
+        Visit node.param
+        Write ') '
+        Visit node.body
 
     virtual def OnLiteral(node as Literal):
         if node.value is null:

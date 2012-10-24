@@ -99,7 +99,7 @@ abstract class Printer(Visitor):
     virtual def Write(s as string):
         # Dump accumulated white space if actually writing something
         if len(_accumulator) and not /^\s*$/.IsMatch(s):
-            _writer.Write(_accumulator)
+            s = _accumulator + s
             _accumulator = ''
 
         # Accumulate trailing white space
@@ -115,6 +115,9 @@ abstract class Printer(Visitor):
             _column = len(lines[-1])
         else:
             _column += len(lines[0])
+
+        # Only indent if there is no input on the same line
+        _needsIndenting = len(lines[-1]) == 0
 
         _writer.Write(s)
 
