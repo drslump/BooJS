@@ -45,11 +45,15 @@ class TransformAttribute(AbstractAstAttribute):
             return if not number
             idx = number.Value
             if idx == 0:
-                ReplaceCurrentNode _target
+                if _target isa MemberReferenceExpression:
+                    ReplaceCurrentNode((_target as MemberReferenceExpression).Target)
+                else:
+                    ReplaceCurrentNode _target
             elif idx > 0 and idx <= len(_args):
                 ReplaceCurrentNode _args[idx - 1]
             else:
                 raise 'Invalid placeholder number ' + idx
+
 
     expr as Expression
 
@@ -114,6 +118,7 @@ class TransformAttribute(AbstractAstAttribute):
     static def Resolve(ast as Node, target as Expression, args as ExpressionCollection) as Node:
         # Parse the expression replacing placeholders
         resolver = PlaceholderResolver(target, args)
+        ast.LexicalInfo = target.LexicalInfo
         resolver.Visit(ast)
         return ast
 

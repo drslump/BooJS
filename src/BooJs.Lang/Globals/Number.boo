@@ -10,6 +10,11 @@ class Number(Object):
     static final NEGATIVE_INFINITY as double
     static final POSITIVE_INFINITY as double
 
+    def constructor():
+        pass
+
+    def constructor(n as object):
+        pass
 
     def toExponential(digits as int) as string:
         pass
@@ -42,16 +47,20 @@ class NumberInt(Number):
     static def op_Multiply(lhs as int, rhs as string) as string:
         pass
 
+    [Transform( Number() )]
     def constructor():
         pass
 
+    [Transform( Number($1) )]
     def constructor(n as object):
         pass
 
 class NumberUInt(NumberInt):
+    [Transform( Number() )]
     def constructor():
         pass
 
+    [Transform( Number($1) )]
     def constructor(n as object):
         pass
 
@@ -61,8 +70,10 @@ class NumberDouble(Number):
     static def op_Exponentiation(lhs as double, rhs as double) as double:
         pass
 
+    [Transform( Number() )]
     def constructor():
         pass
-    # TODO: We might want to be more strict on this calling a runtime method
+
+    [Transform( Number($1) )]
     def constructor(n as object):
         pass

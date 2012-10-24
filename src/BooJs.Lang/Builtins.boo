@@ -45,12 +45,13 @@ class Builtins:
         def constructor(items as object*):
             pass
 
+        # Use a transform to ensure we can use it with plain object literals too
+        [Transform( Boo.Hash.keys($0) )]
         def keys() as (string):
             pass
-
+        [Transform( Boo.Hash.values($0) )]
         def values() as (object):
             pass
-
         [Transform( Boo.enumerate($0) )]
         def items() as ((object)):
             pass
@@ -65,8 +66,10 @@ class Builtins:
             pass
 
 
+    [Transform( Boo.ReturnValue )]
     class ReturnValue:
         public value as object
+
         def constructor(val as object):
             value = val
 
