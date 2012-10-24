@@ -11,30 +11,43 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
         ---
         { __gen = []; for i in range(3): __gen.push(i*2); return __gen }()
 """
+
+    # Keep track of last visited method
+    _method as Method
+    def OnMethod(node as Method):
+        last = _method
+        _method = node
+        super(node)
+        _method = last
+
+    def OnListLiteralExpression(node as ListLiteralExpression):
+    """ If generator is contained in a list literal, remove the list literal
+    """
+        if len(node.Items) == 1 and node.Items.First.NodeType == NodeType.GeneratorExpression:
+            result = Visit(node.Items.First)
+            ReplaceCurrentNode result
+            return
+
+        super(node)
+
     def LeaveGeneratorExpression(node as GeneratorExpression):
-        # ( i*2 for i as int in range(3) )  =>  ( expression for declarations in iterator if filter )
+    """ Convert generator expressions to a sequence:
 
-        # Build a loop statement with the details from the generator
-        loop = ForStatement()
-        loop.Declarations = node.Declarations
-        loop.Iterator = node.Iterator
-        if not node.Filter:
-            loop.Block = [|
-                block:
-                    _gen.push($(node.Expression))
-            |].Body
+        ( i*2 for i in range(3) )  =>  @(__gen = [], Boo.each(range(3), { i | __gen.push(i*2) }), __gen)
+
+    """
+        # Make sure the __gen variable is declared
+        _method.Locals.Add(Local(node.LexicalInfo, '__gen'))
+
+        if node.Filter:
+            lambda = [| { $(node.Filter.Condition) and __gen.push( $(node.Expression) ) } |]
         else:
-            loop.Block = [|
-                block:
-                    _gen.push($(node.Expression)) if $(node.Filter.Condition)
-            |].Body
+            lambda = [| { __gen.push( $(node.Expression) ) } |]
 
-        # Build the body of the anonymous function
-        body = [|
-            block:
-                $loop
-                return _gen
-        |].Body
+        lambda.LexicalInfo = node.LexicalInfo
+        for decl in node.Declarations:
+            lambda.Parameters.Add(ParameterDeclaration(node.LexicalInfo, Name: decl.Name))
 
-        # Replace the generator expression with the result of executing the anonymous function
-        ReplaceCurrentNode([| {_gen as (object)| $(body) }([]) |])
+        result = [| @(__gen = [], Boo.each($(node.Iterator), $lambda), __gen) |]
+        ReplaceCurrentNode result
+
