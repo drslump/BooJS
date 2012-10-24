@@ -54,7 +54,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())
 
         # Normalize generator expressions
-        InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
+        #InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
 
         # Normalize literals
         InsertAfter(NormalizeTypeAndMemberDefinitions, Steps.NormalizeLiterals())
@@ -78,6 +78,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Normalize closures
         Add(Steps.NormalizeClosures())
+
+        Add(Steps.NormalizeGeneratorExpression())
 
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
