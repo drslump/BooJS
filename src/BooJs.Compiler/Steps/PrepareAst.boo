@@ -34,10 +34,18 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     protected def IsBuiltin(node as Node) as bool:
         entity = node.Entity as TypeSystem.Reflection.ExternalType
+        if not entity and centity = node.Entity as TypeSystem.ExternalMethod:
+            entity = centity.DeclaringType
+
         return false if not entity
         return true if entity.Type is TypeSystemServices.BuiltinsType
         return entity.DeclaringType == TypeSystemServices.BuiltinsType
 
+    protected def IsGlobal(node as Node) as bool:
+        if entity = node.Entity as TypeSystem.Reflection.ExternalType:
+            return entity.ActualType.Namespace == 'BooJs.Lang.Globals'
+
+        return false
 
     def Initialize(context as CompilerContext):
         super(context)
@@ -65,36 +73,49 @@ class PrepareAst(AbstractTransformerCompilerStep):
             RemoveCurrentNode
             return
 
-        Visit node.Expression
+        super(node)
 
-    def OnReferenceExpression(node as ReferenceExpression):
+    protected def ProcessReference(node as ReferenceExpression) as Node:
         if TransformAttribute.HasAttribute(node):
-            ReplaceCurrentNode TransformAttribute.Resolve(node, null)
-            return
+            result = TransformAttribute.Resolve(node, null)
+            Visit result
+            return result
 
         # Check for builtins references
         if IsBuiltin(node):
             name = node.Name.Split(char('.'))[-1]
-            ReplaceCurrentNode [| Boo.$(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
-            return
+            refe = [| Boo.$(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
+            refe.Entity = node.Entity
+            return refe
+
+        # Entities in the Global namespace are never prefixed
+        if IsGlobal(node):
+            node.Name = node.Name.Split(char('.'))[-1]
+            return node
 
         # Members of the module are placed in the top scope
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.IsFinal:
             name = node.Name.Split(char('.'))[-1]
-            ReplaceCurrentNode [| $(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
-            return
+            return [| $(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
+
+        return node
+
+    def OnReferenceExpression(node as ReferenceExpression):
+        ReplaceCurrentNode ProcessReference(node)
+
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         if TransformAttribute.HasAttribute(node):
-            ReplaceCurrentNode TransformAttribute.Resolve(node, null)
+            result = TransformAttribute.Resolve(node, null)
+            Visit result
+            ReplaceCurrentNode result
             return
 
         # Convert from `$locals.$variable` to `variable`
         if node.Target.NodeType == NodeType.ReferenceExpression:
             if (node.Target as ReferenceExpression).Name == '$locals':
                 refexp = ReferenceExpression(node.Name[1:], LexicalInfo: node.LexicalInfo)
-                Visit refexp
                 ReplaceCurrentNode refexp
                 return
 
@@ -102,7 +123,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
         ientity = node.Target.Entity as TypeSystem.Internal.AbstractInternalType
         if node.Target.IsSynthetic and ientity and ientity.IsClass and ientity.IsFinal:
             refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
-            Visit refexp
             ReplaceCurrentNode refexp
             return
 
@@ -113,27 +133,21 @@ class PrepareAst(AbstractTransformerCompilerStep):
         super(node)
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
-
-        # TODO: Create custom step (or use the AST attribute) to apply the transformation.
-        #       They should be given as a quasi-quotation, replacing the placeholders by
-        #       traversing the node.
-        #       The result should be a Mozilla AST serialized as JSON in the assembly
-        #       attribute. This will allow to easily transform even when referencing
-        #       types already compiled.
-
         # Convert Transform attribute metadata to an AST annotation
-        #if not node.ContainsAnnotation('Transform') and TransformAttribute.HasAttribute(node.Target):
         if TransformAttribute.HasAttribute(node.Target):
-            #node.Annotate('Transform', ast)
-            ReplaceCurrentNode TransformAttribute.Resolve(node.Target, node.Arguments)
+            result = TransformAttribute.Resolve(node.Target, node.Arguments)
+            result = VisitNode(result)
+            ReplaceCurrentNode result
             return
 
 
         # Eval calls take the form: @( stmt1, stmt2, ...., return_stmt )
         # We convert them to a self invoking anonymous function that returns the last argument.
         #
+        # TODO: Isn't this equivalent to Js ( expr1, expr2, expr3 ) ???
+        #
         # Note: variables are declared in the enclosing scope, not wrapped in the function.
-        if '@' == node.Target.ToString():
+        if false and '@' == node.Target.ToString():
             bexpr = BlockExpression(LexicalInfo: node.Target.LexicalInfo)
             st as Statement
             for i, arg as Expression in enumerate(node.Arguments):
@@ -147,87 +161,77 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
             mie = MethodInvocationExpression(LexicalInfo: node.LexicalInfo)
             mie.Target = bexpr
-            Visit mie
             ReplaceCurrentNode mie
+            Visit mie
             return
-
 
         super(node)
 
     def OnMethod(node as Method):
-    """ Detect the Main method and move its statements to the Module globals
+    """ Process locals and detect the Main method to move its statements into the Module globals
     """
         # Skip compiler generated methods
         if node.IsSynthetic and node.IsInternal:
             RemoveCurrentNode
             return
 
-        # Filter locals to remove duplicates
+        # Convert locals back to simple declaration statements
         found = ['$locals']
-        remove = List[of Local]()
         for local in node.Locals:
-            if local.Name in found:
-                remove.Push(local)
-            else:
-                found.Push(local.Name)
+            # Avoid duplicates
+            if local.Name is null or local.Name in found:
+                continue
 
-        for local in remove:
-            node.Locals.Remove(local)
+            found.Push(local.Name)
+
+            decl = Declaration(LexicalInfo: local.LexicalInfo)
+            decl.Name = local.Name
+
+            # Detect local type
+            initializer as Expression = NullLiteralExpression()
+            entity = local.Entity as TypeSystem.Internal.InternalLocal
+            if entity:
+                if entity.OriginalDeclaration:
+                    # Skip declarations for those flagged as global
+                    continue if entity.OriginalDeclaration.ContainsAnnotation('global')
+                    decl.Type = entity.OriginalDeclaration.Type
+                else:
+                    # TODO: Can we generate proper type annotations with this?
+                    decl.Type = SimpleTypeReference(Entity: entity)
+
+                # Initialize with a default value
+                if TypeSystemServices.IsNumber(entity.Type):
+                    initializer = IntegerLiteralExpression(0)
+                elif entity.Type == TypeSystemServices.TimeSpanType:
+                    initializer = IntegerLiteralExpression(0)
+                elif entity.Type == TypeSystemServices.BoolType:
+                    initializer = BoolLiteralExpression(false)
+                elif entity.Type == TypeSystemServices.StringType:
+                    initializer = StringLiteralExpression('')
+
+            st = DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
+            node.Body.Insert(0, st)
 
 
         # Detect the Main method and move its statements to the Module globals
         if ContextAnnotations.GetEntryPoint(Context) is node:
-
             Visit node.Body
             node.EnclosingModule.Globals = node.Body
-    
-            for local in node.Locals:
-                decl = Declaration(LexicalInfo: local.LexicalInfo)
-                decl.Name = local.Name
-
-                # Detect local type
-                initializer as Expression = NullLiteralExpression()
-                entity = local.Entity as TypeSystem.Internal.InternalLocal
-                if entity:
-                    if entity.OriginalDeclaration:
-                        # Skip declarations for those flagged as global
-                        continue if entity.OriginalDeclaration.ContainsAnnotation('global')
-                        decl.Type = entity.OriginalDeclaration.Type
-                    else:
-                        # TODO: Can we generate proper type annotations with this?
-                        decl.Type = SimpleTypeReference(Entity: entity)
-
-                    # Initialize with a default value
-                    if TypeSystemServices.IsNumber(entity.Type):
-                        initializer = IntegerLiteralExpression(0)
-                    elif entity.Type == TypeSystemServices.TimeSpanType:
-                        initializer = IntegerLiteralExpression(0)
-                    elif entity.Type == TypeSystemServices.BoolType:
-                        initializer = BoolLiteralExpression(false)
-                    elif entity.Type == TypeSystemServices.StringType:
-                        initializer = StringLiteralExpression('')
-
-                st = DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
-                node.EnclosingModule.Globals.Insert(0, st)
-
-                Visit node.EnclosingModule.Globals
-
             RemoveCurrentNode
-        else:
-            super(node)
+            return
+
+        super(node)
 
     def OnCastExpression(node as CastExpression):
         mie = [| Boo.$(ReferenceExpression('cast'))() |]
         mie.Arguments.Add(node.Target)
         mie.Arguments.Add(node.Type as Expression)
-        Visit mie
         ReplaceCurrentNode mie
 
     def OnTryCastExpression(node as TryCastExpression):
         mie = [| Boo.trycast() |]
         mie.Arguments.Add(node.Target)
         mie.Arguments.Add(node.Type as Expression)
-        Visit mie
         ReplaceCurrentNode mie
 
     def OnCharLiteralExpression(node as CharLiteralExpression):
@@ -282,6 +286,37 @@ class PrepareAst(AbstractTransformerCompilerStep):
         )
         ifst.TrueBlock = node.Block
 
-        Visit ifst
         ReplaceCurrentNode ifst
 
+    def OnBinaryExpression(node as BinaryExpression):
+        if node.Operator == BinaryOperatorType.TypeTest:
+            mie = MethodInvocationExpression(node.LexicalInfo)
+            mie.Target = ReferenceExpression(node.LexicalInfo, 'Boo.isa')
+            mie.Arguments.Add(node.Left)
+            mie.Arguments.Add(node.Right)
+            Visit mie.Arguments
+            ReplaceCurrentNode mie
+            return
+
+        super(node)
+
+    def OnTypeofExpression(node as TypeofExpression):
+        if st = node.Type as SimpleTypeReference:
+
+            # Primitives are just enclosed as strings
+            if TypeSystemServices.IsPrimitive(st.Name):
+                ReplaceCurrentNode StringLiteralExpression(node.LexicalInfo, st.Name)
+                return
+
+            # If we have an entity use it
+            if exent = st.Entity as TypeSystem.Reflection.ExternalType:
+                refe = CodeBuilder.CreateReference(node.LexicalInfo, exent.ActualType)
+                ReplaceCurrentNode ProcessReference(refe)
+                return
+
+            # Just rely on the type name
+            refe = ReferenceExpression(node.LexicalInfo, st.Name)
+            ReplaceCurrentNode ProcessReference(refe)
+
+        else:
+            raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
