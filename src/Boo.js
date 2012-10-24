@@ -58,12 +58,20 @@
     };
 
     // Assertion error
-    Boo.AssertionError = function (message) {
+    Boo.AssertionError = function AssertionError(message) {
         this.name = 'AssertionError';
         this.message = message;
     };
     Boo.AssertionError.prototype = new Error();
     Boo.AssertionError.prototype.constructor = Boo.AssertionError;
+
+    // Cast error
+    Boo.CastError = function CastError(from, to) {
+        this.name = 'CastError';
+        this.message = "Cannot cast '" + from + "' to '" + to + "'";
+    };
+    Boo.CastError.prototype = new Error();
+    Boo.CastError.prototype.constructor = Boo.CastError;
 
     // State for the module loader
     var mod_waiting = {},
@@ -234,11 +242,12 @@
 
     // Concatenates the elements of the arrays given as argument
     var cat = Boo.cat = function (args) {
-        var values = [],
-            add = function (v) { values.push(v); };
+        var values = [];
 
         for (var i = 0, l = args.length; i < l; i++) {
-            each(args[i], add);
+            for (var ii = 0, ll = args[i].length; ii < ll; ii++) {
+                values.push(args[i][ii]);
+            }
         }
 
         return values;
@@ -246,8 +255,7 @@
 
     // Generates a string concatenating the elements in the array
     Boo.join = function (list, sep) {
-        var result = cat([list]);
-        return result.join(sep || ' ');
+        return list.join(sep || ' ');
     };
 
     // Obtain a reversed version of the given array
@@ -320,6 +328,11 @@
         return result;
     };
 
+    // Makes sure a value is enumerable
+    Boo.enumerable = function (value) {
+        return (value && value.length) ? value : [];
+    };
+
     // Runtime support for slicing on arrays
     Boo.slice = function (value, begin, end, step) {
         begin = begin || 0;
@@ -346,22 +359,48 @@
         return (typeof value === 'string') ? result.join('') : result;
     };
 
+    // Check the type of a value
+    var isa = Boo.isa = function (value, type) {
+        // Handle literal primitives
+        if (typeof type === 'string') {
+            switch (typeOf(value)) {
+            case 'String':
+                return type === 'string';
+            case 'Function':
+                return type === 'callable';
+            case 'Boolean':
+                return type === 'bool';
+            case 'Number':
+                if (type === 'int' && value === parseInt(value, 10))
+                    return true;
+                if (type === 'uint' && value === parseInt(value, 10) && value >= 0)
+                    return true;
+                return type === 'double';
+            default:
+                return type === 'object';
+            }
+        }
+
+        // Special handling for arrays (just in case we run into cross-frame issues)
+        if (type === Array) {
+            return typeOf(value) === 'Array';
+        }
+
+        // Check the prototype (basic inheritance)
+        if (value instanceof type)
+            return true;
+
+        // Check interfaces
+        return hop(value, '$boo$interfaces') && -1 !== value.$boo$interfaces.indexOf(type);
+    };
+
     // Casts a value to the given type, raising an error if it's not possible
     var cast = Boo.cast = function (value, type) {
-        // TODO: This is an absolute hack!!!
-        var t = type, tof = typeof(value);
-        if (t === Boo.Types.int || t === Boo.Types.uint || t === Boo.Types.double) t = 'number';
+        // Use isa to detect imposible casts
+        if (!isa(value, type))
+            throw new Boo.CastError(typeOf(value), type);
 
-        if (tof === t)
-            return value;
-        else if (tof !== 'undefined' && t === 'object')
-            return value;
-        else if ((tof === 'undefined' || value === null) && t === 'number')
-            return 0;
-        else if ((tof === 'undefined' || value === null) && t === 'string')
-            return '';
-        else
-            throw new Error('Unable to cast from ' + tof + ' to ' + type);
+        return value;
     };
 
     // Casts a value to the given type, resulting in a null if it's not possible
@@ -371,16 +410,6 @@
         } catch (e) {
             return null;
         }
-    };
-
-    // Makes sure a value is enumerableo
-    // TODO: When do we need this?
-    Boo.enumerable = function (value) {
-        if (typeIs(value, 'String', 'Array')) {
-            return value;
-        }
-
-        throw new Error('Unable to cast to enumerable the value "' + value + '" with type ' + typeOf(value));
     };
 
     // Obtains the length of a value
@@ -557,8 +586,8 @@
     };
 
     // Obtains the keys of an object
-    Boo.Hash.prototype.keys = function () {
-        var result = [], enumerated = enumerate(this);
+    Boo.Hash.keys = function (hash) {
+        var result = [], enumerated = enumerate(hash);
         for (var i = 0, l = enumerated.length; i < l; i++) {
             result.push(enumerated[i][0]);
         }
@@ -566,8 +595,8 @@
     };
 
     // Obtains the values of an object
-    Boo.Hash.prototype.values = function () {
-        var result = [], enumerated = enumerate(this);
+    Boo.Hash.values = function (hash) {
+        var result = [], enumerated = enumerate(hash);
         for (var i = 0, l = enumerated.length; i < l; i++) {
             result.push(enumerated[i][1]);
         }
@@ -581,6 +610,54 @@
     Boo.Hash.prototype.set_Item = function (key, value) {
         this[key] = value;
     };
+
+
+    ////////// Class //////////////////////////////////////////////////////
+
+    // Class factory. Inherits from the first item in the `extend` array,
+    // registering additional items as interfaces.
+    Boo.Class = function (extend, constructor, statics, instance) {
+        var prop, base, cls = constructor;
+
+        cls.prototype.constructor = cls;
+        if (extend.length) {
+            base = extend.shift();
+            cls.prototype = new base;
+            cls.$boo$interfaces = extend;
+        }
+
+        for (prop in statics) if (hop(statics, prop))
+            cls[prop] = statics[prop];
+        for (prop in instance) if (hop(instance, prop))
+            cls.prototype[prop] = instance[prop];
+
+        return cls;
+    };
+
+    /*
+    Person = Boo.Class([Base, IEnumerable], function (){
+
+    }, {
+        Flag: 'flag',
+        foo: function Person$foo() {}
+    }, {
+        bar: 'field',
+        baz: function Person$baz() {}
+    });
+
+    Person = function () {};
+    // Basic inheritance
+    Person.prototype = new Base();
+    Person.prototype.constructor = Person;
+    // Interface metadata (used by isa testing)
+    Person.$boo$interfaces = [IEnumerable];
+    // Static members
+    Person.Flag = 'flag';
+    Person.foo = function Person$bar() {};   // Name functions to help debugging
+    // Instance members
+    Person.prototype.bar = 'field';
+    Person.prototype.baz = function Person$baz() {};
+    */
 
 
     exports.Boo = Boo;
