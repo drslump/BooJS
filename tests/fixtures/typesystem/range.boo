@@ -4,6 +4,7 @@ continue 2
 break 0
 return 11
 """
+
 def loop_with_return():
 	for i in range(3):
 		return i if i > 0

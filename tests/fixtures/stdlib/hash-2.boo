@@ -1,3 +1,6 @@
+#IGNORE: Hash with non-string keys are not supported
+#TODO: Possible implementation based on http://code.google.com/p/jshashtable
+
 h = { (1, 2): "1, 2", (3, 4): "3, 4" }
 		
 assert "1, 2", h[(1 == 2)]

@@ -1,16 +1,33 @@
 """
 foo = 3
 key = value
+foo = 3
+key = value
+foo = 3
+key = value
+key
+foo
+value
+3
 """
 h = { "key" : "value", "foo": 3 }
 
-#for key, value in [(item.Key, item.Value) for item in h].Sort():
-#	print key, "=", value
+# Literal hashes are mapped to simple Javascript objects (notice the order of the values).
+for key, value in [(k, v) for v, k in h].sort():
+    print key, '=', value
 
 # We can also use enumerate to get an array of (k, v) pairs
 for key, value in enumerate(h).sort():
-	print key, '=', value
+    print key, '=', value
 	
-# BooJs aliases Hash.iter() to enumerate at compile time
+# .items() is an alias to enumerate(h)
 for key, value in h.items().sort():
 	print key, '=', value
+
+# .keys() obtains only the keys
+for key in h.keys():
+	print key
+
+# .values() obtains only the keys
+for value in h.values():
+    print value
