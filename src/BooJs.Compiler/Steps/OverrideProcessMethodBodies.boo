@@ -39,6 +39,18 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
 
+    override def OnIntegerLiteralExpression(node as IntegerLiteralExpression):
+    """ In BooJs ints are always long (64bits)
+    """
+        self.BindExpressionType(node, TypeSystemServices.LongType)
+
+    override def OnDoubleLiteralExpression(node as DoubleLiteralExpression):
+    """ In BooJs floats are always double (64bits)
+    """
+        node.IsSingle = false
+        super(node)
+
+
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
 
         super(node)
