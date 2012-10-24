@@ -52,6 +52,14 @@ class ProcessTry(AbstractTransformerCompilerStep):
             return
         Visit CompileUnit
 
+    # Keep track of enclosing method
+    protected _method as Method
+    def OnMethod(node as Method):
+        last = _method
+        _method = node
+        super(node)
+        _method = last
+
     def OnTryStatement(node as TryStatement):
         # Generate a fixed handler
         handler = ExceptionHandler()
@@ -66,13 +74,18 @@ class ProcessTry(AbstractTransformerCompilerStep):
             cond = IfStatement()
             block.Add(cond)
 
+            # Include the declaration as local to the enclosing method
+            if hdl.Declaration and hdl.Declaration.Name:
+                _method.Locals.Add(Local(hdl.Declaration, false))
+
             # except e as Exception
             if hdl.Declaration and hdl.Declaration.Name and hdl.Declaration.Type:
-                reference = ReferenceExpression(Name: hdl.Declaration.Name)
+                reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
                 cond.Condition = [| __e isa $(hdl.Declaration.Type) and $reference = __e |]
             # except e
             elif hdl.Declaration and hdl.Declaration.Name:
-                cond.Condition = [| $(hdl.Declaration.Name) = __e |]
+                reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
+                cond.Condition = [| $reference = __e |]
             # except as Exception
             elif hdl.Declaration and hdl.Declaration.Type:
                 cond.Condition = [| __e isa $(hdl.Declaration.Type) |]
