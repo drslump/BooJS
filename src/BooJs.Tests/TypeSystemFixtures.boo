@@ -65,6 +65,10 @@ class FixtureForTypesystem:
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/timespan.boo')
 
   [Test]
+  def test_typetest():
+    FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/typetest.boo')
+
+  [Test]
   def test_version():
     FixtureRunner.run('/Users/drslump/www/boojs/tests/fixtures/typesystem/version.boo')
 

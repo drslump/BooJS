@@ -42,7 +42,7 @@ class FixtureRunner:
       comp = setupCompiler()
       comp.Parameters.Ducky = false
 
-      print 'Setup: ', timer.ElapsedMilliseconds
+      #print 'Setup: ', timer.ElapsedMilliseconds
 
       # Check if we want to ignore this fixture
       fp = StreamReader(file)
@@ -98,7 +98,7 @@ class FixtureRunner:
                 timer.Restart()
             }
             pipeline.AfterStep += def(pipeline, args):
-                if timer.ElapsedMilliseconds > 50:
+                if timer.ElapsedMilliseconds > 100:
                     print 'Slow Step {0}: {1}ms' % (args.Step.GetType().Name, timer.ElapsedMilliseconds)
 
             _comp = newBooJsCompiler(pipeline)
