@@ -84,6 +84,9 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Use our custom generators processing
         Replace(ProcessGenerators, Steps.ProcessGenerators())
 
+        # Disable int literals range checks
+        Remove(CheckLiteralValues)
+
         # Prepare the AST to be printed
         Add(Steps.PrepareAst())
 
