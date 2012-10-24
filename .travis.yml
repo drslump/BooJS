@@ -1,0 +1,29 @@
+# Travis-CI Build for BooJs
+# see travis-ci.org for details
+
+language: c
+
+# Make sure CMake is installed
+install:
+ - sudo apt-get install mono-devel
+
+# Run the Build script
+script:
+ - xbuild src/boojs.sln
+
+# Run Tests
+#after_script:
+# - xbuild CI-build.msbuild /t:Deploy
+
+# Only watch the development branch
+#branches:
+# only:
+#   - vNext
+
+# Notify development list when needed
+notifications:
+ recipients:
+   - drslump@pollinimini.net
+ email:
+   on_success: change
+   on_failure: always
