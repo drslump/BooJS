@@ -3,7 +3,7 @@ namespace BooJs.Compiler.TypeSystem
 import Boo.Lang.Compiler.TypeSystem(BuiltinFunction, IType)
 import Boo.Lang.Compiler.TypeSystem.TypeSystemServices as BooServices
 
-import BooJs.Lang
+import BooJs.Lang(Globals, Builtins, Runtime)
 
 
 class Services(BooServices):
@@ -16,16 +16,33 @@ class Services(BooServices):
     override protected def PreparePrimitives():
         # Setup new defaults for primitive types
         ObjectType = Map(Globals.Object)
+        ObjectArrayType = ObjectType.MakeArrayType(1)
+
         StringType = Map(Globals.String)
 
+        BoolType = Map(Globals.Boolean)
+
+        SByteType = Map(Globals.NumberInt)
+        ShortType = Map(Globals.NumberInt)
+        IntType = Map(Globals.NumberInt)
+        LongType = Map(Globals.NumberInt)
+
+        ByteType = Map(Globals.NumberUInt)
+        UShortType = Map(Globals.NumberUInt)
+        UIntType = Map(Globals.NumberUInt)
+        ULongType = Map(Globals.NumberUInt)
+
+        SingleType = Map(Globals.NumberDouble)
+        DoubleType = Map(Globals.NumberDouble)
+
+        # In BooJs arrays are mutable too
         ArrayType = Map(Globals.Array)
         ListType = Map(Globals.Array)
 
-        IntType = Map(Globals.NumberInt)
-        UIntType = Map(Globals.NumberUInt)
-        DoubleType = Map(Globals.NumberDouble)
         RegExpType = Map(Globals.RegExp)
-        ICallableType = Map(Builtins.ICallable) #Map(Globals.Function)
+
+        ICallableType = Map(Builtins.ICallable)
+
         DuckType = Map(Builtins.Duck)
 
         RuntimeServicesType = Map(Runtime.Services)
@@ -35,13 +52,12 @@ class Services(BooServices):
         # Add primitive types
         AddPrimitiveType("void", VoidType)
         AddPrimitiveType("object", ObjectType)
-        #AddPrimitiveType("list", ArrayType)
         AddPrimitiveType("callable", ICallableType)
-        AddPrimitiveType("duck", DuckType);
+        AddPrimitiveType("duck", DuckType)
 
         AddLiteralPrimitiveType("bool", BoolType)
-        AddLiteralPrimitiveType("int", IntType)
-        AddLiteralPrimitiveType("uint", UIntType)
+        AddLiteralPrimitiveType("int", LongType)
+        AddLiteralPrimitiveType("uint", ULongType)
         AddLiteralPrimitiveType("double", DoubleType)
         AddLiteralPrimitiveType("string", StringType)
         AddLiteralPrimitiveType('regex', RegExpType)

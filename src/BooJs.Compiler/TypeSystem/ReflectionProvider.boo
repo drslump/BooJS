@@ -7,7 +7,7 @@ import Boo.Lang.Compiler.TypeSystem.Reflection.ReflectionTypeSystemProvider as B
 import BooJs.Lang
 
 class ReflectionProvider(BooProvider):
-""" Configures the primitive types """
+""" Tells the compiler how it should interpret reflected types """
 
     internal class JsRefType(ExternalType):
     """ Type wrapper for reference types """
@@ -37,48 +37,72 @@ class ReflectionProvider(BooProvider):
 
     public static final SharedTypeSystemProvider = ReflectionProvider()
 
+
     def constructor():
+        # TODO: Not sure we need to map all types, just provide a mapping for reference types (object)
+
         # Define the base object type
-        #MapTo(System.Object, JsRefType(self, Globals.Object))
-        MapTo(Globals.Object, JsRefType(self, Globals.Object))
+        reftype = JsRefType(self, Globals.Object)
+        #MapRef(typeof(object), reftype)  # Cannot be replaced, already mapped
+        MapTo(Globals.Object, reftype)
 
         # Define duck type
-        MapTo(Builtins.Duck, JsRefType(self, Builtins.Duck))
+        reftype = JsRefType(self, Builtins.Duck)
+        #MapRef(typeof(duck), reftype)  # Cannot be replaced, already mapped
+        MapTo(Builtins.Duck, reftype)
 
         # Define ICallable type
-        MapTo(Builtins.ICallable, JsRefType(self, Builtins.ICallable))
-        MapTo(Boo.Lang.ICallable, JsRefType(self, Builtins.ICallable))
+        reftype = JsRefType(self, Builtins.ICallable)
+        MapTo(typeof(callable), reftype)
+        MapTo(Builtins.ICallable, reftype)
 
-        # Strings are actually mutable
-        MapTo(Globals.String, JsRefType(self, Globals.String))
-        MapTo(System.String, JsRefType(self, Globals.String))
+        # Strings (which are actually mutable)
+        reftype = JsRefType(self, Globals.String)
+        MapTo(typeof(string), reftype)
+        MapTo(Globals.String, reftype)
 
         # Booleans are value types
-        MapTo(Globals.Boolean, JsValueType(self, Globals.Boolean))
-        MapTo(System.Boolean, JsValueType(self, Globals.Boolean))
+        valtype = JsValueType(self, Globals.Boolean)
+        MapTo(typeof(bool), valtype)
+        MapTo(Globals.Boolean, valtype)
 
         # Define numbers as value types
-        type as IType = JsValueType(self, Globals.NumberInt)
-        for t in (System.Int64, System.Int32, /* System.Int16, System.SByte,*/ Globals.NumberInt):
-            MapTo(t, type)
+        valtype = JsValueType(self, Globals.NumberInt)
+        MapTo(typeof(sbyte), valtype)
+        MapTo(typeof(short), valtype)
+        MapTo(typeof(int), valtype)
+        MapTo(typeof(long), valtype)
+        MapTo(Globals.NumberInt, valtype)
 
-        type = JsValueType(self, Globals.NumberUInt)
-        for t in (System.UInt64, System.UInt32, /* System.UInt16, System.Byte,*/ Globals.NumberUInt):
-            MapTo(t, type)
+        valtype = JsValueType(self, Globals.NumberUInt)
+        MapTo(typeof(byte), valtype)
+        MapTo(typeof(ushort), valtype)
+        MapTo(typeof(uint), valtype)
+        MapTo(typeof(ulong), valtype)
+        MapTo(Globals.NumberUInt, valtype)
 
-        type = JsValueType(self, Globals.NumberDouble)
-        for t in (System.Double, /*System.Single,*/ Globals.NumberDouble):
-            MapTo(t, type)
+        valtype = JsValueType(self, Globals.NumberDouble)
+        MapTo(typeof(single), valtype)
+        MapTo(typeof(double), valtype)
+        MapTo(Globals.NumberDouble, valtype)
 
-        # Boo's immutable Array and mutable List are converted to a JS mutable array
-        type = JsRefType(self, Globals.Array)
-        MapTo(Globals.Array, type)
-        MapTo(Boo.Lang.List, type)
+        # Lists and Hashes
+        reftype = JsRefType(self, Globals.Array)
+        MapTo(Boo.Lang.List, reftype)
+        MapTo(Globals.Array, reftype)
 
-        type = JsRefType(self, Builtins.Hash)
-        MapTo(Builtins.Hash, type)
-        MapTo(Boo.Lang.Hash, type)
+        reftype = JsRefType(self, Builtins.Hash)
+        MapTo(Boo.Lang.Hash, reftype)
+        MapTo(Builtins.Hash, reftype)
 
-        type = JsRefType(self, Globals.RegExp)
-        MapTo(Globals.RegExp, type)
-        MapTo(System.Text.RegularExpressions.Regex, type)
+        reftype = JsRefType(self, Globals.RegExp)
+        MapTo(typeof(regex), reftype)
+        MapTo(Globals.RegExp, reftype)
+
+        # NOTE: Map value types
+        #MapVal(System.ValueType, System.ValueType)
+
+
+    override def CreateEntityForRegularType(type as System.Type):
+        return JsRefType(self, type)
+
