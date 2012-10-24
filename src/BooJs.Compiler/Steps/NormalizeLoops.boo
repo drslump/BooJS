@@ -127,7 +127,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             mie = [| $each($(node.Iterator), $callback) |]
 
             if has_return:
-                ex = CodeBuilder.CreateReference(ReturnValueType)
+                ex = CodeBuilder.CreateTypeReference(ReturnValueType)
                 block = [|
                     try:
                         $mie
@@ -363,8 +363,15 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
                 node.Statements.Replace(st, [| return $boo.STOP |])
             elif st.NodeType == NodeType.ReturnStatement:
                 ret = st as ReturnStatement
-                ex = CodeBuilder.CreateReference(ReturnValueType)
-                node.Statements.Replace(st, [| raise $ex($(ret.Expression)) |])
+
+                # HACK: Ugly way to get a reference to the constructor :(
+                ctor as IConstructor
+                for itm in ReturnValueType.GetConstructors():
+                    ctor = itm
+
+                cie = CodeBuilder.CreateConstructorInvocation(ctor, ret.Expression)
+                cie.LexicalInfo = ret.Expression.LexicalInfo
+                node.Statements.Replace(st, [| raise $cie |])
                 has_return = true
             elif st.NodeType == NodeType.Block:
                 if ProcessContinueBreakReturn(st):
