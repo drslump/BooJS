@@ -3,9 +3,10 @@
 
 language: c
 
-# Make sure CMake is installed
+# Make sure mono is installed
 install:
- - sudo apt-get install mono-devel
+ - echo "Installing Mono..."
+ - sudo apt-get install mono-devel > /dev/null
 
 # Run the Build script
 script:
