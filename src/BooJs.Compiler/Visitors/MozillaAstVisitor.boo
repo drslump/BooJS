@@ -309,7 +309,6 @@ Transforms a Boo AST into a Mozilla AST
         Return Moz.Identifier(loc: loc(node), name: node.Name)
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
-        # TODO: handle computed expressions
         n = Moz.MemberExpression(loc: loc(node), property: Moz.Identifier(loc: loc(node), name: node.Name))
         n.object = Apply(node.Target)
         Return n
@@ -342,6 +341,12 @@ Transforms a Boo AST into a Mozilla AST
             for arg in node.Arguments:
                 c.arguments.Add(Apply(arg))
             Return c
+        # Detect sequences
+        elif node.Target.ToString() == '@':
+            s = Moz.SequenceExpression(loc: loc(node))
+            for arg in node.Arguments:
+                s.expressions.Add(Apply(arg))
+            Return s
         else:
             n = Moz.CallExpression(loc: loc(node))
             n.callee = Apply(node.Target)
