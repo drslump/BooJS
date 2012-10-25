@@ -47,6 +47,13 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
             elif target.Entity is BooMethodCache.ICallable_Call:
                 t_target = (target as MemberReferenceExpression).Target
                 node.Target = t_target
+                # Convert varargs to plain arguments
+                # TODO: What happens if the callable actually expects a vararg?
+                if len(node.Arguments) == 1 and node.Arguments.First.NodeType == NodeType.ArrayLiteralExpression:
+                    lst = (node.Arguments.First as ArrayLiteralExpression).Items
+                    node.Arguments.Clear()
+                    for arg in lst:
+                        node.Arguments.Add(arg)
                 return
 
             # Retarget builtins
