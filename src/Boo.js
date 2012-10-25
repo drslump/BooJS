@@ -277,7 +277,7 @@
     // Reduces a list of items using a callback to a single one
     var reduce = Boo.reduce = function (list, callback, value) {
         if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
-        var i = 0, l = +this.length;
+        var i = 0, l = +list.length;
      
         if (arguments.length < 3) {
             if (l === 0) throw new TypeError("Array length is 0 and no third argument");
@@ -295,12 +295,12 @@
 
     // Builds a list of lists using one item from each given array
     var zip = Boo.zip = function (args) {
-        var shortest = args.length || reduce(args, function (a, b) {
+        var shortest = reduce(args, function (a, b) {
             return a.length < b.length ? a : b;
         });
 
         var i, result = [], fn = function (arg) { return arg[i]; };
-        for (i = 0; i < shortest; i++) {
+        for (i = 0; i < shortest.length; i++) {
             result[i] = map(args, fn);
         }
         return result;
