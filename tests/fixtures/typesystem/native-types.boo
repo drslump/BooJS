@@ -26,10 +26,8 @@ print 'regex', r.test('foo')
 
 # Objects are mutable in Javascript thus it's init as null
 o as object = 1
-o['foo']
 print 'object', o + 1
 
 # Duck type is mostly the same as object
 p as duck = 'foo'
 print 'duck', p + 1 
-
