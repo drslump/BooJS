@@ -66,6 +66,7 @@ class TransformAttribute(AbstractAstAttribute):
         NodeType.ReferenceExpression: typeof(ReferenceExpression),
         NodeType.MemberReferenceExpression: typeof(MemberReferenceExpression),
         NodeType.MethodInvocationExpression: typeof(MethodInvocationExpression),
+        NodeType.SlicingExpression: typeof(SlicingExpression),
     }
 
     def constructor(expr as Expression):
