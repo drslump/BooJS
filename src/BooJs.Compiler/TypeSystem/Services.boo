@@ -64,8 +64,8 @@ class Services(BooServices):
 
     override protected def PrepareBuiltinFunctions():
         AddBuiltin(BuiltinFunction.Len)
+        AddBuiltin(BuiltinFunction.Eval);
         #AddBuiltin(BuiltinFunction.AddressOf);
-        #AddBuiltin(BuiltinFunction.Eval);
         #AddBuiltin(BuiltinFunction.Switch);
 
 
