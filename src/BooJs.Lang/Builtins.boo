@@ -35,7 +35,9 @@ class Builtins:
     """ Simple hash/dictionary based on Javascript's object
     """
         self[key as string] as object:
+            [Transform( $0[$1] )]
             get: pass
+            [Transform( $0[$1] = $2 )]
             set: pass
 
         [Transform( Boo.Hash() )]
