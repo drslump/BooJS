@@ -76,7 +76,7 @@ Transforms a Boo AST into a Mozilla AST
         Return Moz.Literal(loc: loc(node), value: node.Value)
 
     def OnRELiteralExpression(node as RELiteralExpression):
-        Return Moz.Literal(loc: loc(node), value: node.Value)
+        Return Moz.Literal(loc: loc(node), value: node.Value, regexp: true)
 
     def OnSelfLiteralExpression(node as SelfLiteralExpression):
         Return Moz.ThisExpression(loc: loc(node))
