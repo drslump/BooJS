@@ -5,11 +5,7 @@ import Boo.Lang.Compiler.Steps
 
 class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 """
-    Converts generator expressions to a simpler format:
-
-        ( i*2 for i in range(3) )
-        ---
-        { __gen = []; for i in range(3): __gen.push(i*2); return __gen }()
+    Converts generator expressions to a simpler form using a sequence/eval
 """
 
     # Keep track of last visited method
@@ -48,6 +44,9 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
         for decl in node.Declarations:
             lambda.Parameters.Add(ParameterDeclaration(node.LexicalInfo, Name: decl.Name))
 
-        result = [| @(__gen = [], Boo.each($(node.Iterator), $lambda), __gen) |]
-        ReplaceCurrentNode result
+        eval = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
+        eval.Arguments.Add( [| __gen = [] |] )
+        eval.Arguments.Add( [| Boo.each($(node.Iterator), $lambda) |] )
+        eval.Arguments.Add( [| __gen |] )
+        ReplaceCurrentNode eval
 
