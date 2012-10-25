@@ -12,3 +12,4 @@ def bar():
 	
 c = @(foo(), a=1, bar())
 assert c == "bar"
+assert a == 1
