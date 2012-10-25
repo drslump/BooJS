@@ -18,9 +18,6 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
             return
         Visit CompileUnit
 
-    def OnIntegerLiteralExpression(node as IntegerLiteralExpression):
-        print node
-
     override def EnterMethod(node as Method):
     """ Remove the injected \$locals variable
     """
