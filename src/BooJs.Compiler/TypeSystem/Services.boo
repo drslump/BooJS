@@ -65,18 +65,3 @@ class Services(BooServices):
     override protected def PrepareBuiltinFunctions():
         AddBuiltin(BuiltinFunction.Len)
         AddBuiltin(BuiltinFunction.Eval);
-        #AddBuiltin(BuiltinFunction.AddressOf);
-        #AddBuiltin(BuiltinFunction.Switch);
-
-
-    /*
-    # We might need to replace more methods to take into account the new types
-    new def IsNumberOrBool(type as IType):
-        return BoolType == type or IsNumber(type)
-
-    new def IsNumber(type as IType):
-        return IsPrimitiveNumber(type) or type == DecimalType
-
-    new def IsPrimitiveNumber(type as IType):
-        return IsIntegerNumber(type) or type == DoubleType or type == Map(Globals.Number)
-    */

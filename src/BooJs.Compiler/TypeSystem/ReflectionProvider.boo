@@ -103,9 +103,6 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
         MapTo(typeof(regex), reftype)
         MapTo(Globals.RegExp, reftype)
 
-        # NOTE: Map value types
-        #MapVal(System.ValueType, System.ValueType)
-
 
     override def CreateEntityForRegularType(type as System.Type):
         if type.IsValueType:

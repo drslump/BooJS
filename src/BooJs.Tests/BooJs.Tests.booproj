@@ -88,6 +88,7 @@
     <Compile Include="BoojayFixtures.boo" />
     <Compile Include="Support\Support.boo" />
     <Compile Include="CallablesFixtures.boo" />
+    <Compile Include="GeneratorsFixtures.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
