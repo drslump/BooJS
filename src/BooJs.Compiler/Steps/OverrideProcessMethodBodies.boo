@@ -164,3 +164,4 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         else:
             super(node)
 
+

@@ -32,8 +32,8 @@ class Services(BooServices):
         UIntType = Map(Globals.NumberUInt)
         ULongType = Map(Globals.NumberUInt)
 
-        SingleType = Map(Globals.NumberDouble)
-        DoubleType = Map(Globals.NumberDouble)
+        SingleType = Map(Globals.Number)
+        DoubleType = Map(Globals.Number)
 
         # In BooJs arrays are mutable too
         ArrayType = Map(Globals.Array)

@@ -28,12 +28,19 @@ class Builtins:
     interface ICallable:
     """ Define the ICallable interface
     """
-        def Call(args as (object)) as object
+        def Call(args as (Object)) as Object
 
 
     class Hash(Object):
     """ Simple hash/dictionary based on Javascript's object
     """
+        [Transform( $2.hasOwnProperty($1) )]
+        static def op_Member(lhs as object, rhs as Hash) as bool:
+            pass
+        [Transform( not $2.hasOwnProperty($1) )]
+        static def op_NotMember(lhs as object, rhs as Hash) as bool:
+            pass
+
         self[key as string] as object:
             [Transform( $0[$1] )]
             get: pass
@@ -77,11 +84,11 @@ class Builtins:
 
 
 
-    static def range(stop as int) as int*:
+    static def range(stop as int) as (int):
         pass
-    static def range(start as int, stop as int) as int*:
+    static def range(start as int, stop as int) as (int):
         pass
-    static def range(start as int, stop as int, step as int) as int*:
+    static def range(start as int, stop as int, step as int) as (int):
         pass
 
     static def print(*list as (object)) as void:

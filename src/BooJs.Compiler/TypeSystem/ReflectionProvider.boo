@@ -2,11 +2,19 @@ namespace BooJs.Compiler.TypeSystem
 
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.TypeSystem.Reflection.ExternalType as ExternalType
+import Boo.Lang.Compiler.TypeSystem.Reflection(IReflectionTypeSystemProvider, IAssemblyReference)
 import Boo.Lang.Compiler.TypeSystem.Reflection.ReflectionTypeSystemProvider as BooProvider
 
 import BooJs.Lang
 
-class ReflectionProvider(BooProvider):
+/*
+import System
+import System.Collections.Generic
+import System.Reflection
+import Boo.Lang.Compiler.Util
+*/
+
+class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 """ Tells the compiler how it should interpret reflected types """
 
     internal class JsRefType(ExternalType):
@@ -30,25 +38,21 @@ class ReflectionProvider(BooProvider):
             super(provider, type)
 
         override def IsAssignableFrom(other as IType) as bool:
-            # TODO: Properly understand all this and refactor it nicely
             result = super(other)
             return result
 
 
     public static final SharedTypeSystemProvider = ReflectionProvider()
 
-
     def constructor():
-        # TODO: Not sure we need to map all types, just provide a mapping for reference types (object)
 
+        # TODO: Not sure we need to map all types
         # Define the base object type
         reftype = JsRefType(self, Globals.Object)
-        #MapRef(typeof(object), reftype)  # Cannot be replaced, already mapped
         MapTo(Globals.Object, reftype)
 
         # Define duck type
         reftype = JsRefType(self, Builtins.Duck)
-        #MapRef(typeof(duck), reftype)  # Cannot be replaced, already mapped
         MapTo(Builtins.Duck, reftype)
 
         # Define ICallable type
@@ -81,10 +85,10 @@ class ReflectionProvider(BooProvider):
         MapTo(typeof(ulong), valtype)
         MapTo(Globals.NumberUInt, valtype)
 
-        valtype = JsValueType(self, Globals.NumberDouble)
+        valtype = JsValueType(self, Globals.Number)
         MapTo(typeof(single), valtype)
         MapTo(typeof(double), valtype)
-        MapTo(Globals.NumberDouble, valtype)
+        MapTo(Globals.Number, valtype)
 
         # Lists and Hashes
         reftype = JsRefType(self, Globals.Array)
@@ -104,5 +108,8 @@ class ReflectionProvider(BooProvider):
 
 
     override def CreateEntityForRegularType(type as System.Type):
-        return JsRefType(self, type)
+        if type.IsValueType:
+            return JsValueType(self, type)
+        else:
+            return JsRefType(self, type)
 

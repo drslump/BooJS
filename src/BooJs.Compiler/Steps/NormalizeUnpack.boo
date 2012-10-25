@@ -28,3 +28,4 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
             refe = ReferenceExpression(Name: decl.Name)
             stmt = ExpressionStatement(Expression: [| $refe = $unpack[$i] |])
             stmts.Insert(idx++, stmt)
+

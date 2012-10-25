@@ -4,15 +4,22 @@ import BooJs.Lang.Extensions
 
 class Number(Object):
 
+    [Transform( Math.pow($1, $2) )]
+    static def op_Exponentiation(lhs as double, rhs as double) as double:
+        pass
+
+
     static final NaN as double
     static final MAX_VALUE as double
     static final MIN_VALUE as double
     static final NEGATIVE_INFINITY as double
     static final POSITIVE_INFINITY as double
 
+    [Transform( Number() )]
     def constructor():
         pass
 
+    [Transform( Number($1) )]
     def constructor(n as object):
         pass
 
@@ -65,15 +72,3 @@ class NumberUInt(NumberInt):
         pass
 
 
-class NumberDouble(Number):
-    [Transform( Math.pow($1, $2) )]
-    static def op_Exponentiation(lhs as double, rhs as double) as double:
-        pass
-
-    [Transform( Number() )]
-    def constructor():
-        pass
-
-    [Transform( Number($1) )]
-    def constructor(n as object):
-        pass

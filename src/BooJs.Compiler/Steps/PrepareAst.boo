@@ -9,6 +9,9 @@ import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMet
 import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 import BooJs.Lang.Extensions
 
+import System.Runtime.CompilerServices(CompilerGeneratedAttribute)
+
+
 
 class PrepareAst(AbstractTransformerCompilerStep):
 """
@@ -64,6 +67,11 @@ class PrepareAst(AbstractTransformerCompilerStep):
         if node.Name == 'CompilerGeneratedExtensions':
             RemoveCurrentNode()
             return false
+
+        if GetAttribute[of CompilerGeneratedAttribute](node):
+            RemoveCurrentNode()
+            return false
+
         return true
 
     def OnExpressionStatement(node as ExpressionStatement):
@@ -225,14 +233,19 @@ class PrepareAst(AbstractTransformerCompilerStep):
     def OnCastExpression(node as CastExpression):
         mie = [| Boo.$(ReferenceExpression('cast'))() |]
         mie.Arguments.Add(node.Target)
-        mie.Arguments.Add(node.Type as Expression)
-        ReplaceCurrentNode mie
+        ReplaceCurrentNode( ProcessCast(mie, node.Type) )
 
     def OnTryCastExpression(node as TryCastExpression):
         mie = [| Boo.trycast() |]
         mie.Arguments.Add(node.Target)
-        mie.Arguments.Add(node.Type as Expression)
-        ReplaceCurrentNode mie
+        ReplaceCurrentNode( ProcessCast(mie, node.Type) )
+
+    protected def ProcessCast(mie as MethodInvocationExpression, type as Node) as MethodInvocationExpression:
+        if not type isa Expression:
+            type = TypeofExpression(type.LexicalInfo, type)
+
+        mie.Arguments.Add(type)
+        return Visit(mie)
 
     def OnCharLiteralExpression(node as CharLiteralExpression):
     """ There is no char type in BooJs. char('c') and char(int) are converted to a string of length 1
