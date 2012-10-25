@@ -357,6 +357,8 @@ class Literal(Node, IExpression):
 """ A literal token. Note that a literal can be an expression. """
     public value as object // string | boolean | null | number | RegExp
 
+    public regexp = false   # BooJs proprietary
+
     def constructor():
         pass
 

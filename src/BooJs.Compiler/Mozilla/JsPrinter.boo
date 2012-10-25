@@ -323,6 +323,8 @@ class JsPrinter(Printer):
             Write 'null'
         elif node.value == true or node.value == false:
             Write node.value.ToString().ToLower()
+        elif node.regexp:
+            Write node.value
         elif node.value isa string:
             quotes = 0
             result = ''
