@@ -1,3 +1,9 @@
+"""
+5.5
+1
+3.414171521474055
+"""
+
 def arithmetic_mean(lst as (double)) as double:
     sum = reduce(lst, {a as double, b as double| a+b}, 0)
     return sum / len(lst)

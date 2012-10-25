@@ -2,7 +2,7 @@
 6
 4,1
 """
-def mode(lst as list) as list:
+def mode(lst as Array) as Array:
     counter = {}
     modes = []
     max = 0

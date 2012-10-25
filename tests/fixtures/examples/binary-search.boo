@@ -1,3 +1,7 @@
+"""
+recursive 4
+iterative 4
+"""
 def binary_search_recursive(a as (int), value as int, lo as int, hi as int) as int:
     return -1 if hi < lo
     mid = Math.floor((lo+hi)/2)
@@ -10,7 +14,7 @@ def binary_search_recursive(a as (int), value as int, lo as int, hi as int) as i
 
 def binary_search_iterative(a as (int), value as int):
     lo = 0
-    hi = len(a.length) - 1
+    hi = len(a) - 1
     while lo <= hi:
         mid = Math.floor((lo+hi)/2)
         if a[mid] > value: hi = mid - 1
