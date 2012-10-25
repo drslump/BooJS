@@ -255,7 +255,7 @@
 
     // Generates a string concatenating the elements in the array
     Boo.join = function (list, sep) {
-        return list.join(sep || ' ');
+        return list.join(arguments.length > 1 ? sep : ' ');
     };
 
     // Obtain a reversed version of the given array

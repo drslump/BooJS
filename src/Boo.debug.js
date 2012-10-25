@@ -22,66 +22,69 @@
             try {
                 _define.apply(Boo, args);
             } catch (e) {
-                var trace = [e.message], frames = e.stack.split(/\n/);
                 
-                for (var i = 0; i < frames.length; i++) {
-                    var ident, file, line, column, m, frame = frames[i];
+                if (e.stack) {
+                    var trace = [e.message], frames = e.stack.split(/\n/);
+                    
+                    for (var i = 0; i < frames.length; i++) {
+                        var ident, file, line, column, m, frame = frames[i];
 
-                    // Chrome
-                    if (m = frame.match(/^\s+at\s+([^\s]+)\s+\((.+?):(\d+):(\d+)\)$/)) {
-                        ident = m[1].replace('Object.<anonymous>', '{anonymous}').replace('Object.', '');
-                        file = m[2];
-                        line = parseInt(m[3], 10) - 1;
-                        column = parseInt(m[4], 10) - 1;
-                    // Generic (ie: Firefox, Opera)
-                    } else if (m = frame.match(/[\s@]?(.+?):(\d+)([:,](\d+))?$/)) {
-                        ident = '{anonymous}';
-                        file = m[1];
-                        line = parseInt(m[2], 10) - 1;
-                        column = m[2] ? parseInt(m[3], 10) - 1 : -1;
-                    // Unrecognized but seems important
-                    } else if (/:\d+/.test(frame) || /\w+:\/\//.test(frame)) {
-                        trace.push(frame.replace(/^\s+/, ''));
-                        continue;
-                    // Unrecognized, just ignore it
-                    } else {
-                        continue;
-                    }
+                        // Chrome
+                        if (m = frame.match(/^\s+at\s+([^\s]+)\s+\((.+?):(\d+):(\d+)\)$/)) {
+                            ident = m[1].replace('Object.<anonymous>', '{anonymous}').replace('Object.', '');
+                            file = m[2];
+                            line = parseInt(m[3], 10) - 1;
+                            column = parseInt(m[4], 10) - 1;
+                        // Generic (ie: Firefox, Opera)
+                        } else if (m = frame.match(/[\s@]?(.+?):(\d+)([:,](\d+))?$/)) {
+                            ident = '{anonymous}';
+                            file = m[1];
+                            line = parseInt(m[2], 10) - 1;
+                            column = m[2] ? parseInt(m[3], 10) - 1 : -1;
+                        // Unrecognized but seems important
+                        } else if (/:\d+/.test(frame) || /\w+:\/\//.test(frame)) {
+                            trace.push(frame.replace(/^\s+/, ''));
+                            continue;
+                        // Unrecognized, just ignore it
+                        } else {
+                            continue;
+                        }
 
-                    // Ignore runtime
-                    if (/\/Boo(\.\w+)?\.js$/.test(file)) {
-                        continue;
-                    }
+                        // Ignore runtime
+                        if (/\/Boo(\.\w+)?\.js$/.test(file)) {
+                            continue;
+                        }
 
-                    var srcmap;
-                    for (var j = 0; j < sourcemaps.length; j++) {
-                        // TODO: Make the matching a bit fuzzy (backslashes, spaces, ...)
-                        if (-1 !== file.indexOf(sourcemaps[j].file)) {
-                            srcmap = SrcMap(sourcemaps[j]);
-                            break;
+                        var srcmap;
+                        for (var j = 0; j < sourcemaps.length; j++) {
+                            // TODO: Make the matching a bit fuzzy (backslashes, spaces, ...)
+                            if (-1 !== file.indexOf(sourcemaps[j].file)) {
+                                srcmap = SrcMap(sourcemaps[j]);
+                                break;
+                            }
+                        }
+
+                        if (!srcmap) {
+                            continue;
+                        }
+
+                        // TODO: don't output column if it's -1 in the Javascript stack
+                        var found = srcmap.find(line, column);
+                        if (found) {
+                            trace.push('at ' + ident + ' @ ' + found.source + ':' + (found.line + 1) + ':' + (found.column + 1));
+                        } else {
+                            trace.push('at ' + ident + ' @ ' + file + ':' + (line + 1) + ':' + (column + 1));
                         }
                     }
 
-                    if (!srcmap) {
-                        continue;
-                    }
-
-                    // TODO: don't output column if it's -1 in the Javascript stack
-                    var found = srcmap.find(line, column);
-                    if (found) {
-                        trace.push('at ' + ident + ' @ ' + found.source + ':' + (found.line + 1) + ':' + (found.column + 1));
+                    trace = trace.join('\n    ');
+                    if ('warn' in console) {
+                        console.warn(trace);
+                    } else if ('log' in console) {
+                        console.log(trace);
                     } else {
-                        trace.push('at ' + ident + ' @ ' + file + ':' + (line + 1) + ':' + (column + 1));
+                        e.message = trace;
                     }
-                }
-
-                trace = trace.join('\n    ');
-                if ('warn' in console) {
-                    console.warn(trace);
-                } else if ('log' in console) {
-                    console.log(trace);
-                } else {
-                    e.message = trace;
                 }
 
                 throw e;
