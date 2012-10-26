@@ -3,10 +3,10 @@ FOO
 foo
 """
 def ToUpper(s as string):
-	return s.ToUpper()
+	return s.toUpperCase()
 	
 def ToLower(s as string):
-	return s.ToLower()
+	return s.toLowerCase()
 
 def Select(upper as bool):	
 	return ToUpper if upper

@@ -25,7 +25,9 @@ class Array(Object):
 
 
     self[index as int] as object:
+        [Transform( $0[$1] )]
         get: pass
+        [Transform( $0[$1] = $2 )]
         set: pass
 
     public length as uint

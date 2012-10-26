@@ -274,6 +274,15 @@
         return result;
     };
 
+    // Calls a function for each element in the array
+    Boo.filter = function (list, callback) {
+        var result = [];
+        each(list, function (v) {
+            if (callback(v)) result.push(v);
+        });
+        return result;
+    };
+
     // Reduces a list of items using a callback to a single one
     var reduce = Boo.reduce = function (list, callback, value) {
         if (list === null || list === undefined) throw new TypeError("Object is null or undefined");

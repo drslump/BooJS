@@ -114,6 +114,9 @@ class Builtins:
     static def reduce[of T](items as (T), callback as callable, initial as T) as T:
         pass
 
+    static def filter(items as (object), callback as callable) as (object):
+        pass
+
     static def zip(*arrays as (object)) as (object):
         pass
 
@@ -123,20 +126,13 @@ class Builtins:
         pass
 
 
-    # TODO: The annotation does not work :(
-    #[TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
-    #def array(type as System.Type, enumerable as System.Collections.IEnumerable):
-    #    pass
-
-    #[TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
-    #def array(type as System.Type, num as int):
-    #    pass
-
-    static def array(type as System.Type, enumerable as (object)) as (object): #Array:
+    [TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
+    static def array(type as System.Type, enumerable as Object*) as (Object): #Array:
         pass
-    static def array(type as System.Type, num as int) as (object): #Array
+    [TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
+    static def array(type as System.Type, num as int) as (Object): #Array
         pass
-    static def array(enumerable as (object)) as (object): #Array:
+    static def array[of T](enumerable as T*) as (T):
         pass
 
 

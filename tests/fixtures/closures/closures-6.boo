@@ -1,4 +1,3 @@
-#IGNORE: List generators not supported yet
 
 def filter(items, condition as System.Predicate[of object]):
 	return [item for item in items if condition(item)]

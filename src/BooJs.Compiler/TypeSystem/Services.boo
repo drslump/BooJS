@@ -41,7 +41,7 @@ class Services(BooServices):
 
         RegExpType = Map(Globals.RegExp)
 
-        #ICallableType = Map(Builtins.ICallable)
+        ICallableType = Map(Builtins.ICallable)
 
         DuckType = Map(Builtins.Duck)
 

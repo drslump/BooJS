@@ -22,10 +22,10 @@ MakeItUpper foo FOO
 MakeItLower BaR bar
 """
 
-for line in /\n/.split(text):
-	continue unless len(line.trim())	
+for line in text.split(/\n/):
+	continue unless len(line)	
 	
-	command, arg, expected = /\s+/.split(line)	
+	command, arg, expected = line.split(/\s+/)
 	assert expected == invoke(commandMap[command], arg)
 	
 	print("${command}:${arg}:${expected}")
