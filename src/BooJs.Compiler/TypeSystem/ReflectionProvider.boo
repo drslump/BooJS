@@ -19,15 +19,18 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 
     internal class JsRefType(ExternalType):
     """ Type wrapper for reference types """
-         def constructor(provider as ReflectionProvider, type as System.Type):
-            super(provider, type)
+        def constructor(provider as ReflectionProvider, type as System.Type):
+           super(provider, type)
 
-         override def IsAssignableFrom(other as IType) as bool:
-             external = other as ExternalType;
-             return true if external is null
-             return true if external is other
-             return true if external.IsAssignableFrom(other)
-             return external.ActualType != Types.Void;
+        override def IsAssignableFrom(other as IType) as bool:
+            return super(other)
+            /*
+            if external = other as ExternalType:
+                return false if external is null
+                return true if self.ActualType.IsAssignableFrom(external.ActualType)
+
+            return false
+            */
 
     internal class JsValueType(ExternalType):
     """ Type wrapper for value types """
@@ -92,6 +95,7 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 
         # Lists and Hashes
         reftype = JsRefType(self, Globals.Array)
+        MapTo(System.Array, reftype)
         MapTo(Boo.Lang.List, reftype)
         MapTo(Globals.Array, reftype)
 

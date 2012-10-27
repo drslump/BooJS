@@ -31,6 +31,19 @@ class RuntimeMethodCache(AbstractCompilerComponent):
         })
 
 
+    # Duck methods
+
+    InvokeBinaryOperator as IMethod:
+        get: return CachedMethod('InvokeBinaryOperator', {
+            Methods.Of[of string, object, object, object](RuntimeServices.InvokeBinaryOperator)
+        })
+
+    InvokeUnaryOperator as IMethod:
+        get: return CachedMethod('InvokeUnaryOperator', {
+            Methods.Of[of string, object, object](RuntimeServices.InvokeUnaryOperator)
+        })
+
+
     private _methodCache = Dictionary[of string, IMethodBase](StringComparer.Ordinal)
     def CachedMethod(key as string, producer as callable() as MethodInfo) as IMethod:
         return CachedMethodBase(key, { TypeSystemServices.Map(producer()) })

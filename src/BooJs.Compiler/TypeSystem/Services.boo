@@ -22,22 +22,22 @@ class Services(BooServices):
 
         BoolType = Map(Globals.Boolean)
 
-        SByteType = Map(Globals.NumberInt)
-        ShortType = Map(Globals.NumberInt)
-        IntType = Map(Globals.NumberInt)
         LongType = Map(Globals.NumberInt)
+        IntType = LongType
+        SByteType = LongType
+        ShortType = LongType
 
-        ByteType = Map(Globals.NumberUInt)
-        UShortType = Map(Globals.NumberUInt)
-        UIntType = Map(Globals.NumberUInt)
         ULongType = Map(Globals.NumberUInt)
+        UIntType = ULongType
+        UShortType = ULongType
+        ByteType = ULongType
 
-        SingleType = Map(Globals.Number)
         DoubleType = Map(Globals.Number)
+        SingleType = DoubleType
 
         # In BooJs arrays are mutable too
         ArrayType = Map(Globals.Array)
-        ListType = Map(Globals.Array)
+        ListType = ArrayType
 
         RegExpType = Map(Globals.RegExp)
 

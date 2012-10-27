@@ -110,6 +110,7 @@
     <Compile Include="Steps\PrepareAst.boo" />
     <Compile Include="Steps\ExpandVarArgsMethodInvocation.boo" />
     <Compile Include="Steps\PrepareForEmit.boo" />
+    <Compile Include="TypeSystem\DowncastPermissions.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">
