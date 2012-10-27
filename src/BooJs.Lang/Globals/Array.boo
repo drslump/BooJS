@@ -2,37 +2,59 @@ namespace BooJs.Lang.Globals
 
 import BooJs.Lang.Extensions
 
-import System.Collections(IList, IEnumerable, ICollection)
+#import System.Collections(IList, IEnumerable, ICollection)
 
-class Array(Object, IList):
+
+import System.Collections(IList, IEnumerable, IEnumerator)
+import System.Collections.Generic(IList, IEnumerable, IEnumerator)
+import System(Func)
+
+
+class Array[of T] (Object, IList[of T]): #, IList):
 
     [Transform( Boo.Array.op_Equality($1, $2) )]
-    static def op_Equality(lhs as Array, rhs as Array) as bool:
+    static def op_Equality(lhs as Array[of T], rhs as Array[of T]) as bool:
         pass
-    #[Transform( Boo.Array.op_Equality($1, $2) )]
-    #static def op_Equality(lhs as object*, rhs as object*) as bool:
-    #    pass
     [Transform( Boo.Array.op_Member($1, $2) )]
-    static def op_Member(lhs as Array, rhs as object) as bool:
+    static def op_Member(lhs as Array[of T], rhs as object) as bool:
         pass
     [Transform( not Boo.Array.op_Member($1, $2) )]
-    static def op_NotMember(lhs as Array, rhs as object) as bool:
+    static def op_NotMember(lhs as Array[of T], rhs as object) as bool:
         pass
     [Transform( Boo.Array.op_Addition($1, $2) )]
-    static def op_Addition(lhs as Array, rhs as Array) as Array:
+    static def op_Addition(lhs as Array[of T], rhs as Array[of T]) as Array[of T]:
         pass
     [Transform( Boo.Array.op_Multiply($1, $2) )]
-    static def op_Multiply(lhs as Array, rhs as int) as Array:
+    static def op_Multiply(lhs as Array[of T], rhs as int) as Array[of T]:
+        pass
+
+    # Allow assignment from arrays
+    static def op_Implicit(rhs as (T)) as Array[of T]:
         pass
 
 
-    self[index as int] as object:
+    # Implement enumerable interfaces that conflicts
+    def IEnumerable.GetEnumerator() as IEnumerator:
+        pass
+    def GetEnumerator() as IEnumerator[of T]:
+        pass
+
+
+    # Indexer
+    self[index as int] as T:
         [Transform( $0[$1] )]
         get: pass
         [Transform( $0[$1] = $2 )]
         set: pass
 
+    /*
+    self[index as int] as object:
+        get: pass
+        set: pass
+    */
+
     public length as uint
+
 
     def constructor():
         pass
@@ -40,81 +62,80 @@ class Array(Object, IList):
         pass
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
-    def push(itm as object) as uint:
+    def push(itm as T) as uint:
         pass
-    def push(itm1 as object, itm2 as object) as uint:
+    def push(itm1 as T, itm2 as T) as uint:
         pass
-    def push(itm1 as object, itm2 as object, itm3 as object) as uint:
-        pass
-
-    def pop() as object:
+    def push(itm1 as T, itm2 as T, itm3 as T) as uint:
         pass
 
-    def reverse() as Array:
-        return self
-
-    def shift() as object:
+    def pop() as T:
         pass
 
-    def sort() as Array:
-        return self
-
-    def sort(comp as callable) as Array:
-        return self
-
-    def splice(index as int, cnt as int, *elems as (object)) as Array:
-        return self
-        
-    def splice(index as int, cnt as int) as Array:
-        return self
-
-    def splice(index as int) as Array:
-        return self
-
-    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
-    def unshift(itm1 as object) as uint:
+    def reverse() as Array[of T]:
         pass
-    def unshift(itm1 as object, itm2 as object) as uint:
+
+    def shift() as T:
         pass
-    def unshift(itm1 as object, itm2 as object, itm3 as object) as uint:
+
+    def sort() as Array[of T]:
+        pass
+    def sort(comp as callable) as Array[of T]:
+        pass
+
+    def splice(index as int, cnt as int, *elems as (T)) as Array[of T]:
+        pass
+    def splice(index as int, cnt as int) as Array[of T]:
+        pass
+    def splice(index as int) as Array[of T]:
         pass
 
     # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
-    def concat(itm1 as Array) as Array:
+    def unshift(itm1 as T) as uint:
         pass
-    def concat(itm1 as Array, itm2 as Array) as Array:
+    def unshift(itm1 as T, itm2 as T) as uint:
         pass
-    def concat(itm1 as Array, itm2 as Array, itm3 as Array) as Array:
+    def unshift(itm1 as T, itm2 as T, itm3 as T) as uint:
+        pass
+
+    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
+    def concat(itm1 as Array[of T]) as Array[of T]:
+        pass
+    def concat(itm1 as Array[of T], itm2 as Array[of T]) as Array[of T]:
+        pass
+    def concat(itm1 as Array[of T], itm2 as Array[of T], itm3 as Array[of T]) as Array[of T]:
         pass
 
     def join(sep as string) as string:
         pass
 
-    def slice(start as int, stop as int) as Array:
+    def slice(start as int, stop as int) as Array[of T]:
         pass
 
-    def slice(start as int) as Array:
+    def slice(start as int) as Array[of T]:
         pass
 
-    def indexOf(itm as object, start as int) as int:
+    def indexOf(itm as T, start as int) as int:
         pass
 
-    def indexOf(itm as object) as int:
+    def indexOf(itm as T) as int:
         pass
 
-    def lastIndexOf(itm as object, start as int) as int:
+    def lastIndexOf(itm as T, start as int) as int:
         pass
 
-    def lastIndexOf(itm as object) as int:
+    def lastIndexOf(itm as T) as int:
         pass
 
 
-    def filter(callback as callable, context as object) as Array:
+    def filter(callback as callable, context as object) as Array[of T]:
         pass
-    def filter(callback as callable) as Array:
+    def filter(callback as callable) as Array[of T]:
         pass
 
-    def forEach(callback as callable, context as object) as void:
+    #def forEach(callback as callable(T), context as object) as void:
+    def forEach(callback as Func[of T], context as object) as void:
+
         pass
     def forEach(callback as callable) as void:
         pass
@@ -124,9 +145,9 @@ class Array(Object, IList):
     def every(callback as callable) as bool:
         pass
 
-    def map(callback as callable, context as object) as Array:
+    def map(callback as callable, context as object) as Array[of T]:
         pass
-    def map(callback as callable) as Array:
+    def map(callback as callable) as Array[of T]:
         pass
 
     def some(callback as callable, context as object) as bool:
@@ -150,3 +171,10 @@ class Array(Object, IList):
     static def isArray(arg as object) as bool:
         pass
 
+
+
+class Array(Array[of object]):
+    def constructor():
+        pass
+    def constructor(n as int):
+        pass

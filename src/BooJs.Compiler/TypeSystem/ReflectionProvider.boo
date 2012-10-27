@@ -23,14 +23,13 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
            super(provider, type)
 
         override def IsAssignableFrom(other as IType) as bool:
-            return super(other)
-            /*
-            if external = other as ExternalType:
-                return false if external is null
-                return true if self.ActualType.IsAssignableFrom(external.ActualType)
+            # Globals.Object behaves just like System.Object
+            # TODO: Move this to a custom TypeCompatibilityRules?
+            if self.ActualType in (Globals.Object, Builtins.Duck):
+                external = other as ExternalType
+                return external is null or external.ActualType != Types.Void
 
-            return false
-            */
+            return super(other)
 
     internal class JsValueType(ExternalType):
     """ Type wrapper for value types """
