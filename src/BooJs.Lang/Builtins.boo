@@ -3,6 +3,8 @@ namespace BooJs.Lang
 import BooJs.Lang.Globals
 import BooJs.Lang.Extensions
 
+import System.Collections(IEnumerable)
+
 class Builtins:
 
     [Transform( '%%COMPILER_VERSION%%' )]
@@ -31,7 +33,7 @@ class Builtins:
         def Call(args as (Object)) as Object
 
 
-    class Hash(Object):
+    class Hash(Object, IEnumerable):
     """ Simple hash/dictionary based on Javascript's object
     """
         [Transform( $2.hasOwnProperty($1) )]
@@ -41,7 +43,7 @@ class Builtins:
         static def op_NotMember(lhs as object, rhs as Hash) as bool:
             pass
 
-        self[key as string] as object:
+        self[key as object] as object:
             [Transform( $0[$1] )]
             get: pass
             [Transform( $0[$1] = $2 )]
@@ -94,19 +96,18 @@ class Builtins:
     static def print(*list as (object)) as void:
         pass
 
-    static def cat(*list as (object)) as (object):
+    #static def cat(*list as (object)) as (object):
+    static def cat(*list as (object)) as Array:
     """ Concatenates the given enumerable arguments """
         pass
 
-    static def join(items as (object), separator as string) as string:
+    static def join(items as object*, separator as string) as string:
         pass
-    static def join(items as (object)) as string:
+    static def join(items as object*) as string:
         pass
-    #static def join(items as Array, separator as string) as string:
-    #    pass
-    #static def join(items as Array) as string:
-    #    pass
-    static def map(items as (object), callback as callable) as (object):
+
+    #static def map(items as object*, callback as callable(object)) as object*:
+    static def map(items as Array, callback as callable(object)) as Array:
         pass
 
     static def reduce[of T](items as (T), callback as callable) as T:
@@ -120,9 +121,7 @@ class Builtins:
     static def zip(*arrays as (object)) as (object):
         pass
 
-    static def reversed(items as (object)) as (object):
-        pass
-    static def reversed(items as string) as (object):
+    static def reversed(items as object*) as Array:
         pass
 
 
@@ -130,13 +129,13 @@ class Builtins:
     static def array(type as System.Type, enumerable as Object*) as (Object): #Array:
         pass
     [TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
-    static def array(type as System.Type, num as int) as (Object): #Array
+    static def array(type as System.Type, num as int) as Array:
         pass
     static def array[of T](enumerable as T*) as (T):
         pass
 
 
     # Allows to iterate accesing indices/keys
-    static def enumerate(enumerable as (object)) as (object): #Array:
+    static def enumerate(enumerable as object*) as Array:
         pass
 
