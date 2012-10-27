@@ -316,25 +316,29 @@
         return result;
     };
 
-    // Converts any enumerable into an array, casting to a given type
-    // If the enumerable is a number an array with that many elements is created
+    // Converts any enumerable into an array, casting its values to a given type.
+    // If no type is given just convert it into an array.
+    // If the enumerable is a number an array with that many elements is created.
     Boo.array = function (type, enumerable) {
         if (arguments.length === 1) {
             enumerable = type;
             type = null;
         }
 
+        var result, value;
         if (typeIs(enumerable, 'Number')) {
-            enumerable = new Array(enumerable);
+            result = new Array(enumerable);
+            value = type === 'int' || type === 'uint' || type === 'double' ? 0 : type === 'bool' ? false : null;
             for (var i = 0, l = enumerable.length; i < l; i++) {
-                enumerable[i] = null;
+                result[i] = value;
             }
+        } else {
+            result = [];
+            each(enumerable, function (v) {
+                result.push(type ? cast(v, type) : v);
+            });
         }
-
-        var result = [];
-        each(enumerable, function (v) {
-            result.push(type ? cast(v, type) : v);
-        });
+        
         return result;
     };
 
