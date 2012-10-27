@@ -255,6 +255,7 @@
 
     // Generates a string concatenating the elements in the array
     Boo.join = function (list, sep) {
+        list = Boo.enumerable(list);
         return list.join(arguments.length > 1 ? sep : ' ');
     };
 
@@ -339,6 +340,7 @@
 
     // Makes sure a value is enumerable
     Boo.enumerable = function (value) {
+        if (typeIs(value, 'String')) value = value.split('');
         return (value && value.length) ? value : [];
     };
 
@@ -545,21 +547,18 @@
 
     Boo.Duck = {
         invoke: function (target, method, args) {
-            if (!target || typeof target[method] !== 'function') {
+            if (!target || typeof target[method] !== 'function')
                 throw new Error('Method ' + method + ' not found in target ' + target.toString());
-            }
             return target[method].apply(target, args);
         },
         set: function (target, property, value) {
-            if (!target) {
+            if (!target)
                 throw new Error('Target not found when setting property ' + property);
-            }
             target[property] = value;
         },
         get: function (target, property) {
-            if (!target) {
+            if (!target)
                 throw new Error('Target not found when getting property ' + property);
-            }
             var value = target[property];
             return typeof value === 'undefined' ? null : value;
         },
@@ -567,16 +566,12 @@
             var lhs_t = typeOf(lhs),
                 rhs_t = typeOf(rhs);
 
-            switch (op) {
-            case 'op_Addition':
-                return Boo.op_Addition(lhs, rhs);
-            case 'op_Subtraction':
-                return Boo.op_Subtraction(lhs, rhs);
-            case 'op_Multiply':
-                return Boo.op_Multiply(lhs, rhs);
-            default:
-                throw new Error('Unsupported binary operator (' + op + ') for duck types');
-            }
+            if (Boo[lhs_t] && Boo[lhs_t][op])
+                return Boo[lhs_t][op](lhs, rhs);
+            if (Boo[rhs_t] && Boo[rhs_t][op])
+                return Boo[rhs_t][op](rhs, lhs);
+
+            throw new Error('Unsupported binary operator (' + op + ') for operands of types ' + lhs_t + ' and ' + rhs_t);
         }
     };
 
