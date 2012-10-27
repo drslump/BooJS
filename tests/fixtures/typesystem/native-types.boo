@@ -3,8 +3,8 @@
 string null
 Array null
 regex True
-object 2
-duck foo1
+object null 1
+duck FOO1 foo
 """
 
 # Numbers are always initialized as 0
@@ -24,10 +24,12 @@ print 'list', f
 r as regex = /foo/
 print 'regex', r.test('foo')
 
-# Objects are mutable in Javascript thus it's init as null
-o as object = 1
-print 'object', o + 1
+# Objects are mutable in Javascript thus they are init as null
+o1 as object
+o2 as object = 1
+print 'object', o1, o2
 
-# Duck type is mostly the same as object
-p as duck = 'foo'
-print 'duck', p + 1 
+# Duck types behave the same as objects for type safety but also
+# allow any operation on them (resolved at runtime).
+p as duck = 'FOO'
+print 'duck', p + 1, p.toLowerCase()

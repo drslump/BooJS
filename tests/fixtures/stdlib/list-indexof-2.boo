@@ -1,6 +1,6 @@
 a = [5, 4, 3, 2, 1]
 
-def find(lst, cb as callable):
+def find(lst as int*, cb as callable):
 	for i, v in enumerate(lst):
 		return i if cb(v)
 	return null
