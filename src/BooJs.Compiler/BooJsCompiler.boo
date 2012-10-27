@@ -6,6 +6,7 @@ import Boo.Lang.Environments
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem(TypeSystemServices)
+import Boo.Lang.Compiler.TypeSystem.Services(DowncastPermissions)
 
 import BooJs.Compiler.TypeSystem as BooJsTypeSystem
 
@@ -42,7 +43,8 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider)
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { BooJsTypeSystem.Services() }
+        TypeSystemServices: { BooJsTypeSystem.Services() },
+        DowncastPermissions: { BooJsTypeSystem.DowncastPermissions() }
     }
 
     # Load language runtime assemblies
