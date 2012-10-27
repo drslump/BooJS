@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 class Person:
 
 	public Name as string

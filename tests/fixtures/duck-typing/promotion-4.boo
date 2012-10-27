@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 class Item:
 	[property(value)] _value as char
 	

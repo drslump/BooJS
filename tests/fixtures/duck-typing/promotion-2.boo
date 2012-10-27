@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 struct Item:
 	public value as int
 	

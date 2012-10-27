@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 import Boo.Lang.Runtime
 import My
 

@@ -1,3 +1,4 @@
+#IGNORE: classes not supported
 struct Person:
 	[property(Name)]
 	_name as string

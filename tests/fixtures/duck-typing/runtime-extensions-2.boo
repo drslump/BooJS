@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 """
 1, 2, 3
 """

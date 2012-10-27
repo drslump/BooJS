@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 class Foo:
 	bar:
 		get:

@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 """
 Foo.Name
 Foo.Name

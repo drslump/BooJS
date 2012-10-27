@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 class Person:
 	[property(Name)]
 	_name as string

@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 class QuackTest(IQuackFu):
 	private i as int
 	def constructor(j as int):

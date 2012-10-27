@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 """
 QuackSet("", ("param1",), "value1")
 QuackGet("", ("param2",))

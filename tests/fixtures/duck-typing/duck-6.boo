@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported
 """
 let's see whose quack fu is better!
 whoooooyah!
