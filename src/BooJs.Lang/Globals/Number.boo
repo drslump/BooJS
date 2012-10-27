@@ -8,6 +8,9 @@ class Number(Object):
     static def op_Exponentiation(lhs as double, rhs as double) as double:
         pass
 
+    [Transform( $1 + $2 )]
+    static def op_Addition(lhs as double, rhs as string) as string:
+        pass
 
     static final NaN as double
     static final MAX_VALUE as double

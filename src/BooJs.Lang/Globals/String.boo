@@ -2,7 +2,9 @@ namespace BooJs.Lang.Globals
 
 import BooJs.Lang.Extensions
 
-class String(Object):
+import System.Collections(IEnumerable)
+
+class String(Object, IEnumerable):
     # IMPORTANT: Boo requires explicit/implicit operators to use the actual types
     [Transform( parseInt($1) )]
     static def op_Explicit(value as String) as NumberInt:
@@ -16,16 +18,17 @@ class String(Object):
     static def op_Addition(lhs as string, rhs as string) as string:
         pass
 
+    [Transform($1 + $2)]
+    static def op_Addition(lhs as string, rhs as double) as string:
+        pass
+
     # Multiply operator: 'foo' * 2 --> 'foofoo'
     [Transform( Boo.String.op_Multiply($1, $2) )]
     static def op_Multiply(lhs as string, rhs as int) as string:
         pass
     # Formatting: '{0} {1}' % ('foo', 'bar')
     [Transform( Boo.String.op_Modulus($1, $2) )]
-    static def op_Modulus(lhs as string, rhs as (object)) as string:
-        pass
-    [Transform( Boo.String.op_Modulus($1, $2) )]
-    static def op_Modulus(lhs as string, rhs as Array) as string: #IEnumerable):
+    static def op_Modulus(lhs as string, rhs as IEnumerable) as string:
         pass
 
     # Static methods

@@ -1,5 +1,7 @@
 namespace BooJs.Lang.Globals
 
+import BooJs.Lang.Extensions
+
 class Math(Object):
 
     # Euler's constant and the base of natural logarithms

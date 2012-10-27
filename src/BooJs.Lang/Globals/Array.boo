@@ -2,14 +2,16 @@ namespace BooJs.Lang.Globals
 
 import BooJs.Lang.Extensions
 
-class Array(Object):
+import System.Collections(IList, IEnumerable, ICollection)
+
+class Array(Object, IList):
 
     [Transform( Boo.Array.op_Equality($1, $2) )]
     static def op_Equality(lhs as Array, rhs as Array) as bool:
         pass
-    [Transform( Boo.Array.op_Equality($1, $2) )]
-    static def op_Equality(lhs as object*, rhs as object*) as bool:
-        pass
+    #[Transform( Boo.Array.op_Equality($1, $2) )]
+    #static def op_Equality(lhs as object*, rhs as object*) as bool:
+    #    pass
     [Transform( Boo.Array.op_Member($1, $2) )]
     static def op_Member(lhs as Array, rhs as object) as bool:
         pass
