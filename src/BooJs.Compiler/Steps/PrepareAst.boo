@@ -89,6 +89,11 @@ class PrepareAst(AbstractTransformerCompilerStep):
             Visit result
             return result
 
+        # Primitive type references
+        if entity = node.Entity as TypeSystem.Reflection.ExternalType:
+            if TypeSystemServices.IsLiteralPrimitive(entity):
+                return StringLiteralExpression(node.LexicalInfo, entity.FullName)
+
         # Check for builtins references
         if IsBuiltin(node):
             name = node.Name.Split(char('.'))[-1]
@@ -191,13 +196,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         super(node)
 
-
-    /*
-    protected def ResolveRuntimeMethod(name as string) as IMethod:
-        method = NameResolutionService(TypeSystemServices.RuntimeType, name)
-        raise 'Runtime method not found' if not method
-        return method
-    */
 
     def OnMethod(node as Method):
     """ Process locals and detect the Main method to move its statements into the Module globals
@@ -354,6 +352,12 @@ class PrepareAst(AbstractTransformerCompilerStep):
             # Just rely on the type name
             refe = ReferenceExpression(node.LexicalInfo, st.Name)
             ReplaceCurrentNode ProcessReference(refe)
+
+        elif at = node.Type as ArrayTypeReference:
+
+            refe = CodeBuilder.CreateReference(node.LexicalInfo, TypeSystemServices.ArrayType)
+            ReplaceCurrentNode ProcessReference(refe)
+            return
 
         else:
             raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
