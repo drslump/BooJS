@@ -41,6 +41,8 @@ class FixtureRunner:
 
       comp = setupCompiler()
       comp.Parameters.Ducky = false
+      comp.Parameters.Strict = false
+
 
       #print 'Setup: ', timer.ElapsedMilliseconds
 

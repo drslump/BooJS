@@ -148,32 +148,56 @@ class PrepareAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode result
             return
 
+        /*
+        rts = TypeSystemServices.RuntimeType
+        rtsInvoke = ResolveMethod(rts, 'Invoke')
+        rtsInvokeCallable = ResolveMethod(rts, 'InvokeCallable')
+        rtsInvokeBinaryOperator = ResolveMethod(rts, 'InvokeBinaryOperator')
+        rtsInvokeUnaryOperator = ResolveMethod(rts, 'InvokeUnaryOperator')
+        rtsSetProperty = ResolveMethod(rts, 'SetProperty')
+        rtsGetProperty = ResolveMethod(rts, 'GetProperty')
+        rtsSetSlice = ResolveMethod(rts, 'SetSlice')
+        rtsGetSlice = ResolveMethod(rts, 'GetSlice')
+        */
 
-        # Eval calls take the form: @( stmt1, stmt2, ...., return_stmt )
-        # We convert them to a self invoking anonymous function that returns the last argument.
-        #
-        # TODO: Isn't this equivalent to Js ( expr1, expr2, expr3 ) ???
-        #
-        # Note: variables are declared in the enclosing scope, not wrapped in the function.
-        if false and '@' == node.Target.ToString():
-            bexpr = BlockExpression(LexicalInfo: node.Target.LexicalInfo)
-            st as Statement
-            for i, arg as Expression in enumerate(node.Arguments):
+        if node.Target.Entity == MethodCache.InvokeBinaryOperator:
 
-                if i == len(node.Arguments)-1:
-                    st = ReturnStatement(LexicalInfo: arg.LexicalInfo, Expression: arg)
-                else:
-                    st = ExpressionStatement(LexicalInfo: arg.LexicalInfo, Expression: arg)
+            # Convert it back into a binary expression
+            be = BinaryExpression(node.LexicalInfo)
+            be.ExpressionType = node.ExpressionType
+            be.Left = node.Arguments[1]
+            be.Right = node.Arguments[2]
 
-                bexpr.Body.Add(st)
+            # Remove the op_ to find the operator type
+            operator = (node.Arguments[0] as StringLiteralExpression).Value[3:]
+            be.Operator = System.Enum.Parse(BinaryOperatorType, operator)
 
-            mie = MethodInvocationExpression(LexicalInfo: node.LexicalInfo)
-            mie.Target = bexpr
-            ReplaceCurrentNode mie
-            Visit mie
+            ReplaceCurrentNode Visit(be)
             return
 
+        if node.Target.Entity == MethodCache.InvokeUnaryOperator:
+            # Convert it back into a unary expression
+            ue = UnaryExpression(node.LexicalInfo)
+            ue.ExpressionType = node.ExpressionType
+            ue.Operand = node.Arguments[1]
+
+            # Remove the op_ to find the operator type
+            operator = (node.Arguments[0] as StringLiteralExpression).Value[3:]
+            ue.Operator = System.Enum.Parse(UnaryOperatorType, operator)
+
+            ReplaceCurrentNode Visit(ue)
+            return
+
+
         super(node)
+
+
+    /*
+    protected def ResolveRuntimeMethod(name as string) as IMethod:
+        method = NameResolutionService(TypeSystemServices.RuntimeType, name)
+        raise 'Runtime method not found' if not method
+        return method
+    */
 
     def OnMethod(node as Method):
     """ Process locals and detect the Main method to move its statements into the Module globals
