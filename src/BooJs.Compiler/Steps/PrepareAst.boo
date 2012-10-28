@@ -361,3 +361,30 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         else:
             raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
+
+
+    def OnUnaryExpression(node as UnaryExpression):
+        # Logical Not folding
+        if node.Operator == UnaryOperatorType.LogicalNot:
+            # not(not(expr)) -> expr
+            if ue = node.Operand as UnaryExpression and ue.Operator == UnaryOperatorType.LogicalNot:
+                ReplaceCurrentNode Visit(ue.Operand)
+                return
+
+            if be = node.Operand as BinaryExpression:
+                inverses = {
+                    BinaryOperatorType.Equality: BinaryOperatorType.Inequality,
+                    BinaryOperatorType.Inequality: BinaryOperatorType.Equality,
+                    BinaryOperatorType.GreaterThan: BinaryOperatorType.LessThanOrEqual,
+                    BinaryOperatorType.LessThanOrEqual: BinaryOperatorType.GreaterThan,
+                    BinaryOperatorType.LessThan: BinaryOperatorType.GreaterThanOrEqual,
+                    BinaryOperatorType.GreaterThanOrEqual: BinaryOperatorType.LessThan,
+                }
+
+                if be.Operator in inverses:
+                    be.Operator = inverses[be.Operator]
+                    ReplaceCurrentNode Visit(be)
+                    return
+
+        super(node)
+
