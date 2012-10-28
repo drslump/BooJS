@@ -11,21 +11,20 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
 
     In this step we convert that operation to the following statements:
 
-        __unpack = (10, 20, 30)
-        a = __unpack[0]
-        b = __unpack[1]
-        c = __unpack[2]
+        @(upk = (10, 20, 30), a = upk[0], b = upk[1], c = upk[2])
 """
-    def EnterUnpackStatement(node as UnpackStatement):
-        stmts = (node.ParentNode as Block).Statements
-        idx = stmts.IndexOf(node)
-        RemoveCurrentNode
+    static final REFERENCE_NAME = '__upk'
 
-        unpack = ReferenceExpression(Name: '__unpack')
-        stmt = ExpressionStatement(Expression: [| $unpack = $(node.Expression) |])
-        stmts.Insert(idx++, stmt)
+    def OnUnpackStatement(node as UnpackStatement):
+
+        upkref = ReferenceExpression(node.LexicalInfo, REFERENCE_NAME)
+        seq = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
+        be = CodeBuilder.CreateAssignment(node.LexicalInfo, upkref, node.Expression)
+        seq.Arguments.Add(be)
         for i as int, decl as Declaration in enumerate(node.Declarations):
-            refe = ReferenceExpression(Name: decl.Name)
-            stmt = ExpressionStatement(Expression: [| $refe = $unpack[$i] |])
-            stmts.Insert(idx++, stmt)
+            refe = ReferenceExpression(decl.LexicalInfo, decl.Name)
+            slice = CodeBuilder.CreateSlicing(upkref, i)
+            be = CodeBuilder.CreateAssignment(decl.LexicalInfo, refe, slice)
+            seq.Arguments.Add(be)
 
+        ReplaceCurrentNode ExpressionStatement(node.LexicalInfo, seq)
