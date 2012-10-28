@@ -11,6 +11,8 @@ Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Lang", "BooJs.Lang\Bo
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Lang.Extensions", "BooJs.Lang.Extensions\BooJs.Lang.Extensions.booproj", "{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}"
 EndProject
+Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Web", "BooJs.Web\BooJs.Web.booproj", "{3B07EBF1-1388-40DC-A12B-AF6D56538856}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,16 @@ Global
 		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Debug Net-1.1|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Debug Net-1.1|Any CPU.Build.0 = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Micro-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Micro-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Micro-Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Micro-Release|Any CPU.Build.0 = Debug|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B07EBF1-1388-40DC-A12B-AF6D56538856}.Release|Any CPU.Build.0 = Release|Any CPU
 		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{576D8BA6-B55E-4984-853E-387133D3EC48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{576D8BA6-B55E-4984-853E-387133D3EC48}.Release|Any CPU.ActiveCfg = Release|Any CPU
