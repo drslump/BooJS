@@ -1,10 +1,9 @@
-#IGNORE: Type system not fully supported (object -> int)
 """
 """
 
 a, b = 1, 1
 reader = { return a, b }
-writer = { a1, b1 | a, b = a1, b1 }
+writer = { a1 as int, b1 as int | a, b = a1, b1 }
 
 assert array([1, 1]) == (a, b)
 assert array([1, 1]) == reader()
