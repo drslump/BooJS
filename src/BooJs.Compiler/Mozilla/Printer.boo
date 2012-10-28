@@ -39,7 +39,9 @@ abstract class Printer(Visitor):
     protected _needsIndenting = true
     protected _disableNewLine = 0
     protected _accumulator = ''
+    [getter(Line)]
     protected _line = 0
+    [getter(Column)]
     protected _column = 0
 
     [getter(PrecedenceStack)]

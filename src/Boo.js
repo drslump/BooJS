@@ -75,7 +75,7 @@
 
     // State for the module loader
     var mod_waiting = {},
-        mod_defined = {};
+        mod_defined = { 'Boo': Boo };
 
     // AMD style module loader. All Boo modules (files) wrap their
     // contents in a call to this function. This implementation is
@@ -338,7 +338,7 @@
                 result.push(type ? cast(v, type) : v);
             });
         }
-        
+
         return result;
     };
 

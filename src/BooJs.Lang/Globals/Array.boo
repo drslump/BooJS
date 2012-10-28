@@ -47,12 +47,6 @@ class Array[of T] (Object, IList[of T]): #, IList):
         [Transform( $0[$1] = $2 )]
         set: pass
 
-    /*
-    self[index as int] as object:
-        get: pass
-        set: pass
-    */
-
     public length as uint
 
 

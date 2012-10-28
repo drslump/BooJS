@@ -17,10 +17,9 @@ class JsPrinter(Printer):
         # TODO: Move to custom step
         module = node['module'] as Boo.Lang.Compiler.Ast.Module
 
-        deps = List of IExpression()
-        refs = List of IPattern()
+        deps = List of IExpression() { Literal('Boo') }
+        refs = List of IPattern() { Identifier('Boo') }
         prefixed = {}
-
 
         for imp in module.Imports:
             mie = imp.Expression as BooAst.MethodInvocationExpression
@@ -207,10 +206,14 @@ class JsPrinter(Printer):
         WriteLine
 
     virtual def OnExpressionStatement(node as ExpressionStatement):
+        line = Line
         WriteIndented
         Visit node.expression
         Trim
         WriteLine ';'
+        # Include additional new line if the expressions spanned multiple lines
+        if Line-line > 2:
+            WriteLine
 
     virtual def OnVariableDeclaration(node as VariableDeclaration):
         WriteIndented '{0} ', node.kind
