@@ -174,6 +174,22 @@ class Array[of T] (Object, IList[of T]): #, IList):
 
 
 class Array(Array[of object]):
+    [Transform( Boo.Array.op_Equality($1, $2) )]
+    static def op_Equality(lhs as Array, rhs as Array) as bool:
+        pass
+    [Transform( Boo.Array.op_Member($1, $2) )]
+    static def op_Member(lhs as object, rhs as Array) as bool:
+        pass
+    [Transform( not Boo.Array.op_Member($1, $2) )]
+    static def op_NotMember(lhs as object, rhs as Array) as bool:
+        pass
+    [Transform( Boo.Array.op_Addition($1, $2) )]
+    static def op_Addition(lhs as Array, rhs as Array) as Array:
+        pass
+    [Transform( Boo.Array.op_Multiply($1, $2) )]
+    static def op_Multiply(lhs as Array, rhs as int) as Array:
+        pass
+
     def constructor():
         pass
     def constructor(n as int):
