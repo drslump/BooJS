@@ -109,8 +109,8 @@
     <Compile Include="Mozilla\AstPrinter.boo" />
     <Compile Include="Steps\PrepareAst.boo" />
     <Compile Include="Steps\ExpandVarArgsMethodInvocation.boo" />
-    <Compile Include="Steps\PrepareForEmit.boo" />
     <Compile Include="TypeSystem\DowncastPermissions.boo" />
+    <Compile Include="Steps\EmitAssembly.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

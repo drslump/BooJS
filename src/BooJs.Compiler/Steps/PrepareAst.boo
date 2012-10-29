@@ -244,13 +244,20 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
 
         # Detect the Main method and move its statements to the Module globals
-        if ContextAnnotations.GetEntryPoint(Context) is node:
+        if IsEntryPoint(node):
             Visit node.Body
             node.EnclosingModule.Globals = node.Body
             RemoveCurrentNode
             return
 
         super(node)
+
+    def IsEntryPoint(node as Method):
+        # Note: We cannot use ContextAnnotations.GetEntryPoint(Context) to detect
+        # the entry point since when emitting the assembly we have to clone the AST
+        # and then the node instance is different.
+        return node.Name == IntroduceModuleClasses.EntryPointMethodName \
+               and node.IsSynthetic and node.IsStatic and node.IsPrivate
 
     def OnCastExpression(node as CastExpression):
         mie = [| Boo.$(ReferenceExpression('cast'))() |]

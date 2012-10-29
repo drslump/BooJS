@@ -96,15 +96,20 @@ class FixtureRunner:
             #pipeline = Pipelines.ProduceBoo()
 
             timer = System.Diagnostics.Stopwatch()
-            pipeline.BeforeStep += { pipeline, args |
+            pipeline.BeforeStep += def(pipeline, args):
+                //print '-------------------------------------------'
+                //print 'Step:', args.Step
+                //print args.Context.CompileUnit
                 timer.Restart()
-            }
+
             pipeline.AfterStep += def(pipeline, args):
                 if timer.ElapsedMilliseconds > 100:
                     print 'Slow Step {0}: {1}ms' % (args.Step.GetType().Name, timer.ElapsedMilliseconds)
 
             _comp = newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true
+            _comp.Parameters.GenerateInMemory = true
+
 
         # Reset the output writer
         _comp.Parameters.OutputWriter = System.IO.StringWriter()
