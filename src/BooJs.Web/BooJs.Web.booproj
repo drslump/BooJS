@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>BooJs.Web</RootNamespace>
     <AssemblyName>BooJs.Web</AssemblyName>
+    <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -54,4 +55,6 @@
       <Name>BooJs.Compiler</Name>
     </ProjectReference>
   </ItemGroup>
+
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>
