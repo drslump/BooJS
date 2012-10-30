@@ -36,11 +36,11 @@ class BooJsCompiler:
         
 
 def newBooJsCompiler():
-    return newBooJsCompiler(Pipelines.ProduceJs())
+    return newBooJsCompiler(Pipelines.SaveJs())
 
 def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     # Register our custom type system provider
-    params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider)
+    params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider, false)
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
         TypeSystemServices: { BooJsTypeSystem.Services() },

@@ -34,15 +34,9 @@ class CommandLine(AbstractCommandLine):
     [Option("Output directory", ShortForm: "o", LongForm: "out")]
     public OutputDirectory = "."
         
-    [Option("Prints the resulting bytecode to stdout.", ShortForm: 'p', LongForm: "print")]
+    [Option("Prints the resulting bytecode to stdout (js, boo).", ShortForm: 'p', LongForm: "print")]
     public PrintCode = false
     
-    [Option("Prints the expanded boo code to stdout.", LongForm: "boo")]
-    public Boo = false
-
-    [Option("Prints the expanded js code to stdout.", LongForm: "boojs")]
-    public BooJs = false
-
     [Option("Enables duck typing.", LongForm: "ducky")]
     public Ducky = false
     
@@ -52,8 +46,15 @@ class CommandLine(AbstractCommandLine):
     [Option("Enables verbose mode.", LongForm: "verbose")]
     public Verbose = false
     
-    [Option("Prints additional compiler internal messages to stdout.", LongForm: "debug-compiler")]
-    public DebugCompiler = false 
+    [Option("Embeds the types metadata assembly into the generated file (enabled by default).", LongForm: "embedasm")]
+    public EmbedAssembly = true
+
+    [Option("References the specified {assembly}", ShortForm: 'r', LongForm: "reference", MaxOccurs: int.MaxValue)]
+    def AddReference(reference as string):
+        if not reference:
+            raise CommandLineException("No reference supplied (ie: -r:my.project.reference)")
+
+        _references.AddUnique(Unquote(reference))
 
     [Option("Includes all *.boo files from {srcdir}", LongForm: "srcdir", MaxOccurs: int.MaxValue)]
     def AddSourceDir(srcDir as string):
@@ -65,3 +66,9 @@ class CommandLine(AbstractCommandLine):
     [Argument]
     def AddSourceFile([required] sourceFile as string):
         _sourceFiles.Add(sourceFile)
+
+
+    def Unquote(path as string):
+        if path.StartsWith('"') or path.StartsWith("'"):
+            return path[1:-1]
+        return path

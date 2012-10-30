@@ -98,14 +98,18 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         #for step in self: print step
 
 
-class ProduceBoo(Compile):
+class PrintBoo(Compile):
     def constructor():
         Add PrintBoo()
 
-class ProduceJs(Compile):
+class PrintJs(Compile):
     def constructor():
         Add Steps.PrintJs()
 
-class ProduceAst(Compile):
+class PrintAst(Compile):
     def constructor():
         Add Steps.PrintAst()
+
+class SaveJs(Compile):
+    def constructor():
+        Add Steps.Save()

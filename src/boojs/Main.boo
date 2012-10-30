@@ -2,11 +2,13 @@ namespace boojs
 
 import System
 import System.Reflection
-import System.Diagnostics
+import System.Diagnostics(Trace, TraceLevel, TextWriterTraceListener)
 import System.IO as SysIO
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
+import BooJs.Compiler.CompilerParameters as JsCompilerParameters
+import BooJs.Compiler.CompilerContext as JsCompilerContext
 
 def loadAssembly(name as string):
     if SysIO.File.Exists(name):
@@ -25,21 +27,25 @@ def parseCommandLine(argv as (string)):
         return null
 
 def selectPipeline(cmdLine as CommandLine):
-    return Pipelines.ProduceJs()
+    return Pipelines.SaveJs()
     
-def configureParams(cmdLine as CommandLine, params as BooJs.Compiler.CompilerParameters):
-    for fname in cmdLine.SourceFiles():
-        if cmdLine.Verbose: print fname
-        params.Input.Add(FileInput(fname))
-
-    params.Debug = true
+def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
+    params.Debug = cmdLine.Debug
     params.OutputAssembly = getOutputDirectory(cmdLine)
     params.Ducky = cmdLine.Ducky
-    if cmdLine.DebugCompiler:
-        params.TraceLevel = System.Diagnostics.TraceLevel.Verbose
+    params.EmbedAssembly = cmdLine.EmbedAssembly
+
+    if cmdLine.Verbose:
+        params.TraceLevel = TraceLevel.Verbose
         Trace.Listeners.Add(TextWriterTraceListener(System.Console.Error))
 
-def showErrorsWarnings(cmdLine as CommandLine, result as BooJs.Compiler.CompilerContext):
+    for refe in cmdLine.References:
+        params.LoadAssembly(refe)
+
+    for fname in cmdLine.SourceFiles():
+        params.Input.Add(FileInput(fname))
+
+def showErrorsWarnings(cmdLine as CommandLine, result as JsCompilerContext):
     for warning in result.Warnings:
         System.Console.Error.WriteLine( warning )
     for error in result.Errors:
