@@ -1,19 +1,35 @@
 namespace BooJs.Compiler.Mozilla
 
 import System.IO(TextWriter)
+import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
 
 import Boo.Lang.Compiler.Ast as BooAst
+
+import BooJs.Compiler(CompilerContext)
+import BooJs.Compiler.SourceMap(MapBuilder)
 
 
 class JsPrinter(Printer):
 """
     Generates Javascript source code from the Mozilla AST
 """
+    [property(SourceMap)]
+    _srcmap as MapBuilder = null
+
 
     def constructor(writer as TextWriter):
         super(writer)
 
-    protected virtual def WrapProgram(node as Program):
+    override def Visit(node as Node):
+        if SourceMap and node and node.loc:
+            identifier = node as Identifier
+            ident = (identifier.name if identifier else null)
+            pos as Position = node.loc.start
+            SourceMap.Map(node.loc.source, pos.line-1, pos.column, Line, Column, ident)
+
+        super(node)
+
+    protected def WrapProgram(node as Program):
         # TODO: Move to custom step
         module = node['module'] as Boo.Lang.Compiler.Ast.Module
 
@@ -81,6 +97,14 @@ class JsPrinter(Printer):
 
     virtual def OnProgram(node as Program):
         Visit WrapProgram(node)
+
+        # Add source map to the runtime
+        # TODO: Sourcemaps should be per assembly not module
+        if SourceMap and CompilerContext.Current.Parameters.Debug:
+            srcmap = SourceMap.ToHash()
+            Write 'Boo.sourcemap({0});', JavaScriptSerializer().Serialize(srcmap)
+            WriteLine
+
 
     virtual def OnWhileStatement(node as WhileStatement):
         WriteIndented 'while ('

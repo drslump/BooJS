@@ -34,6 +34,8 @@ def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     params.OutputAssembly = getOutputDirectory(cmdLine)
     params.Ducky = cmdLine.Ducky
     params.EmbedAssembly = cmdLine.EmbedAssembly
+    params.SourceMap = cmdLine.SourceMap
+    params.SourceMapRoot = cmdLine.SourceMapRoot
 
     if cmdLine.Verbose:
         params.TraceLevel = TraceLevel.Verbose

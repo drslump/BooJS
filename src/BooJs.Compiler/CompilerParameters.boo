@@ -12,6 +12,12 @@ class CompilerParameters(BooCompilerParameters):
     [Property(EmbedAssembly)]
     _embedasm = true
 
+    [Property(SourceMap)]
+    _sourceMap = null
+
+    [Property(SourceMapRoot)]
+    _sourceMapRoot = null
+
     def constructor(provider as IReflectionTypeSystemProvider):
         super(provider)
 
@@ -24,7 +30,7 @@ class CompilerParameters(BooCompilerParameters):
         asm = null
         using sr = StreamReader(fname):
             while sr.Peek() >= 0:
-                m = /^\s*\/\/@\s*booAssembly=([^\s]+)/.Match(sr.ReadLine())
+                m = /^\s*\/\/@\s*booAssembly\s*=\s*([^\s]+)/.Match(sr.ReadLine())
                 if m.Success:
                     asm = DecompressAssembly(m.Groups[1].Value)
                     break

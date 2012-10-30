@@ -9,7 +9,7 @@ import BooJs.Compiler
 
 class Main(NancyModule):
     def constructor():
-        pipeline = Pipelines.ProduceJs()
+        pipeline = Pipelines.PrintJs()
         comp = newBooJsCompiler(pipeline)
         comp.Parameters.Debug = true
         comp.Parameters.Ducky = false

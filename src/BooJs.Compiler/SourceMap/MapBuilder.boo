@@ -1,5 +1,7 @@
 namespace BooJs.Compiler.SourceMap
 
+import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
+
 
 class MapBuilder:
 
@@ -59,7 +61,7 @@ class MapBuilder:
         segments.Add(segment)
 
 
-    def ToHash():
+    def ToHash() as Hash:
         # Make sure we have added all the segments
         if len(segments):
             mappings.Add(segments.Join(','))
@@ -74,19 +76,7 @@ class MapBuilder:
         }
         return h
 
-    def ToJSON():
-        # Make sure we have added all the segments
-        if len(segments):
-            mappings.Add(segments.Join(','))
-
-        return """
-            {
-                "version": $(VERSION),
-                "file": "$(file)",
-                "sourceRoot": "$(sourceRoot)",
-                "sources": ["$(sources.Join('", "'))"],
-                "names": ["$(names.Join('", "'))"],
-                "mappings": "$(mappings.Join(';'))"
-            }
-        """
+    def ToJSON() as string:
+        js = JavaScriptSerializer()
+        return js.Serialize(ToHash())
 

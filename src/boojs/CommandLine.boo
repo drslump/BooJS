@@ -59,7 +59,12 @@ class CommandLine(AbstractCommandLine):
     [Option("Includes all *.boo files from {srcdir}", LongForm: "srcdir", MaxOccurs: int.MaxValue)]
     def AddSourceDir(srcDir as string):
         _srcDirs.AddUnique(Path.GetFullPath(srcDir))
-        
+
+    [Option("Specify an output file where to generate source map", LongForm: "sourcemap")]
+    public SourceMap as string = null
+    [Option("Root prefix for source map files", LongForm: "sourcemap-root")]
+    public SourceMapRoot as string = null
+
     [Option("display this help and exit", LongForm: "help")]
     public DoHelp = false
         

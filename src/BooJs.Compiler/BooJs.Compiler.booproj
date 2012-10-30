@@ -102,7 +102,6 @@
     <Compile Include="Mozilla\Serializer.boo" />
     <Compile Include="Mozilla\Visitor.boo" />
     <Compile Include="Mozilla\Printer.boo" />
-    <Compile Include="Mozilla\SourceMapPrinter.boo" />
     <Compile Include="Mozilla\JsPrinter.boo" />
     <Compile Include="Visitors\MozillaAstVisitor.boo" />
     <Compile Include="Steps\PrintAst.boo" />
