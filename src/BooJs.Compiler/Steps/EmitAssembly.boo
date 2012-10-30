@@ -1,5 +1,7 @@
 namespace BooJs.Compiler.Steps
 
+import System.IO
+
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler(CompilerContext)
 import Boo.Lang.Compiler.Steps.EmitAssembly as BooEmitAssembly
@@ -20,32 +22,36 @@ class EmitAssembly(BooEmitAssembly):
                 super(node)
 
         def OnClassDefinition(node as ClassDefinition):
-            if not node.IsVisible:
+            unless node.IsVisible:
                 RemoveCurrentNode
-            else:
-                super(node)
+                return
+
+            super(node)
 
         def OnStructDefinition(node as StructDefinition):
-            if not node.IsVisible:
+            unless node.IsVisible:
                 RemoveCurrentNode
-            else:
-                super(node)
+                return
+
+            super(node)
 
         def OnEnumDefinition(node as EnumDefinition):
-            if not node.IsVisible:
+            unless node.IsVisible:
                 RemoveCurrentNode
-            else:
-                super(node)
+                return
+
+            super(node)
 
         def OnField(node as Field):
-            if not node.IsVisible:
+            unless node.IsVisible:
                 RemoveCurrentNode
-            else:
-                super(node)
+                return
+
+            super(node)
 
         def OnMethod(node as Method):
             # Skip non visible methods
-            if not node.IsVisible and node is not ContextAnnotations.GetEntryPoint(CompilerContext.Current):
+            unless node.IsVisible or node is ContextAnnotations.GetEntryPoint(CompilerContext.Current):
                 RemoveCurrentNode
                 return
 
@@ -71,8 +77,18 @@ class EmitAssembly(BooEmitAssembly):
         # Remove non visible contents
         stripper.Visit(CompileUnit)
 
+        # Setup a temporary location for the assembly
+        # TODO: We should set this up when configuring the compiler
+        path = Path.GetTempPath()
+        fname = System.Guid.NewGuid().ToString() + '.bjsasm'
+
+        orig_fname = Parameters.OutputAssembly
+        Parameters.OutputAssembly = Path.Combine(path, fname)
+
         # Emit the assembly
         super()
+
+        Parameters.OutputAssembly = orig_fname or '.'
 
         # Restore the AST to its previous step now that the assembly has been generated
         CompileUnit.Modules = saved

@@ -1,6 +1,9 @@
 namespace BooJs.Compiler.Mozilla
 
 import System.IO(TextWriter)
+import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
+
+import BooJs.Compiler(CompilerContext)
 import BooJs.Compiler.SourceMap(MapBuilder)
 
 
@@ -26,31 +29,8 @@ class SourceMapPrinter(JsPrinter):
         super(node)
 
         # Add source map to the runtime
-        # TODO: Only do this in debug mode
-        # TODO: Use multiple source map format to only issue this once per assembly
-        srcmap = SrcMap.ToHash()
-
-        hash = ObjectExpression()
-        hash.properties.Add( ObjectExpressionProp('version', Literal(srcmap['version'])) )
-        hash.properties.Add( ObjectExpressionProp('file', Literal(srcmap['file'])) )
-
-        arr = ArrayExpression()
-        for item in srcmap['sources']:
-            arr.elements.Add(Literal(item))
-        hash.properties.Add(ObjectExpressionProp('sources', arr))
-
-        arr = ArrayExpression()
-        for name in srcmap['names']:
-            arr.elements.Add(Literal(name))
-        hash.properties.Add(ObjectExpressionProp('names', arr))
-
-        hash.properties.Add(ObjectExpressionProp('mappings', Literal(srcmap['mappings'])))
-
-        call = CallExpression()
-        call.callee = MemberExpression(
-            object: Identifier(name: 'Boo'),
-            property: Identifier(name: 'sourcemap')
-        )
-        call.arguments.Add(hash)
-
-        Visit ExpressionStatement(call)
+        if CompilerContext.Current.Parameters.Debug:
+            srcmap = SrcMap.ToHash()
+            Write 'Boo.sourcemap({0});', JavaScriptSerializer().Serialize(srcmap)
+            #Write '//@ booSourceMap=' + JavaScriptSerializer().Serialize(srcmap)
+            WriteLine

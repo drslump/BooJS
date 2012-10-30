@@ -91,9 +91,9 @@ class FixtureRunner:
 
     static def setupCompiler():
         if not _comp:
-            pipeline = Pipelines.ProduceJs()
-            #pipeline = Pipelines.ProduceAst()
-            #pipeline = Pipelines.ProduceBoo()
+            pipeline = Pipelines.PrintJs()
+            #pipeline = Pipelines.PrintAst()
+            #pipeline = Pipelines.PrintBoo()
 
             timer = System.Diagnostics.Stopwatch()
             pipeline.BeforeStep += def(pipeline, args):
