@@ -72,7 +72,6 @@
     <Compile Include="CompilerParameters.boo" />
     <Compile Include="CompilerPipeline.boo" />
     <Compile Include="Mozilla\Ast.boo" />
-    <Compile Include="Steps\Globals.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
     <Compile Include="Steps\NormalizeLoops.boo" />
@@ -111,6 +110,7 @@
     <Compile Include="TypeSystem\DowncastPermissions.boo" />
     <Compile Include="Steps\EmitAssembly.boo" />
     <Compile Include="Steps\Save.boo" />
+    <Compile Include="Utils.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

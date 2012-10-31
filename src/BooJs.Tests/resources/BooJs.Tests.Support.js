@@ -14,3 +14,11 @@ Boo.define('BooJs.Tests.Support', [], function () {
 
     return this;
 });
+
+
+// Emulate jQuery
+var jQuery = function(){
+    return jQuery;
+};
+jQuery.isArray = function(){ return true; };
+jQuery.each = function(){ return jQuery; };

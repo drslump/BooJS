@@ -5,6 +5,7 @@ import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Ex
 
 import Boo.Lang.Compiler.Ast as BooAst
 
+import BooJs.Compiler.Utils
 import BooJs.Compiler(CompilerContext)
 import BooJs.Compiler.SourceMap(MapBuilder)
 
@@ -43,6 +44,7 @@ class JsPrinter(Printer):
                 for alias in mie.Arguments:
                     trycast = alias as BooAst.TryCastExpression
                     if trycast:
+                        continue if isExtern(imp.Namespace + '.' + trycast.Target)
                         deps.Add(Literal(imp.Namespace + '.' + trycast.Target))
                         if imp.Alias:
                             refs.Add(Identifier(imp.Alias + '_' + trycast.Type))
@@ -51,6 +53,7 @@ class JsPrinter(Printer):
                         else:
                             refs.Add(Identifier(trycast.Type.ToString()))
                     else:
+                        continue if isExtern(imp.Namespace + '.' + alias)
                         deps.Add(Literal(imp.Namespace + '.' + alias))
                         if imp.Alias:
                             refs.Add(Identifier(imp.Alias + '_' + alias))
@@ -62,6 +65,8 @@ class JsPrinter(Printer):
                 if not imp.Alias:
                     raise 'Wildcard import (' + imp.Expression + ') not supported'
                 else:
+                    continue if isExtern(imp.Namespace)
+
                     deps.Add(Literal(imp.Namespace))
                     refs.Add(Identifier(imp.Alias.ToString()))
 

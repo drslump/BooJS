@@ -2,17 +2,9 @@ namespace BooJs.Compiler.TypeSystem
 
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler.TypeSystem.Reflection.ExternalType as ExternalType
-import Boo.Lang.Compiler.TypeSystem.Reflection(IReflectionTypeSystemProvider, IAssemblyReference)
 import Boo.Lang.Compiler.TypeSystem.Reflection.ReflectionTypeSystemProvider as BooProvider
 
 import BooJs.Lang
-
-/*
-import System
-import System.Collections.Generic
-import System.Reflection
-import Boo.Lang.Compiler.Util
-*/
 
 class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 """ Tells the compiler how it should interpret reflected types """

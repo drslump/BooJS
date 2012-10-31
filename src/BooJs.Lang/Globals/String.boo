@@ -84,3 +84,7 @@ class String(Object, IEnumerable):
     def trim() as string:
         pass
 
+
+    # Comply with IEnumerable interface
+    def GetEnumerator():
+        pass

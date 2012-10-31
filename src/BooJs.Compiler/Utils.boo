@@ -1,4 +1,4 @@
-namespace BooJs.Compiler.Steps
+namespace BooJs.Compiler.Utils
 
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.TypeSystem
@@ -7,6 +7,36 @@ import Boo.Lang.Compiler.Ast
 
 import Boo.Lang.Environments
 import Boo.Lang.PatternMatching
+
+import BooJs.Lang.Extensions(ExternAttribute)
+
+
+def isExtern(node as Node):
+    entity = node.Entity as Reflection.ExternalType
+    return false if not entity
+    return isExtern(entity.ActualType)
+
+def isExtern(fqn as string):
+    srv = my(NameResolutionService)
+    entity = srv.ResolveQualifiedName(fqn) as Reflection.ExternalType
+    return false if not entity
+    return isExtern(entity.ActualType)
+
+def isExtern(info as System.Reflection.MemberInfo):
+    attr = System.Attribute.GetCustomAttribute(info, typeof(BooJs.Lang.Extensions.ExternAttribute), false)
+    return attr is not null
+
+def isFactory(node as Node):
+    entity = node.Entity as Reflection.ExternalType
+    if not entity and node.Entity isa IConstructor:
+        entity = (node.Entity as IConstructor).DeclaringType
+
+    return false if not entity
+
+    attr as ExternAttribute = System.Attribute.GetCustomAttribute(entity.ActualType, typeof(ExternAttribute), false)
+    return (attr.Factory if attr else false)
+
+
 
 def resolveRuntimeMethod(methodName as string):
     return resolveMethod(typeSystem().RuntimeServicesType, methodName)
@@ -24,17 +54,12 @@ def erasureFor(type as IType):
     if type isa IGenericParameter:
         return typeSystem().ObjectType
     
-#	genericInstance = type.ConstructedInfo
-#	if genericInstance is not null:
-#		return genericInstance.GenericDefinition
+    #genericInstance = type.ConstructedInfo
+    #if genericInstance is not null:
+    #   return genericInstance.GenericDefinition
         
     return type
         
-def isJavaLangObject(type as IType):
-    if typeSystem().IsSystemObject(type):
-        return true
-    return type is Null.Default
-    
 def definitionFor(m as IMethodBase) as IMethodBase:
     if m.DeclaringType.ConstructedInfo is null:
         return m
@@ -65,4 +90,3 @@ def uniqueName():
     
 def uniqueReference():
     return ReferenceExpression(uniqueName())
-        

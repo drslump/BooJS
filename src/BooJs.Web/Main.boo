@@ -38,11 +38,6 @@ class Main(NancyModule):
                 'warnings': result.Warnings
             } 
 
-            print Request.Body.ToString()
-
-            return {'foo': 'bar'}
-
-
 
 // initialize an instance of NancyHost (found in the Nancy.Hosting.Self package)
 host = NancyHost(Uri("http://localhost:12345"))

@@ -81,7 +81,7 @@ class FixtureRunner:
 
       result = comp.Run()
 
-      print 'Compilation: ', timer.ElapsedMilliseconds
+      #print 'Compilation: ', timer.ElapsedMilliseconds
 
       if len(result.Warnings):
         for warn as Boo.Lang.Compiler.CompilerWarning in result.Warnings:

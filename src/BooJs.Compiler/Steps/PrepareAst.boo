@@ -81,6 +81,12 @@ class PrepareAst(AbstractTransformerCompilerStep):
             RemoveCurrentNode
             return
 
+        # Ignore initialization value calls (__initobj__). We do it elsewhere.
+        mie = node.Expression as MethodInvocationExpression
+        if mie and mie.Target.Entity == TypeSystem.BuiltinFunction.InitValueType:
+            RemoveCurrentNode
+            return
+
         super(node)
 
     protected def ProcessReference(node as ReferenceExpression) as Node:
@@ -360,7 +366,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
             refe = ReferenceExpression(node.LexicalInfo, st.Name)
             ReplaceCurrentNode ProcessReference(refe)
 
-        elif at = node.Type as ArrayTypeReference:
+        elif node.Type isa ArrayTypeReference:
 
             refe = CodeBuilder.CreateReference(node.LexicalInfo, TypeSystemServices.ArrayType)
             ReplaceCurrentNode ProcessReference(refe)

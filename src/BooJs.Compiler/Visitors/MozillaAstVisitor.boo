@@ -4,6 +4,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.PatternMatching
 
+import BooJs.Compiler.Utils
 import BooJs.Compiler.Mozilla as Moz
 
 
@@ -335,7 +336,7 @@ Transforms a Boo AST into a Mozilla AST
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
         # Detect constructors
-        if node.Target.Entity isa IConstructor:
+        if node.Target.Entity isa IConstructor and not isFactory(node.Target):
             c = Moz.NewExpression(loc: loc(node))
             c._constructor = Apply(node.Target)
             for arg in node.Arguments:

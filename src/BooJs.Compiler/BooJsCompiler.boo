@@ -26,10 +26,10 @@ class BooJsCompiler:
         if not Parameters.Pipeline:
             raise InvalidOperationException(Boo.Lang.Resources.StringResources.BooC_CantRunWithoutPipeline)
 
-        context = CompilerContext(Parameters, unit)
-        Parameters.Pipeline.Run(context)
+        ctxt = CompilerContext(Parameters, unit)
+        Parameters.Pipeline.Run(ctxt)
 
-        return context
+        return ctxt
 
     def Run():
         return Run(CompileUnit())

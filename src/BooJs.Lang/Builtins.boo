@@ -30,7 +30,7 @@ class Builtins:
     interface ICallable:
     """ Define the ICallable interface
     """
-        def Call(args as (Object)) as Object
+        def Call(args as (object)) as object
 
 
     class Hash(Object, IEnumerable):
@@ -65,6 +65,10 @@ class Builtins:
             pass
         [Transform( Boo.enumerate($0) )]
         def items() as ((object)):
+            pass
+
+        # Comply with IEnumerable interface
+        def GetEnumerator():
             pass
 
 

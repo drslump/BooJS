@@ -1,8 +1,12 @@
 namespace BooJs.Lang.Api
 
+import BooJs.Lang.Builtins(ICallable)
+import BooJs.Lang.Extensions
 import BooJs.Lang.Api.Dom2 as DOM
 
+[Extern(Factory:true)]
 class jQuery(ICallable):
+
     # Utilities (static)
     static def map(arr as (object), callback as callable) as (object):
         pass
@@ -57,6 +61,9 @@ class jQuery(ICallable):
     selector as string:
         get: pass
 
+
+    # TODO: Use Transform to convert the instance creation into a simple call
+    # TODO: Perhaps we should have a specialized attribute to signal constructors/factories that don't use `new` in JS
     def constructor():
         pass
     def constructor(expr_or_html as string):
@@ -72,9 +79,10 @@ class jQuery(ICallable):
     def constructor(callback as callable):
         pass
 
+
     # Callable interface
     def Call(args as (object)) as object:
-        return args[0] cast jQuery
+        pass
     # callable methods for BooJs
     def Call(expr_or_html as string) as jQuery:
         pass
@@ -90,7 +98,7 @@ class jQuery(ICallable):
         pass
 
     # Core - Accessors
-    def index(subject as jQuery) as int: 
+    def index(subject as jQuery) as int:
         pass
     def index(subject as DOM.Element) as int: 
         pass
@@ -109,176 +117,176 @@ class jQuery(ICallable):
     def get(index as int) as DOM.Element: 
         pass
 
-    def eq(position as int) as jQuery: 
+    def eq(position as int) as jQuery:
         pass
 
     # Core - Data
-    def queue(name as string, callback as callable) as jQuery: 
+    def queue(name as string, callback as callable) as jQuery:
         pass
-    def queue(callback as callable) as jQuery: 
+    def queue(callback as callable) as jQuery:
         pass
     def queue(name as string) as (callable): 
         pass
-    def queue(name as string, queue as (callable)) as jQuery: 
+    def queue(name as string, queue as (callable)) as jQuery:
         pass
-    def dequeue(name as string) as jQuery: 
+    def dequeue(name as string) as jQuery:
         pass
-    def dequeue() as jQuery: 
+    def dequeue() as jQuery:
         pass
 
     def data(name as string) as object: 
         pass
-    def data(name as string, value as object) as jQuery: 
+    def data(name as string, value as object) as jQuery:
         pass
-    def removeData(name as string) as jQuery: 
+    def removeData(name as string) as jQuery:
         pass
 
     # Core - Plugins
-    def extend(obj as object) as jQuery: 
+    def extend(obj as object) as jQuery:
         pass
     # TODO: $.fn.extend ??
 
     # Core - Interoperability
-    def noConflict() as jQuery: 
+    def noConflict() as jQuery:
         pass
-    def noConflict(extreme as bool) as jQuery: 
+    def noConflict(extreme as bool) as jQuery:
         pass
 
     # Attributes
     def attr(name as string) as string: 
         pass
-    def attr(props as Hash) as jQuery: 
+    def attr(props as Hash) as jQuery:
         pass
-    def attr(key as string, value as string) as jQuery: 
+    def attr(key as string, value as string) as jQuery:
         pass
-    def attr(key as string, resolver as callable) as jQuery: 
+    def attr(key as string, resolver as callable) as jQuery:
         pass
-    def removeAttr(name as string) as jQuery: 
+    def removeAttr(name as string) as jQuery:
         pass
 
-    def toggleClass(cls as string, switch as bool) as jQuery: 
+    def toggleClass(cls as string, switch as bool) as jQuery:
         pass
-    def toggleClass(cls as string) as jQuery: 
+    def toggleClass(cls as string) as jQuery:
         pass
-    def addClass(cls as string) as jQuery: 
+    def addClass(cls as string) as jQuery:
         pass
     def hasClass(cls as string) as bool: 
         pass
-    def removeClass(cls as string) as jQuery: 
+    def removeClass(cls as string) as jQuery:
         pass
 
     def html() as string: 
         pass
-    def html(val as string) as jQuery: 
+    def html(val as string) as jQuery:
         pass
 
     def text() as string: 
         pass
-    def text(val as string) as jQuery: 
+    def text(val as string) as jQuery:
         pass
 
     def val() as string: # or (string)
         pass
-    def val(val as string) as jQuery: 
+    def val(val as string) as jQuery:
         pass
-    def val(vals as (string)) as jQuery: 
+    def val(vals as (string)) as jQuery:
         pass
 
     # Traversing - Filtering
     #def is(expression as string) as bool
-    def filter(expr as string) as jQuery: 
+    def filter(expr as string) as jQuery:
         pass
-    def filter(resolver as callable) as jQuery: 
+    def filter(resolver as callable) as jQuery:
         pass
     #def not(expr as string) as jQuery
-    def slice(start as int) as jQuery: 
+    def slice(start as int) as jQuery:
         pass
-    def slice(start as int, stop as int) as jQuery: 
+    def slice(start as int, stop as int) as jQuery:
         pass
-    def map(callback as callable) as jQuery: 
+    def map(callback as callable) as jQuery:
         pass
 
     # Traversing - Finding
-    def parent(expr as string) as jQuery: 
+    def parent(expr as string) as jQuery:
         pass
-    def parent() as jQuery: 
-        pass
-
-    def parents(expr as string) as jQuery: 
-        pass
-    def parents() as jQuery: 
+    def parent() as jQuery:
         pass
 
-    def find(expr as string) as jQuery: 
+    def parents(expr as string) as jQuery:
+        pass
+    def parents() as jQuery:
         pass
 
-    def prev(expr as string) as jQuery: 
-        pass
-    def prev() as jQuery: 
-        pass
-    def prevAll(expr as string) as jQuery: 
-        pass
-    def prevAll() as jQuery: 
+    def find(expr as string) as jQuery:
         pass
 
-    def next(expr as string) as jQuery: 
+    def prev(expr as string) as jQuery:
         pass
-    def next() as jQuery: 
+    def prev() as jQuery:
         pass
-    def nextAll(expr as string) as jQuery: 
+    def prevAll(expr as string) as jQuery:
         pass
-    def nextAll() as jQuery: 
-        pass
-
-    def siblings(expr as string) as jQuery: 
-        pass
-    def siblings() as jQuery: 
+    def prevAll() as jQuery:
         pass
 
-    def add(expr as string) as jQuery: 
+    def next(expr as string) as jQuery:
         pass
-    def add(expr as DOM.Element) as jQuery: 
+    def next() as jQuery:
         pass
-    def add(expr as (DOM.Element)) as jQuery: 
+    def nextAll(expr as string) as jQuery:
         pass
-
-    def children(expr as string) as jQuery: 
-        pass
-    def children() as jQuery: 
+    def nextAll() as jQuery:
         pass
 
-    def closests(expr as string) as jQuery: 
+    def siblings(expr as string) as jQuery:
+        pass
+    def siblings() as jQuery:
         pass
 
-    def contents() as jQuery: 
+    def add(expr as string) as jQuery:
+        pass
+    def add(expr as DOM.Element) as jQuery:
+        pass
+    def add(expr as (DOM.Element)) as jQuery:
         pass
 
-    def offsetParent() as jQuery: 
+    def children(expr as string) as jQuery:
+        pass
+    def children() as jQuery:
+        pass
+
+    def closests(expr as string) as jQuery:
+        pass
+
+    def contents() as jQuery:
+        pass
+
+    def offsetParent() as jQuery:
         pass
 
     # Traversing - chaining
-    def andSelf() as jQuery: 
+    def andSelf() as jQuery:
         pass
-    def end() as jQuery: 
+    def end() as jQuery:
         pass
 
     # Manipulation
-    def append(content as string) as jQuery: 
+    def append(content as string) as jQuery:
         pass
-    def append(content as DOM.Element) as jQuery: 
+    def append(content as DOM.Element) as jQuery:
         pass
-    def append(content as jQuery) as jQuery: 
+    def append(content as jQuery) as jQuery:
         pass
-    def appendTo(selector as string) as jQuery: 
+    def appendTo(selector as string) as jQuery:
         pass
 
-    def prepend(content as string) as jQuery: 
+    def prepend(content as string) as jQuery:
         pass
-    def prepend(content as DOM.Element) as jQuery: 
+    def prepend(content as DOM.Element) as jQuery:
         pass
-    def prepend(content as jQuery) as jQuery: 
+    def prepend(content as jQuery) as jQuery:
         pass
-    def prependTo(selector as string) as jQuery: 
+    def prependTo(selector as string) as jQuery:
         pass
 
     # .......

@@ -3,10 +3,13 @@ namespace BooJs.Compiler.Steps
 import System
 import Boo.Lang.Environments
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
+import Boo.Lang.Compiler.Steps(AbstractTransformerCompilerStep)
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler(CompilerContext)
+
+import BooJs.Compiler.Utils
 import BooJs.Compiler.TypeSystem.RuntimeMethodCache as RuntimeMethodCache
+
 
 class NormalizeLoops(AbstractTransformerCompilerStep):
 """
@@ -25,9 +28,9 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     private ReturnValueType as IType
 
-    def Initialize(context as CompilerContext):
-        super(context)
-        _methodCache = EnvironmentProvision[of RuntimeMethodCache]()
+    def Initialize(ctxt as CompilerContext):
+        super(ctxt)
+        _methodCache = my(RuntimeMethodCache) #EnvironmentProvision[of RuntimeMethodCache]()
         ReturnValueType = TypeSystemServices.Map(BooJs.Lang.Builtins.ReturnValue)
 
     override def Run():

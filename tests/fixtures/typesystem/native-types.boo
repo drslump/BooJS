@@ -19,7 +19,7 @@ print 'string', d
 
 # Arrays are mutable in Javascript thus it's init as null
 f as Array
-print 'list', f
+print 'Array', f
 
 r as regex = /foo/
 print 'regex', r.test('foo')

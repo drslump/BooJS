@@ -16,8 +16,9 @@ class EmitAssembly(BooEmitAssembly):
         def OnModule(node as Module):
             if not node.IsVisible:
                 RemoveCurrentNode
-            elif node.Name == 'CompilerGenerated':
-                RemoveCurrentNode
+            # TODO: Callables need these modules
+            #elif node.Name == 'CompilerGenerated':
+            #    RemoveCurrentNode
             else:
                 super(node)
 
