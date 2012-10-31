@@ -29,7 +29,6 @@ class ConsoleMock(ObjectInstance):
         _output.Clear()
 
 
-
 class FixtureRunner:
 
     static _comp as BooJsCompiler
@@ -40,8 +39,7 @@ class FixtureRunner:
     static def fixture_path(fname):
       if not _tests_path:
         # Find the path where the assembly resides
-        path = Assembly.GetAssembly(typeof(FixtureRunner)).Location;
-        path = Path.GetDirectoryName(path)
+        path = Assembly.GetExecutingAssembly().CodeBase
 
         # Look for the tests directory in once of its parent paths
         while path = Path.GetFullPath(Path.Combine(path, '..')):
