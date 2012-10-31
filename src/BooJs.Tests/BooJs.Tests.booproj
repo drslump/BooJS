@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EF0D7427-0168-48BF-A021-0956B9D1C22A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>BooJs.Compiler.Test</RootNamespace>
-    <AssemblyName>BooJs.Compiler.Test</AssemblyName>
+    <RootNamespace>BooJs.Test</RootNamespace>
+    <AssemblyName>BooJs.Test</AssemblyName>
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -89,6 +89,7 @@
     <Compile Include="Support\Support.boo" />
     <Compile Include="CallablesFixtures.boo" />
     <Compile Include="GeneratorsFixtures.boo" />
+    <Compile Include="SaveFile.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>

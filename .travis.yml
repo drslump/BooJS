@@ -13,13 +13,8 @@ script:
  - xbuild src/boojs.sln
 
 # Run Tests
-#after_script:
-# - xbuild CI-build.msbuild /t:Deploy
-
-# Only watch the development branch
-#branches:
-# only:
-#   - vNext
+after_script:
+ - mono --runtime=v4.0 lib/nunit/nunit-console.exe -run=FixtureForTypesystem src/BooJs.Tests/bin/Debug/BooJs.Test.dll
 
 # Notify development list when needed
 notifications:

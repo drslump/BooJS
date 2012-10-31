@@ -26,5 +26,36 @@ class SourceMapTest:
         assert Base64VLQ.encode(-1000) == 'x+B'
         assert Base64VLQ.encode(-10000) == 'hxT'
 
+    [Test]
+    def ToHash():
+
+        builder = MapBuilder()
+        builder.SourceRoot = 'http://root/'
+        builder.File = 'assembly.js'
+        builder.Map('foo.boo', 1, 1, 2, 2, 'foo')
+        builder.Map('foo.boo', 2, 2, 3, 3, 'bar')
+        builder.Map('bar.boo', 1, 1, 2, 2, 'foo')
+
+        h = builder.ToHash()
+        print h['sources'] as string*
+        assert h['sourceRoot'] == 'http://root/'
+        assert h['file'] == 'assembly.js'
+        assert len(h['sources']) == 2
+        assert array(h['sources']) == ('foo.boo', 'bar.boo')
+        assert len(h['names']) == 2
+        assert array(h['names']) == ('foo', 'bar')
+
+    [Test]
+    def ToJSON():
+        builder = MapBuilder()
+        builder.File = 'assembly.js'
+        builder.Map('foo.boo', 1, 1, 2, 2, 'foo')
+
+        json = builder.ToJSON()
+        print json
+        assert json =~ @/"version":3/
+        assert json =~ @/"file":"assembly.js"/
+        assert json =~ @/"names":\["foo"\]/
+
 
 

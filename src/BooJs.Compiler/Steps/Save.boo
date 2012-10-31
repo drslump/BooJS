@@ -35,9 +35,12 @@ class Save(AbstractCompilerStep):
                 writer.WriteLine('//@ booAssembly = ' + GetCompressedAssembly())
 
             if printer.SourceMap:
-                fname = params.SourceMap or GetFileName() + '.map'
-                writer.WriteLine('//@ sourceMappingURL = ' + Path.GetFileName(fname))
-                File.WriteAllText(fname, printer.SourceMap.ToJSON())
+                mapname = params.SourceMap or GetFileName() + '.map'
+                writer.WriteLine('//@ sourceMappingURL = ' + Path.GetFileName(mapname))
+                File.WriteAllText(mapname, printer.SourceMap.ToJSON())
+
+        # Finally set the generated filename in the context
+        ctxt.GeneratedAssemblyFileName = fname
 
 
     def GetCompressedAssembly():
