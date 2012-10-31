@@ -48,6 +48,8 @@ The compiler works in Windows, Mac and Linux using the .Net or Mono runtimes.
 
 ## Roadmap
 
+[![Build Status](https://travis-ci.org/drslump/boojs.png)](https://travis-ci.org/drslump/boojs)
+
   - Imperative idioms - 95%
   - Functional idioms - 90%
   - Closures (annonymous functions) - 75%
