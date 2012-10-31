@@ -1,6 +1,6 @@
 import NUnit.Framework
 
-import System.IO(StreamReader)
+import System.IO(Path, Directory, StreamReader)
 import System.Reflection(Assembly)
 
 import Boo.Lang.Compiler.IO
@@ -35,7 +35,26 @@ class FixtureRunner:
     static _comp as BooJsCompiler
     static _engine as ScriptEngine
 
+    static _tests_path as string
+
+    static def fixture_path(fname):
+      if not _tests_path:
+        # Find the path where the assembly resides
+        path = Assembly.GetAssembly(typeof(FixtureRunner)).Location;
+        path = Path.GetDirectoryName(path)
+
+        # Look for the tests directory in once of its parent paths
+        while path = Path.GetFullPath(Path.Combine(path, '..')):
+          if Directory.Exists(Path.Combine(path, 'tests')):
+            _tests_path = path
+            break
+          elif path == Path.GetPathRoot(path):
+            raise 'Unable to find tests directory'
+
+      return Path.Combine(_tests_path, fname)
+
     static def run(file as string):
+      file = fixture_path(file)
 
       timer = System.Diagnostics.Stopwatch()
 

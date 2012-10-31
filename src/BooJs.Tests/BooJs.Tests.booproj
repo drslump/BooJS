@@ -74,7 +74,6 @@
   <ItemGroup>
     <Compile Include="FixtureRunner.boo" />
     <Compile Include="OperatorsFixtures.boo" />
-    <Compile Include="ArrayFixtures.boo" />
     <Compile Include="StatementsFixtures.boo" />
     <Compile Include="SourceMap.boo" />
     <Compile Include="PrimitivesFixtures.boo" />
@@ -90,6 +89,7 @@
     <Compile Include="CallablesFixtures.boo" />
     <Compile Include="GeneratorsFixtures.boo" />
     <Compile Include="SaveFile.boo" />
+    <Compile Include="ArraysFixtures.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
