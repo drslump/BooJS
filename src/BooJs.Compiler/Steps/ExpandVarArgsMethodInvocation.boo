@@ -33,7 +33,6 @@ class ExpandVarArgsMethodInvocations(AbstractFastVisitorCompilerStep):
 
     protected virtual def ExpandInvocation(node as MethodInvocationExpression, parameters as (IParameter)):
         if AstUtil.InvocationEndsWithExplodeExpression(node):
-            // explode the arguments
             node.Arguments.ReplaceAt(-1, (node.Arguments[-1] as UnaryExpression).Operand)
             return
 

@@ -21,7 +21,8 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
                 external = other as ExternalType
                 return external is null or external.ActualType != Types.Void
 
-            return super(other)
+            result = super(other)
+            return result
 
     internal class JsValueType(ExternalType):
     """ Type wrapper for value types """
@@ -40,7 +41,6 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 
     def constructor():
 
-        # TODO: Not sure we need to map all types
         # Define the base object type
         reftype = JsRefType(self, Globals.Object)
         MapTo(Globals.Object, reftype)

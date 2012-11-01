@@ -43,7 +43,7 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider, false)
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
-        TypeSystemServices: { BooJsTypeSystem.Services() },
+        TypeSystemServices: { BooJsTypeSystem.TypeSystemServices() },
         DowncastPermissions: { BooJsTypeSystem.DowncastPermissions() }
     }
 

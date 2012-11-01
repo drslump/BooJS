@@ -11,7 +11,7 @@ import Boo.Lang.Compiler.Util
 import Boo.Lang.Compiler(AbstractCompilerComponent)
 import Boo.Lang.Compiler.TypeSystem(IMethod, IMethodBase, IConstructor)
 
-import BooJs.Lang.Runtime.Services as RuntimeServices
+import BooJs.Lang(RuntimeServices)
 
 class RuntimeMethodCache(AbstractCompilerComponent):
 

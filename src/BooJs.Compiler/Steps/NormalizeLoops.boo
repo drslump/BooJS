@@ -113,8 +113,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         # Simplified form
         if SIMPLE_LOOPS:
             # Handle nested loops
-            # TODO: Is this needed?
-            #Visit node.Block
+            Visit node.Block
 
             DesugarizeOrThenBlocks(node)
             has_return = ProcessContinueBreakReturn(node.Block)

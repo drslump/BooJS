@@ -1,9 +1,10 @@
 namespace BooJs.Compiler.Steps
 
+import Boo.Lang.Environments
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity, IMethod,
-                                    Reflection, Internal,
+                                    Reflection, Internal, IType,
                                     BuiltinFunction, BuiltinFunctionType)
 
 
@@ -163,5 +164,4 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
                 pmb.InvalidOperatorForTypes(node)
         else:
             super(node)
-
 

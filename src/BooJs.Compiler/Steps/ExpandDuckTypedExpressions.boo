@@ -3,7 +3,7 @@ namespace BooJs.Compiler.Steps
 import System
 import Boo.Lang.Compiler.Steps.ExpandDuckTypedExpressions as BooStep
 import Boo.Lang.Compiler.TypeSystem
-import BooJs.Lang.Runtime.Services as RuntimeServices
+import BooJs.Lang(RuntimeServices)
 
 class ExpandDuckTypedExpressions(BooStep):
 

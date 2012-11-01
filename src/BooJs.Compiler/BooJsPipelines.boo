@@ -17,10 +17,14 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         InsertBefore Parsing, safe_member
         InsertAfter Parsing, safe_member
 
+        # Make sure the parsing generated AST fits our needs
+        InsertAfter Parsing, Steps.AdaptParsingAst()
+
         # Check for unsupported features
         unsupported = Steps.UnsupportedFeatures()
         InsertAfter Parsing, unsupported
         InsertAfter MacroAndAttributeExpansion, unsupported
+
 
         Replace ExpandDuckTypedExpressions, Steps.ExpandDuckTypedExpressions()
 
@@ -47,8 +51,6 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Customize slicing expressions
         Replace ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions()
-        #InsertAfter(ExpandDuckTypedExpressions, Steps.ExpandComplexSlicingExpressions())
-        #InsertAfter(MacroAndAttributeExpansion, Steps.ExpandComplexSlicingExpressions())
 
         # Relax boolean conversions
         Replace InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions()
