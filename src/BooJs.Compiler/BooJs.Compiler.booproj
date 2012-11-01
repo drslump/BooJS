@@ -93,7 +93,6 @@
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
     <Compile Include="Steps\MethodOverloading.boo" />
     <Compile Include="TypeSystem\ReflectionProvider.boo" />
-    <Compile Include="TypeSystem\Services.boo" />
     <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
     <Compile Include="Steps\ExpandDuckTypedExpressions.boo" />
     <Compile Include="Steps\IntroduceGlobalNamespaces.boo" />
@@ -111,6 +110,8 @@
     <Compile Include="Steps\EmitAssembly.boo" />
     <Compile Include="Steps\Save.boo" />
     <Compile Include="Utils.boo" />
+    <Compile Include="TypeSystem\TypeSystemServices.boo" />
+    <Compile Include="Steps\AdaptParsingAst.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

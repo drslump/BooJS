@@ -1,9 +1,9 @@
-namespace BooJs.Lang.Runtime
+namespace BooJs.Lang
 
 import BooJs.Lang.Extensions
 
 
-class Services:
+class RuntimeServices:
 
     [Transform( Boo.op_Equality($1, $2) )]
     static def Equality(lhs as object, rhs as object) as bool:
@@ -46,6 +46,10 @@ class Services:
     static def GetSlice(target as object, name as string, args as object*) as object:
         pass
 
+
+    # HACK: Needed to support varargs with the original ImplementICallableOnCallableDefinitions step
+    static def GetRange1(source as System.Array, begin as int) as System.Array:
+        pass
 
 
     # HACK: We name the methods differently since we don't have a clean way
