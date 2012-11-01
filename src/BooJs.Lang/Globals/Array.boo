@@ -28,8 +28,15 @@ class Array[of T] (Object, IList[of T]): #, IList):
     static def op_Multiply(lhs as Array[of T], rhs as int) as Array[of T]:
         pass
 
-    # Allow assignment from arrays
+
+    # Allow assignment from arrays of the same generic type
     static def op_Implicit(rhs as (T)) as Array[of T]:
+        pass
+
+    # Allow assignment from non generic Arrays but only to object generic type
+    static def op_Implicit(rhs as Array) as Array[of object]:
+        pass
+    static def op_Implicit(rhs as Array) as Array[of Object]:
         pass
 
 

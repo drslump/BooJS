@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Api
 
+import BooJs.Lang.Globals(Object)
 import BooJs.Lang.Builtins(ICallable)
 import BooJs.Lang.Extensions
 import BooJs.Lang.Api.Dom2 as DOM
@@ -81,7 +82,7 @@ class jQuery(ICallable):
 
 
     # Callable interface
-    def Call(args as (object)) as object:
+    def Call(args as (Object)) as Object:
         pass
     # callable methods for BooJs
     def Call(expr_or_html as string) as jQuery:

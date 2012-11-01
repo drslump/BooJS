@@ -28,9 +28,9 @@ class Builtins:
 
 
     interface ICallable:
-    """ Define the ICallable interface
+    """ Custom ICallable interface using our Object type
     """
-        def Call(args as (object)) as object
+        def Call(args as (Object)) as Object
 
 
     class Hash(Object, IEnumerable):
