@@ -1,12 +1,9 @@
-#IGNORE imports not supported yet
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 
-i0 as int = Constants.UnsignedInt
-i1 as int = Constants.UnsignedLong
-l0 as long = Constants.UnsignedLong
-l1 as long = Constants.UnsignedInt
+u0 as uint = 1000
+u1 as uint = 1000000000
 
-assert Constants.UnsignedInt == i0
-assert Constants.UnsignedLong == i1
-assert Constants.UnsignedLong == l0
-assert Constants.UnsignedInt == l1
+i0 as int = u0
+i1 as int = u1
+
+assert u0 == i0
+assert u1 == i1

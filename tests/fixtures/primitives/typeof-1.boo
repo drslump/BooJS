@@ -4,6 +4,6 @@ System.String
 Boo.Lang.List
 
 """
-print(typeof(string).ToString())
-print(typeof(Hash).ToString())
+print(typeof(string))
+print(typeof(Hash))
 

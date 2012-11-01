@@ -1,5 +1,4 @@
-#IGNORE: Javascript typesystem does not support this use
 """
-System.Object[]
+function Array() { [native code] }
 """
 print(typeof((object)))

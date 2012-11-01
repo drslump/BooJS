@@ -1,3 +1,4 @@
+#IGNORE: loop declarations shadow locals
 """
 1
 2

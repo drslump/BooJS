@@ -1,4 +1,4 @@
-#IGNORE imports not supported yet
+#IGNORE classes not supported yet
 
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 

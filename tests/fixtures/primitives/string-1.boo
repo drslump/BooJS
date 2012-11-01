@@ -1,9 +1,8 @@
-#IGNORE function overloading not supported yet
 """
-foo(char)
+foo(string)
 """
-def foo(ch as char):
-	print "foo(char)"
+def foo(ch as string):
+	print "foo(string)"
 	
 def foo(o as object):
 	print "foo(object)"
