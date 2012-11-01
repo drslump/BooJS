@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForCompilation:
+class CompilationFixtures:
 
   [Test]
   def test_1():

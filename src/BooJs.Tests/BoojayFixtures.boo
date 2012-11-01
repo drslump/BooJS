@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForBoojay:
+class BoojayFixtures:
 
   [Test]
   def test_And_1():

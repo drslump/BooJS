@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForClosures:
+class ClosuresFixtures:
 
   [Test]
   def test_closure_inference_1():

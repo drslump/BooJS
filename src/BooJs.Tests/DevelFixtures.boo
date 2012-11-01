@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForDevel:
+class DevelFixtures:
 
   [Test]
   def test_one():

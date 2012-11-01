@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForExamples:
+class ExamplesFixtures:
 
   [Test]
   def test_99_bottles_of_beer():

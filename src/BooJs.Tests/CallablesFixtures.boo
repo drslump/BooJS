@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForCallables:
+class CallablesFixtures:
 
   [Test]
   def test_byref_1():

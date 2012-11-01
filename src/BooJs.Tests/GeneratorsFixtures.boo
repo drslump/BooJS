@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForGenerators:
+class GeneratorsFixtures:
 
   [Test]
   def test_generator_calling_external_super_with_arguments_2():

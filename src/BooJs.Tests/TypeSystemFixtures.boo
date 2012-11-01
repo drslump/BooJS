@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForTypesystem:
+class TypesystemFixtures:
 
   [Test]
   def test_block_expressions():

@@ -6,7 +6,7 @@
 import NUnit.Framework
 
 [TestFixture]
-class FixtureForPrimitives:
+class PrimitivesFixtures:
 
   [Test]
   def test___switch___1():
