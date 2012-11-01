@@ -47,10 +47,6 @@ class ProcessTry(AbstractTransformerCompilerStep):
         ensure:
             print 'run if all ok or not catched'
 """
-    override def Run():
-        if len(Errors) > 0:
-            return
-        Visit CompileUnit
 
     # Keep track of enclosing method
     protected _method as Method
@@ -61,65 +57,58 @@ class ProcessTry(AbstractTransformerCompilerStep):
         _method = last
 
     def OnTryStatement(node as TryStatement):
-        # Generate a fixed handler
-        handler = ExceptionHandler()
-        handler.Declaration = Declaration(Name:'__e')
 
-        # TODO: FilterCondition can apply even if a declaration is given
-        #   ie: except ex as MyError if a == b:
-
-        # Convert excepts to if conditions
-        block = handler.Block
-        for hdl in node.ExceptionHandlers:
-            cond = IfStatement()
-            block.Add(cond)
-
-            # Include the declaration as local to the enclosing method
-            if hdl.Declaration and hdl.Declaration.Name:
-                _method.Locals.Add(Local(hdl.Declaration, false))
-
-            # except e as Exception
-            if hdl.Declaration and hdl.Declaration.Name and hdl.Declaration.Type:
-                reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
-                cond.Condition = [| __e isa $(hdl.Declaration.Type) and $reference = __e |]
-            # except e
-            elif hdl.Declaration and hdl.Declaration.Name:
-                reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
-                cond.Condition = [| $reference = __e |]
-            # except as Exception
-            elif hdl.Declaration and hdl.Declaration.Type:
-                cond.Condition = [| __e isa $(hdl.Declaration.Type) |]
-            else:
-                cond.Condition = [| true |]
-
-            # Add the statements to the condition
-            cond.TrueBlock = hdl.Block
-            block = cond.FalseBlock = Block()
-
-            # except a == b
-            if hdl.FilterCondition:
-                cond.Condition = [| $(cond.Condition) and $(hdl.FilterCondition) |]
-
-
-        # If none of the conditions match include the failure block
+        # Add failure as the last handler if present
         if node.FailureBlock:
-            for st in node.FailureBlock.Statements:
-                block.Add(st as Statement)
-
+            handler = ExceptionHandler(node.FailureBlock.LexicalInfo)
+            handler.Block = node.FailureBlock
             # Rethrow again the error
-            block.Add([| raise __e |])
+            handler.Block.Add([| raise __e |])
+            node.ExceptionHandlers.Add(handler)
             node.FailureBlock = null
 
-        # Replace original handlers with the generated one
-        node.ExceptionHandlers.Clear()
-        node.ExceptionHandlers.Add(handler)
+        if len(node.ExceptionHandlers):
+            # Generate the parent handler to capture the exception in a variable
+            handler = ExceptionHandler()
+            handler.Declaration = Declaration(Name:'__e')
+            block = handler.Block
+
+            for hdl in node.ExceptionHandlers:
+
+                cond = IfStatement(hdl.LexicalInfo)
+                block.Add(cond)
+
+                # except e as Exception
+                if hdl.Declaration and hdl.Declaration.Name and hdl.Declaration.Type:
+                    _method.Locals.Add(Local(hdl.Declaration, false))
+                    reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
+                    cond.Condition = [| __e isa $(hdl.Declaration.Type) and $reference = __e |]
+                # except e
+                elif hdl.Declaration and hdl.Declaration.Name:
+                    _method.Locals.Add(Local(hdl.Declaration, false))
+                    reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
+                    cond.Condition = [| $reference = __e |]
+                # except as Exception
+                elif hdl.Declaration and hdl.Declaration.Type:
+                    cond.Condition = [| __e isa $(hdl.Declaration.Type) |]
+                else:
+                    cond.Condition = [| true |]
+
+                # update the condition if we are filtering
+                if hdl.FilterCondition:
+                    cond.Condition = [| $(cond.Condition) and $(hdl.FilterCondition) |]
+
+                # Add the statements to the condition
+                cond.TrueBlock = hdl.Block
+                block = cond.FalseBlock = Block()
+
+
+            # Replace original handlers with the generated one
+            node.ExceptionHandlers.Clear()
+            node.ExceptionHandlers.Add(handler)
 
         # Recurse into the single handler and the ensure block
         Visit node.ProtectedBlock
         Visit node.ExceptionHandlers
         Visit node.EnsureBlock
-
-    def OnRaiseStatement(node as RaiseStatement):
-        if not node.Exception:
-            node.Exception = [| __e |]
 

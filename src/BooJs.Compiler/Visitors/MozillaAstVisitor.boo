@@ -224,17 +224,17 @@ Transforms a Boo AST into a Mozilla AST
 
     def OnTryStatement(node as TryStatement):
 
-        assert 1 == len(node.ExceptionHandlers), 'Multiple exceptions handlers should be processed in previous steps'
 
         n = Moz.TryStatement(loc: loc(node))
         n.block = Apply(node.ProtectedBlock)
 
-        hdl = node.ExceptionHandlers[0]
-        h = Moz.CatchClause(loc: loc(hdl))
-        h.param = Moz.Identifier(loc: loc(hdl.Declaration), name: hdl.Declaration.Name)
-        h.body = Apply(hdl.Block)
-
-        n.handlers.Add(h)
+        assert len(node.ExceptionHandlers) <= 1, 'Multiple exceptions handlers should be processed in previous steps'
+        if len(node.ExceptionHandlers):
+            hdl = node.ExceptionHandlers[0]
+            h = Moz.CatchClause(loc: loc(hdl))
+            h.param = Moz.Identifier(loc: loc(hdl.Declaration), name: hdl.Declaration.Name)
+            h.body = Apply(hdl.Block)
+            n.handlers.Add(h)
 
         if node.EnsureBlock:
             n.finalizer = Apply(node.EnsureBlock)
