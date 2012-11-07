@@ -114,7 +114,7 @@ class JsPrinter(Printer):
     virtual def OnWhileStatement(node as WhileStatement):
         WriteIndented 'while ('
         Visit node.test
-        Write ')'
+        Write ') '
         Visit node.body
 
     virtual def OnDoWhileStatement(node as DoWhileStatement):
@@ -133,6 +133,22 @@ class JsPrinter(Printer):
         Visit node.update
         Write ') '
         Visit node.body
+
+    virtual def OnSwitchStatement(node as SwitchStatement):
+        WriteIndented 'switch ('
+        Visit node.discriminant
+        WriteLine ') {'
+        for case in node.cases:
+            WriteIndented 'case '
+            Visit case.test
+            WriteLine ':'
+            Indent
+            for st in case.consequent:
+                WriteIndented
+                Visit st
+            Dedent
+        WriteIndented
+        WriteLine '}'
 
     virtual def OnThisExpression(node as ThisExpression):
         Write 'this'
@@ -198,10 +214,6 @@ class JsPrinter(Printer):
         Visit node.argument
         WriteLine ';'
 
-    virtual def OnSwitchStatement(node as SwitchStatement):
-        Visit node.discriminant
-        Visit node.cases
-
     virtual def OnWithStatement(node as WithStatement):
         WriteIndented 'with ('
         Visit node.object
@@ -219,6 +231,7 @@ class JsPrinter(Printer):
         WriteLine ';'
 
     virtual def OnLabeledStatement(node as LabeledStatement):
+        WriteIndented
         Visit node.label
         Write ': '
         Visit node.body
@@ -381,6 +394,7 @@ class JsPrinter(Printer):
 
     virtual def OnIdentifier(node as Identifier):
         Write node.name
+
 
     virtual def OnXCodeExpression(node as XCodeExpression):
         Parens Precedence.Assignment:

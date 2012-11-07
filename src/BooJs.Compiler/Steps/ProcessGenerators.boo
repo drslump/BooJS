@@ -9,294 +9,204 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 """
     Specialized step to process generators to replace Boo's original one.
 
-    TODO: Step to run just before this one that converts all loops to while ones
+    TODO: State to run just before this one that converts all loops to while ones
           if the method is a generator
-
-    TODO: In order to support nested generators we most probably will
-          need to keep some kind to state
-
 """
-    _state = 0
-    _states as StatementCollection
-    _current as Block
+    class TransformGenerator(FastDepthFirstVisitor):
+        [getter(States)]
+        _states = StatementCollection()
+
+        [property(State)]
+        _state as int = 0
+
+        Current as Block:
+            get: return States[State]
+
+        _statemachinelabel = ReferenceExpression('statemachine')
+        _gotostatemachine = GotoStatement(Label: _statemachinelabel)
+
+        def constructor():
+            CreateState()
+
+        def CreateState():
+            block = Block()
+            States.Add(block)
+            return len(States)-1
+
+        def OnExpressionStatement(node as ExpressionStatement):
+            Current.Add(node)
+
+        def OnYieldStatement(node as YieldStatement):
+            # Create a re-entry state
+            nextstate = CreateState()
+
+            # Setup jump to next state and return value
+            Current.Add([| __state = $(nextstate) |])
+            Current.Add([| return $(node.Expression) |])
+
+            # Continue in the re-entry state
+            State = nextstate
+
+        def OnWhileStatement(node as WhileStatement):
+            # Loop always starts in a new step
+            State = loopstate = CreateState()
+
+            # Create new step for exiting the loop but don't use it yet
+            exitstate = CreateState()
+
+            # Check if we should skip the loop by negating the condition
+            ifs = [|
+                if not $(node.Condition):
+                    __state = $(exitstate)
+                    $(_gotostatemachine)
+            |]
+            Current.Add(ifs)
+
+            # Process the loop body
+            Visit node.Block
+
+            # Go back to the start of the loop to check if we have more iterations left
+            Current.Add([| __state = $(loopstate) |])
+            Current.Add(_gotostatemachine)
+
+            # Continue in the exit step previously created
+            State = exitstate
+
+        def OnTryStatement(node as TryStatement):
+            # A try block always initiates an state
+            State = trystate = CreateState()
+
+            # Register ensure block
+            if node.EnsureBlock:
+                Current.Add([| __final.push( $(BlockExpression(Body: node.EnsureBlock)) ) |])
+
+            Visit node.ProtectedBlock
+
+            # Execute ensure block after we reach the end of the protected block
+            if node.EnsureBlock:
+                Current.Add( [| __final.pop()() |] )
+
+            # Create a new state for the exception handler
+            exceptstate = CreateState()
+
+            # Register the states covered by this protected block
+            tryblock = States[trystate] as Block
+            for state in range(trystate, exceptstate):
+                tryblock.Insert(0, [| __catch[$state] = $exceptstate |] )
+
+            # Create a new state for exiting the try/except block
+            afterstate = CreateState()
+
+            # Skip the exception handler state
+            Current.Add( [| __state = $afterstate |] )
+            Current.Add(_gotostatemachine)
+
+            # Produce the exception handler
+            State = exceptstate
+            Visit node.ExceptionHandlers
+
+            # Continue in the after state
+            State = afterstate
+
+
+        def Terminate():
+            # Create an exit point
+            exitstate = CreateState()
+
+            # Direct the current state to the exit point
+            Current.Add([| __state = $(exitstate) |])
+            Current.Add(_gotostatemachine)
+
+            # Define the exit strategy
+            State = exitstate
+            Current.Add( [| raise Boo.STOP |] )
+
+
 
     override def Run():
         if len(Errors) > 0:
             return
         Visit CompileUnit
 
-    override def EnterMethod(node as Method):
-        # Types should be already resolved so we can just check if it was flagged as a generator 
-        entity as InternalMethod = node.Entity
-        if not entity.IsGenerator:
-            return false
-        # If it's a generator inside another one stop with an error
-        elif _state:
-            raise 'Nested generators are not supported'
-
-        print 'GENERATOR: ', node
-        
-        # Create a collection to hold the states (case X: ...)
-        _states = StatementCollection()
-        # Start by defining the first state
-        CreateState()
-
-        return true
-
-    def LeaveMethod(node as Method):
-
-        placeholder = [| 'PLACEHOLDER' |]
-
-        # We convert the function into a factory by wrapping the contents in 
-        # closure and handling it to a runtime helper method.
-        # Since we are creating a closure but we already defined the locals
-        # above we'll let the Javascript engine take care of keeping the state.
-        # TODO: Can't we simply use: return {next:function(){ ... }  ???
-        closure = [| 
-            $(CreateDeclaration('__state', 1))
-            return Boo.generator def():
-                # Wrap the statements in a loop so we can use continue/break inside
-                # in order to perform a goto. We also need to label to it since we
-                # are going to use also a switch statement below.
-                :__loop
-                while true:
-                    # Setup a switch statement to allow jumping to a specific statement 
-                    # when the closure is executed.
-                    # NOTE: We define switch as if it was a macro since Boo doesn't have it
-                    switch __state:
-                        $placeholder
-
-                        # Just exit from the switch statement in the last step
-                        case 0:
-                            break
-                        # Check that nothing wrong happened when executing the code
-                        default:
-                            raise 'Boo.Js: invalid state in state machine #' + __state
-
-                    # Notify the runtime helper that the generator has finished
-                    return Boo.STOP
-        |]
-
-        print closure
-        print '----------'
-
-        # The placeholder structure is Block(Statements=[PLACEHOLDER,])
-        placeholder_st = placeholder.ParentNode as Statement
-        placeholder_block = placeholder_st.ParentNode as Block
-        statements = placeholder_block.Statements
-
-        # Insert the instrumented statements in the placeholder
-        index = statements.IndexOf(placeholder_st)
-        statements.RemoveAt(index)
-        for stmt in _states:
-            statements.Insert(index, stmt)
-            index++
-
-        print closure
-
-        # Replace the body of the method with the instrumented version
-        node.Body.Statements = closure.Statements
-
-        # Reset the processor state
-        ResetProcessor()
-
-
-    def ResetProcessor():
-        _state = 0
-        _states = null
-        _current = null
-
-    def Add(node as Expression):
-        _current.Add(node)
-
-    def Add(node as Statement):
-        _current.Add(node)
-
-    def CreateState() as Block:
-        _state++
-        case = MacroStatement(Name: 'case', Body: Block())
-        case.Arguments.Add([| $_state |])
-        _states.Add(case)
-        _current = case.Body
-
-    def OnExpressionStatement(node as ExpressionStatement):
-        return unless _state
-        Add(node)
-
-    def OnDeclarationStatement(node as DeclarationStatement):
-        return unless _state
-        Add(node)
-
-    def OnUnpackStatement(node as UnpackStatement):
-        return unless _state
-        Add(node)
-
-    def OnYieldStatement(node as YieldStatement):
-        return unless _state
-
-        # Point to the next step
-        Add([| __step = $(_state + 1) |])
-
-        # Return the value
-        Add([| return $(node.Expression) |])
-
-        # Setup the next step entry point
-        CreateState()
-
-
-    def EnterForStatement(node as ForStatement):
-        return false unless _state
-        # TODO: If there is no yield in the loop we can process it normally
-        #       We need a `yield` finder since we will also need this for If
-        return true
-
-    def OnForStatement(node as ForStatement):
-    """ To simplify the generator we convert the for loops to while ones in a 
-        previous step. In the case of the `for x in y` style we just obtain 
-        the keys as an array before starting the loop and then just iterate over it.
-        Note: when issuing a `continue` in a for loop is expected that the increment
-        is executed, thus the increment should be evaluated before the condition, and
-        it's not clear how to do this except for this which is quite verbose :(
-        
-          done = false
-          while (true):
-            if not done:
-              increment++
-              done = true
-            if not condition:
-              break
-            ...
-
-    """
-        return unless _state
-
-        raise 'For loops are not implemented for generators'
-        /*
-        if node.OrBlock:
-            raise 'Or blocks are not supported in generators'
-        if node.ThenBlock:
-            raise 'Then blocks are not supported in generators'
-        */
-
-    def EnterWhileStatement(node as WhileStatement):
-        # TODO: If there is no yield in the loop we can process it normally
-        #       We need a `yield` finder since we will also need this for If
-
-        return unless _state
-
-        # New step to check the condition
-        CreateState()
-
-        initial_state = _state
-
-        # Create the loop condition and a placeholder to later fill the final step
-        final_step_holder = [| __step = null |]
-        cond = [| 
-            if not ($(node.Condition)):
-                $final_step_holder
-                goto __loop
-        |]
-        Add cond
-
-        # Process the contents of the loop
-        Visit node.Block
-
-        # Enter a new state, if reached we go back to check the loop condition
-        CreateState
-        Add [| __step = $initial_state |]
-        Add( GotoStatement(Label:[| __loop |]) )
-
-        # This state is now outside the loop
-        CreateState
-        # Now we know the state where the loop ends
-        final_step_holder.Right = [| $_state |]
+    def HasTryStatement(node as Block) as bool:
+        for st in node.Statements:
+            return true if st.NodeType == NodeType.TryStatement
+            if wst = st as WhileStatement:
+                return true if HasTryStatement(wst.Block)
+            elif ist = st as IfStatement:
+                return true if HasTryStatement(ist.TrueBlock) or HasTryStatement(ist.FalseBlock)
 
         return false
 
-    #def OnIfStatement(node as IfStatement):
-    #    Visit(node)
-        
+    override def EnterMethod(node as Method):
+        # Types should be already resolved so we can just check if it was flagged as a generator 
+        entity = node.Entity as InternalMethod
+        return entity and entity.IsGenerator
 
+    override def LeaveMethod(node as Method):
 
+        has_try = HasTryStatement(node.Body)
 
+        # Transform the method body into a list of states
+        transformer = TransformGenerator()
+        transformer.OnBlock(node.Body)
+        transformer.Terminate()
 
-    def CreateDeclaration(name as string, initializer as int):
-        return DeclarationStatement(Declaration(Name: name), [| $initializer |])
+        # Remove the original method contents
+        node.Body.Clear()
+        # Create a new local to keep the current step of the generator
+        CodeBuilder.DeclareLocal(node, '__state', TypeSystemServices.IntType)
+        if has_try:
+            CodeBuilder.DeclareLocal(node, '__catch', TypeSystemServices.HashType)
+            CodeBuilder.DeclareLocal(node, '__final', TypeSystemServices.ArrayType)
+            node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__catch'), HashLiteralExpression()) )
+            node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__final'), ListLiteralExpression()) )
 
-    def EnterMacroStatement(node as MacroStatement):
-        print 'MACRO', node
+        # Wrap the steps into a switch/case construct
+        switch = MacroStatement(Name: 'switch')
+        switch.Arguments.Add(ReferenceExpression('__state'))
+        for idx as int, step as Block in enumerate(transformer.States):
+            case = MacroStatement()
+            case.Name = 'case'
+            case.Arguments.Add(IntegerLiteralExpression(idx))
+            case.Body = step
+            switch.Body.Add(case)
 
+        statemachine as Statement
+        statemachine = [|
+            #console.log('<STATE: ' + __state + '>')
+            if __error:
+                raise __error
 
+            $switch
+        |]
 
+        # Wrap the state machine to support exception handling
+        if has_try:
+            statemachine = [|
+                try:
+                    $statemachine
+                except:
+                    if __e is not Boo.STOP and __state in __catch:
+                        __error = null  # Make sure any reported error is removed
+                        __state = __catch[__state]
+                        goto statemachine
 
-/*
-    def CreateLocal(method as Method, name as string, initializer):
+                    # Position the generator to its last state
+                    __state = $(len(transformer.States)-1)
 
-        def ProcessStatements(statements as StatementCollection):
-            for stmt in statements: 
-                print '/*', stmt.NodeType, '*/'
+                    # Ensure all finally blocks are executed
+                    while __final.length:
+                        __final.pop()()
 
-                # Non flow control statements can be placed in the current step
-                # without problems
-                if stmt.NodeType == NodeType.ExpressionStatement:
-                    Visit(stmt)
+                    # Re-raise the exception
+                    raise __e
+            |]
 
-                # Once we reach a yield we prepare to return the value
-                elif stmt.NodeType == NodeType.YieldStatement:
-                    # Point to the next step
-                    step++
-                    WriteIndented '$step$ = ' + step + ';'
-                    WriteLine
-
-                    # Return the value
-                    WriteIndented 'return '
-                    Visit( (stmt as YieldStatement).Expression )
-                    WriteLine ';'
-
-                    # Setup the next step entry point
-                    Dedent
-                    WriteIndented 'case ' + step + ':'
-                    WriteLine
-                    Indent
-
-                elif stmt.NodeType == NodeType.WhileStatement:
-                    # New step to check the condition
-                    step++
-                    cond_step = step
-                    Dedent
-                    WriteIndented 'case ' + step + ':'
-                    WriteLine
-                    Indent
-                    
-                    # Check if the reversed condition applies
-                    WriteIndented 
-                    Write 'if (!('
-                    Visit( (stmt as WhileStatement).Condition )
-                    WriteIndented
-                    Write ')) {'
-                    WriteLine
-                    Indent
-                    # Exit the while loop
-                    # TODO: This surely breaks with nested flows
-                    WriteIndented '$step$ = ' + (step+1) + ';'
-                    WriteLine
-                    WriteIndented 'continue $loop$;'
-                    WriteLine
-                    Dedent
-                    WriteIndented
-                    Write '}'
-                    WriteLine
-
-                    ProcessStatements( (stmt as WhileStatement).Block.Statements )
-
-                    step++
-                    Dedent
-                    WriteIndented 'case ' + step + ':'
-                    WriteLine
-                    Indent
-                    WriteIndented '$step$ = ' + cond_step + ';'
-                    WriteLine
-                    WriteIndented 'goto $step$;'
-
-        ProcessStatements(m.Body.Statements)
-*/
+        # Make the method return a generator
+        generator = [|
+            return Boo.generator do(__value, __error):
+                :statemachine
+                $statemachine
+        |]
+        node.Body.Add(generator)

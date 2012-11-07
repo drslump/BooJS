@@ -332,7 +332,7 @@ class SwitchCase(Node):
     switch statement.
 """
     public test as IExpression = null
-    public consequent as List[of IStatement]
+    public consequent = List[of IStatement]()
 
 class CatchClause(Node):
 """ A catch clause following a try block. The optional guard property corresponds to the 

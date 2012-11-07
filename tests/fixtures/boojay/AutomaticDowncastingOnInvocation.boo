@@ -1,7 +1,6 @@
 """
 42
 """
-namespace autocasting
 
 def p(s as string):
 	print s

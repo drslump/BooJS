@@ -251,7 +251,7 @@ Transforms a Boo AST into a Mozilla AST
         n = Moz.LabeledStatement(loc: loc(node))
         n.label = Moz.Identifier(loc: loc(node), name: node.Name)
 
-        # In Mozilla AST the label statements are associated with an statement.
+        # In Mozilla AST labels are always associated with a statement.
         stmts = (node.ParentNode as Block).Statements
         idx = stmts.IndexOf(node)
         st = stmts[idx + 1]
@@ -334,8 +334,29 @@ Transforms a Boo AST into a Mozilla AST
 
         Return n
 
+    def OnMacroStatement(node as MacroStatement):
+        # Special handling for switch/case constructs (used in generators)
+        if node.Name == 'switch':
+            switch = Moz.SwitchStatement(loc: loc(node))
+            switch.discriminant = Apply(node.Arguments[0])
+            for casemacro as MacroStatement in node.Body.Statements:
+                assert casemacro isa MacroStatement
+
+                case = Moz.SwitchCase(loc: loc(casemacro))
+                case.test = Apply(casemacro.Arguments[0])
+                for st in casemacro.Body.Statements:
+                    case.consequent.Add(Apply(st))
+
+                switch.cases.Add(case)
+
+            Return switch
+        else:
+            raise 'Macro statements should have been already resolved'
+
+
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
         # Detect constructors
+
         if node.Target.Entity isa IConstructor and not isFactory(node.Target):
             c = Moz.NewExpression(loc: loc(node))
             c._constructor = Apply(node.Target)

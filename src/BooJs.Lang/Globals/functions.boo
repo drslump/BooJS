@@ -1,5 +1,48 @@
 namespace BooJs.Lang.Globals
 
+
+
+
+interface Iterable:
+""" Enumerable interface (aka IEnumerable)
+"""
+    def iterator() as Iterator
+
+interface Iterable[of T] (Iterable):
+""" Enumerable interface for generic types (aka IEnumerable[of T])
+"""
+    def iterator() as Iterator[of T]
+
+interface Iterator:
+""" Enumerator interface (aka IEnumerator)
+"""
+    def next() as object
+
+interface Iterator[of T] (Iterator):
+""" Enumerator interface for generic types (aka IEnumerator[of T])
+"""
+    def next() as T
+
+interface GeneratorIterator(Iterable, Iterator):
+""" Generator based enumerator
+"""
+    # Just returns itself (allowing their use in for..in loops)
+    def iterator() as GeneratorIterator
+
+    def send(value as object)
+    def throw(error as object)
+    def close()
+
+interface GeneratorIterator[of T] (GeneratorIterator, Iterable[of T], Iterator[of T]):
+""" Generator based enumerator for generic types
+"""
+    # Just returns itself (allowing their use in for..in loops)
+    def iterator() as GeneratorIterator[of T]
+
+
+
+
+
 # TODO: They would be declared as module locals
 #NaN as double
 #Infinity as double

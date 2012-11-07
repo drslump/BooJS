@@ -1,4 +1,4 @@
-#!IGNORE: Classes not supported
+#IGNORE: Classes not supported
 """
 Eric Idle
 42

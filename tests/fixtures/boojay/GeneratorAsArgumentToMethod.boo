@@ -1,8 +1,6 @@
-#IGNORE: yield not supported yet
 """
 A STRING
 """
-namespace generators
 
 def producer() as string*:
 	yield "a string"

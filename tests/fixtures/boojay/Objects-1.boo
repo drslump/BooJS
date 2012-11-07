@@ -1,5 +1,7 @@
 """
-Hello, world!
+Hello,world!
 """
 
-print Array().push("Hello, ", "world!")
+a = Array()
+a.push("Hello", "world!")
+print a

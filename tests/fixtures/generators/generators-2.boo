@@ -13,6 +13,7 @@ def odds(begin, end):
 	
 def evens(begin, end):
 	return i for i in range(begin, end) unless i % 2
+
 	
 for expected, actual in zip((1, 3, 5), odds(1, 6)):
 	print(actual)
@@ -22,4 +23,3 @@ for expected, actual in zip((2, 4, 6), evens(1, 7)):
 	print(actual)
 	assert expected == actual
 	
-

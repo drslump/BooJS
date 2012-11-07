@@ -2,24 +2,23 @@ namespace BooJs.Lang.Globals
 
 import BooJs.Lang.Extensions
 
-#import System.Collections(IList, IEnumerable, ICollection)
-
-
-import System.Collections(IList, IEnumerable, IEnumerator)
-import System.Collections.Generic(IList, IEnumerable, IEnumerator)
 import System(Func)
 
 
-class Array[of T] (Object, IList[of T]): #, IList):
+
+class Array[of T] (Object, Iterable[of T]):
 
     [Transform( Boo.Array.op_Equality($1, $2) )]
     static def op_Equality(lhs as Array[of T], rhs as Array[of T]) as bool:
         pass
+    [Transform( Boo.Array.op_Equality($1, $2) )]
+    static def op_Equality(lhs as Array[of T], rhs as Array) as bool:
+        pass
     [Transform( Boo.Array.op_Member($1, $2) )]
-    static def op_Member(lhs as Array[of T], rhs as object) as bool:
+    static def op_Member(lhs as object, rhs as Array[of T]) as bool:
         pass
     [Transform( not Boo.Array.op_Member($1, $2) )]
-    static def op_NotMember(lhs as Array[of T], rhs as object) as bool:
+    static def op_NotMember(lhs as object, rhs as Array[of T]) as bool:
         pass
     [Transform( Boo.Array.op_Addition($1, $2) )]
     static def op_Addition(lhs as Array[of T], rhs as Array[of T]) as Array[of T]:
@@ -34,18 +33,16 @@ class Array[of T] (Object, IList[of T]): #, IList):
         pass
 
     # Allow assignment from non generic Arrays but only to object generic type
-    static def op_Implicit(rhs as Array) as Array[of object]:
-        pass
     static def op_Implicit(rhs as Array) as Array[of Object]:
         pass
 
 
-    # Implement enumerable interfaces that conflicts
-    def IEnumerable.GetEnumerator() as IEnumerator:
-        pass
-    def GetEnumerator() as IEnumerator[of T]:
+
+    def Iterable.iterator() as Iterator:
         pass
 
+
+    public final length as uint
 
     # Indexer
     self[index as int] as T:
@@ -53,9 +50,6 @@ class Array[of T] (Object, IList[of T]): #, IList):
         get: pass
         [Transform( $0[$1] = $2 )]
         set: pass
-
-    public length as uint
-
 
     def constructor():
         pass
@@ -112,19 +106,16 @@ class Array[of T] (Object, IList[of T]): #, IList):
 
     def slice(start as int, stop as int) as Array[of T]:
         pass
-
     def slice(start as int) as Array[of T]:
         pass
 
     def indexOf(itm as T, start as int) as int:
         pass
-
     def indexOf(itm as T) as int:
         pass
 
     def lastIndexOf(itm as T, start as int) as int:
         pass
-
     def lastIndexOf(itm as T) as int:
         pass
 
@@ -136,7 +127,6 @@ class Array[of T] (Object, IList[of T]): #, IList):
 
     #def forEach(callback as callable(T), context as object) as void:
     def forEach(callback as Func[of T], context as object) as void:
-
         pass
     def forEach(callback as callable) as void:
         pass
@@ -174,7 +164,8 @@ class Array[of T] (Object, IList[of T]): #, IList):
 
 
 
-class Array(Array[of object]):
+class Array(Array[of object], Iterable):
+
     [Transform( Boo.Array.op_Equality($1, $2) )]
     static def op_Equality(lhs as Array, rhs as Array) as bool:
         pass
@@ -191,7 +182,20 @@ class Array(Array[of object]):
     static def op_Multiply(lhs as Array, rhs as int) as Array:
         pass
 
+
+    # Comply with Iterable interface
+    def Iterable.iterator() as Iterator:
+        pass
+
+
     def constructor():
         pass
     def constructor(n as int):
         pass
+
+
+    # Ecma 5th edition
+
+    static def isArray(arg as object) as bool:
+        pass
+

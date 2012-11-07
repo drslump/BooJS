@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported
 """
 Test 0
 =====
@@ -55,15 +54,14 @@ def NestedEnsures():
         print "outer ensure"
         raise "Exception from outer ensure"
 
-def Consume(generator as System.Collections.Generic.IEnumerable of string, count as int):
-    enumerator = generator.GetEnumerator()
+def Consume(generator as IGenerator[of string], count as int):
+    enumerator = generator
     try:
         for i in range(count):
-            enumerator.MoveNext()
-            print enumerator.Current
-        enumerator.Dispose()
+            print enumerator.next()
+        enumerator.close()
     except ex:
-        print "Caught: ${ex.Message}"
+        print "Caught: ${ex.message}"
 
 for i in range(5):
     print "Test ${i}"

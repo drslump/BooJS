@@ -1,10 +1,8 @@
-#IGNORE: yield not supported yet
 """
 before
 in between
 after
 """
-namespace generators
 
 def simplest():
 	print "before"

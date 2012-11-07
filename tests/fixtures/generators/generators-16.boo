@@ -1,4 +1,4 @@
-
+#IGNORE: BooJs generators are evaluated immediatly
 
 a = range(3)
 g = i*2 for i in a

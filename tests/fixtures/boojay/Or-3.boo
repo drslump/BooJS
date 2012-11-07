@@ -1,10 +1,10 @@
 """
 yes!
-true
-false
-true
+True
+False
+True
 3
-true
+True
 5
 """
 print "no way!" if null or false

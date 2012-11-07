@@ -1,10 +1,8 @@
-#IGNORE: Yield not supported
 """
 1
 2
 3
 """
-
 
 def onetwothree():
 	yield 1

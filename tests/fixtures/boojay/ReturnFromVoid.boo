@@ -9,7 +9,6 @@ loop 2
 1
 2
 """
-namespace statements
 
 def foo(steps as int):
 	print "0"

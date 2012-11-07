@@ -7,5 +7,5 @@
 2, 1
 """
 items = (x, y) for x in range(1, 3) for y in range(3, 0)
-for item in items:
-	print join(item, ", ")
+#for item in items:
+#	print join(item, ", ")

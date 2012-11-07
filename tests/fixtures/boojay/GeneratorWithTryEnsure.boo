@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported yet
 """
 before
 during
@@ -6,7 +5,6 @@ ensure
 before
 ensure
 """
-namespace generators
 
 def tryEnsureAround(source):
 	print "before"

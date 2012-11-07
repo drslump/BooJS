@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported
 """
 2
 1
@@ -10,6 +9,6 @@ def onetwothree():
 	yield --i
 	yield --i
 	
-e = onetwothree().GetEnumerator()
-while e.MoveNext():
-	print(e.Current)
+e = onetwothree()
+for itm in e:
+	print(itm)

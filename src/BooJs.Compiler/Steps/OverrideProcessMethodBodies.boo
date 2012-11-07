@@ -6,7 +6,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity, IMethod,
                                     Reflection, Internal, IType,
                                     BuiltinFunction, BuiltinFunctionType)
-
+import Boo.Lang.Compiler.Steps.Generators(GeneratorItemTypeInferrer)
 
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally
@@ -165,3 +165,14 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         else:
             super(node)
 
+    virtual protected def GetGeneratorReturnType(generator as Internal.InternalMethod) as IType:
+        # TODO: DO WE NEED THIS?
+
+        // Make method return a generic IEnumerable
+        itemType = my(GeneratorItemTypeInferrer).GeneratorItemTypeFor(generator)
+        if TypeSystemServices.VoidType == itemType:
+            // circunvent exception in MakeGenericType
+            return TypeSystemServices.ErrorEntity
+
+        enumerableType = (TypeSystemServices as BooJs.Compiler.TypeSystem.TypeSystemServices).IGeneratorGenericType
+        return enumerableType.GenericInfo.ConstructType(itemType)

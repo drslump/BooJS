@@ -10,6 +10,9 @@ class TypeSystemServices(BooServices):
 
     override static ErrorEntity = Globals.Error
 
+    public IGeneratorType as IType
+    public IGeneratorGenericType as IType
+
     override ExceptionType:
          get: return Map(Globals.Error)
 
@@ -37,12 +40,19 @@ class TypeSystemServices(BooServices):
         SingleType = DoubleType
 
         # In BooJs arrays are mutable too
-        ArrayType = Map(Globals.Array)
+        ArrayType = Map(typeof(Globals.Array))
         ListType = ArrayType
+        # List is implemented with a generic version of Array
+        #ListType = Map(typeof(Globals.Array[of Globals.Object]))
 
-        # Enumerables are just mapped to Arrays too
-        IEnumerableType = ArrayType
-        IEnumerableGenericType = Map(typeof(Globals.Array[of*]))
+        # Enumerables
+        IEnumerableType = Map(typeof(Globals.Iterable))
+        IEnumerableGenericType = Map(typeof(Globals.Iterable[of*]))
+
+        # TODO: Custom generator type
+        IGeneratorType = Map(typeof(Globals.GeneratorIterator))
+        IGeneratorGenericType = Map(typeof(Globals.GeneratorIterator[of*]))
+
 
 
         RegExpType = Map(Globals.RegExp)
@@ -72,7 +82,6 @@ class TypeSystemServices(BooServices):
         AddBuiltin(BuiltinFunction.Len)
         AddBuiltin(BuiltinFunction.Eval);
 
-
     override public def CanBeReachedByPromotion(expectedType as IType, actualType as IType) as bool:
         # Boo allows to cast chars to integers, since in BooJs a char is just a string
         # we can't allow that kind of cast.
@@ -82,3 +91,8 @@ class TypeSystemServices(BooServices):
             return false
 
         return super(expectedType, actualType)
+
+     new def IsSystemObject(type as IType):
+        # TODO: Is this ever used?
+        # ObjectType is mapped to our custom object
+        return type == ObjectType or type == DuckType or type == Map(System.Object)

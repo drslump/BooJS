@@ -15,6 +15,9 @@ class DowncastPermissions(BooDowncastPermissions):
         if expected.IsInterface and external = actual as ExternalType:
             for iface in external.GetInterfaces():
                 return true if iface.IsAssignableFrom(expected)
+
+            # HACK: Map custom IEnumerable interface
+            #return expected.FullName == 'System.Collections.Generic.IEnumerable' and actual.FullName == 'BooJs.Lang.Globals.IEnumerable'
             return false
 
         return true

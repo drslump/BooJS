@@ -1,5 +1,4 @@
-#IGNORE: Yield not supported
-def generator() as System.Collections.IEnumerable:
+def generator() as object*:
 	yield 1
 	yield "um"
 	

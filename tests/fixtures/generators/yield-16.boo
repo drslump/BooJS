@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported
 """
 before
 1
@@ -23,13 +22,13 @@ print "before"
 
 for item in foo():
 	print "insideA"
-	assert item is null
+	assert not item
 
 print "==="
 
 for item in foo():
 	print "insideB"
-	assert item is null
+	assert not item
 	break
 
 print "after"

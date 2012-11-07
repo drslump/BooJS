@@ -2,9 +2,9 @@ namespace BooJs.Lang.Globals
 
 import BooJs.Lang.Extensions
 
-import System.Collections(IEnumerable)
 
-class String(Object, IEnumerable):
+class String(Object, Iterable):
+
     # IMPORTANT: Boo requires explicit/implicit operators to use the actual types
     [Transform( parseInt($1) )]
     static def op_Explicit(value as String) as NumberInt:
@@ -28,14 +28,18 @@ class String(Object, IEnumerable):
         pass
     # Formatting: '{0} {1}' % ('foo', 'bar')
     [Transform( Boo.String.op_Modulus($1, $2) )]
-    static def op_Modulus(lhs as string, rhs as IEnumerable) as string:
+    static def op_Modulus(lhs as String, rhs as Array) as string:
         pass
+
 
     # Static methods
 
     static def fromCharCode(code as int) as string:
         pass
 
+    # Comply with Iterable interface
+    def iterator():
+        pass
 
     # Instance members
     

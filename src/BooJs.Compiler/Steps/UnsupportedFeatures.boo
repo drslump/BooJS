@@ -28,7 +28,7 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
 
-    def OnYieldStatement(node as YieldStatement):
+    def _OnYieldStatement(node as YieldStatement):
     """ Porting yield/generators to standard Javascript is very difficult and it's not
         clear that it could work in all cases. Only Firefox supports them natively thus
         one option could be to add a compiler flag to allow them.

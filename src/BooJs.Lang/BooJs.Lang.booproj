@@ -78,6 +78,8 @@
     <Compile Include="Api\jQuery.boo" />
     <Compile Include="Macros\ExtensionAttribute.boo" />
     <Compile Include="RuntimeServices.boo" />
+    <Compile Include="Async.boo" />
+    <Compile Include="Macros\ConstMacro.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

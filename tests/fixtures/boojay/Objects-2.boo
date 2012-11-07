@@ -1,5 +1,7 @@
 """
-Hello, world!
+Hello,world!
 """
 
-print ["Hello, "].push("world!")
+a = ["Hello"]
+a.push("world!")
+print a

@@ -15,13 +15,25 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
            super(provider, type)
 
         override def IsAssignableFrom(other as IType) as bool:
+            external = other as ExternalType
+
             # Globals.Object behaves just like System.Object
             # TODO: Move this to a custom TypeCompatibilityRules?
-            if self.ActualType in (Globals.Object, Builtins.Duck):
-                external = other as ExternalType
+            if self.ActualType in (System.Object, Globals.Object, Builtins.Duck):
                 return external is null or external.ActualType != Types.Void
 
             result = super(other)
+
+            if not result:
+                # TODO: Iterable[of int] is currently assignable for Array[of string]
+                tss = Boo.Lang.Environments.my(TypeSystemServices)
+                aoftype = tss.Map(typeof(Globals.Array[of*]))
+                if self == tss.ArrayType:
+                    # Array <- Array[of *]
+                    return true if other == aoftype
+                    # Array <- Array[of T]
+                    return true if other.ConstructedInfo and other.ConstructedInfo.GenericDefinition == aoftype
+
             return result
 
     internal class JsValueType(ExternalType):
@@ -87,8 +99,36 @@ class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
         # Lists and Hashes
         reftype = JsRefType(self, Globals.Array)
         MapTo(System.Array, reftype)
-        MapTo(Boo.Lang.List, reftype)
         MapTo(Globals.Array, reftype)
+
+        reftype = JsRefType(self, typeof(Globals.Array[of*]))
+        MapTo(typeof(Boo.Lang.List), reftype)
+        MapTo(typeof(Boo.Lang.List[of*]), reftype)
+        MapTo(typeof(Globals.Array[of*]), reftype)
+
+        reftype = JsRefType(self, typeof(Globals.Iterable))
+        MapTo(System.Collections.IEnumerable, reftype)
+        MapTo(Globals.Iterable, reftype)
+
+        reftype = JsRefType(self, typeof(Globals.Iterable[of*]))
+        MapTo(typeof(System.Collections.Generic.IEnumerable[of*]), reftype)
+        MapTo(typeof(Globals.Iterable[of*]), reftype)
+
+        # Map some common enumerable generic types
+        # TODO: Must be a more elegant way to do this
+        /*
+        reftype = JsRefType(self, typeof(Globals.IEnumerable[of object]))
+        MapTo(System.Collections.Generic.IEnumerable[of object], reftype)
+        MapTo(Globals.IEnumerable[of object], reftype)
+
+        reftype = JsRefType(self, typeof(Globals.IEnumerable[of Globals.NumberInt]))
+        MapTo(System.Collections.Generic.IEnumerable[of int], reftype)
+        MapTo(Globals.IEnumerable[of Globals.NumberInt], reftype)
+
+        reftype = JsRefType(self, typeof(Globals.IEnumerable[of string]))
+        MapTo(System.Collections.Generic.IEnumerable[of string], reftype)
+        MapTo(Globals.IEnumerable[of string], reftype)
+        */
 
         reftype = JsRefType(self, Builtins.Hash)
         MapTo(Boo.Lang.Hash, reftype)

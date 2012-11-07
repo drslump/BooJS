@@ -16,4 +16,4 @@ class AdaptParsingAst(AbstractTransformerCompilerStep):
         # HACK: Replace references to IEnumerable for Array ones. Boo's parser
         #       defines <type>* as a generic type reference to IEnumerable.
         if node.Name == 'System.Collections.Generic.IEnumerable':
-            node.Name = 'BooJs.Lang.Globals.Array'
+            node.Name = 'BooJs.Lang.Globals.Iterable'

@@ -10,5 +10,5 @@
 5, 1
 """
 items = (x, y) for x in range(1, 6) if (x % 2) for y in range(5, 0) if y % 2
-for item in items:
-	print join(item, ", ")
+#for item in items:
+#	print join(item, ", ")

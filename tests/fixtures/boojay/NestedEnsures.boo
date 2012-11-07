@@ -1,4 +1,3 @@
-#IGNORE: yield not supported yet
 """
 Test 0
 =====
@@ -36,7 +35,7 @@ Caught: Exception from outer ensure
 """
 namespace generators
 
-def nestedEnsures() as string*:
+def nestedEnsures():
     try:
         yield "begin outer try"
         try:
@@ -57,14 +56,13 @@ def nestedEnsures() as string*:
         raise "Exception from outer ensure"
 
 def consume(strings as string*, count as int):
-    enumerator = strings.getEnumerator()
+    enumerator = strings
     try:
         for i in range(count):
-            enumerator.moveNext()
-            print enumerator.current
-        enumerator.dispose()
+            print enumerator.next()
+        enumerator.close()
     except ex:
-        print "Caught: ${ex.getMessage()}"
+        print "Caught: ${ex.message()}"
 
 for i in range(5):
     print "Test ${i}"

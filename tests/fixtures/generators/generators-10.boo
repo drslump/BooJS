@@ -1,8 +1,9 @@
+#NOTE: In BooJS generator expressions are resolved immediately
 """
 before generator
+gen
 after generator
 before iteration
-gen
 0
 1
 after iteration

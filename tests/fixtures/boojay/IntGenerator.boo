@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported yet
 """
 1
 1
@@ -7,7 +6,6 @@
 5
 8
 """
-namespace generators
 
 def fibonacciUpTo(max as int):
 	a, b = 1, 1

@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported
 """
 0
 1

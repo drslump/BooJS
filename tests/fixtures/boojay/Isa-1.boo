@@ -1,9 +1,9 @@
 """
-true
-true
-false
+True
+True
+False
 """
 
 print "foo" isa string
-print "foo" isa object
+print "foo" isa String
 print "foo" isa Array

@@ -112,3 +112,7 @@ class ProcessTry(AbstractTransformerCompilerStep):
         Visit node.ExceptionHandlers
         Visit node.EnsureBlock
 
+    override def OnRaiseStatement(node as RaiseStatement):
+        # If no exception is given just launch the captured one
+        if not node.Exception:
+            node.Exception = [| __e |]

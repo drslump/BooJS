@@ -1,5 +1,5 @@
 """
-TRACE: 42
+42
 """
 
 def trace(s as string):

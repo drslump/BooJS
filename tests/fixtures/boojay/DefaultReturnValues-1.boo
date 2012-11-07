@@ -1,3 +1,4 @@
+#IGNORE: Default values for method invocation are not supported
 """
 """
 def defaultInt() as int:

@@ -1,7 +1,12 @@
-#IGNORE: Yield not supported
 """
 1 1
+1 2
+1 3
+2 1
 2 2
+2 3
+3 1
+3 2
 3 3
 """
 def onetwothree():
@@ -10,7 +15,6 @@ def onetwothree():
 	yield ++i
 	yield ++i
 	
-e1 = onetwothree().GetEnumerator()
-e2 = onetwothree().GetEnumerator()
-while e1.MoveNext() and e2.MoveNext():
-	print("${e1.Current} ${e2.Current}")
+for i1 in onetwothree():
+	for i2 in onetwothree():
+		print("$i1 $i2")

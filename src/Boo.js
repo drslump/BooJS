@@ -50,7 +50,7 @@
             BOO_RUNTIME_VERSION: '0.0.1'
         },
         // Used as a unique indentifier when we want to stop iterating a generator
-        STOP = Boo.STOP = {};
+        STOP = Boo.STOP = typeof StopIteration !== 'undefined' ? StopIteration : {};
 
     // Used to return a value while iterating a generator
     Boo.ReturnValue = function (v) {
@@ -181,6 +181,15 @@
             for (i = 0; i < l; i++) {
                 if (i in obj && iterator[mode](context, obj[i]) === STOP) return;
             }
+        } else if (typeof obj.next === 'function') {
+            var i = 0;
+            try {
+                while (iterator.call(context, obj.next(), i) !== STOP) { i++; }
+            } catch (e) {
+                if (e !== STOP) throw e;
+            } finally {
+                obj.close();
+            }
         } else {
             // For dictionaries we always pass the value and the key
             for (var key in obj) {
@@ -192,9 +201,22 @@
     };
 
     // Generator factory
-    //exports.generator = function (closure) {
-    //    return {next: closure};
-    //};
+    Boo.generator = function (closure) {
+        return {
+            next: closure,  // next()
+            send: closure,  // send(value)
+            'throw': function (error) {
+                closure(undefined, error);
+            },
+            close: function () {
+                try {
+                    closure(undefined, STOP);
+                } catch (e) {
+                    if (e !== STOP) throw e;
+                }
+            }
+        };
+    };
 
     // Similar to Python's range function this will return an array of integers
     // based on the given parameters.
@@ -345,6 +367,7 @@
     // Makes sure a value is enumerable
     Boo.enumerable = function (value) {
         if (typeIs(value, 'String')) value = value.split('');
+        if (value && typeof(value.next) === 'function') value = Boo.array(value);
         return (value && value.length) ? value : [];
     };
 

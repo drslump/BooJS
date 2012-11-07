@@ -72,9 +72,6 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # Adapt try/except statements
         Add Steps.ProcessTry()
 
-        # Support `goto`
-        Add Steps.ProcessGoto()
-
         # Normalize method invocations
         Add Steps.NormalizeMethodInvocation()
 
@@ -84,7 +81,11 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Add Steps.NormalizeGeneratorExpression()
 
         # Use our custom generators processing
+        Replace BranchChecking, Steps.BranchChecking()  # Lift limitation for yield staments in try/except blocks
         Replace ProcessGenerators, Steps.ProcessGenerators()
+
+        # Support `goto`
+        Add Steps.ProcessGoto()
 
         # Disable int literals range checks
         Remove CheckLiteralValues

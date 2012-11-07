@@ -8,6 +8,8 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
     Converts generator expressions to a simpler form using a sequence/eval
 """
 
+    _depth = 0
+
     # Keep track of last visited method
     _method as Method
     def OnMethod(node as Method):
@@ -26,27 +28,36 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 
         super(node)
 
+    def EnterGeneratorExpression(node as GeneratorExpression):
+        _depth++
+        return true
+
     def LeaveGeneratorExpression(node as GeneratorExpression):
     """ Convert generator expressions to a sequence:
 
         ( i*2 for i in range(3) )  =>  @(__gen = [], Boo.each(range(3), { i | __gen.push(i*2) }), __gen)
 
     """
-        # Make sure the __gen variable is declared
-        _method.Locals.Add(Local(node.LexicalInfo, '__gen'))
+        _depth--
 
-        if node.Filter:
-            lambda = [| { $(node.Filter.Condition) and __gen.push( $(node.Expression) ) } |]
+        # Make sure the gen temporary variable is declared
+        genref = ReferenceExpression(node.LexicalInfo, '__gen' + _depth)
+        _method.Locals.Add(Local(node.LexicalInfo, genref.Name))
+
+        if node.Filter and node.Filter.Type == StatementModifierType.If:
+            lambda = [| { $(node.Filter.Condition) and $(genref).push( $(node.Expression) ) } |]
+        elif node.Filter and node.Filter.Type == StatementModifierType.Unless:
+            lambda = [| { $(node.Filter.Condition) or $(genref).push( $(node.Expression) ) } |]
         else:
-            lambda = [| { __gen.push( $(node.Expression) ) } |]
+            lambda = [| { $(genref).push( $(node.Expression) ) } |]
 
         lambda.LexicalInfo = node.LexicalInfo
         for decl in node.Declarations:
             lambda.Parameters.Add(ParameterDeclaration(node.LexicalInfo, Name: decl.Name))
 
         eval = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
-        eval.Arguments.Add( [| __gen = [] |] )
+        eval.Arguments.Add( [| $genref = [] |] )
         eval.Arguments.Add( [| Boo.each($(node.Iterator), $lambda) |] )
-        eval.Arguments.Add( [| __gen |] )
+        eval.Arguments.Add( [| $genref |] )
         ReplaceCurrentNode eval
 

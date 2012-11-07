@@ -1,9 +1,7 @@
-#IGNORE: Yield not fully supported yet
 """
 FOO
 BAR
 """
-namespace generators
 
 def foobar():
 	yield "foo"

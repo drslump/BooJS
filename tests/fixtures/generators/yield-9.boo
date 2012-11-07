@@ -1,4 +1,3 @@
-#IGNORE: Yield not supported
 def fibonacci():
 	a, b = 0, 1
 	while true:

@@ -2,7 +2,6 @@
 42
 bar
 """
-namespace expressions
 
 h = { "ltuae": 42 }
 print h["ltuae"]

@@ -3,34 +3,19 @@ namespace BooJs.Lang.Macros
 import Boo.Lang.Compiler.Ast
 
 
-macro global:
-""" Avoids the definition of locally scoped variables in order to access
-    global values, for example the `window` object.
+macro const:
+""" Allows to define constants at the module level
 
-        global console   # Binds to the duck type by default
-        global mystr as string = 'override global value'
+        const FOOBAR = 'FOOBAR'
 """
-    if len(global.Arguments) != 1:
-        raise System.ArgumentException('Expected an identifier (ie: global console)')
+    if len(const.Arguments) != 1 or const.Arguments[0].NodeType != NodeType.BinaryExpression:
+        raise System.ArgumentException('Expected an assignment (ie: const foo = 10)')
 
-    node = global.Arguments[0]
-    decl = Declaration()
-    decl.Annotate('global')
-    stmt = DeclarationStatement(Declaration: decl)
+    node = const.Arguments[0] as BinaryExpression
 
-    if node.NodeType == NodeType.TryCastExpression:
-        decl.Name = (node as TryCastExpression).Target.ToString()
-        decl.Type = (node as TryCastExpression).Type
-    elif node.NodeType == NodeType.BinaryExpression:
-        be = node as BinaryExpression
-        if be.Left.NodeType == NodeType.TryCastExpression:
-            decl.Name = (be.Left as TryCastExpression).Target.ToString()
-            decl.Type = (be.Left as TryCastExpression).Type
-        else:
-            decl.Name = be.Left.ToString()
-        stmt.Initializer = (node as BinaryExpression).Right
-    else:
-        decl.Name = node.ToString()
-        decl.Type = SimpleTypeReference('duck')
+    f = Field()
+    f.Name = (node.Left as ReferenceExpression).Name
+    f.Initializer = node.Right
+    f.Modifiers = TypeMemberModifiers.Public | TypeMemberModifiers.Static | TypeMemberModifiers.Final
+    yield f
 
-    return stmt

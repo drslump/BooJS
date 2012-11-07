@@ -114,8 +114,13 @@ class TransformAttribute(AbstractAstAttribute):
 
         # Use Boo's Parser to obtain an AST back from the attribute
         cu = BooParser.ParseString('code', attr.Ast)
-        st as ExpressionStatement = cu.Modules[0].Globals.FirstStatement
-        return st.Expression
+        est = cu.Modules[0].Globals.FirstStatement as ExpressionStatement
+        # Plain references come as a Macro statement
+        if not est:
+            mst = cu.Modules[0].Globals.FirstStatement as MacroStatement
+            return ReferenceExpression(mst.Name)
+
+        return est.Expression
 
     static def Resolve(ast as Node, target as Expression, args as ExpressionCollection) as Node:
         # Parse the expression replacing placeholders

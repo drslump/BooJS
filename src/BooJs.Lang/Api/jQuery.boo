@@ -4,9 +4,16 @@ import BooJs.Lang.Globals(Object)
 import BooJs.Lang.Builtins(ICallable)
 import BooJs.Lang.Extensions
 import BooJs.Lang.Api.Dom2 as DOM
+import BooJs.Lang.Async(IPromise)
 
 [Extern(Factory:true)]
 class jQuery(ICallable):
+
+    interface jqXHR(IPromise):
+        def success(cb as callable)
+        def error(cb as callable)
+        def complete(cb as callable)
+
 
     # Utilities (static)
     static def map(arr as (object), callback as callable) as (object):
@@ -50,6 +57,10 @@ class jQuery(ICallable):
     static def param(jq as jQuery) as string:
         pass
     static def param(obj as object) as string:
+        pass
+
+
+    static def get(url as string) as jqXHR:
         pass
 
 

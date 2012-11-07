@@ -60,6 +60,9 @@ class FixtureRunner:
       comp.Parameters.Ducky = false
       comp.Parameters.Strict = false
 
+      # Enable compiler debug messages
+      #comp.Parameters.TraceLevel = System.Diagnostics.TraceLevel.Verbose
+
 
       #print 'Setup: ', timer.ElapsedMilliseconds
 
@@ -126,6 +129,7 @@ class FixtureRunner:
             _comp = newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true
             _comp.Parameters.GenerateInMemory = true
+
 
 
         # Reset the output writer
