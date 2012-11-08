@@ -93,6 +93,9 @@ class Deferred:
 def async(fn as callable) as IPromise:
     pass
 
+def sleep(ms as int) as IPromise:
+    pass
+
 
 /*
 

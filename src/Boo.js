@@ -47,7 +47,8 @@
 
     // Main namespace
     var Boo = {
-            BOO_RUNTIME_VERSION: '0.0.1'
+            BOO_RUNTIME_VERSION: '0.0.1',
+            UNDEF: undefined
         },
         // Used as a unique indentifier when we want to stop iterating a generator
         STOP = Boo.STOP = typeof StopIteration !== 'undefined' ? StopIteration : {};
