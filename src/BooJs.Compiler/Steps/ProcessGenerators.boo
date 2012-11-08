@@ -135,6 +135,8 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 return true if HasTryStatement(wst.Block)
             elif ist = st as IfStatement:
                 return true if HasTryStatement(ist.TrueBlock) or HasTryStatement(ist.FalseBlock)
+            elif bst = st as Block:
+                return true if HasTryStatement(bst)
 
         return false
 
@@ -152,15 +154,26 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         transformer.OnBlock(node.Body)
         transformer.Terminate()
 
+        # If the method is a closure we look for the original method node to declare locals in it
+        method = node
+        if node.IsSynthetic:
+            for member in (node.ParentNode as TypeDefinition).Members:
+                if member.LexicalInfo.Equals(node.LexicalInfo):
+                    method = member
+                    break
+
+
         # Remove the original method contents
         node.Body.Clear()
         # Create a new local to keep the current step of the generator
-        CodeBuilder.DeclareLocal(node, '__state', TypeSystemServices.IntType)
+        CodeBuilder.DeclareLocal(method, '__state', TypeSystemServices.IntType)
         if has_try:
-            CodeBuilder.DeclareLocal(node, '__catch', TypeSystemServices.HashType)
-            CodeBuilder.DeclareLocal(node, '__final', TypeSystemServices.ArrayType)
+            CodeBuilder.DeclareLocal(method, '__catch', TypeSystemServices.HashType)
+            CodeBuilder.DeclareLocal(method, '__final', TypeSystemServices.ArrayType)
             node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__catch'), HashLiteralExpression()) )
             node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__final'), ListLiteralExpression()) )
+
+
 
         # Wrap the steps into a switch/case construct
         switch = MacroStatement(Name: 'switch')
