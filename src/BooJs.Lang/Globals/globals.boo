@@ -1,8 +1,6 @@
 namespace BooJs.Lang.Globals
 
 
-
-
 interface Iterable:
 """ Enumerable interface (aka IEnumerable)
 """
@@ -44,8 +42,8 @@ interface GeneratorIterator[of T] (GeneratorIterator, Iterable[of T], Iterator[o
 
 
 # TODO: They would be declared as module locals
-#NaN as double
-#Infinity as double
+#NaN = 0
+#Infinity = 0
 
 def parseInt(n as string, radix as int) as int:
     pass

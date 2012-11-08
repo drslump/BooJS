@@ -66,7 +66,6 @@
     <Compile Include="Globals\RegExp.boo" />
     <Compile Include="Globals\Function.boo" />
     <Compile Include="Globals\Math.boo" />
-    <Compile Include="Globals\functions.boo" />
     <Compile Include="Macros\AssertMacro.boo" />
     <Compile Include="Macros\PrintMacro.boo" />
     <Compile Include="Macros\GlobalMacro.boo" />
@@ -80,6 +79,7 @@
     <Compile Include="RuntimeServices.boo" />
     <Compile Include="Async.boo" />
     <Compile Include="Macros\ConstMacro.boo" />
+    <Compile Include="Globals\globals.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
