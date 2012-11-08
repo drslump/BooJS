@@ -1,7 +1,5 @@
 namespace BooJs.Lang.Async
 
-#import BooJs.Lang.Globals
-
 import BooJs.Lang.Extensions
 
 import System
@@ -18,7 +16,6 @@ macro await:
     if be:
         yield [| yield $(be.Right) |]
         yield [| $(be.Left) = BooJs.Lang.Async.__value() |]
-
 
 
 [AttributeUsage(AttributeTargets.Method)]
@@ -122,11 +119,6 @@ def async(fn as callable) as AsyncWrapper:
              generator.close()
 
          return defer
-
-
-
-
-
 
 def join(*args as (IPromiseA)) as IPromiseA:
     pass
