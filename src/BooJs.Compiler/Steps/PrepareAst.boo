@@ -401,3 +401,21 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         super(node)
 
+
+    def OnBlock(node as Block):
+
+        Visit node.Statements
+
+        # Flatten nested blocks
+        ofs = 0
+        while ofs < len(node.Statements):
+            st = node.Statements[ofs]
+            if st.NodeType == NodeType.Block:
+                node.Statements.Remove(st)
+                for st2 in (st as Block).Statements:
+                    node.Statements.Insert(ofs, st2)
+                    ofs++
+            else:
+                ofs++
+
+
