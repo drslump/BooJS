@@ -28,13 +28,6 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
 
-    def _OnYieldStatement(node as YieldStatement):
-    """ Porting yield/generators to standard Javascript is very difficult and it's not
-        clear that it could work in all cases. Only Firefox supports them natively thus
-        one option could be to add a compiler flag to allow them.
-    """
-        NotImplemented node, 'Yield is not implemented in Boojs'
-
     def OnEvent(node as Event):
     """ Boo Event's are a way to easily setup delegates in classes, implementing the 
         observer pattern. Basically they allow registering a callback on them from outside
