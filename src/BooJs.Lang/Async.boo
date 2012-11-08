@@ -10,12 +10,49 @@ import Boo.Lang.Compiler.Ast
 [Transform( __value )]
 def __value() as object:
     pass
+[Transform( __value )]
+def __valuelist() as (object):
+    pass
+
 
 macro await:
-    be = await.Arguments[0] as BinaryExpression
-    if be:
-        yield [| yield $(be.Right) |]
-        yield [| $(be.Left) = BooJs.Lang.Async.__value() |]
+    # await foo()
+    # await foo(), bar()  <==>  (foo(), bar())
+    # await data = foo()
+    # await data = foo(), bar()
+    # await data, data2 = foo(), bar()
+
+    # TODO: Support type definitions
+
+    decls = ExpressionCollection()
+    exprs = ExpressionCollection()
+    list = decls
+    for arg in await.Arguments:
+        if be = arg as BinaryExpression:
+            if be.Operator != BinaryOperatorType.Assign:
+                raise 'Invalid operator, only simple assigns are allowed'
+            decls.Add(be.Left)
+            exprs.Add(be.Right)
+            list = exprs
+            continue
+
+        list.Add(arg)
+
+    if len(exprs) == 1:
+        yield [| yield $(exprs[0]) |]
+    else:
+        yield [| yield $( ArrayLiteralExpression(Items: exprs) ) |]
+
+    if len(decls) == 1:
+        yield [| $(decls[0]) = BooJs.Lang.Async.__value() |]
+    elif len(decls) > 1:
+        unpack = UnpackStatement()
+        for decl as ReferenceExpression in decls:
+            unpack.Declarations.Add(Declaration(Name: decl.Name))
+        unpack.Expression = [| BooJs.Lang.Async.__valuelist() |]
+        yield unpack
+
+
 
 
 [AttributeUsage(AttributeTargets.Method)]
@@ -102,40 +139,3 @@ def when(*promises as (IPromise)) as IPromise:
 
 def sleep(ms as int) as IPromise:
     pass
-
-
-/*
-
-callable AsyncWrapper(*args) as IPromise
-
-def async(fn as callable) as AsyncWrapper:
-    return def(*args):
-        # TODO: This won't work, we have to wait until the wrapped generator exists to
-        #       fulfill the async deferred
-        defer = Deferred()
-
-        gen = fn(*args)
-        try:
-             result = generator.next()
-             unless result isa IPromise:
-                 raise 'A non promise value was yielded back'
-
-             result.@then({v| generator.send(v)}, {e| generator.throw(e)})
-         except as StopIteration:
-             pass
-         except e:
-             defer.errback(e)
-         ensure:
-             generator.close()
-
-         return defer
-
-def join(*args as (IPromiseA)) as IPromiseA:
-    pass
-
-def spawn(fn as callable):
-    pass
-
-def sleep(delay, compensate):
-    pass
-*/
