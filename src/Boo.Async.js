@@ -9,9 +9,15 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
 
     function Promise(deferred) {
         return {
-            then: deferred.then,
-            cancel: deferred.cancel,
-            done: deferred.then,
+            then: function (ok, error, progress) {
+                return deferred.then(ok, error, progress);
+            },
+            cancel: function () {
+                deferred.cancel();
+            },
+            done: function (fn) {
+                deferred.then(fn);
+            },
             fail: function (fn) {
                 return deferred.then(null, fn);
             },
@@ -147,13 +153,27 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
 
         // Initiate the asynchronous task
         consume();
-        return defer;
+        return defer.promise;
     }
 
     function when() {
     }
 
     function sleep(ms) {
+        function check() {
+            var elapsed = +(new Date) - start;
+            if (elapsed < ms) {
+                ref = setTimeout(check, ms - elapsed);
+                return;
+            }
+            defer.resolve(elapsed);
+        }
+
+        var defer = new Deferred(),
+            start = +(new Date),
+            ref = setTimeout(check, ms);
+
+        return defer.promise;
     }
 
 
