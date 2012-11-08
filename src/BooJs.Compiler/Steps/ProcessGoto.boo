@@ -24,6 +24,12 @@ class ProcessGoto(AbstractTransformerCompilerStep):
         Visit CompileUnit
 
     def OnLabelStatement(node as LabelStatement):
+        # Make sure we only process the statement once
+        if node.ContainsAnnotation(self):
+            return
+
+        node.Annotate(self)
+
         parent = node.ParentNode as Block
         index = parent.Statements.IndexOf(node)
 
@@ -35,6 +41,3 @@ class ProcessGoto(AbstractTransformerCompilerStep):
         loop.Block.Statements.Add(BreakStatement())
 
         parent.Statements.Add(loop)
-
-
-
