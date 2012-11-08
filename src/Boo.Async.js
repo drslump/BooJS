@@ -71,6 +71,10 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
 
         this.promise = Promise(this);
 
+        this.getState = function() {
+            return state;
+        };
+
         this.resolve = function (value) {
             notifyAll(value, false);
         };
@@ -156,7 +160,57 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
         return defer.promise;
     }
 
-    function when() {
+    function when(promises) {
+        var n = promises.length,
+            remaining = n,
+            result = new Array(n),
+            pending = new Array(n),
+            defer;
+
+        function cancel() {
+            if (defer.getState() !== DeferredState.Unresolved) {
+                return;
+            }
+
+            for (var i = 0; i < n; i++) {
+                if (pending[i]) {
+                    pending[i].cancel();
+                }
+            }
+        }
+
+
+        defer = new Deferred(cancel);
+        if (n === 0) {
+            defer.resolve(result);
+        }
+
+        for (var i = 0; i < n; i++) {
+            (function (i) {
+                var p = promises[i];
+                pending[i] = p;
+                p.then(function (value) {
+                    if (defer.getState() !== DeferredState.Unresolved) {
+                        return;
+                    }
+                    result[i] = value;
+                    pending[i] = null;
+                    if ((--remaining) === 0) {
+                        defer.resolve(result);
+                    }
+                }, function (error) {
+                    if (defer.getState() !== DeferredState.Unresolved) {
+                        return;
+                    }
+
+                    pending[i] = null;
+                    cancel();
+                    defer.reject(error);
+                });
+            })(i);
+        }
+
+        return defer.promise;
     }
 
     function sleep(ms) {
@@ -178,7 +232,6 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
 
 
     return {
-        Promise: Promise,
         Deferred: Deferred,
         async: async,
         when: when,

@@ -65,10 +65,14 @@ class Deferred:
 
     public promise = Promise(self)
 
+
     def constructor():
         pass
 
     def constructor(cancel as callable):
+        pass
+
+    def getState() as DeferredState:
         pass
 
     def resolve(value):
@@ -91,6 +95,9 @@ class Deferred:
 
 
 def async(fn as callable) as IPromise:
+    pass
+
+def when(*promises as (IPromise)) as IPromise:
     pass
 
 def sleep(ms as int) as IPromise:
