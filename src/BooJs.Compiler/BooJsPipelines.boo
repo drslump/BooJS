@@ -95,6 +95,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Add Steps.EmitAssembly()
 
         # Prepare the AST to be printed
+        Add Steps.ProcessImports()
         Add Steps.PrepareAst()
         Add Steps.MozillaAst()
 

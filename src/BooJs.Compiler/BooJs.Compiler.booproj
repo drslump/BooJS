@@ -113,6 +113,7 @@
     <Compile Include="TypeSystem\TypeSystemServices.boo" />
     <Compile Include="Steps\AdaptParsingAst.boo" />
     <Compile Include="Steps\BranchChecking.boo" />
+    <Compile Include="Steps\ProcessImports.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

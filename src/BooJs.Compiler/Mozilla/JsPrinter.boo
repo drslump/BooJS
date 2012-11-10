@@ -3,9 +3,8 @@ namespace BooJs.Compiler.Mozilla
 import System.IO(TextWriter)
 import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
 
-import Boo.Lang.Compiler.Ast as BooAst
+import Boo.Lang.Compiler.Ast(Module)
 
-import BooJs.Compiler.Utils
 import BooJs.Compiler(CompilerContext)
 import BooJs.Compiler.SourceMap(MapBuilder)
 
@@ -32,60 +31,23 @@ class JsPrinter(Printer):
 
     protected def WrapProgram(node as Program):
         # TODO: Move to custom step
-        module = node['module'] as Boo.Lang.Compiler.Ast.Module
+        module = node['module'] as Module
 
         deps = List of IExpression() { Literal('Boo') }
         refs = List of IPattern() { Identifier('Boo') }
-        prefixed = {}
 
-        for imp in module.Imports:
-            mie = imp.Expression as BooAst.MethodInvocationExpression
-            if mie:
-                for alias in mie.Arguments:
-                    trycast = alias as BooAst.TryCastExpression
-                    if trycast:
-                        continue if isExtern(imp.Namespace + '.' + trycast.Target)
-                        deps.Add(Literal(imp.Namespace + '.' + trycast.Target))
-                        if imp.Alias:
-                            refs.Add(Identifier(imp.Alias + '_' + trycast.Type))
-                            prefixed[imp.Alias.Name] = prefixed[imp.Alias.Name] or []
-                            (prefixed[imp.Alias.Name] as List).Add(alias.ToString())
-                        else:
-                            refs.Add(Identifier(trycast.Type.ToString()))
-                    else:
-                        continue if isExtern(imp.Namespace + '.' + alias)
-                        deps.Add(Literal(imp.Namespace + '.' + alias))
-                        if imp.Alias:
-                            refs.Add(Identifier(imp.Alias + '_' + alias))
-                            prefixed[imp.Alias.Name] = prefixed[imp.Alias.Name] or []
-                            (prefixed[imp.Alias.Name] as List).Add(alias.ToString())
-                        else:
-                            refs.Add(Identifier(alias.ToString()))
+        # Get namespace mapping annotations
+        mapping as Hash = module['nsmapping']
+        asmrefs as Hash = module['nsasmrefs']
+
+        for ns in mapping.Keys:
+            if ns in asmrefs:
+                print '{0} => {1}' % (ns, mapping[ns] + ':' + asmrefs[ns])
+                deps.Add( Literal(ns + ':' + asmrefs[ns]) )
             else:
-                if not imp.Alias:
-                    raise 'Wildcard import (' + imp.Expression + ') not supported'
-                else:
-                    continue if isExtern(imp.Namespace)
-
-                    deps.Add(Literal(imp.Namespace))
-                    refs.Add(Identifier(imp.Alias.ToString()))
-
-
-        # Assign aliases before any other statement
-        if len(prefixed):
-            decls = VariableDeclaration()
-            for itm in prefixed:
-
-                h = ObjectExpression()
-                for key in itm.Value:
-                    prop = ObjectExpressionProp(key, Identifier(itm.Key + '_' + key))
-                    h.properties.Add(prop)
-
-                decl = VariableDeclarator(itm.Key as string, init: h);
-                decls.declarations.Add(decl)
-
-            node.body.Insert(0, decls)
-
+                print '{0} => {1}' % (ns, mapping[ns])
+                deps.Add( Literal(ns) )
+            refs.Add( Identifier(mapping[ns]) )
 
         # Use Boo.define to bootstrap the module contents
         call = CallExpression()
@@ -273,6 +235,7 @@ class JsPrinter(Printer):
             Trim
 
         WriteLine ';'
+        WriteLine if len(node.declarations) > 1
         Dedent
 
     virtual def OnUnaryExpression(node as UnaryExpression):

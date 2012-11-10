@@ -327,6 +327,13 @@ class MemberExpression(Node, IExpression):
     public property as IExpression # Identifier | Expression
     public computed = false
 
+    def constructor():
+        pass
+
+    def constructor(obj as IExpression, prop as string):
+        self.object = obj
+        property = Identifier(prop)
+
 class SwitchCase(Node):
 """ A case (if test is an Expression) or default (if test === null) clause in the body of a 
     switch statement.
