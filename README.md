@@ -34,7 +34,7 @@ but also has a pretty intelligent compiler to help you in your development.
 
 ## Documentation
 
-BooJs specific features are being documented in the [github wiki](wiki/) and automatically
+BooJs specific features are being documented in the [github wiki](/drslump/boojs/wiki/) and automatically
 published in [ReadTheDocs](http://boojs.readthedocs.org).
 
 ## Requirements
