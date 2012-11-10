@@ -201,29 +201,40 @@ interface Entity(Node):
     notationName as string:
         get
 
-interface Document(Node):
+class Document(Node):
     //readonly attribute DocumentType     doctype;
-    doctype as DocumentType:
-        get
+    final public doctype as DocumentType
     //readonly attribute DOMImplementation  implementation;
-    implementation as DOMImplementation:
-        get
+    final public implementation as DOMImplementation
     //readonly attribute Element          documentElement;
-    documentElement as Element:
-        get
+    final public documentElement as Element
 
-    def createElement(tagName as string) as Element
-    def createDocumentFragment() as DocumentFragment
-    def createTextNode(data as string) as Text
-    def createComment(data as string) as Comment
-    def createCDATASection(data as string) as CDATASection
-    def createProcessingInstruction(target as string, data as string) as ProcessingInstruction
-    def createAttribute(name as string) as Attr
-    def createEntityReference(name as string) as EntityReference
-    def getElementsByTagName(tagname as string) as NodeList
-    def importNode(importedNode as Node, deep as bool) as Node
-    def createElementNS(namespaceURI as string, qualifiedName as string) as Element
-    def createAttributeNS(namespaceURI as string, qualifiedNamed as string) as Attr
-    def getElementsByTagNameNS(namespaceURI as string, localName as string) as NodeList
-    def getElementById(elementId as string) as Element
+    def createElement(tagName as string) as Element:
+        pass
+    def createDocumentFragment() as DocumentFragment:
+        pass
+    def createTextNode(data as string) as Text:
+        pass
+    def createComment(data as string) as Comment:
+        pass
+    def createCDATASection(data as string) as CDATASection:
+        pass
+    def createProcessingInstruction(target as string, data as string) as ProcessingInstruction:
+        pass
+    def createAttribute(name as string) as Attr:
+        pass
+    def createEntityReference(name as string) as EntityReference:
+        pass
+    def getElementsByTagName(tagname as string) as NodeList:
+        pass
+    def importNode(importedNode as Node, deep as bool) as Node:
+        pass
+    def createElementNS(namespaceURI as string, qualifiedName as string) as Element:
+        pass
+    def createAttributeNS(namespaceURI as string, qualifiedNamed as string) as Attr:
+        pass
+    def getElementsByTagNameNS(namespaceURI as string, localName as string) as NodeList:
+        pass
+    def getElementById(elementId as string) as Element:
+        pass
 

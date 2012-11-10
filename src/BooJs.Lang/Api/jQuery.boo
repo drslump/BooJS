@@ -9,10 +9,21 @@ import BooJs.Lang.Async(IPromise)
 [Extern(Factory:true)]
 class jQuery(ICallable):
 
-    interface jqXHR(IPromise):
-        def success(cb as callable)
-        def error(cb as callable)
-        def complete(cb as callable)
+    interface Promise(IPromise):
+        def _then(ok as callable, error as callable, progress as callable) as Promise
+        def done(cb as callable) as Promise
+        def fail(cb as callable) as Promise
+        def always(cb as callable) as Promise
+        def pipe(okfilter as callable, failfilter as callable, progressfilter as callable) as Promise
+        def isResolved() as bool
+        def isRejected() as bool
+
+    interface jqXHR(Promise):
+        def success(cb as callable) as Promise
+        def error(cb as callable) as Promise
+        def complete(cb as callable) as Promise
+
+
 
 
     # Utilities (static)
@@ -61,6 +72,18 @@ class jQuery(ICallable):
 
 
     static def get(url as string) as jqXHR:
+        pass
+
+    static def post(url as string) as jqXHR:
+        pass
+    static def post(url as string, data as Hash) as jqXHR:
+        pass
+
+    static def ajax(url as string) as jqXHR:
+        pass
+    static def ajax(url as string, settings as Hash) as jqXHR:
+        pass
+    static def ajax(settings as Hash) as jqXHR:
         pass
 
 
@@ -303,3 +326,31 @@ class jQuery(ICallable):
 
     # .......
 
+    def fadeIn() as jQuery:
+        pass
+    def fadeIn(duration as int) as jQuery:
+        pass
+    def fadeIn(duration as int, callback as callable) as jQuery:
+        pass
+    def fadeIn(duration as int, easing as string) as jQuery:
+        pass
+    def fadeIn(duration as int, easing as string, callback as callable) as jQuery:
+        pass
+
+    def fadeOut() as jQuery:
+        pass
+    def fadeOut(duration as int) as jQuery:
+        pass
+    def fadeOut(duration as int, callback as callable) as jQuery:
+        pass
+    def fadeOut(duration as int, easing as string) as jQuery:
+        pass
+    def fadeOut(duration as int, easing as string, callback as callable) as jQuery:
+        pass
+
+    def promise() as Promise:
+        pass
+    def promise(type as string) as Promise:
+        pass
+    def promise(type as string, target as object) as Promise:
+        pass

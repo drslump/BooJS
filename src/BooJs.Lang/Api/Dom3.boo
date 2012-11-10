@@ -103,29 +103,21 @@ interface Entity(Dom2.Entity):
         get
 
 
-interface Document(Dom2.Document):
-    inputEncoding as string:
-        get
-    xmlEncoding as string:
-        get
-    xmlStandalone as bool:
-        get
-        set
-    xmlVersion as string:
-        get
-        set
-    strictErrorChecking as bool:
-        get
-        set
-    documentURI as string:
-        get
-        set
-    domConfig as DOMConfiguration:
-        get
+class Document(Dom2.Document):
+    final public inputEncoding as string
+    final public xmlEncoding as string
+    public xmlStandalone as bool
+    public xmlVersion as string
+    public strictErrorChecking as bool
+    public documentURI as string
+    public domConfig as DOMConfiguration
 
-    def adoptNode(source as Node) as Node
-    def normalizeDocument() as void
-    def renameNode(n as Node, namespaceURI as string, qualifiedName as string) as Node
+    def adoptNode(source as Node) as Node:
+        pass
+    def normalizeDocument() as void:
+        pass
+    def renameNode(n as Node, namespaceURI as string, qualifiedName as string) as Node:
+        pass
 
 
 
