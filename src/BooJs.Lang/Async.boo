@@ -1,10 +1,11 @@
 namespace BooJs.Lang.Async
 
-import BooJs.Lang.Extensions
-
 import System
+import Boo.Lang.Environments
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
+
+import BooJs.Lang.Extensions
 
 
 [Transform( __value )]
@@ -24,6 +25,22 @@ macro await:
 
     # TODO: Support type definitions
 
+    # Check if the macro is used with async
+    has_async = false
+    parent = await.ParentNode
+    while parent:
+        if mie = parent as MethodInvocationExpression:
+            target = mie.Target as ReferenceExpression
+            if target and target.Name == 'async':
+                has_async = true
+                break
+
+        parent = parent.ParentNode
+
+    if not has_async:
+        warning = CompilerWarningFactory.CustomWarning(await, 'await macro is being used in a method without the async attribute')
+        my(CompilerContext).Warnings.Add(warning)
+
     decls = ExpressionCollection()
     exprs = ExpressionCollection()
     list = decls
@@ -37,6 +54,10 @@ macro await:
             continue
 
         list.Add(arg)
+
+    # No expressions mean we are not handling an assignment operation
+    if len(exprs) == 0:
+        exprs, decls = decls, exprs
 
     if len(exprs) == 1:
         yield [| yield $(exprs[0]) |]
@@ -70,7 +91,7 @@ interface IPromise:
     def _then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise
 
 
-class Promise(IPromise):
+internal class Promise(IPromise):
 
     def constructor(defer as Deferred):
         pass
