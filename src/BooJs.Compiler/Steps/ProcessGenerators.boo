@@ -174,6 +174,12 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__final'), ListLiteralExpression()) )
 
 
+        # Add value check to first state
+        valuecheck = [|
+            if __value is not Boo.UNDEF or __error is not Boo.UNDEF:
+                raise TypeError('Generator not started yet, unable to process sent value/error')
+        |]
+        (transformer.States[0] as Block).Insert(0, valuecheck)
 
         # Wrap the steps into a switch/case construct
         switch = MacroStatement(Name: 'switch')
@@ -187,9 +193,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
         statemachine as Statement
         statemachine = [|
-            #console.log('<STATE: ' + __state + '>')
-            if __state == 0 and (__value is not Boo.UNDEF or __error is not Boo.UNDEF):
-                raise TypeError('Generator not started yet, unable to process sent value/error')
             if __error:
                 raise __error
 
