@@ -7,7 +7,7 @@ import Boo.Lang.Compiler.TypeSystem.Internal
 
 class ProcessGenerators(AbstractTransformerCompilerStep):
 """
-    Specialized step to process generators to replace Boo's original one.
+    Specialized step to process generators replacing Boo's one.
 
     TODO: State to run just before this one that converts all loops to while ones
           if the method is a generator
@@ -109,20 +109,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = afterstate
 
 
-        def Terminate():
-            # Create an exit point
-            exitstate = CreateState()
-
-            # Direct the current state to the exit point
-            Current.Add([| __state = $(exitstate) |])
-            Current.Add(_gotostatemachine)
-
-            # Define the exit strategy
-            State = exitstate
-            Current.Add( [| raise Boo.STOP |] )
-
-
-
     override def Run():
         if len(Errors) > 0:
             return
@@ -152,7 +138,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         # Transform the method body into a list of states
         transformer = TransformGenerator()
         transformer.OnBlock(node.Body)
-        transformer.Terminate()
 
         # If the method is a closure we look for the original method node to declare locals in it
         method = node
@@ -161,7 +146,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 if member.LexicalInfo.Equals(node.LexicalInfo):
                     method = member
                     break
-
 
         # Remove the original method contents
         node.Body.Clear()
@@ -172,7 +156,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             CodeBuilder.DeclareLocal(method, '__final', TypeSystemServices.ArrayType)
             node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__catch'), HashLiteralExpression()) )
             node.Body.Add( CodeBuilder.CreateAssignment(ReferenceExpression('__final'), ListLiteralExpression()) )
-
 
         # Add value check to first state
         valuecheck = [|
@@ -197,6 +180,10 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 raise __error
 
             $switch
+
+            # Set the state to an imposible value
+            __state = -1
+            raise Boo.STOP
         |]
 
         # Wrap the state machine to support exception handling
@@ -210,8 +197,8 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                         __state = __catch[__state]
                         goto statemachine
 
-                    # Position the generator to its last state
-                    __state = $(len(transformer.States)-1)
+                    # Position the generator to the terminating state
+                    __state = -1
 
                     # Ensure all finally blocks are executed
                     while __final.length:
