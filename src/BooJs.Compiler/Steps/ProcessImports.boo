@@ -32,9 +32,15 @@ class ProcessImports(AbstractTransformerCompilerStep):
         if actualns != ns:
             alias = null
 
+        # Namespace already mapped, nothing to do
+        if actualns in _mappings:
+            return
+
+        # Generate an alias name if none given
         if not alias:
             alias = 'NS' + _nsidx++
 
+        # Map the namespace
         _mappings[actualns] = alias
         if asmref:
             _asmrefs[actualns] = asmref.Name
@@ -48,8 +54,8 @@ class ProcessImports(AbstractTransformerCompilerStep):
         # Annotate the module with the reported namespace mappings
         # TODO: Avoid the annotations by converting this step into a simple visitor
         #       used from the printer
-        node.Annotate('nsmapping', _mappings)
-        node.Annotate('nsasmrefs', _asmrefs)
+        node.Annotate('nsmapping', _mappings.Clone())
+        node.Annotate('nsasmrefs', _asmrefs.Clone())
 
         # Reset for next module
         _mappings.Clear()
@@ -75,10 +81,22 @@ class ProcessImports(AbstractTransformerCompilerStep):
 
     def OnReferenceExpression(node as ReferenceExpression):
         # Only process external types
-        if not node.Entity isa ExternalType:
+        if etype = node.ExpressionType as ExternalType:
+            name = etype.FullName
+        # Handle aliases with multiple references: import Foo(Bar, Baz) as MyFoo
+        elif entity = node.Entity as Boo.Lang.Compiler.TypeSystem.Core.SimpleNamespace:
+            if entity.FullName:
+                name = entity.FullName
+            else:
+                for member in entity.GetMembers():
+                    if member isa ExternalType:
+                        name = (member as ExternalType).ActualType.Namespace
+                        break;
+
+        if not name:
             return
 
-        parts = node.Name.Split(char('.'))
+        parts = name.Split(char('.'))
         rhs = []
         while len(parts):
             name = join(parts, '.')

@@ -7,7 +7,7 @@ import BooJs.Tests.Support as AliasNamespace
 import BooJs.Tests.Support(Gender, Card)
 import BooJs.Tests.Support.Gender as AliasType
 import BooJs.Tests.Support(Gender, Card) as AliasGroup
-# The following is not supported by Boo :()
+# The following is not supported by Boo :(
 #import BooJs.Tests.Support(Gender as G, Card as C)
 #import BooJs.Tests.Support(Gender as G, Card as C) AliasAliases
 
