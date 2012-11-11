@@ -132,14 +132,17 @@ class JsPrinter(Printer):
 
         WriteLine '{'
         Indent
-        for prop in node.properties:
+        l = len(node.properties)-1
+        for idx as int, prop as ObjectExpressionProp in enumerate(node.properties):
             WriteIndented
             Visit prop.key
             Write ': '
             Visit prop.value
-            WriteLine ', '
+            Write ', ' if idx < l
+            WriteLine
         Dedent
-        WriteLine '}'
+        WriteIndented '}'
+        WriteLine
 
     virtual def OnFunctionExpression(node as FunctionExpression):
         Write 'function '
