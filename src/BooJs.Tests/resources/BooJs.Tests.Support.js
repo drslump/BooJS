@@ -22,3 +22,4 @@ var jQuery = function(){
 };
 jQuery.isArray = function(){ return true; };
 jQuery.each = function(){ return jQuery; };
+jQuery.ajax = function(){ return jQuery; };

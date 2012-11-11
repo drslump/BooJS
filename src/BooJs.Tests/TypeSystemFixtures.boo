@@ -37,6 +37,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/method-overloading.boo')
 
   [Test]
+  def test_named_arguments():
+    FixtureRunner.run('tests/fixtures/typesystem/named-arguments.boo')
+
+  [Test]
   def test_native_types():
     FixtureRunner.run('tests/fixtures/typesystem/native-types.boo')
 
