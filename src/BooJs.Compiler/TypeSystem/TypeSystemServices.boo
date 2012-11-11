@@ -45,6 +45,8 @@ class TypeSystemServices(BooServices):
         # List is implemented with a generic version of Array
         #ListType = Map(typeof(Globals.Array[of Globals.Object]))
 
+        HashType = Map(Builtins.Hash)
+
         # Enumerables
         IEnumerableType = Map(typeof(Globals.Iterable))
         IEnumerableGenericType = Map(typeof(Globals.Iterable[of*]))
