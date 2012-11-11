@@ -51,6 +51,11 @@ class ProcessImports(AbstractTransformerCompilerStep):
         node.Annotate('nsmapping', _mappings)
         node.Annotate('nsasmrefs', _asmrefs)
 
+        # Reset for next module
+        _mappings.Clear()
+        _asmrefs.Clear()
+        _nsidx = 0
+
     def OnImport(node as Import):
         if mie = node.Expression as MethodInvocationExpression:
             for arg as ReferenceExpression in mie.Arguments:
@@ -90,5 +95,8 @@ class ProcessImports(AbstractTransformerCompilerStep):
 
 
     protected def IsModule(fqn as string) as bool:
-        type = NameResolutionService.ResolveQualifiedName(fqn) as ExternalType
-        return type and type.IsClass and type.IsFinal and type.Name =~ /^\w+Module$/
+        try:
+            type = NameResolutionService.ResolveQualifiedName(fqn) as ExternalType
+            return type and type.IsClass and type.IsFinal and type.Name =~ /^\w+Module$/
+        except:
+            return false
