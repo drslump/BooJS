@@ -3,6 +3,7 @@ namespace BooJs.Lang.Globals
 import BooJs.Lang.Extensions
 
 
+[EnumeratorItemType(String)]
 class String(Object, Iterable):
 
     # IMPORTANT: Boo requires explicit/implicit operators to use the actual types

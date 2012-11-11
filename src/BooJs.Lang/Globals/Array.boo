@@ -5,7 +5,7 @@ import BooJs.Lang.Extensions
 import System(Func)
 
 
-
+[EnumeratorItemType(typeof(T))]
 class Array[of T] (Object, Iterable[of T]):
 
     [Transform( Boo.Array.op_Equality($1, $2) )]
