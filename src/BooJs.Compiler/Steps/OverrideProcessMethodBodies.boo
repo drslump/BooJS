@@ -40,7 +40,27 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
 
+    protected def IsMethod(node as Expression):
+        # Make sure it's resolved
+        Visit node
+
+        entity = node.Entity
+        return false if not entity
+        if entity.EntityType == Boo.Lang.Compiler.TypeSystem.EntityType.Method:
+            return true
+        ambiguous = entity as Boo.Lang.Compiler.TypeSystem.Ambiguous
+        return ambiguous and ambiguous.AllEntitiesAre(Boo.Lang.Compiler.TypeSystem.EntityType.Method)
+
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
+        # Convert named arguments in method invocations to a hash literal
+        if len(node.NamedArguments) and IsMethod(node.Target):
+            h = HashLiteralExpression(node.NamedArguments[0].LexicalInfo)
+            for arg in node.NamedArguments:
+                arg.First = StringLiteralExpression(arg.LexicalInfo, (arg.First as ReferenceExpression).Name)
+                h.Items.Add(arg)
+
+            node.Arguments.Add(h)
+            node.NamedArguments.Clear()
 
         super(node)
 
@@ -176,3 +196,5 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
         enumerableType = (TypeSystemServices as BooJs.Compiler.TypeSystem.TypeSystemServices).IGeneratorGenericType
         return enumerableType.GenericInfo.ConstructType(itemType)
+
+
