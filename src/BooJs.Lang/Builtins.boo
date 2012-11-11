@@ -34,6 +34,7 @@ class Builtins:
         def Call(args as (Object)) as Object
 
 
+    [EnumeratorItemType(typeof(Object))]
     class Hash(Object, Iterable):
     """ Simple hash/dictionary based on Javascript's object
     """
