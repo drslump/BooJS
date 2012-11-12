@@ -14,6 +14,8 @@ class IntroduceGlobalNamespaces(BooStep):
             SafeGetNamespace('BooJs.Lang.Globals'),
             SafeGetNamespace('BooJs.Lang.Macros'),
             SafeGetNamespace('BooJs.Lang'),
-            TypeSystemServices.BuiltinsType
+            TypeSystemServices.BuiltinsType,
+            # Make pattern maching macros globally available
+            SafeGetNamespace('Boo.Lang.PatternMatching')
         )
 

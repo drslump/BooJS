@@ -49,8 +49,8 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
 
     # Load language runtime assemblies
     params.References.Add(params.LoadAssembly('BooJs.Lang'))
-    # Load Boo.Lang.Compiler assembly (needed for Extension attribute???)
-    #params.References.Add(params.LoadAssembly('Boo.Lang.Compiler'))
+    # Load Boo.Lang.PatternMatching assembly (we provide access to it by default)
+    params.References.Add(params.LoadAssembly('Boo.Lang.PatternMatching'))
 
     params.Pipeline = pipeline
     return BooJsCompiler(params)
