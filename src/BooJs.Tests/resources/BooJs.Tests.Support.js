@@ -1,18 +1,15 @@
-Boo.define('BooJs.Tests.Support', [], function () {
-
-    this.Gender = {
+Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
+    exports.Gender = {
         Male: 0,
         Female: 1
     };
 
-    this.Card = {
+    exports.Card = {
         clubs: 0,
         diamonds: 1,
         hearts: 2,
         spades: 3
     };
-
-    return this;
 });
 
 

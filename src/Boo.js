@@ -26,8 +26,7 @@
         '[object RegExp]': 'RegExp'
     };
     // Tells the type of a variable according to the following rules:
-    //  - Undefineds are reported as null
-    //  - Nulls are reported as Null
+    //  - Undefineds and Nulls are reported as null
     //  - Objects without primitives are reported as Object (except for Array and RegExp)
     function typeOf(v) {
         var t = typeof(v);
@@ -36,7 +35,7 @@
         t = Object.prototype.toString.call(v);
         return type_lookup[t] || 'Object';
     }
-    // Checks if the type of a value is the one given (multiple expected supported)
+    // Checks if the type of a value is the one given (multiple expected types supported)
     function typeIs(v, expected) {
         var i, t = typeOf(v);
         for (i = 1; i < arguments.length; i++) {
@@ -76,7 +75,7 @@
 
     // State for the module loader
     var mod_waiting = {},
-        mod_defined = { 'Boo': Boo };
+        mod_defined = { '': exports, 'Boo': Boo };
 
     // AMD style module loader. All Boo modules (files) wrap their
     // contents in a call to this function. This implementation is
@@ -98,9 +97,20 @@
             mod_waiting[name] = [name, deps, factory];
         }
 
-        // Evaluate dependencies
+        // Evaluate dependencies (the fist element is always 'exports')
         for (i = 0; i < deps.length; i++) {
             dep = deps[i];
+
+            // Handle exports in a special way
+            if (dep === 'exports') {
+                refs[i] = mod_defined[name] = mod_defined[name] || {};
+                continue;
+            }
+
+            // Ignore assembly filenames
+            if (dep.indexOf(':') !== -1) {
+                dep = dep.substring(0, dep.indexOf(':'));
+            }
 
             // If the dependency is waiting to be resolved, do it now
             if (hop(mod_waiting, dep)) {
@@ -121,14 +131,14 @@
         }
 
         // Execute the module and pass references to its dependencies
-        module = factory.apply(mod_defined[name] || {}, refs);
-        mod_defined[name] = module;
+        factory.apply(undefined, refs);
         delete mod_waiting[name];
 
-        // Register public members
+        // Register nested namespaces
         // TODO: Handle nested levels
+        module = mod_defined[name];
         for (member in module) {
-            if (hop(module, member) && /^(object|function)$/.test(typeof(module[member]))) {
+            if (hop(module, member) && typeIs(module[member], 'Object')) {
                 mod_defined[name + '.' + member] = module[member];
             }
         }
@@ -423,6 +433,9 @@
         // Special handling for arrays (just in case we run into cross-frame issues)
         if (type === Array) {
             return typeOf(value) === 'Array';
+        // Special handling for hash (any object can be casted to a hash)
+        } else if (type === Boo.Hash) {
+            return type && typeof(type) === 'object';
         }
 
         // Check the prototype (basic inheritance)

@@ -33,8 +33,8 @@ class JsPrinter(Printer):
         # TODO: Move to custom step
         module = node['module'] as Module
 
-        deps = List of IExpression() { Literal('Boo') }
-        refs = List of IPattern() { Identifier('Boo') }
+        deps = List of IExpression() { Literal('exports'), Literal('Boo') }
+        refs = List of IPattern() { Identifier('exports'), Identifier('Boo') }
 
         # Get namespace mapping annotations
         mapping as Hash = module['nsmapping']
