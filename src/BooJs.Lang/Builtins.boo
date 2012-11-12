@@ -35,7 +35,7 @@ class Builtins:
 
 
     [EnumeratorItemType(typeof(Object))]
-    class Hash(Object, Iterable):
+    class Hash(Object, Iterable, IQuackFu):  # The IQuackFoo allows to access items as members (dot notation)
     """ Simple hash/dictionary based on Javascript's object
     """
         [Transform( $2.hasOwnProperty($1) )]
