@@ -28,8 +28,6 @@ Desugarizes the safe access operator.
 
 """
     override def LeaveUnaryExpression(node as UnaryExpression):
-        return unless node.Operator == UnaryOperatorType.SafeAccess and not IsTarget(node)
-
         # target references should already be resolved, so just evaluate as existential
         tern = [| (true if $(node.Operand) is not null else false) |]
         ReplaceCurrentNode tern
@@ -97,7 +95,3 @@ Desugarizes the safe access operator.
         tern = [| ($node if ($tmp = $(ue.Operand)) is not null else null) |]
         return tern
 
-    protected def IsTarget(node):
-        return AstUtil.IsTargetOfMemberReference(node) or \
-               AstUtil.IsTargetOfMethodInvocation(node) or \
-               AstUtil.IsTargetOfSlicing(node)
