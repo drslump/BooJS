@@ -11,7 +11,7 @@ import Boo.Lang.Compiler.Util
 import Boo.Lang.Compiler(AbstractCompilerComponent)
 import Boo.Lang.Compiler.TypeSystem(IMethod, IMethodBase, IConstructor)
 
-import BooJs.Lang(RuntimeServices)
+import BooJs.Lang(Globals, RuntimeServices)
 
 class RuntimeMethodCache(AbstractCompilerComponent):
 
@@ -30,6 +30,10 @@ class RuntimeMethodCache(AbstractCompilerComponent):
             Methods.Of[of object*, ICallable, object](RuntimeServices.Each)
         })
 
+    Eval as IMethod:
+        get: return CachedMethod('eval', {
+            Methods.Of[of string, object](Globals.eval)
+        })
 
     # Duck methods
 

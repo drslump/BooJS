@@ -158,4 +158,3 @@ class Builtins:
     # Allows to iterate accesing indices/keys
     static def enumerate(enumerable as Iterable) as ((object)):
         pass
-

@@ -45,7 +45,9 @@ interface IPattern(INode):
 
 class Node(INode):
     public loc as SourceLocation
-    public xreplace as string
+
+    # Custom property to define javascript code to be used instead of the AST
+    public verbatim as string
 
     self[index as object] as object:
         get:
@@ -457,8 +459,3 @@ class ComprehensionExpression(Node, IExpression):
     public blocks = List[of ComprehensionBlock]()
     public filter as IExpression
 
-class XCodeExpression(Node, IExpression):
-""" A chunk of Javascript code to be generated verbatim
-    Node: This node type is not defined by the Mozilla parser API.
-"""
-    public code as string

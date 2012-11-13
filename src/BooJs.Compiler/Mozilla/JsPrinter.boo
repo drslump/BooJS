@@ -21,11 +21,24 @@ class JsPrinter(Printer):
         super(writer)
 
     override def Visit(node as Node):
+        return if not node
+
         if SourceMap and node and node.loc:
             identifier = node as Identifier
             ident = (identifier.name if identifier else null)
             pos as Position = node.loc.start
             SourceMap.Map(node.loc.source, pos.line-1, pos.column, Line, Column, ident)
+
+
+        # Output provided verbatim source code (ie: for eval calls)
+        if node.verbatim is not null:
+            Parens Precedence.Sequence:
+                lines = /\r\n|\n/.Split(node.verbatim)
+                Write lines[0]
+                for line in lines[1:]:
+                    WriteLine
+                    WriteIndented line
+            return
 
         super(node)
 
@@ -286,7 +299,7 @@ class JsPrinter(Printer):
             Visit node.property
 
     virtual def OnCallExpression(node as CallExpression):
-        Parens Precedence.Call:
+         Parens Precedence.Call:
             # Make sure self-callable functions are defined as expressions
             if node.callee isa FunctionExpression:
                 Write '('
@@ -361,12 +374,4 @@ class JsPrinter(Printer):
     virtual def OnIdentifier(node as Identifier):
         Write node.name
 
-
-    virtual def OnXCodeExpression(node as XCodeExpression):
-        Parens Precedence.Assignment:
-            lines = /\r\n|\n/.Split(node.code)
-            Write lines[0]
-            for line in lines[1:]:
-                WriteLine
-                WriteIndented line
 

@@ -1,10 +1,12 @@
 namespace BooJs.Compiler.Visitors
 
+import Boo.Lang.Environments
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.PatternMatching
 
 import BooJs.Compiler.Utils
+import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 import BooJs.Compiler.Mozilla as Moz
 
 
@@ -369,11 +371,20 @@ Transforms a Boo AST into a Mozilla AST
             for arg in node.Arguments:
                 s.expressions.Add(Apply(arg))
             Return s
+
         else:
             n = Moz.CallExpression(loc: loc(node))
             n.callee = Apply(node.Target)
             for arg in node.Arguments:
                 n.arguments.Add(Apply(arg))
+
+            # Detect calls to eval() with a simple string argument to define a
+            # verbatim version of the expression.
+            if node.Target.Entity is my(RuntimeMethodCache).Eval and \
+               len(node.Arguments) == 1 and \
+               node.Arguments[0].NodeType == NodeType.StringLiteralExpression:
+                n.verbatim = (node.Arguments[0] as StringLiteralExpression).Value
+
             Return n
 
     def OnBlockExpression(node as BlockExpression):
