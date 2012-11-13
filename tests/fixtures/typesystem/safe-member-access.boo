@@ -18,7 +18,7 @@ def retret():
     return ret
 
 foo as duck = null
-foo2 = {'bar': 'bar'}
+foo2 = {'bar': 'foo'}
 
 # Existential
 print foo?

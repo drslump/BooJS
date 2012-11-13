@@ -9,10 +9,10 @@ class SafeAccess(AbstractTransformerCompilerStep):
 Desugarizes the safe access operator.
 
   foo?
-  (true if foo is not null else false)
+  (foo is not null)
 
   foo?.bar?
-  (true if (foo.bar if foo is not null else null) else false)
+  ((foo.bar if foo is not null else null) is not null)
 
   foo?.bar
   (foo.bar if foo != null else null)
@@ -30,7 +30,7 @@ Desugarizes the safe access operator.
     override def LeaveUnaryExpression(node as UnaryExpression):
         if node.Operator == UnaryOperatorType.SafeAccess:
             # target references should already be resolved, so just evaluate as existential
-            tern = [| (true if $(node.Operand) is not null else false) |]
+            tern = [| $(node.Operand) is not null |]
             ReplaceCurrentNode tern
 
     override def OnMemberReferenceExpression(node as MemberReferenceExpression):
