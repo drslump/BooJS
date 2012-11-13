@@ -11,6 +11,7 @@ nullified
 nullified
 nullified
 """
+
 def ret(v):
 	return v
 def retret():
@@ -36,7 +37,6 @@ b as (int) = null
 print b?.pop() or 'nullified'
 print b?[0] or 'nullified'
 
-foo = {'bar': 'bar'}
-print foo?['bar'].toUpperCase()
-print foo['not']?.toUpperCase() or 'nullified'
-	
+#foo = {'bar': 'bar'}
+#print foo?['bar'].toUpperCase()
+#print foo['not']?.toUpperCase() or 'nullified'

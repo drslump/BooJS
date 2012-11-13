@@ -42,8 +42,19 @@ Desugarizes the safe access operator.
             super(node)
 
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
+        # JavaScript binds the `this` keyword based on the calling reference.
+        # Make sure we keep the reference intact if there is a direct safe access: foo.bar?()
+        if IsSafeAccess(node.Target):
+            ue = node.Target as UnaryExpression
+            node.Target = ue.Operand
+            tern = [| ($node if $(node.Target) is not null else null) |]
+            Visit tern
+            ReplaceCurrentNode tern
+            return
+
         tern = ProcessTargets(node)
         if tern:
+            Visit node.Arguments
             ReplaceCurrentNode tern
         else:
             super(node)
@@ -60,17 +71,21 @@ Desugarizes the safe access operator.
                node isa MethodInvocationExpression or \
                node isa SlicingExpression
 
+    protected def IsSafeAccess(node) as bool:
+        return node isa UnaryExpression and (node as UnaryExpression).Operator == UnaryOperatorType.SafeAccess
+
     protected def ProcessTargets(node as Expression) as Expression:
         # Look for safe access operators in the targets chain
         ue as UnaryExpression
         target as duck = node
         while IsTargetable(target):
-            break if ue = target.Target as UnaryExpression and ue.Operator == UnaryOperatorType.SafeAccess
+            if IsSafeAccess(target.Target):
+                ue = target.Target
+                break
             target = target.Target
 
         # No safe access operator was found
-        if not ue or ue.Operator != UnaryOperatorType.SafeAccess:
-            return null
+        return null if not ue
 
         # Make sure previous access operators are processed
         Visit(target.Target as Expression)
