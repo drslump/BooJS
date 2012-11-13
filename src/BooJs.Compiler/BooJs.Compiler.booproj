@@ -114,6 +114,7 @@
     <Compile Include="Steps\AdaptParsingAst.boo" />
     <Compile Include="Steps\BranchChecking.boo" />
     <Compile Include="Steps\ProcessImports.boo" />
+    <Compile Include="Steps\SafeAccess.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

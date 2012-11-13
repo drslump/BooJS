@@ -13,9 +13,11 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Process safe member access operator
         # NOTE: It must be added before and after the parsing step
-        safe_member = Steps.SafeMemberAccess()
-        InsertBefore Parsing, safe_member
-        InsertAfter Parsing, safe_member
+        #safe_member = Steps.SafeMemberAccess()
+        #InsertBefore Parsing, safe_member
+        #InsertAfter Parsing, safe_member
+
+        InsertAfter Parsing, Steps.SafeAccess()
 
         # Make sure the parsing generated AST fits our needs
         InsertAfter Parsing, Steps.AdaptParsingAst()
