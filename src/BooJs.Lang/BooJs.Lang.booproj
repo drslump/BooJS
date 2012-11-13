@@ -80,6 +80,7 @@
     <Compile Include="Async.boo" />
     <Compile Include="Macros\ConstMacro.boo" />
     <Compile Include="Globals\globals.boo" />
+    <Compile Include="Browser.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
