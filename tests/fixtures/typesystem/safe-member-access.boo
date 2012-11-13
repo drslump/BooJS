@@ -1,4 +1,8 @@
 """
+False
+False
+True
+True
 10
 nullified
 10
@@ -12,6 +16,15 @@ def ret(v):
 def retret():
     return ret
 
+foo as duck = null
+foo2 = {'bar': 'bar'}
+
+# Existential
+print foo?
+print foo?.bar?
+print foo2.bar?
+print foo2?.bar?
+
 print ret(10)?.toString()
 print ret(null)?.toString() or "nullified"
 print retret()?(10)?.toString()
@@ -23,7 +36,7 @@ b as (int) = null
 print b?.pop() or 'nullified'
 print b?[0] or 'nullified'
 
-#foo = {'bar': 'bar'}
-#print foo?['bar'].toUpperCase()
-#print foo['not']?.toUpperCase() or 'nullified'
+foo = {'bar': 'bar'}
+print foo?['bar'].toUpperCase()
+print foo['not']?.toUpperCase() or 'nullified'
 	
