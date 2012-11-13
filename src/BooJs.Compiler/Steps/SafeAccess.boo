@@ -1,9 +1,7 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.IO
+import Boo.Lang.Compiler.Steps(AbstractTransformerCompilerStep)
 
 
 class SafeAccess(AbstractTransformerCompilerStep):
@@ -20,13 +18,13 @@ Desugarizes the safe access operator.
   (foo.bar if foo != null else null)
 
   foo?.bar?.baz
-  (foo.bar.baz if (foo.bar if foo != null else null) != null else null)
+  (foo.bar.baz if (foo.bar if foo is not null else null) is not null else null)
 
   foo?.bar?[2]
-  (foo.bar[2] if (foo.bar if foo != null else null) != null else null)
+  (foo.bar[2] if (foo.bar if foo is not null else null) is not null else null)
 
   foo?.bar?()
-  (foo.bar() if (foo.bar if foo != null else null) != null else null)
+  (foo.bar() if (foo.bar if foo is not null else null) is not null else null)
 
 """
     override def LeaveUnaryExpression(node as UnaryExpression):

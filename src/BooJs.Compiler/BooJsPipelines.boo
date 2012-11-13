@@ -9,15 +9,10 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         # TODO: Do we need this?
         Insert 0, Steps.InitializeEntityNameMatcher()
 
-        Replace IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces()
-
         # Process safe member access operator
-        # NOTE: It must be added before and after the parsing step
-        #safe_member = Steps.SafeMemberAccess()
-        #InsertBefore Parsing, safe_member
-        #InsertAfter Parsing, safe_member
-
         InsertAfter Parsing, Steps.SafeAccess()
+
+        Replace IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces()
 
         # Make sure the parsing generated AST fits our needs
         InsertAfter Parsing, Steps.AdaptParsingAst()
