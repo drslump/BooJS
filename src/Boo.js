@@ -31,6 +31,8 @@
     function typeOf(v) {
         var t = typeof(v);
         if (t in type_lookup) return type_lookup[t];
+        // Jurassic engine doesn't support toString on nulls
+        if (v === null) return 'Null';
         // Check using Object.toString
         t = Object.prototype.toString.call(v);
         return type_lookup[t] || 'Object';
@@ -406,6 +408,11 @@
             }
         }
         return (typeof value === 'string') ? result.join('') : result;
+    };
+
+    // Check if a value is null (or undefined)
+    Boo.isNull = function (value) {
+        return typeOf(value) === 'Null';
     };
 
     // Check the type of a value

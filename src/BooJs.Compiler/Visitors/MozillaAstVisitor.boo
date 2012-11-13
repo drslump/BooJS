@@ -388,14 +388,26 @@ Transforms a Boo AST into a Mozilla AST
     def OnBinaryExpression(node as BinaryExpression):
         n = Moz.BinaryExpression(loc: loc(node))
         match node.Operator:
+            case BinaryOperatorType.ReferenceEquality:
+                if NodeType.NullLiteralExpression in (node.Left.NodeType, node.Right.NodeType):
+                    Return(ProcessIsNull(node))
+                    return
+
+                n.operator = '==='
+            case BinaryOperatorType.ReferenceInequality:
+                if NodeType.NullLiteralExpression in (node.Left.NodeType, node.Right.NodeType):
+                    ue = Moz.UnaryExpression(loc: loc(node), operator: '!')
+                    ue.argument = ProcessIsNull(node)
+                    Return ue
+                    return
+
+                n.operator = '!=='
+
             case BinaryOperatorType.Equality:
                 n.operator = '=='
             case BinaryOperatorType.Inequality:
                 n.operator = '!='
-            case BinaryOperatorType.ReferenceEquality:
-                n.operator = '==='
-            case BinaryOperatorType.ReferenceInequality:
-                n.operator = '!=='
+
             case BinaryOperatorType.Member:
                 n.operator = 'in'
             case BinaryOperatorType.Addition:
@@ -463,3 +475,10 @@ Transforms a Boo AST into a Mozilla AST
 
         n.argument = Apply(node.Operand)
         Return n
+
+    protected def ProcessIsNull(node as BinaryExpression) as Moz.IExpression:
+        itm = (node.Right if node.Left.NodeType == NodeType.NullLiteralExpression else node.Left)
+        call = Moz.CallExpression(loc: loc(node))
+        call.callee = Moz.Identifier('Boo.isNull')
+        call.arguments.Add(Apply(itm))
+        return call

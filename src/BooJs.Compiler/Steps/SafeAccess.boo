@@ -28,9 +28,10 @@ Desugarizes the safe access operator.
 
 """
     override def LeaveUnaryExpression(node as UnaryExpression):
-        # target references should already be resolved, so just evaluate as existential
-        tern = [| (true if $(node.Operand) is not null else false) |]
-        ReplaceCurrentNode tern
+        if node.Operator == UnaryOperatorType.SafeAccess:
+            # target references should already be resolved, so just evaluate as existential
+            tern = [| (true if $(node.Operand) is not null else false) |]
+            ReplaceCurrentNode tern
 
     override def OnMemberReferenceExpression(node as MemberReferenceExpression):
         tern = ProcessTargets(node)
