@@ -95,6 +95,16 @@ class TypeSystemServices(BooServices):
         return super(expectedType, actualType)
 
      new def IsSystemObject(type as IType):
-        # TODO: Is this ever used?
-        # ObjectType is mapped to our custom object
-        return type == ObjectType or type == DuckType or type == Map(System.Object)
+        # ObjectType is mapped to our custom object so we have to check also against System.Object
+        return super.IsSystemObject(type) or type is Map(System.Object)
+
+     new def IsDuckType(type as IType) as bool:
+        # ObjectType is mapped to our custom object so we have to check also against System.Object
+        return super.IsDuckType(type) or (Context.Parameters.Ducky and IsSystemObject(type))
+
+     override def IsDuckTyped(node as Boo.Lang.Compiler.Ast.Expression) as bool:
+        type = node.ExpressionType
+        return type is not null and IsDuckType(type)
+
+
+
