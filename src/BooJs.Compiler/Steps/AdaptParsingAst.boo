@@ -12,13 +12,13 @@ class AdaptParsingAst(AbstractTransformerCompilerStep):
             return
         Visit CompileUnit
 
-    def OnGenericTypeReference(node as GenericTypeReference):
-        # HACK: Replace references to IEnumerable for Array ones. Boo's parser
+    override def OnGenericTypeReference(node as GenericTypeReference):
+        # HACK: Replace references to IEnumerable for our Iterable interface. Boo's parser
         #       defines <type>* as a generic type reference to IEnumerable.
         if node.Name == 'System.Collections.Generic.IEnumerable':
             node.Name = 'BooJs.Lang.Globals.Iterable'
 
-    def OnStringLiteralExpression(node as StringLiteralExpression):
-        if node.ContainsAnnotation('quote'):
-            if node['quote'] == '`':
-                ReplaceCurrentNode [| eval($node) |]
+    override def OnStringLiteralExpression(node as StringLiteralExpression):
+        # Convert backquoted literals to eval expressions
+        if node.ContainsAnnotation('quote') and node['quote'] == '`':
+            ReplaceCurrentNode [| eval($node) |]

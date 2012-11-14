@@ -53,6 +53,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/numbers.boo')
 
   [Test]
+  def test_pattern_matching():
+    FixtureRunner.run('tests/fixtures/typesystem/pattern-matching.boo')
+
+  [Test]
   def test_range():
     FixtureRunner.run('tests/fixtures/typesystem/range.boo')
 
