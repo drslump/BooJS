@@ -440,9 +440,9 @@
         // Special handling for arrays (just in case we run into cross-frame issues)
         if (type === Array) {
             return typeOf(value) === 'Array';
-        // Special handling for hash (any object can be casted to a hash)
+        // Special handling for hash (any object except arrays/regexps can be casted to a hash)
         } else if (type === Boo.Hash) {
-            return value && typeof(value) === 'object';
+            return typeIs(value, 'Object');
         }
 
         // Check the prototype (basic inheritance)
