@@ -6,6 +6,7 @@ import Boo.Lang.Compiler.Steps
 
 import Boo.Lang.Environments
 import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache
+import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
 import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 import BooJs.Lang.Extensions
 
@@ -96,9 +97,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
             return result
 
         # Primitive type references
-        if entity = node.Entity as TypeSystem.Reflection.ExternalType:
-            if TypeSystemServices.IsLiteralPrimitive(entity):
-                return StringLiteralExpression(node.LexicalInfo, entity.FullName)
+        if entity = node.Entity as ExternalType and TypeSystemServices.IsLiteralPrimitive(entity):
+            return StringLiteralExpression(node.LexicalInfo, entity.FullName)
 
         # Check for builtins references
         if IsBuiltin(node):
@@ -267,11 +267,13 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     def OnCastExpression(node as CastExpression):
         mie = [| Boo.$(ReferenceExpression('cast'))() |]
+        mie.LexicalInfo = node.LexicalInfo
         mie.Arguments.Add(node.Target)
         ReplaceCurrentNode( ProcessCast(mie, node.Type) )
 
     def OnTryCastExpression(node as TryCastExpression):
         mie = [| Boo.trycast() |]
+        mie.LexicalInfo = node.LexicalInfo
         mie.Arguments.Add(node.Target)
         ReplaceCurrentNode( ProcessCast(mie, node.Type) )
 
@@ -285,7 +287,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
     def OnCharLiteralExpression(node as CharLiteralExpression):
     """ There is no char type in BooJs. char('c') and char(int) are converted to a string of length 1
     """
-        ReplaceCurrentNode StringLiteralExpression(LexicalInfo: node.LexicalInfo, Value: node.Value.ToString())
+        ReplaceCurrentNode StringLiteralExpression(LexicalInfo: node.LexicalInfo, Value: node.Value)
 
     def OnRELiteralExpression(node as RELiteralExpression):
     """ Almost a direct translation to Javascript regexp literals. The only modification
@@ -319,8 +321,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
     def OnArrayLiteralExpression(node as ArrayLiteralExpression):
     """ In BooJs arrays are muttable (Boo's Lists)
     """
-        list = ListLiteralExpression(LexicalInfo: node.LexicalInfo, Items: node.Items)
-        Visit list
+        super(node)
+        list = ListLiteralExpression(node.LexicalInfo, Items: node.Items)
         ReplaceCurrentNode list
 
     def OnUnlessStatement(node as UnlessStatement):

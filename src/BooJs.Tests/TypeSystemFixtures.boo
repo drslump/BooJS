@@ -17,6 +17,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/double.boo')
 
   [Test]
+  def test_eval():
+    FixtureRunner.run('tests/fixtures/typesystem/eval.boo')
+
+  [Test]
   def test_globals():
     FixtureRunner.run('tests/fixtures/typesystem/globals.boo')
 

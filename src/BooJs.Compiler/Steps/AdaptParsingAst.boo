@@ -17,3 +17,8 @@ class AdaptParsingAst(AbstractTransformerCompilerStep):
         #       defines <type>* as a generic type reference to IEnumerable.
         if node.Name == 'System.Collections.Generic.IEnumerable':
             node.Name = 'BooJs.Lang.Globals.Iterable'
+
+    def OnStringLiteralExpression(node as StringLiteralExpression):
+        if node.ContainsAnnotation('quote'):
+            if node['quote'] == '`':
+                ReplaceCurrentNode [| eval($node) |]
