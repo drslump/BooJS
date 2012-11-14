@@ -442,7 +442,7 @@
             return typeOf(value) === 'Array';
         // Special handling for hash (any object can be casted to a hash)
         } else if (type === Boo.Hash) {
-            return type && typeof(type) === 'object';
+            return value && typeof(value) === 'object';
         }
 
         // Check the prototype (basic inheritance)
