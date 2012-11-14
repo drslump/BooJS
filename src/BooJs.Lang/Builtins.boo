@@ -123,10 +123,20 @@ class Builtins:
     static def map(items as Array, callback as callable(object)) as Array:
         pass
 
+    static def reduce(items as (object), callback as callable) as object:
+        pass
+    static def reduce(items as (object), callback as callable, initial as object) as object:
+        pass
+    static def reduce(items as (object), initial as object, callback as callable) as object:
+        pass
+    /*
     static def reduce[of T](items as (T), callback as callable) as T:
         pass
     static def reduce[of T](items as (T), callback as callable, initial as T) as T:
         pass
+    static def reduce[of T](items as (T), initial as T, callback as callable) as T:
+        pass
+    */
 
     static def filter(items as (object), callback as callable) as (object):
         pass

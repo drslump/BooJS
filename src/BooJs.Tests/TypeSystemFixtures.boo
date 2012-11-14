@@ -73,6 +73,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/typetest.boo')
 
   [Test]
+  def test_underscore():
+    FixtureRunner.run('tests/fixtures/typesystem/underscore.boo')
+
+  [Test]
   def test_version():
     FixtureRunner.run('tests/fixtures/typesystem/version.boo')
 

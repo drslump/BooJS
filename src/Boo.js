@@ -328,6 +328,10 @@
             if (l === 0) throw new TypeError("Array length is 0 and no third argument");
             value = list[0];
             i = 1;
+        } else if (typeof callback !== 'function') {
+            var tmp = callback;
+            callback = value;
+            value = tmp;
         }
      
         while (i < l) {
