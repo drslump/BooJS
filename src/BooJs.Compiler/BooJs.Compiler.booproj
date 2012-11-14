@@ -114,6 +114,7 @@
     <Compile Include="Steps\BranchChecking.boo" />
     <Compile Include="Steps\ProcessImports.boo" />
     <Compile Include="Steps\SafeAccess.boo" />
+    <Compile Include="Steps\ApplyPlaceholderParameters.boo" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="resources\escodegen.js">

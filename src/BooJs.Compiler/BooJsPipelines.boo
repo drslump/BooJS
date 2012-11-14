@@ -11,6 +11,7 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         # Process safe member access operator
         InsertAfter Parsing, Steps.SafeAccess()
+        InsertAfter Parsing, Steps.ApplyPlaceholderParameters()
 
         Replace IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces()
 
