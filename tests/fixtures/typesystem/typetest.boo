@@ -11,7 +11,10 @@ string-int False
 callable True
 callable-null False
 Array True
-Hash False
+Hash-literal True
+Hash-array False
+Hash-Hash True
+Hash-Type True
 Number-int True
 Number-double True
 ReturnValue True
@@ -39,7 +42,10 @@ print 'string-int', a_int isa string
 print 'callable', a_callable isa callable
 print 'callable-null', null isa callable
 print 'Array', [1, 2] isa Array
-print 'Hash', a_hash isa Hash
+print 'Hash-literal', a_hash isa Hash
+print 'Hash-array', (1, 2) isa Hash
+print 'Hash-Hash', Hash(a:10) isa Hash
+print 'Hash-Type', a_return isa Hash
 print 'Number-int', a_int isa Number
 print 'Number-double', a_double isa Number
 print 'ReturnValue', a_return isa ReturnValue
