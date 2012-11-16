@@ -17,8 +17,8 @@ Hash-Hash True
 Hash-Type True
 Number-int True
 Number-double True
-ReturnValue True
-ReturnValue-int False
+Date True
+Date-int False
 """
 
 a_int as object = -10
@@ -28,7 +28,7 @@ a_bool as object = true
 a_string = 'foo'
 a_callable = {x| print x}
 a_hash = {}
-a_return = ReturnValue(true)
+a_date = Date()
 
 print 'int', a_int isa int
 print 'int-double', a_double isa int
@@ -45,8 +45,8 @@ print 'Array', [1, 2] isa Array
 print 'Hash-literal', a_hash isa Hash
 print 'Hash-array', (1, 2) isa Hash
 print 'Hash-Hash', Hash(a:10) isa Hash
-print 'Hash-Type', a_return isa Hash
+print 'Hash-Type', a_date isa Hash
 print 'Number-int', a_int isa Number
 print 'Number-double', a_double isa Number
-print 'ReturnValue', a_return isa ReturnValue
-print 'ReturnValue-int', a_int isa ReturnValue
+print 'Date', a_date isa Date
+print 'Date-int', a_int isa Date
