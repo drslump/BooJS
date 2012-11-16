@@ -217,6 +217,41 @@ Transforms a Boo AST into a Mozilla AST
 
         Return ifst
 
+    def OnForStatement(node as ForStatement):
+        # Only for statements over range should have survived
+        mie = node.Iterator as MethodInvocationExpression
+        if len(mie.Arguments) == 1:
+            start = Moz.Literal(0)
+            length = Apply(mie.Arguments[0])
+        else:
+            start = Apply(mie.Arguments[0])
+            length = Apply(mie.Arguments[1])
+
+        if node.ContainsAnnotation('loop-index'):
+            index = Moz.Identifier(node['loop-index'])
+        else:
+            index = Moz.Identifier(node.Declarations[0].Name)
+
+        fst = Moz.ForStatement(loc: loc(node))
+        fst.init = Moz.AssignmentExpression(
+            left: index,
+            operator: '=',
+            right: start
+        )
+        fst.test = Moz.BinaryExpression(
+            left: index,
+            operator: '<',
+            right: length
+        )
+        fst.update = Moz.UpdateExpression(
+            argument: index,
+            operator: '++',
+            prefix: false
+        )
+
+        fst.body = Apply(node.Block)
+        Return fst
+
     def OnWhileStatement(node as WhileStatement):
         wst = Moz.WhileStatement(loc: loc(node))
         wst.test = Apply(node.Condition)
@@ -452,11 +487,18 @@ Transforms a Boo AST into a Mozilla AST
 
             case BinaryOperatorType.Assign:
                 n = Moz.AssignmentExpression(loc: loc(node), operator: '=')
+            case BinaryOperatorType.InPlaceBitwiseAnd:
+                n = Moz.AssignmentExpression(loc: loc(node), operator: '&=')
+            case BinaryOperatorType.InPlaceBitwiseOr:
+                n = Moz.AssignmentExpression(loc: loc(node), operator: '|=')
+            case BinaryOperatorType.InPlaceExclusiveOr:
+                n = Moz.AssignmentExpression(loc: loc(node), operator: '^=')
 
             case BinaryOperatorType.And:
                 n = Moz.LogicalExpression(loc: loc(node), operator: '&&')
             case BinaryOperatorType.Or:
                 n = Moz.LogicalExpression(loc: loc(node), operator: '||')
+
 
             otherwise:
                 raise 'Operator not supported ' + node.Operator

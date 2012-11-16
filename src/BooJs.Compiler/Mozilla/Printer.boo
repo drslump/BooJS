@@ -49,6 +49,9 @@ abstract class Printer(Visitor):
 
     protected _binaryPrecedence = {
         '=': Precedence.Assignment,
+        '&=': Precedence.Assignment,
+        '|=': Precedence.Assignment,
+        '^=': Precedence.Assignment,
         '||': Precedence.LogicalOR,
         '&&': Precedence.LogicalAND,
         '|': Precedence.BitwiseOR,

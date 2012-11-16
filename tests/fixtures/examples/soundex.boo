@@ -1,21 +1,21 @@
 def soundex(s as string) as string:
-    codes = {
-        'a': '', 'e': '', 'i': '', 'o': '', 'u': '',
-        'b': 1, 'f': 1, 'p': 1, 'v': 1,
-        'c': 2, 'g': 2, 'j': 2, 'k': 2, 'q': 2, 's': 2, 'x': 2, 'z': 2,
-        'd': 3, 't': 3,
-        'l': 4,
-        'm': 5, 'n': 5,
-        'r': 6
-    }
+    codes = Hash(
+        a: '', e: '', i: '', o: '', u: '',
+        b: 1, f: 1, p: 1, v: 1,
+        c: 2, g: 2, j: 2, k: 2, q: 2, s: 2, x: 2, z: 2,
+        d: 3, t: 3,
+        l: 4,
+        m: 5, n: 5,
+        r: 6
+    )
 
     a as (string) = s.toLowerCase().split('')
     f as string = a.shift()
     r = ''
  
     # TODO: Doesn't work :(
-    r = f + map(a, {v as string| codes[v]}) \
-        .filter({v as string, i as int, a as (string)| return (v != codes[f] if i == 0 else v != a[i-1]) }) \
+    r = f + map(a, {codes[_]}) \
+        .filter({v as string, i as int, a as (string)| (v != codes[f] if i == 0 else v != a[i-1]) }) \
         .join('')
 
     r += '000'
@@ -46,5 +46,5 @@ tests = {
 }
 
 for v, k in tests:
-    #print v, k, soundex(v)
+    print v, k, soundex(v)
     assert soundex(v) == k

@@ -11,7 +11,7 @@ import Boo.Lang.Compiler.Util
 import Boo.Lang.Compiler(AbstractCompilerComponent)
 import Boo.Lang.Compiler.TypeSystem(IMethod, IMethodBase, IConstructor)
 
-import BooJs.Lang(Globals, RuntimeServices)
+import BooJs.Lang(Builtins, Globals, RuntimeServices)
 
 class RuntimeMethodCache(AbstractCompilerComponent):
 
@@ -25,6 +25,11 @@ class RuntimeMethodCache(AbstractCompilerComponent):
             Methods.Of[of object, object*](RuntimeServices.Enumerable)
         })
 
+    Generator as IMethod:
+        get: return CachedMethod('generator', {
+            Methods.Of[of object, object*](RuntimeServices.Generator)
+        })
+
     Each as IMethod:
         get: return CachedMethod('each', {
             Methods.Of[of object*, ICallable, object](RuntimeServices.Each)
@@ -33,6 +38,16 @@ class RuntimeMethodCache(AbstractCompilerComponent):
     Eval as IMethod:
         get: return CachedMethod('eval', {
             Methods.Of[of string, object](Globals.eval)
+        })
+
+    Range1 as IMethod:
+        get: return CachedMethod('range1', {
+            Methods.Of[of int, (int)](Builtins.range)
+        })
+    Range2 as IMethod:
+        # TODO: It's not resolving the correct method
+        get: return CachedMethod('range2', {
+            Methods.Of[of int, int, (int)](Builtins.range)
         })
 
     # Duck methods

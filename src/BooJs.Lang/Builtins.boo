@@ -92,15 +92,6 @@ class Builtins:
         pass
     static def range(start as int, stop as int, step as int) as (int):
         pass
-    [Transform( Boo.range($1) )]
-    static def xrange(stop as int) as Iterable[of int]:
-        pass
-    [Transform( Boo.range($1, $2) )]
-    static def xrange(start as int, stop as int) as Iterable[of int]:
-        pass
-    [Transform( Boo.range($1, $2, $3) )]
-    static def xrange(start as int, stop as int, step as int) as Iterable[of int]:
-        pass
 
     static def print(*list as (object)) as void:
         pass

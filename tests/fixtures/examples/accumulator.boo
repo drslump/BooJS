@@ -4,7 +4,7 @@
 """
 
 def accumulator(sum as int):
-	return {n| sum += n}
+	return { sum += _ }
 
 x = accumulator(1)
 print x(5)

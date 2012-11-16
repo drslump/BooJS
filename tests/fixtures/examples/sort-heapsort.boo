@@ -14,6 +14,7 @@ def heapsort(lst as (int)) as (int):
     lst[end] = lst[0]
     lst[0] = t
     siftdown(lst, 0, end - 1)
+    
   return lst
  
 def siftdown(lst as (int), start as int, end as int):

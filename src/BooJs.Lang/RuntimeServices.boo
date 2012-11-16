@@ -21,6 +21,10 @@ class RuntimeServices:
     static def Len(list as object) as int:
         pass
 
+    [Transform( Boo.generator($1) )]
+    static def Generator(any as object) as object*:
+        pass
+
 
     # Duck dynamic dispatching
 

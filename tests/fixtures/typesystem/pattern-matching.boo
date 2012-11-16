@@ -21,7 +21,7 @@ def m(data):
         case Hash(foo: a=string()):
             print '3', a
         case Hash(foo: c) and c is not null:
-            print '4', a
+            print '4', c
         case a = Hash():
             print '5'
         otherwise:

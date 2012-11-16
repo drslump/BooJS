@@ -7,7 +7,6 @@ import Boo.Lang.Compiler.Steps(AbstractTransformerCompilerStep)
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler(CompilerContext)
 
-import BooJs.Compiler.Utils
 import BooJs.Compiler.TypeSystem.RuntimeMethodCache as RuntimeMethodCache
 
 
@@ -15,20 +14,110 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 """
     Normalize loops
 
-    TODO: Improve transformations, for example by skipping the creation of __ref
-          if the iterable is already a reference.
-          Fully optimize the range case.
+    The current implementation is very naive, it won't inspect the type system to
+    choose a proper loop strategy. This should be done in the future using a compiler
+    step.
+
+    - If it contains a yield statement is converted to a while equivalent loop.
+    - If it has an Or or Then block it's converted to a while loop
+    - If it is an array we convert it to a for in range
+    - When the iterator is the range method it's left to be optimized when converting to the Mozilla AST
+    - If it contains a return convert to a while loop
+    - If iterator is not an array iterate it with Boo.each()
+
+
+    for i in arr:
+    ---
+    for __idx in range(len(arr)):
+        i = arr[__idx]
+
+    for x, y in arr:
+    ---
+    for __idx in range(len(arr)):
+        x, y = arr[__idx]
+
+    for i in iter:
+    ---
+    Boo.each(iter) do (i):
+        pass
+
+
+    for i in ducky():
+    ---
+    __for1 = Boo.generator(ducky())
+    try:
+        while @(i = __for.next(), true):
+            pass
+    except e if e is Boo.STOP:
+        pass
+    ensure:
+        __for1.close()
+
+
+    Boo's for statement does not allow to specify a receiving variable for the key like it's
+    done in CoffeeScript (for v,k in hash), however it allows to defines multiple variables
+    for unpacking. So the solution is to disable the support for unpacking and use it instead
+    to obtain the key.
+
+        for v,k in obj: ...
+        ---
+        Boo.each(obj, {v,k| ...})
 """
 
-    # If set to true uses a runtime helper to perform the iteration
-    SIMPLE_LOOPS = true
+    class NodeFinder(FastDepthFirstVisitor):
+        [property(Accepted)]
+        _accepted as (NodeType)
+
+        [property(Skipped)]
+        _skipped as (NodeType)
+
+        _found as bool
+
+        def Run(node as Node) as bool:
+            _found = false
+            Visit(node)
+            return _found
+
+        override def Visit(node as Node):
+            if _found:
+                return
+            elif node.NodeType in Accepted:
+                _found = true
+                return
+            elif node.NodeType in Skipped:
+                return
+            else:
+                super(node)
+
+    _yieldFinder = NodeFinder(
+        Accepted: (NodeType.YieldStatement,),
+        Skipped: (NodeType.Method, NodeType.BlockExpression)
+    )
+
+    _returnFinder = NodeFinder(
+        Accepted: (NodeType.ReturnStatement,),
+        Skipped: (NodeType.Method, NodeType.BlockExpression)
+    )
 
     [getter(MethodCache)]
-    private _methodCache as RuntimeMethodCache
+    _methodCache as RuntimeMethodCache
 
-    private ReturnValueType as IType
+    [property(CurrentMethod)]
+    _method as Method
 
-    def Initialize(ctxt as CompilerContext):
+    override def OnMethod(node as Method):
+        prev = CurrentMethod
+        CurrentMethod = node
+        super(node)
+        CurrentMethod = prev
+
+    override def OnConstructor(node as Constructor):
+        prev = CurrentMethod
+        CurrentMethod = node
+        super(node)
+        CurrentMethod = prev
+
+    override def Initialize(ctxt as CompilerContext):
         super(ctxt)
         _methodCache = my(RuntimeMethodCache) #EnvironmentProvision[of RuntimeMethodCache]()
         ReturnValueType = TypeSystemServices.Map(BooJs.Lang.Builtins.ReturnValue)
@@ -38,278 +127,180 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             return
         Visit CompileUnit
 
-    def OnForStatement(node as ForStatement):
-    """
-        The current implementation is very naive, it won't inspect the type system to 
-        choose a proper loop strategy. This should be done in the future using a compiler
-        step.
+    protected def HasYield(node as Node):
+        return _yieldFinder.Run(node)
 
-        Normalization algorithm:
+    protected def HasReturn(node as Node):
+        return _returnFinder.Run(node)
 
-            for v in range(0, 10, 1): ...
-            ---
-            v=0-1
-            while v<10:
-                v++
-                ...
+    protected def IsLiteralRange(node as Node):
+        # We only support optimizations for simple ranges with positive integers
+        if mie = node as MethodInvocationExpression and entity = mie.Target.Entity:
+            if entity is MethodCache.Range1 and ile = mie.Arguments[0] as IntegerLiteralExpression:
+                return ile.Value >= 0
+            if entity is MethodCache.Range2 and ile1 = mie.Arguments[0] as IntegerLiteralExpression and \
+               ile2 = mie.Arguments[1] as IntegerLiteralExpression:
+                return ile1.Value >= 0 and ile1.Value <= ile2.Value
 
-            for v in list_array: ...
-            ---
-            __ref = list_array
-            __len = __ref.length
-            __i = 0
-            while __i < __len:
-                v = __ref[__i++]
-                ...
+        return false
 
-            for k in hash: ...
-            ---
-            __keys = []
-            for __k in hash: __keys.push(__k)
-            __i = 0
-            __len = __keys.length
-            while __i < __len:
-                k = __keys[__i++]
-                ...
-            ---
-            # With runtime support
-            for k in Boo.keys(hash):
-                v = hash[k]
-            ---
-            # Translated to
-            __ref = Boo.keys(hash)
-            __len = __ref.length
-            __i = 0
-            while __i < __len:
-                v = __ref[__i++]
+    protected def IsArray(node as Expression):
+        # TODO: Detect Globals.Array here too?
+        type = GetExpressionType(node)
+        return type and type.IsArray
 
-            for v in duck: ...
-            ---
-            Boo.each(hash, {v| ...}, self)
+    protected def ForToWhile(node as ForStatement) as Statement:
+        mie = CodeBuilder.CreateMethodInvocation([| Boo.generator |], MethodCache.Generator, node.Iterator)
+        tmpref = TempLocalInMethod(CurrentMethod, mie.ExpressionType, Context.GetUniqueName('for'))
 
-            for v in generator: ...
-            ---
-            while (v = generator.next()) is not Boo.STOP:
-                ...
-
-        Boo's for statement does not allow to specify a receiving variable for the key like it's 
-        done in CoffeeScript (for v,k in hash), however it allows to defines multiple variables
-        for unpacking. So the solution is to disable the support for unpacking and use it instead
-        to obtain the key.
-
-            for v,k in obj: ...
-            ---
-            Boo.each(obj, {v,k| ...}, self)
-    """
-        #   for i in lst:
-        #       return i if cb(i)
-        #   ----
-        #   try:
-        #       Boo.each lst do (i):
-        #           Boo.stop(i) if cb(i)
-        #   except Boo.STOP as e:
-        #       return e.retval
-
-        # Simplified form
-        if SIMPLE_LOOPS:
-            # Handle nested loops
-            Visit node.Block
-
-            DesugarizeOrThenBlocks(node)
-            has_return = ProcessContinueBreakReturn(node.Block)
-
-            # TODO: Unlike Boo, the loop declarations are bound to the loop scope
-            callback = BlockExpression(Body: node.Block)
-            for decl in node.Declarations:
-                param = ParameterDeclaration(decl.Name, decl.Type, LexicalInfo: decl.LexicalInfo)
-                callback.Parameters.Add(param)
-
-            # Use the runtime helper to iterate
-            each = CodeBuilder.CreateMethodReference(MethodCache.Each)
-            mie = [| $each($(node.Iterator), $callback) |]
-
-            if has_return:
-                ex = CodeBuilder.CreateTypeReference(ReturnValueType)
-                block = [|
-                    try:
-                        $mie
-                    except __re as $ex:
-                        return __re.value
-                    except:
-                        raise
-                |]
-
-                ReplaceCurrentNode block
-            else:
-                ReplaceCurrentNode [|
-                    $mie
-                |]
-
-            return
-
-            /*
-            stmts = StatementCollection()
-
-            callback = BlockExpression(Body: node.Block)
-            for i, decl as Declaration in enumerate(node.Declarations):
-                # Variable declarations in loops are owned by the parent scope
-                stmts.Add(DeclarationStatement(Declaration:decl))
-                # Boo runtime needs to know how many declarations via Function.length
-                callback.Parameters.Add(ParameterDeclaration(Name: '$' + i))
-
-                # Assign the callable argument to the outer variable declaration
-                assign = CodeBuilder.CreateAssignment(ReferenceExpression(Name: decl.Name), ReferenceExpression(Name:'$' + i))
-                callback.Body.Statements.Insert(0, ExpressionStatement(assign))
-
-
-            mie = CodeBuilder.CreateMethodInvocation(node.LexicalInfo, MethodCache.Each, node.Iterator, callback)
-            #mie = [| Boo.each( $(node.Iterator), $callback ) |].withLexicalInfoFrom(node)
-            stmts.Add(ExpressionStatement(mie))
-
-            ReplaceCurrentNode Block(Statements: stmts)
-            return
-            */
-
-            /*
-            decl = ReferenceExpression(Name:node.Declarations[0].Name)
-            loop = [|
-                Block:
-                    Boo.each( $(node.Iterator) ) do( $decl ):
-                        $(node.Block)
-            |].Body
-            */
-
-        # Override unpacking
-        elif len(node.Declarations) >= 2:
-            DesugarizeOrThenBlocks(node)
-            ProcessContinueBreakReturn(node.Block)
-
-            decl1 = ReferenceExpression(Name: node.Declarations[0].Name)
-            decl2 = ReferenceExpression(Name: node.Declarations[1].Name)
-            loop = [|
-                Block:
-                    Boo.each( $(node.Iterator) ) do( $decl1, $decl2 ):
-                        $(node.Block)
-            |].Body
-
-        # Type based forms
+        eval = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
+        if len(node.Declarations) > 1:
+            tmpupk = TempLocalInMethod(CurrentMethod, node.Iterator.ExpressionType, Context.GetUniqueName('upk'))
+            eval.Arguments.Add([| $tmpupk = $(tmpref).next() |])
+            for i as int, decl as Declaration in enumerate(node.Declarations):
+                eval.Arguments.Add([| $(ReferenceExpression(decl.Name)) = $tmpupk[$i] |])
         else:
-            decl = ReferenceExpression(Name:node.Declarations[0].Name)
+            eval.Arguments.Add([| $(ReferenceExpression(node.Declarations[0].Name)) = $(tmpref).next() |])
 
-            # Try range optimization
-            loop = OptimizeRange(decl, node)
-            if not loop:
+        # Make sure we always enter the loop
+        eval.Arguments.Add(BoolLiteralExpression(Value: true))
 
-                # Get the type of the iterable
-                type = typeOf(node.Iterator)
+        whilest = WhileStatement(node.LexicalInfo)
+        whilest.Condition = [| $tmpref and $eval |]
+        whilest.Block = node.Block
 
-                #print node.Iterator
-                #print type
-
-                # Array -> (2, 3, 4)
-                if type.IsArray:
-                    #print type, 'IsArray'
-                    loop = MakeLoopForArray(decl, node.Iterator, node.Block)
-
-                # String -> "abcde"
-                elif type == TypeSystemServices.StringType:
-                    #print type, 'STRING!'
-                    raise "Iterating over strings is not supported. Use `str.split('')`"
-
-                # List -> [2, 3, 4]
-                elif type == TypeSystemServices.ListType:
-                    #print type, 'List'
-                    loop = MakeLoopForList(decl, node.Iterator, node.Block)
-
-                # Generators (yield)
-                elif TypeSystemServices.IsGenericGeneratorReturnType(type):
-                    #print type, 'Generator!'
-                    loop = MakeLoopForGenerator(decl, node.Iterator, node.Block)
-
-                elif TypeSystemServices.GetGenericEnumerableItemType(type):
-                    # TODO: What use do we have for these?
-                    print type, 'Generics!'
-                    loop = MakeLoopForList(decl, node.Iterator, node.Block)
-
-                # Hashes, Ducky and IEnumerable
-                elif TypeSystemServices.IsDuckType(type) \
-                or TypeSystemServices.GetEnumeratorItemType(type):
-                    #print type, 'Enumerable!'
-                    loop = MakeLoopForEnumerable(decl, node.Iterator, node.Block)
-
-                else:
-                    print type, 'WARNING: Not enumerable!!!'
-                    raise 'Iterable not valid'
-
-
-        loop.LexicalInfo = node.LexicalInfo
-
-        # Replace the for node with the new loop and visit it
-        parent = node.ParentNode as Block
-        idx = parent.Statements.IndexOf(node)
-        RemoveCurrentNode
-        parent.Statements.Insert(idx, loop)
-        Visit loop
-
-    def MakeLoopForArray(decl as ReferenceExpression, iter as Expression, block as Block):
-        _ref = TempLocal(block, TypeSystemServices.ArrayType, 'ref')
-        _len = TempLocal(block, TypeSystemServices.IntType, 'len')
-        _i = TempLocal(block, TypeSystemServices.IntType, 'i')
-
-        loop = [|
-            $_ref = $iter
-            $_len = $_ref.length
-            $_i = 0
-            while $_i < $_len:
-                $decl = $_ref[$_i++]
-                $block
+        result = [|
+            $tmpref = $mie
+            try:
+                $whilest
+            except __e if __e is Boo.STOP:
+                pass
+            ensure:
+                $tmpref.close()
         |]
 
-        return loop
+        if node.OrBlock or node.ThenBlock:
+            flagref = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, Context.GetUniqueName('flag'))
+            result.Insert(1, [| $flagref = Boo.LOOP_OR | Boo.LOOP_THEN |])
 
-    def MakeLoopForList(decl as ReferenceExpression, iter as Expression, block as Block):
-    """ Lists are transformed just like arrays """
-        return MakeLoopForArray(decl, iter, block)
+            if node.OrBlock:
+                whilest.Block.Insert(0, [| $flagref &= ~Boo.LOOP_OR |])
+                st = [|
+                    if $flagref & Boo.LOOP_OR:
+                        $(node.OrBlock)
+                |]
+                result.Add(st)
 
-    def MakeLoopForEnumerable(decl as ReferenceExpression, iter as Expression, block as Block):
-    """ Enumerables in general are iterated with the help of the runtime """
-        loop = [|
-            Block:
-                Boo.each( $iter ) do($decl):
-                    $block
-        |].Body
+            if node.ThenBlock:
+                FlagBreaks(flagref, whilest.Block)
+                st = [|
+                    if $flagref & Boo.LOOP_THEN:
+                        $(node.ThenBlock)
+                |]
+                result.Add(st)
 
-        return loop
+        return result
 
-    def MakeLoopForGenerator(decl as ReferenceExpression, iter as Expression, block as Block):
-    """ Consumes a generator """
+    protected def ForToEach(node as ForStatement) as Statement:
+        # Handle nested loops
+        Visit node.Block
 
-        _ref = TempLocal(block, TypeSystemServices.IEnumerableGenericType, 'ref')
+        ProcessContinueBreakForEach(node.Block)
 
-        loop = [|
-            $_ref = $iter
-            while ($decl = $_ref.next()) is not STOP:
-                $block
+        # TODO: Unlike Boo, the loop declarations are bound to the loop scope
+        callback = BlockExpression(Body: node.Block)
+        for decl in node.Declarations:
+            param = ParameterDeclaration(decl.Name, decl.Type, LexicalInfo: decl.LexicalInfo)
+            callback.Parameters.Add(param)
+
+        # Use the runtime helper to iterate
+        each = CodeBuilder.CreateMethodReference(MethodCache.Each)
+        mie = [| $each($(node.Iterator), $callback) |]
+        return ExpressionStatement(mie)
+
+    protected def ForToArray(node as ForStatement) as Statement:
+        Visit node.Block
+
+        tmpref = TempLocalInMethod(CurrentMethod, node.Iterator.Entity, Context.GetUniqueName('for'))
+
+        # Annotate the loop index name for the printer
+        node['loop-index'] = Context.GetUniqueName('idx')
+        tmpidx = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, node['loop-index'])
+
+        # Handle declaration unpacking
+        if len(node.Declarations) > 1:
+            eval = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
+            tmpupk = TempLocalInMethod(CurrentMethod, node.Iterator.ExpressionType, Context.GetUniqueName('upk'))
+            eval.Arguments.Add([| $tmpupk = $tmpref[$tmpidx] |])
+            for i as int, decl as Declaration in enumerate(node.Declarations):
+                eval.Arguments.Add([| $(ReferenceExpression(decl.Name)) = $tmpupk[$i] |])
+            node.Block.Insert(0, eval)
+        else:
+            node.Block.Insert(0, [| $(ReferenceExpression(node.Declarations[0].Name)) = $tmpref[$tmpidx] |])
+
+        result = [|
+            $tmpref = $(node.Iterator)
+            $node
         |]
 
-        return loop
+        # Override the iterator so it's properly processed by the printer
+        node.Iterator = CodeBuilder.CreateMethodInvocation([| BooJs.Lang.Builtins.range |], MethodCache.Range1, [| $tmpref.length |])
 
+        return result
 
-    def TempLocal(node as Node, type as IType, name as string):
-    """ Defines a new temporary variable in the enclosing method or block expression
-    """
-        # Find the enclosing method
-        parent = node
-        while parent:
-            if parent isa Method:
-                return TempLocalInMethod(parent, type, name)
-            elif parent isa BlockExpression:
-                return TempLocalInBlock(parent, type, name)
-            parent = parent.ParentNode
+    override def OnForStatement(node as ForStatement):
+        # Make sure we only normalize once
+        return if node.ContainsAnnotation('for-normalized')
+        node['for-normalized'] = true
 
-        raise 'No parent Method or BlockExpression found'
+        # If it contains a yield statement or has and Or or Then block
+        if HasYield(node) or node.OrBlock or node.ThenBlock:
+            ReplaceCurrentNode ForToWhile(node)
+        # Check if it can be optimized in the generated output
+        elif IsLiteralRange(node.Iterator):
+            # Nothing to do here, we will process it before generating the Javascript
+            Visit node.Block
+        # If it's an array create an optimizable version of the loop
+        elif IsArray(node.Iterator):
+            ReplaceCurrentNode ForToArray(node)
+        # If it has a return statement use a while
+        elif HasReturn(node):
+            ReplaceCurrentNode ForToWhile(node)
+        # Any other case uses the Boo.each runtime method to handle the iteration
+        else:
+            ReplaceCurrentNode ForToEach(node)
 
-    def TempLocalInMethod(method as Method, type as IType, name as string):
+    override def LeaveWhileStatement(node as WhileStatement):
+        if node.OrBlock or node.ThenBlock:
+            ReplaceCurrentNode ProcessWhile(node)
+
+    protected def ProcessWhile(node as WhileStatement) as Statement:
+        tmpref = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, Context.GetUniqueName('flag'))
+        result = [|
+            $tmpref = Boo.LOOP_OR | Boo.LOOP_THEN
+            while $(node.Condition):
+                $tmpref &= ~Boo.LOOP_OR
+                $(node.Block)
+        |]
+
+        if node.OrBlock and not node.OrBlock.IsEmpty:
+            st = [|
+                if $tmpref & Boo.LOOP_OR:
+                    $(node.OrBlock)
+            |]
+            result.Add(st)
+
+        if node.ThenBlock and not node.ThenBlock.IsEmpty:
+            FlagBreaks(tmpref, node.Block)
+            st = [|
+                if $tmpref & Boo.LOOP_THEN:
+                    $(node.ThenBlock)
+            |]
+            result.Add(st)
+
+        return result
+
+    protected def TempLocalInMethod(method as Method, type as IType, name as string):
         def exists(name):
             found = false
             for local in method.Locals:
@@ -320,7 +311,6 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
         # Find a name that doesn't exists
         cnt = 1
-        name = '__' + name
         while exists(name):
             name = name + cnt
             cnt++
@@ -329,209 +319,39 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         CodeBuilder.DeclareLocal(method, name, type)
         return ReferenceExpression(Name:name)
 
-    def TempLocalInBlock(block as BlockExpression, type as IType, name as string):
-
-        def exists(name):
-            for st in block.Body.Statements:
-                if st isa DeclarationStatement \
-                and (st as DeclarationStatement).Declaration.Name == name:
-                    return true
-            return false
-
-        # Find a name that doesn't exists
-        cnt = 1
-        name = '__' + name
-        while exists(name):
-            name = name + cnt
-            cnt++
-
-        # Inject the variable declaration
-        decl = DeclarationStatement(Declaration:Declaration(name, SimpleTypeReference(type.Name)))
-        block.Body.Insert(0, decl)
-        return ReferenceExpression(Name:name)
-
-
-    def ProcessContinueBreakReturn(node as Block) as bool:
+    protected def ProcessContinueBreakForEach(node as Block) as void:
     """ Replaces the continue keyword with a return and the break one with a return of Boo.STOP
     """
-        return false if not node
-
-        has_return = false
         for st in node.Statements:
             if st.NodeType == NodeType.ContinueStatement:
-                node.Statements.Replace(st, [| return |])
+                node.Replace(st, ReturnStatement(st.LexicalInfo))
             elif st.NodeType == NodeType.BreakStatement:
                 boo = CodeBuilder.CreateTypedReference('Boo', TypeSystemServices.BuiltinsType)
-                node.Statements.Replace(st, [| return $boo.STOP |])
-            elif st.NodeType == NodeType.ReturnStatement:
-                ret = st as ReturnStatement
-
-                # HACK: Ugly way to get a reference to the constructor :(
-                ctor as IConstructor
-                for itm in ReturnValueType.GetConstructors():
-                    ctor = itm
-
-                cie = CodeBuilder.CreateConstructorInvocation(ctor, ret.Expression)
-                cie.LexicalInfo = ret.Expression.LexicalInfo
-                node.Statements.Replace(st, [| raise $cie |])
-                has_return = true
+                node.Replace(st, ReturnStatement(st.LexicalInfo, Expression: [| $boo.STOP |]))
             elif st.NodeType == NodeType.Block:
-                if ProcessContinueBreakReturn(st):
-                    has_return = true
-            elif st.NodeType == NodeType.IfStatement:
-                if ProcessContinueBreakReturn((st as IfStatement).TrueBlock):
-                    has_return = true
-                if ProcessContinueBreakReturn((st as IfStatement).FalseBlock):
-                    has_return = true
-            elif st.NodeType == NodeType.ForStatement:
-                if ProcessContinueBreakReturn((st as ForStatement).OrBlock):
-                    has_return = true
-                if ProcessContinueBreakReturn((st as ForStatement).ThenBlock):
-                    has_return = true
-            elif st.NodeType == NodeType.WhileStatement:
-                if ProcessContinueBreakReturn((st as WhileStatement).OrBlock):
-                    has_return = true
-                if ProcessContinueBreakReturn((st as WhileStatement).ThenBlock):
-                    has_return = true
+                ProcessContinueBreakForEach(st as Block)
+            elif ifst = st as IfStatement:
+                ProcessContinueBreakForEach(ifst.TrueBlock)
+                ProcessContinueBreakForEach(ifst.FalseBlock) if ifst.FalseBlock
+            elif tryst = st as TryStatement:
+                ProcessContinueBreakForEach(tryst.ProtectedBlock)
+                for hdlr in tryst.ExceptionHandlers:
+                    ProcessContinueBreakForEach(hdlr.Block)
+                ProcessContinueBreakForEach(tryst.EnsureBlock) if tryst.EnsureBlock
 
-        return has_return
-
-    def ProcessBreakForThenFlag(node as Block, flag as string):
-    """ Signals the use of the break keyword by setting a flag
+    protected def FlagBreaks(tmpref as ReferenceExpression, block as Block):
+    """ Prepends all break statements with an unflagging operation for the Then block
     """
-        return if not node
-
-        for st in node.Statements.ToArray():
-            if st.NodeType == NodeType.BreakStatement:
-                idx = node.Statements.IndexOf(st)
-                reference = ReferenceExpression(Name: flag)
-                stmt = ExpressionStatement(Expression:[| $reference = true |])
-                node.Statements.Insert(idx, stmt)
-            elif st.NodeType == NodeType.Block:
-                ProcessBreakForThenFlag(st, flag)
-            elif st.NodeType == NodeType.IfStatement:
-                ProcessBreakForThenFlag((st as IfStatement).TrueBlock, flag)
-                ProcessBreakForThenFlag((st as IfStatement).FalseBlock, flag)
-            elif st.NodeType == NodeType.ForStatement:
-                ProcessBreakForThenFlag((st as ForStatement).OrBlock, flag)
-                ProcessBreakForThenFlag((st as ForStatement).ThenBlock, flag)
-            elif st.NodeType == NodeType.WhileStatement:
-                ProcessBreakForThenFlag((st as WhileStatement).OrBlock, flag)
-                ProcessBreakForThenFlag((st as WhileStatement).ThenBlock, flag)
-
-
-
-    def OptimizeRange(decl as ReferenceExpression, node as ForStatement):
-    """ Avoids the need to evaluate range as a generator for the simplest case 
-    """
-        if not node.Iterator isa MethodInvocationExpression:
-            return null
-
-        m = node.Iterator as MethodInvocationExpression
-        # TODO: Use proper detection via types
-        if m.Target.ToString() != 'BooJs.Lang.Builtins.range':
-            return null
-        if len(m.Arguments) != 1:
-            return null
-
-        return [|
-            $decl = -1
-            while $decl < $(m.Arguments[0]):
-                $(decl)++
-                $(node.Block)
-        |]
-
-
-    def OnWhileStatement(node as WhileStatement):
-        Visit node.Block
-        DesugarizeOrThenBlocks(node)
-
-
-    def DesugarizeOrThenBlocks(node as WhileStatement):
-    """ Converts `or:` and `then:` blocks into simple ifs
-    """
-        if node.ThenBlock:
-            # Check for nested before modifying it
-            Visit node.ThenBlock
-
-            ProcessThenBlock(node, node.Block, node.ThenBlock)
-            node.ThenBlock = null
-
-        if node.OrBlock:
-            # Check for nested before modifying it
-            Visit node.OrBlock
-
-            ProcessOrBlock(node, node.Block, node.OrBlock)
-            node.OrBlock = null
-
-    def DesugarizeOrThenBlocks(node as ForStatement):
-    """ Converts `or:` and `then:` blocks into simple ifs
-    """
-        if node.ThenBlock:
-            # Check for nested before modifying it
-            Visit node.ThenBlock
-
-            ProcessThenBlock(node, node.Block, node.ThenBlock)
-            node.ThenBlock = null
-
-        if node.OrBlock:
-            # Check for nested before modifying it
-            Visit node.OrBlock
-
-            ProcessOrBlock(node, node.Block, node.OrBlock)
-            node.OrBlock = null
-
-
-    def ProcessThenBlock(node as Statement, body as Block, block as Block):
-        stmts = (node.ParentNode as Block).Statements
-
-        # Setup a flag in the parent block
-        watch_name = Context.GetUniqueName('then')
-        watch_ref = ReferenceExpression(watch_name)
-        watch_decl = DeclarationStatement(
-            Declaration:Declaration(Name:watch_name),
-            Initializer:BoolLiteralExpression(Value:false)
-        )
-        node_idx = stmts.IndexOf(node)
-        stmts.Insert(node_idx, watch_decl)
-
-        # Trigger the flag if the loop is entered
-        ProcessBreakForThenFlag(body, watch_name)
-
-        # Check if the loop exited normally (no break)
-        cond = [|
-            if not $watch_ref:
-                $(block)
-        |]
-        node_idx = stmts.IndexOf(node)
-        stmts.Insert(node_idx+1, cond)
-
-
-    def ProcessOrBlock(node as Statement, body as Block, block as Block):
-        stmts = (node.ParentNode as Block).Statements
-
-        # Setup a flag in the parent block
-        watch_name = Context.GetUniqueName('or')
-        watch_ref = ReferenceExpression(watch_name)
-        watch_decl = DeclarationStatement(
-            Declaration:Declaration(Name:watch_name),
-            Initializer:BoolLiteralExpression(Value:false)
-        )
-        node_idx = stmts.IndexOf(node)
-        stmts.Insert(node_idx++, watch_decl)
-
-        # Trigger the flag if the loop is entered
-        body.Statements.Insert(
-            0,
-            ExpressionStatement(
-                Expression:[| $watch_ref = true |]
-            )
-        )
-
-        # Check if the loop was not entered at all
-        cond = [|
-            if not $watch_ref:
-                $(block)
-        |]
-        node_idx = stmts.IndexOf(node)
-        stmts.Insert(node_idx+1, cond)
+        for st in block.Statements:
+            if ifst = st as IfStatement:
+                FlagBreaks(tmpref, ifst.TrueBlock)
+                FlagBreaks(tmpref, ifst.FalseBlock) if ifst.FalseBlock
+            elif tryst = st as TryStatement:
+                FlagBreaks(tmpref, tryst.ProtectedBlock)
+                FlagBreaks(tmpref, tryst.EnsureBlock) if tryst.EnsureBlock
+                for hdlr in tryst.ExceptionHandlers:
+                    FlagBreaks(tmpref, hdlr.Block)
+            elif brkst = st as BreakStatement:
+                idx = block.Statements.IndexOf(brkst)
+                block.Insert(idx, [| $tmpref &= ~Boo.LOOP_THEN |])
+                return

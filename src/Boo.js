@@ -48,15 +48,13 @@
 
     // Main namespace
     var Boo = {
-            BOO_RUNTIME_VERSION: '0.0.1',
-            UNDEF: undefined
-        },
+        BOO_RUNTIME_VERSION: '0.0.1',
+        UNDEF: undefined,
+        // Used in loops to flag branching
+        LOOP_OR: 1,
+        LOOP_THEN: 2,
         // Used as a unique indentifier when we want to stop iterating a generator
-        STOP = Boo.STOP = typeof StopIteration !== 'undefined' ? StopIteration : {};
-
-    // Used to return a value while iterating a generator
-    Boo.ReturnValue = function (v) {
-        this.value = v;
+        STOP: typeof StopIteration !== 'undefined' ? StopIteration : {}
     };
 
     // Assertion error
@@ -172,42 +170,35 @@
     Boo.sourcemap = function (srcmap) {
     };
 
-    // Raises an exception annotating it with its location in the boo source
-    // In debug mode the compiler will route all raise statements thru this
-    // function, reporting the boo source filename and line where it was raised
-    Boo.raise = function (error, filename, line) {
-        error.boo_filename = filename;
-        error.boo_line = line;
-        throw error;
-    };
-
     // Note: We don't use the native forEach method since this is custom tailored
     //       to the generated code. It handles unpacking and iteration stopage.
     var each = Boo.each = function (obj, iterator, context) {
         if (obj === null || typeof obj === 'undefined') return;
         if (typeof obj === 'string') obj = obj.split('');
+
+        var i;
         if (obj.length === +obj.length) {
             // Mode is computed based on the following rules:
             //   - If the callback only has one argument the value is passed as is
             //   - If it has more than one the argument is unpacked (apply style invocation)
-            var i, l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
+            var l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
             for (i = 0; i < l; i++) {
-                if (i in obj && iterator[mode](context, obj[i]) === STOP) return;
+                if (i in obj && iterator[mode](context, obj[i]) === Boo.STOP) return;
             }
         } else if (typeof obj.next === 'function') {
-            var i = 0;
+            i = 0;
             try {
-                while (iterator.call(context, obj.next(), i) !== STOP) { i++; }
+                while (iterator.call(context, obj.next(), i) !== Boo.STOP) { i++; }
             } catch (e) {
-                if (e !== STOP) throw e;
+                if (e !== Boo.STOP) throw e;
             } finally {
                 obj.close();
             }
         } else {
             // For dictionaries we always pass the value and the key
-            for (var key in obj) {
-                if (hop(obj, key)) {
-                    if (iterator.call(context, obj[key], key) === STOP) return;
+            for (i in obj) {
+                if (hop(obj, i)) {
+                    if (iterator.call(context, obj[i], i) === Boo.STOP) return;
                 }
             }
         }
@@ -215,6 +206,26 @@
 
     // Generator factory
     Boo.generator = function (closure) {
+        // Convert array/object to a generator
+        if (!typeIs(closure, 'Function')) {
+            // Forward generators
+            if (closure && hop(closure, 'next') && hop(closure, 'close') &&
+                typeof closure.next === 'function' && typeof closure.close === 'function') {
+                return closure;
+            }
+
+            var idx = 0, data = closure;
+            
+            if (!typeIs(data, 'Array'))
+                data = Boo.Hash.values(data);
+
+            closure = function (v, e) {
+                if (typeof e !== 'undefined') throw e;
+                if (idx >= data.length) throw Boo.STOP;
+                return data[idx++];
+            };
+        }
+
         return {
             next: closure,  // next()
             send: closure,  // send(value)
@@ -223,9 +234,9 @@
             },
             close: function () {
                 try {
-                    closure(undefined, STOP);
+                    closure(undefined, Boo.STOP);
                 } catch (e) {
-                    if (e !== STOP) throw e;
+                    if (e !== Boo.STOP) throw e;
                 }
             }
         };
@@ -277,12 +288,11 @@
 
     // Concatenates the elements of the arrays given as argument
     var cat = Boo.cat = function (args) {
-        var values = [];
+        var values = [], fn = function (v) { values.push(v); };
 
+        args = Boo.enumerable(args);
         for (var i = 0, l = args.length; i < l; i++) {
-            for (var ii = 0, ll = args[i].length; ii < ll; ii++) {
-                values.push(args[i][ii]);
-            }
+            each(args[i], fn);
         }
 
         return values;
@@ -322,6 +332,10 @@
     // Reduces a list of items using a callback to a single one
     var reduce = Boo.reduce = function (list, callback, value) {
         if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
+
+        // Make sure we always work with an array
+        list = Boo.enumerable(list);
+
         var i = 0, l = +list.length;
      
         if (arguments.length < 3) {
@@ -342,17 +356,41 @@
         return value;
     };
 
-    // Builds a list of lists using one item from each given array
+    // Builds a list of lists using one item from each given array (zip shortest)
     var zip = Boo.zip = function (args) {
-        var shortest = reduce(args, function (a, b) {
-            return a.length < b.length ? a : b;
-        });
+        var i, fn, result = [],
+            all_arrays = reduce(args, true, function (a, b) { return a && typeIs(b, 'Array'); });
 
-        var i, result = [], fn = function (arg) { return arg[i]; };
-        for (i = 0; i < shortest.length; i++) {
-            result[i] = map(args, fn);
+        if (all_arrays) {
+            var shortest = reduce(args, function (a, b) {
+                return a.length < b.length ? a : b;
+            });
+
+            fn = function (arg) { return arg[i]; };
+            for (i = 0; i < shortest.length; i++) {
+                result[i] = map(args, fn);
+            }
+            return result;
+        } else {
+            // If there is a generator among them
+            fn = function (arg) { return arg[i]; };
+            args = map(args, Boo.generator);
+            // Initialize
+            for (i = 0; i < args.length; i++) args[i] = args[i]();
+            // Consume
+            while (true) {
+                try {
+                    result[i] = map(args, fn);
+                } catch (e) {
+                    if (e !== Boo.STOP) throw e;
+                    break;
+                }
+            }
+            // Terminate
+            for (i = 0; i < args.length; i++) args[i].close();
+
+            return result;
         }
-        return result;
     };
 
     // Converts any enumerable into an array, casting its values to a given type.
@@ -477,13 +515,13 @@
 
     // Obtains the length of a value
     Boo.len = function (value) {
-        if (value.length === +value.length) {
-            return value.length;
-        }
         if (value !== null && typeof value === 'object') {
-            if (typeof value.length === 'function') {
+            if (value.length === +value.length) {
+                return value.length;
+            } else if (typeof value.length === 'function') {
                 return value.length();
             }
+
             var k, length = 0;
             for (k in value) {
                 if (hop(value, k)) {
@@ -492,6 +530,7 @@
             }
             return length;
         }
+
         throw new Error('Unable to obtain length for value');
     };
 
@@ -501,48 +540,6 @@
     // Compares two values for equality
     Boo.op_Equality = function (lhs, rhs) {
         return lhs == rhs;
-    };
-
-    // Perform the modulus operation on two operands
-    Boo.op_Modulus = function (lhs, rhs) {
-        // Check if we should format a string
-        if (typeIs(lhs, 'String') && typeIs(rhs, 'Array')) {
-            return lhs.replace(/\{(\d+)\}/g, function (m, capt) {
-                return rhs[capt];
-            });
-        } else {
-            return lhs % rhs;
-        }
-    };
-
-    // Perform an addition operation on two operands
-    Boo.op_Addition = function (lhs, rhs) {
-        return lhs + rhs;
-    };
-
-    // Perform a multiply operation on two operands
-    Boo.op_Multiply = function (lhs, rhs) {
-        if (typeIs(lhs, 'Number')) {
-            var _ = lhs;
-            lhs = rhs;
-            rhs = _;
-        }
-        if (typeIs(lhs, 'String') && typeIs(rhs, 'Number'))
-            return Boo.String.op_Multiply(lhs, rhs);
-        if (typeIs(lhs, 'Array'))
-            return Boo.Array.op_Multiply(rhs, lhs);
-
-        return lhs * rhs;
-    };
-
-    // Perform a regexp match
-    Boo.op_Match = function (lhs, rhs) {
-        // TODO: A string shall mean substring search instead of regexp?
-        if (typeIs(rhs, 'string')) rhs = new RegExp(rhs);
-        return rhs.test(lhs);
-    };
-    Boo.op_NotMatch = function (lhs, rhs) {
-        return !Boo.op_Match(lhs, rhs);
     };
 
 
@@ -615,30 +612,30 @@
             return typeof value === 'undefined' ? null : value;
         },
         binary: function (op, lhs, rhs) {
-            var lhs_t = typeOf(lhs),
-                rhs_t = typeOf(rhs);
+            var lhs_t, rhs_t;
 
+            lhs_t = typeOf(lhs);
             if (Boo[lhs_t] && Boo[lhs_t][op])
                 return Boo[lhs_t][op](lhs, rhs);
+
+            rhs_t = typeOf(rhs);
             if (Boo[rhs_t] && Boo[rhs_t][op])
                 return Boo[rhs_t][op](rhs, lhs);
 
-            throw new Error('Unsupported binary operator (' + op + ') for operands of types ' + lhs_t + ' and ' + rhs_t);
+            throw new TypeError('Unsupported binary operator (' + op + ') for operands of types ' + lhs_t + ' and ' + rhs_t);
         }
     };
 
     // Constructor for hashes
     Boo.Hash = function (items) {
-        // Make sure we call it as a constructor
-        if (!(this instanceof Boo.Hash)) {
-            return new Boo.Hash(items);
-        }
-
+        var obj = {};
         if (items) {
             for (var i = 0; i < items.length; i++) {
-                this[items[i][0]] = items[i][1];
+                obj[items[i][0]] = items[i][1];
             }
         }
+
+        return obj;
     };
 
     // Obtains the keys of an object
@@ -657,14 +654,6 @@
             result.push(enumerated[i][1]);
         }
         return result;
-    };
-
-    // TODO: This should be handled by the compiler!
-    Boo.Hash.prototype.get_Item = function (key) {
-        return this[key];
-    };
-    Boo.Hash.prototype.set_Item = function (key, value) {
-        this[key] = value;
     };
 
 
