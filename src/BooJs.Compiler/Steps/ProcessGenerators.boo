@@ -8,9 +8,6 @@ import Boo.Lang.Compiler.TypeSystem.Internal
 class ProcessGenerators(AbstractTransformerCompilerStep):
 """
     Specialized step to process generators replacing Boo's one.
-
-    TODO: State to run just before this one that converts all loops to while ones
-          if the method is a generator
 """
     class TransformGenerator(FastDepthFirstVisitor):
         [getter(States)]
@@ -34,6 +31,9 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             return len(States)-1
 
         def OnExpressionStatement(node as ExpressionStatement):
+            Current.Add(node)
+
+        def OnForStatement(node as ForStatement):
             Current.Add(node)
 
         def OnYieldStatement(node as YieldStatement):
@@ -91,8 +91,10 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
             # Register the states covered by this protected block
             tryblock = States[trystate] as Block
+            catchst = [| $exceptstate |]
             for state in range(trystate, exceptstate):
-                tryblock.Insert(0, [| __catch[$state] = $exceptstate |] )
+                catchst = [| __catch[$state] = $catchst |]
+            tryblock.Insert(0, catchst)
 
             # Create a new state for exiting the try/except block
             afterstate = CreateState()
@@ -192,7 +194,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 try:
                     $statemachine
                 except:
-                    if __e is not Boo.STOP and __state in __catch:
+                    if __state in __catch:
                         __error = null  # Make sure any reported error is removed
                         __state = __catch[__state]
                         goto statemachine

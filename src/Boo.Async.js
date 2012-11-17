@@ -1,4 +1,4 @@
-Boo.define('Boo.Async', ['Boo'], function (Boo) {
+Boo.define('Boo.Async', ['exports', 'Boo'], function (exports, Boo) {
 
     var DeferredState = {
         Unresolved: 0,
@@ -231,11 +231,9 @@ Boo.define('Boo.Async', ['Boo'], function (Boo) {
     }
 
 
-    return {
-        Deferred: Deferred,
-        async: async,
-        when: when,
-        sleep: sleep
-    };
-
+    // Expose public API
+    exports.Deferred = Deferred;
+    exports.async = async;
+    exports.when = when;
+    exports.sleep = sleep;
 });

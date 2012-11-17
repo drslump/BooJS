@@ -64,7 +64,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         Boo.each(obj, {v,k| ...})
 """
 
-    class NodeFinder(FastDepthFirstVisitor):
+    class NodeFinder(DepthFirstVisitor):
         [property(Accepted)]
         _accepted as (NodeType)
 
@@ -79,7 +79,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             return _found
 
         override def Visit(node as Node):
-            if _found:
+            if node is null or _found:
                 return
             elif node.NodeType in Accepted:
                 _found = true
