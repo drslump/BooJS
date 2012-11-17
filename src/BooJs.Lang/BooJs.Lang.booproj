@@ -81,6 +81,7 @@
     <Compile Include="Macros\ConstMacro.boo" />
     <Compile Include="Globals\globals.boo" />
     <Compile Include="Browser.boo" />
+    <Compile Include="Macros\WithMacro.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
