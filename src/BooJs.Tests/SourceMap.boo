@@ -52,7 +52,6 @@ class SourceMapTest:
         builder.Map('foo.boo', 1, 1, 2, 2, 'foo')
 
         json = builder.ToJSON()
-        print json
         assert json =~ @/"version":3/
         assert json =~ @/"file":"assembly.js"/
         assert json =~ @/"names":\["foo"\]/
