@@ -208,7 +208,7 @@ Transforms a Boo AST into a Mozilla AST
         ifst = Moz.IfStatement(loc: loc(node))
         ifst.test = Apply(node.Condition)
         ifst.consequent = Apply(node.TrueBlock)
-        if node.FalseBlock:
+        if node.FalseBlock and not node.FalseBlock.IsEmpty:
             blk = node.FalseBlock
             if len(blk.Statements) == 1 and blk.FirstStatement isa IfStatement:
                 ifst.alternate = Apply(blk.FirstStatement)
