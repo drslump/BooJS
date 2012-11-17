@@ -61,6 +61,7 @@ Desugarizes the safe access operator.
     override def OnSlicingExpression(node as SlicingExpression):
         tern = ProcessTargets(node)
         if tern:
+            Visit node.Indices
             ReplaceCurrentNode tern
         else:
             super(node)
