@@ -72,16 +72,16 @@
     <Compile Include="Globals\Boolean.boo" />
     <Compile Include="Globals\Date.boo" />
     <Compile Include="Globals\JSON.boo" />
-    <Compile Include="Api\Dom2.boo" />
-    <Compile Include="Api\Dom3.boo" />
-    <Compile Include="Api\jQuery.boo" />
     <Compile Include="Macros\ExtensionAttribute.boo" />
     <Compile Include="RuntimeServices.boo" />
     <Compile Include="Async.boo" />
     <Compile Include="Macros\ConstMacro.boo" />
     <Compile Include="Globals\globals.boo" />
-    <Compile Include="Browser.boo" />
     <Compile Include="Macros\WithMacro.boo" />
+    <Compile Include="Browser\Dom2.boo" />
+    <Compile Include="Browser\Dom3.boo" />
+    <Compile Include="Browser\globals.boo" />
+    <Compile Include="jQuery.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -97,6 +97,7 @@
     <Folder Include="Globals\" />
     <Folder Include="Macros\" />
     <Folder Include="Api\" />
+    <Folder Include="Browser\" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>

@@ -1,4 +1,4 @@
-namespace BooJs.Lang.Async
+namespace Async
 
 import System
 import Boo.Lang.Environments
@@ -65,12 +65,12 @@ macro await:
         yield [| yield $( ArrayLiteralExpression(Items: exprs) ) |]
 
     if len(decls) == 1:
-        yield [| $(decls[0]) = BooJs.Lang.Async.__value() |]
+        yield [| $(decls[0]) = Async.__value() |]
     elif len(decls) > 1:
         unpack = UnpackStatement()
         for decl as ReferenceExpression in decls:
             unpack.Declarations.Add(Declaration(Name: decl.Name))
-        unpack.Expression = [| BooJs.Lang.Async.__valuelist() |]
+        unpack.Expression = [| Async.__valuelist() |]
         yield unpack
 
 
@@ -88,7 +88,7 @@ class AsyncAttribute(AbstractAstAttribute):
 
 
 interface IPromise:
-    def _then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise
+    def @then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise
 
 
 internal class Promise(IPromise):
@@ -106,7 +106,7 @@ internal class Promise(IPromise):
         pass
 
     [Transform( then($1, $2, $3) )]
-    virtual def _then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
+    virtual def @then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
         pass
 
     virtual def cancel():
@@ -126,7 +126,6 @@ class Deferred:
 
     def constructor():
         pass
-
     def constructor(cancel as callable):
         pass
 
@@ -142,8 +141,7 @@ class Deferred:
     def progress(update):
         pass
 
-    [Transform( then($1, $2, $3) )]
-    def _then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
+    def @then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
         pass
 
     def cancel():

@@ -3,7 +3,7 @@ Interfaces for DOM Level 2
 
 Ref: http://www.w3.org/TR/DOM-Level-2-Core/idl-definitions.html
 """
-namespace BooJs.Lang.Api.Dom2
+namespace Browser.Dom2
 
 interface Node:
     /*

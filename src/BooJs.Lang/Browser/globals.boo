@@ -1,4 +1,4 @@
-namespace BooJs.Lang.Browser
+namespace Browser
 
 import BooJs.Lang.Extensions
 

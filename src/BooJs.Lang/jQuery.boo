@@ -1,16 +1,14 @@
-namespace BooJs.Lang.Api
-
 import BooJs.Lang.Globals(Object)
 import BooJs.Lang.Builtins(ICallable)
 import BooJs.Lang.Extensions
-import BooJs.Lang.Api.Dom2 as DOM
-import BooJs.Lang.Async(IPromise)
+import Browser.Dom2 as DOM
+import Async(IPromise)
 
 [Extern(Factory:true)]
 class jQuery(ICallable):
 
     interface Promise(IPromise):
-        def _then(ok as callable, error as callable, progress as callable) as Promise
+        def @then(ok as callable, error as callable, progress as callable) as Promise
         def done(cb as callable) as Promise
         def fail(cb as callable) as Promise
         def always(cb as callable) as Promise
