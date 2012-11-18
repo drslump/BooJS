@@ -3,6 +3,7 @@
 // Copyright 2012 Iván -DrSlump- Montes <drslump@pollinimini.net>
 
 /*jshint indent:4 lastsemic:false curly:false */
+/*global StopIteration: false */
 
 (function (exports, undefined) {
     // Short alias for hasOwnProperty
