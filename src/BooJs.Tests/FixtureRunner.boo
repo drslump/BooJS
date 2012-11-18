@@ -2,13 +2,15 @@ import NUnit.Framework
 
 import System.IO(Path, Directory, StreamReader)
 import System.Reflection(Assembly)
+import System.Timers(Timer)
+
 
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 
 # The JavaScript interpretter
 import Jurassic(ScriptEngine, JavaScriptException, CompatibilityMode)
-import Jurassic.Library(ObjectInstance, JSFunctionAttribute)
+import Jurassic.Library(ObjectInstance, FunctionInstance, JSFunctionAttribute)
 
 
 class ConsoleMock(ObjectInstance):
@@ -27,6 +29,37 @@ class ConsoleMock(ObjectInstance):
 
     def reset():
         _output.Clear()
+
+static class Window:
+    timers = List[of Timer]()
+
+    def hasTimers():
+        return len(timers) > 0
+
+    def clearTimers():
+        for timer in timers:
+            timer.Stop()
+        timers.Clear()
+
+    def waitTimers():
+        while hasTimers():
+            System.Threading.Thread.Sleep(200)
+
+    [JSFunction(Name:'setTimeout')]
+    def setTimeout(callback as FunctionInstance, millisec as int) as int:
+        timer = Timer(System.Math.Max(millisec, 1))
+        timers.Add(timer)
+        timer.AutoReset = false
+        timer.Enabled = true
+        timer.Elapsed += do:
+            try:
+                callback.Call(callback)
+            ensure:
+                timer.Stop()
+                timers.Remove(timer)
+
+        timer.Start()
+        return -1
 
 
 class FixtureRunner:
@@ -148,6 +181,8 @@ class FixtureRunner:
             #engine.EnableDebugging = true
 
             # Configure the global environment
+            self._engine.SetGlobalFunction('setTimeout', Window.setTimeout)
+
             console = ConsoleMock(self._engine)
             self._engine.SetGlobalValue('console', console)
 
@@ -164,6 +199,8 @@ class FixtureRunner:
             reader = System.IO.StreamReader(stream)
             self._engine.Execute(reader.ReadToEnd())
 
+            self._engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.Async.js')
+
         return self._engine
 
     static def runTest(code as string, expected as string):
@@ -179,8 +216,12 @@ class FixtureRunner:
 
           try:
             engine.Execute(code)
+            Window.waitTimers()
+
             Assert.AreEqual(expected, console.output())
           except ex:
+            Window.clearTimers()
+
             jsex = ex as Jurassic.JavaScriptException
             if jsex:
                 jsobj = jsex.ErrorObject as Jurassic.Library.ObjectInstance
