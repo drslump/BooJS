@@ -1,4 +1,7 @@
+/*global Boo: false, setImmediate: false, setTimeout: false */
+
 Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
+    'use strict';
 
     var DeferredState = {
         Unresolved: 0,
@@ -6,6 +9,13 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         Rejected: 2,
         Cancelled: 3
     };
+
+    var enqueue = (typeof process === 'object' && typeof process.nextTick === 'function')
+                ? process.nextTick
+                : (typeof setImmediate === 'function')
+                // http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html
+                ? setImmediate
+                : function (cb) { setTimeout(cb, 0); };
 
     function Promise(deferred) {
         return {
@@ -55,13 +65,13 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         function notify(listener) {
             var func = state === DeferredState.Rejected ? listener.reject : listener.resolve;
             if (func) {
-                setTimeout(function () {
+                enqueue(function () {
                     try {
                         listener.next.resolve(func(result));
                     } catch (e) {
                         listener.next.reject(e);
                     }
-                }, 0);
+                });
             } else if (state === DeferredState.Rejected) {
                 listener.next.reject(result);
             } else {
@@ -240,6 +250,8 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
     // Expose public API
     exports.Deferred = Deferred;
+    exports.DeferredState = DeferredState;
+    exports.enqueue = enqueue;
     exports.async = async;
     exports.when = when;
     exports.sleep = sleep;
