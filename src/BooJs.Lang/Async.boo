@@ -148,12 +148,13 @@ class Deferred:
         pass
 
 
-
+def enqueue(fn as callable):
+    pass
 
 def async(fn as callable) as IPromise:
     pass
 
-def when(*promises as (IPromise)) as IPromise:
+def when(*promises as (object)) as IPromise:
     pass
 
 def sleep(ms as int) as IPromise:
