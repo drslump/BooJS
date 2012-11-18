@@ -75,7 +75,7 @@
 
     // State for the module loader
     var mod_waiting = {},
-        mod_defined = { '': exports, 'Boo': Boo };
+        mod_defined = { 'Boo': Boo };
 
     // AMD style module loader. All Boo modules (files) wrap their
     // contents in a call to this function. This implementation is
@@ -136,9 +136,6 @@
 
         // Register nested namespaces
         // TODO: Handle nested levels
-        // TODO: We need to change this logic. When defining an empty namespace for example
-        //       it's aliased to the window object, which contains a ton of members outside of
-        //       Boo. 
         module = mod_defined[name];
         for (member in module) {
             if (hop(module, member) && typeIs(module[member], 'Object')) {

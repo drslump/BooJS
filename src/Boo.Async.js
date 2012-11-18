@@ -1,4 +1,4 @@
-Boo.define('Boo.Async', ['exports', 'Boo'], function (exports, Boo) {
+Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
     var DeferredState = {
         Unresolved: 0,
