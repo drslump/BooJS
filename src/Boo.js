@@ -430,7 +430,7 @@
     // Runtime support for slicing on arrays
     Boo.slice = function (value, begin, end, step) {
         begin = begin || 0;
-        if (begin < 0) begin = value.length + begin;
+        if (begin < 0) begin += value.length;
 
         // Index access
         if (arguments.length === 2) {
@@ -438,7 +438,7 @@
         }
 
         end = end || value.length;
-        if (end < 0) end = value.length + end;
+        if (end < 0) end += value.length;
         step = step || (begin <= end ? 1 : -1);
         if (begin < end && step === 1) {
             return value.slice(begin, end);
@@ -451,6 +451,18 @@
             }
         }
         return (typeof value === 'string') ? result.join('') : result;
+    };
+
+    Boo.sliceSet = function (target, begin, end, value) {
+        var args;
+
+        begin = begin || 0;
+        if (begin < 0) begin += target.length;
+        end = end || target.length;
+        if (end < 0) end += target.length;
+
+        args = [begin, end - begin].concat(value);
+        target.splice.apply(target, args);
     };
 
     // Check if a value is null (or undefined)
@@ -537,12 +549,6 @@
 
 
     ////////// Operators /////////////////////////////////////////////////
-
-    // Compares two values for equality
-    Boo.op_Equality = function (lhs, rhs) {
-        return lhs == rhs;
-    };
-
 
     // Runtime support for String type
     Boo.String = {
