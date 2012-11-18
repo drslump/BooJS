@@ -37,8 +37,9 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             waiting = [];
 
         function notifyAll(value, rejected) {
-            if (state === DeferredState.Cancelled) return;
-            if (state !== DeferredState.Unresolved) {
+            if (state === DeferredState.Cancelled) {
+                return;
+            } else if (state !== DeferredState.Unresolved) {
                 throw new TypeError("deferred is already resolved (state is " + state + ")");
             }
 
@@ -71,7 +72,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
         this.promise = Promise(this);
 
-        this.getState = function() {
+        this.getState = function () {
             return state;
         };
 
@@ -94,7 +95,9 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         this.cancel = function () {
             state = DeferredState.Cancelled;
             waiting = null;
-            cancel && cancel();
+            if (typeof cancel === 'function') {
+                cancel();
+            }
         };
 
         this.then = function (ok, error, progress) {
@@ -115,8 +118,6 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         };
     }
 
-
-
     // Wraps a generator in a function that will consume it while resolving yielded
     // promises, implementing this way a coroutine.
     // Returns a promise which can be subscribed to in order to chain and mix async
@@ -129,10 +130,11 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             var result;
             try {
                 if (is_error) {
-                    result = generator.throw(value);
+                    result = generator['throw'](value);
                 } else {
                     result = generator.send(value);
                 }
+
                 // Handle multiple promises
                 if (result && result.length === +result.length) {
                     result = when(result);
@@ -179,43 +181,49 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             }
         }
 
-
         defer = new Deferred(cancel);
         if (n === 0) {
             defer.resolve(result);
         }
 
-        for (var i = 0; i < n; i++) {
-            (function (i) {
-                var p = promises[i];
-                pending[i] = p;
-                p.then(function (value) {
-                    if (defer.getState() !== DeferredState.Unresolved) {
-                        return;
-                    }
-                    result[i] = value;
-                    pending[i] = null;
-                    if ((--remaining) === 0) {
-                        defer.resolve(result);
-                    }
-                }, function (error) {
-                    if (defer.getState() !== DeferredState.Unresolved) {
-                        return;
-                    }
+        Boo.each(Boo.range(n), function (i) {
+            var p = promises[i];
 
-                    pending[i] = null;
-                    cancel();
-                    defer.reject(error);
-                });
-            })(i);
-        }
+            // Immediately resolve those values that are not promises
+            if (!p || typeof p.then !== 'function') {
+                var tmp = new Deferred();
+                p = tmp.promise;
+                tmp.resolve(promises[i]);
+            }
+
+            pending[i] = p;
+
+            p.then(function (value) {
+                remaining -= 1;
+                pending[i] = null;
+                if (defer.getState() !== DeferredState.Unresolved) {
+                    return;
+                }
+                result[i] = value;
+                if (remaining === 0) {
+                    defer.resolve(result);
+                }
+            }, function (error) {
+                pending[i] = null;
+                if (defer.getState() !== DeferredState.Unresolved) {
+                    return;
+                }
+                cancel();
+                defer.reject(error);
+            });
+        });
 
         return defer.promise;
     }
 
     function sleep(ms) {
         function check() {
-            var elapsed = +(new Date) - start;
+            var elapsed = +(new Date()) - start;
             if (elapsed < ms) {
                 ref = setTimeout(check, ms - elapsed);
                 return;
@@ -224,12 +232,11 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         }
 
         var defer = new Deferred(),
-            start = +(new Date),
+            start = +(new Date()),
             ref = setTimeout(check, ms);
 
         return defer.promise;
     }
-
 
     // Expose public API
     exports.Deferred = Deferred;
