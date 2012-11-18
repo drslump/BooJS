@@ -45,7 +45,8 @@ class String(Object, Iterable):
     # Instance members
     
     self[index as int] as string:
-         get: pass
+        [Transform( Boo.slice($0, $1) )]
+        get: pass
 
     public length as uint
 

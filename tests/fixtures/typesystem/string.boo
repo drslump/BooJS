@@ -31,3 +31,10 @@ print 'charAt', a.charAt(1)
 # Expression blocks
 assert {x as string| x+x }(a) == 'foofoo'
 assert { a + a }() == 'foofoo'
+
+# Slicing
+assert a[1] == 'o'
+assert a[:2] == 'fo'
+assert a[1:] == 'oo'
+assert a[-2:] == 'oo'
+assert a[0:3:2] == 'fo'
