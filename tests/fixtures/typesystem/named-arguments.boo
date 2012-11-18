@@ -13,7 +13,7 @@ def named(opts as Hash):
     named('', opts)
 
 def named(prefix as string, opts as Hash):
-    for v, k in opts:
+    for k, v in opts:
         print "$(prefix)$k: $v"
 
 named(foo: 'FOO', bar: 2, baz: null)
