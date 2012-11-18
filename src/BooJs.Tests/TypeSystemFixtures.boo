@@ -25,6 +25,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/globals.boo')
 
   [Test]
+  def test_hash():
+    FixtureRunner.run('tests/fixtures/typesystem/hash.boo')
+
+  [Test]
   def test_import():
     FixtureRunner.run('tests/fixtures/typesystem/import.boo')
 

@@ -196,10 +196,10 @@
                 obj.close();
             }
         } else {
-            // For dictionaries we always pass the value and the key
+            // For dictionaries we always pass the key and the value
             for (i in obj) {
                 if (hop(obj, i)) {
-                    if (iterator.call(context, obj[i], i) === Boo.STOP) return;
+                    if (iterator.call(context, i, obj[i]) === Boo.STOP) return;
                 }
             }
         }
@@ -274,7 +274,7 @@
             return zip([range(enumerable.length), enumerable]);
 
         var result = [];
-        each(enumerable, function (v, k) {
+        each(enumerable, function (k, v) {
             result.push([k, v]);
         });
         return result;
