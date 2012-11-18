@@ -15,6 +15,10 @@ class ExpandVarArgsMethodInvocations(AbstractFastVisitorCompilerStep):
         Visit(CompileUnit)
 
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
+        # Make sure we only process invocations once
+        return if node.ContainsAnnotation(self.GetType())
+        node.Annotate(self.GetType())
+
         # Process first any invocations passed in as arguments
         Visit node.Arguments
 
