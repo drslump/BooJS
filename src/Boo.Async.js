@@ -10,10 +10,11 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         Cancelled: 3
     };
 
+    // Find the best implementation for the enqueue (next-tick) function
     var enqueue = (typeof process === 'object' && typeof process.nextTick === 'function')
                 ? process.nextTick
-                : (typeof setImmediate === 'function')
                 // http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html
+                : (typeof setImmediate === 'function')
                 ? setImmediate
                 : function (cb) { setTimeout(cb, 0); };
 
@@ -235,15 +236,19 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         function check() {
             var elapsed = +(new Date()) - start;
             if (elapsed < ms) {
-                ref = setTimeout(check, ms - elapsed);
+                // Browsers and NodeJS support the setTimeout global function
+                id = setTimeout(check, ms - elapsed);
                 return;
             }
+            id = null;
             defer.resolve(elapsed);
         }
 
-        var defer = new Deferred(),
+        var defer = new Deferred(function () {
+                if (id) { clearTimeout(id); id = null; }
+            }),
             start = +(new Date()),
-            ref = setTimeout(check, ms);
+            id = setTimeout(check, ms);
 
         return defer.promise;
     }

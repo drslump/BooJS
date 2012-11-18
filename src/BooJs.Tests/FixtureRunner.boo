@@ -4,7 +4,6 @@ import System.IO(Path, Directory, StreamReader)
 import System.Reflection(Assembly)
 import System.Timers(Timer)
 
-
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 
@@ -48,7 +47,6 @@ static class Window:
     [JSFunction(Name:'setTimeout')]
     def setTimeout(callback as FunctionInstance, millisec as int) as int:
         timer = Timer(System.Math.Max(millisec, 1))
-        timers.Add(timer)
         timer.AutoReset = false
         timer.Enabled = true
         timer.Elapsed += do:
@@ -59,7 +57,8 @@ static class Window:
                 timers.Remove(timer)
 
         timer.Start()
-        return -1
+        timers.Add(timer)
+        return len(timers)
 
 
 class FixtureRunner:
@@ -211,13 +210,9 @@ class FixtureRunner:
           console as ConsoleMock = engine.GetGlobalValue('console')
           console.reset()
 
-          # Wrap code is a function to avoid leaking many globals
-          #code = "(function(){\n\n" + code + "\n\n}).call(this)\n"
-
           try:
             engine.Execute(code)
             Window.waitTimers()
-
             Assert.AreEqual(expected, console.output())
           except ex:
             Window.clearTimers()
