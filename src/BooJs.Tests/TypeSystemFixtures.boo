@@ -49,6 +49,10 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/native-types.boo')
 
   [Test]
+  def test_nested_varargs():
+    FixtureRunner.run('tests/fixtures/typesystem/nested-varargs.boo')
+
+  [Test]
   def test_numbers():
     FixtureRunner.run('tests/fixtures/typesystem/numbers.boo')
 
