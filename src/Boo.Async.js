@@ -45,7 +45,8 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
         var result = null,
             state = DeferredState.Unresolved,
-            waiting = [];
+            waiting = [],
+            promise = Promise(this);
 
         function notifyAll(value, rejected) {
             if (state === DeferredState.Cancelled) {
@@ -57,7 +58,13 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             state = rejected ? DeferredState.Rejected : DeferredState.Resolved;
             result = value;
             for (var i = 0; i < waiting.length; i++) {
+                rejected = rejected && !waiting[i].reject;
                 notify(waiting[i]);
+            }
+
+            // Notify errors not caught by any reject handler
+            if (rejected) {
+                Deferred.onError(result, promise);
             }
 
             waiting = null;
@@ -80,8 +87,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             }
         }
 
-
-        this.promise = Promise(this);
+        this.promise = promise;
 
         this.getState = function () {
             return state;
@@ -128,6 +134,11 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             return listener.next.promise;
         };
     }
+
+    // Handles unhandled rejections system wide
+    Deferred.onError = function (error, promise) {
+        throw error;
+    };
 
     // Wraps a generator in a function that will consume it while resolving yielded
     // promises, implementing this way a coroutine.
