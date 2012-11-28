@@ -36,8 +36,7 @@ class SourceMapTest:
         builder.Map('foo.boo', 2, 2, 3, 3, 'bar')
         builder.Map('bar.boo', 1, 1, 2, 2, 'foo')
 
-        h = builder.ToHash()
-        print h['sources'] as string*
+        h = builder.ToDict()
         assert h['sourceRoot'] == 'http://root/'
         assert h['file'] == 'assembly.js'
         assert len(h['sources']) == 2
@@ -55,6 +54,4 @@ class SourceMapTest:
         assert json =~ @/"version":3/
         assert json =~ @/"file":"assembly.js"/
         assert json =~ @/"names":\["foo"\]/
-
-
 
