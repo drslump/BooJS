@@ -20,43 +20,61 @@ class MapBuilder:
     segments = List[of string]()
 
     last_source as int
-    last_target_column as int
-    last_target_line as int
+    last_tcolumn as int
+    last_tline as int
     last_name as int
-    last_source_column as int
-    last_source_line as int
+    last_scolumn as int
+    last_sline as int
+
+    protected def SourceIdx(source as string):
+        idx = sources.IndexOf(source)
+        if idx < 0:
+            idx = len(sources)
+            sources.Add(source)
+        return idx
+
+    protected def NameIdx(name as string):
+        idx = names.IndexOf(name)
+        if idx < 0:
+            idx = len(names)
+            names.Add(name)
+        return idx
+
+    protected def encode(value as int):
+        return Base64VLQ.encode(value)
+
+    protected def encode(value as int, offset as int):
+        return encode(value - offset)
+
+    protected def new_line():
+        last_tcolumn = 0
+        last_tline += 1
+        mappings.Add(segments.Join(','))
+        segments.Clear()
 
     def Map(source as string, sline as int, scolumn as int, tline as int, tcolumn as int, ident as string):
-        # Adjust lines
-        while last_target_line < tline:
-            last_target_line++
-            if len(segments):
-                mappings.Add(segments.Join(','))
-                segments.Clear()
-                last_target_column = 0
-            else:
-                mappings.Add('')
+        # Adjust new lines
+        while last_tline < tline:
+            new_line()
 
         # The generated column
-        segment = Base64VLQ.encode(tcolumn - last_target_column)
-        last_target_column = tcolumn
+        segment = encode(tcolumn, last_tcolumn)
+        last_tcolumn = tcolumn
 
         # The source file
-        sources.AddUnique(source)
-        idx = sources.IndexOf(source)
-        segment += Base64VLQ.encode(idx - last_source)
+        idx = SourceIdx(source)
+        segment += encode(idx, last_source)
         last_source = idx
 
         # The source line and column
-        segment += Base64VLQ.encode(sline - last_source_line)
-        last_source_line = sline
-        segment += Base64VLQ.encode(scolumn - last_source_column)
-        last_source_column = scolumn
+        segment += encode(sline, last_sline)
+        last_sline = sline
+        segment += encode(scolumn, last_scolumn)
+        last_scolumn = scolumn
 
         if ident:
-            names.AddUnique(ident)
-            idx = names.IndexOf(ident)
-            segment += Base64VLQ.encode(idx - last_name)
+            idx = NameIdx(ident)
+            segment += encode(idx, last_name)
             last_name = idx
 
         segments.Add(segment)

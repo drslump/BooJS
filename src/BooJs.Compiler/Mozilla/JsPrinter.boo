@@ -81,7 +81,7 @@ class JsPrinter(Printer):
         # Add source map to the runtime
         # TODO: Sourcemaps should be per assembly not module
         if SourceMap and CompilerContext.Current.Parameters.Debug:
-            srcmap = SourceMap.ToHash()
+            srcmap = SourceMap.ToDict()
             Write 'Boo.sourcemap({0});', JavaScriptSerializer().Serialize(srcmap)
             WriteLine
 

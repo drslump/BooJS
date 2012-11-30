@@ -28,7 +28,6 @@ class SourceMapTest:
 
     [Test]
     def ToHash():
-
         builder = MapBuilder()
         builder.SourceRoot = 'http://root/'
         builder.File = 'assembly.js'
@@ -54,4 +53,3 @@ class SourceMapTest:
         assert json =~ @/"version":3/
         assert json =~ @/"file":"assembly.js"/
         assert json =~ @/"names":\["foo"\]/
-
