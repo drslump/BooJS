@@ -42,41 +42,8 @@ class JsPrinter(Printer):
 
         super(node)
 
-    protected def WrapProgram(node as Program):
-        # TODO: Move to custom step
-        module = node['module'] as Module
-
-        deps = List of IExpression() { Literal('exports'), Literal('Boo') }
-        refs = List of IPattern() { Identifier('exports'), Identifier('Boo') }
-
-        # Get namespace mapping annotations
-        mapping as Hash = module['nsmapping']
-        asmrefs as Hash = module['nsasmrefs']
-
-        for ns in mapping.Keys:
-            if ns in asmrefs:
-                print '{0} => {1}' % (ns, mapping[ns] + ':' + asmrefs[ns])
-                deps.Add( Literal(ns + ':' + asmrefs[ns]) )
-            else:
-                print '{0} => {1}' % (ns, mapping[ns])
-                deps.Add( Literal(ns) )
-            refs.Add( Identifier(mapping[ns]) )
-
-        # Use Boo.define to bootstrap the module contents
-        call = CallExpression()
-        call.callee = MemberExpression(
-            object: Identifier(name: 'Boo'),
-            property: Identifier(name: 'define')
-        )
-        call.arguments.Add(Literal(value: (module.Namespace.ToString() if module.Namespace else '')))
-        call.arguments.Add(ArrayExpression(elements: deps))
-        fn = FunctionExpression(params: refs, body: BlockStatement(body: node.body))
-        call.arguments.Add(fn)
-
-        return ExpressionStatement(call)
-
     virtual def OnProgram(node as Program):
-        Visit WrapProgram(node)
+        Visit node.body
 
         # Add source map to the runtime
         # TODO: Sourcemaps should be per assembly not module

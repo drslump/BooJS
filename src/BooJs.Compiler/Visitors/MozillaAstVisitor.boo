@@ -117,6 +117,37 @@ Transforms a Boo AST into a Mozilla AST
     def OnModule(node as Module):
         n = Moz.Program(loc: loc(node))
 
+
+        deps = List of Moz.IExpression() { Moz.Literal('exports'), Moz.Literal('Boo') }
+        refs = List of Moz.IPattern() { Moz.Identifier('exports'), Moz.Identifier('Boo') }
+
+        # Get namespace mapping annotations
+        mapping as Hash = node['nsmapping']
+        asmrefs as Hash = node['nsasmrefs']
+
+        for ns in mapping.Keys:
+            if ns in asmrefs:
+                print '{0} => {1}' % (ns, mapping[ns] + ':' + asmrefs[ns])
+                deps.Add( Moz.Literal(ns + ':' + asmrefs[ns]) )
+            else:
+                print '{0} => {1}' % (ns, mapping[ns])
+                deps.Add( Moz.Literal(ns) )
+            refs.Add( Moz.Identifier(mapping[ns]) )
+
+
+        # Use Boo.define to bootstrap the module contents
+        call = Moz.CallExpression()
+        call.callee = Moz.MemberExpression(
+            object: Moz.Identifier(name: 'Boo'),
+            property: Moz.Identifier(name: 'define')
+        )
+        call.arguments.Add(Moz.Literal(value: (node.Namespace.ToString() if node.Namespace else '')))
+        call.arguments.Add(Moz.ArrayExpression(elements: deps))
+        fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
+        call.arguments.Add(fn)
+        n.body.Add(Moz.ExpressionStatement(call))
+
+
         st as Moz.IStatement
         for member in node.Members:
             st = Apply(member)
@@ -124,16 +155,44 @@ Transforms a Boo AST into a Mozilla AST
                 continue
 
             if st isa Moz.BlockStatement:
-                n.body += (st as Moz.BlockStatement).body
+                fn.body.body += (st as Moz.BlockStatement).body
             else:
-                n.body.Add(st)
+                fn.body.body.Add(st)
 
-        for global in node.Globals.Statements:
-            st = Apply(global)
-            n.body.Add(st)
+        # Export public symbols
+        for member in (node.Members[0] as ClassDefinition).Members:
+            continue unless member.IsVisible
 
-        n['module'] = node
+            expr = Moz.BinaryExpression()
+            expr.left = Moz.MemberExpression(
+                object: Moz.Identifier('exports'),
+                property: Moz.Identifier(member.Name)
+            )
+            expr.operator = '=';
+            expr.right = Moz.Identifier(member.Name)
 
+            st = Moz.ExpressionStatement(expr)
+            fn.body.body.Add(st)
+
+        if not node.Globals.IsEmpty:
+            rcall = Moz.CallExpression()
+            rcall.callee = Moz.MemberExpression(
+                object: Moz.Identifier(name: 'Boo'),
+                property: Moz.Identifier(name: 'require')
+            )
+            # Clone the deps list replacing 'exports' by the namespace
+            deps = deps.GetRange(0, len(deps))
+            deps[0] = Moz.Literal(node.Namespace or '')
+            rcall.arguments.Add(Moz.ArrayExpression(elements: deps))
+            fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
+            rcall.arguments.Add(fn)
+            n.body.Add(Moz.ExpressionStatement(rcall))
+
+            for global in node.Globals.Statements:
+                st = Apply(global)
+                fn.body.body.Add(st)
+
+        #n['module'] = node
         Return n
 
     def OnClassDefinition(node as ClassDefinition):

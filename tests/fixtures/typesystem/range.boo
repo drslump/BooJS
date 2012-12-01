@@ -4,12 +4,22 @@ continue 2
 break 0
 return 11
 """
+def foo():
+	print bar()
+	
+def bar():
+	return 'bar'
+
+/*
 a = [1,2,3]
 b = a + (4,5,6)
 
 a.push(4,5,6)
 
 c = 10
+*/
+
+foo()
 
 
 /*

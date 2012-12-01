@@ -141,8 +141,9 @@ class PrepareAst(AbstractTransformerCompilerStep):
         # Members of the module are placed in the top scope
         ientity = node.Target.Entity as TypeSystem.Internal.AbstractInternalType
         if node.Target.IsSynthetic and ientity and ientity.IsClass and ientity.IsFinal:
-            refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
-            ReplaceCurrentNode refexp
+            #refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
+            #ReplaceCurrentNode refexp
+            node.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
             return
 
         # Check for builtins references
