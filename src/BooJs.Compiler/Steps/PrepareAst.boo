@@ -115,8 +115,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
         # Members of the module are placed in the top scope
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.IsFinal:
-            name = node.Name.Split(char('.'))[-1]
-            return [| $(ReferenceExpression(Name: name)) |].withLexicalInfoFrom(node)
+            mre = MemberReferenceExpression(node.LexicalInfo)
+            mre.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
+            mre.Name = node.Name.Split(char('.'))[-1]
+            return mre
 
         return node
 
