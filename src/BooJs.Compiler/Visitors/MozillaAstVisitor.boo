@@ -392,9 +392,10 @@ Transforms a Boo AST into a Mozilla AST
 
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
-        # Detect constructors
 
-        if node.Target.Entity isa IConstructor and not isFactory(node.Target):
+        # Detect constructors
+        if node.ContainsAnnotation('constructor') or \
+           node.Target.Entity isa IConstructor and not isFactory(node.Target):
             c = Moz.NewExpression(loc: loc(node))
             c._constructor = Apply(node.Target)
             for arg in node.Arguments:

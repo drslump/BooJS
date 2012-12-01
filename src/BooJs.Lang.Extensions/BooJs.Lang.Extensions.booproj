@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Transform.boo" />
     <Compile Include="Extern.boo" />
+    <Compile Include="VarArgs.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

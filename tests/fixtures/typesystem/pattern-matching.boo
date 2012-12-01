@@ -16,7 +16,7 @@ def m(data):
     match data:
         case a=string():
             print '1', a
-        case array(a=string(),b=int(),*_):
+        case array(a=string(), b=int(), *_):
             print '2', a, b
         case Hash(foo: a=string()):
             print '3', a

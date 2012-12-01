@@ -67,7 +67,3 @@ class Save(AbstractCompilerStep):
             fname = Path.Combine(fname, CompileUnit.Modules[0].Name + '.js')
 
         return Path.GetFullPath(fname)
-
-
-
-

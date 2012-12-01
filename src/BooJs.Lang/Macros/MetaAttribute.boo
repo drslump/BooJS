@@ -1,8 +1,8 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.ExtensionAttribute as BooExtensionAttribute
+import Boo.Lang.MetaAttribute as BooMetaAttribute
 
-class ExtensionAttribute(BooExtensionAttribute):
+class MetaAttribute(BooMetaAttribute):
 """
     Just defined to make it available in a global namespace for BooJs
 """

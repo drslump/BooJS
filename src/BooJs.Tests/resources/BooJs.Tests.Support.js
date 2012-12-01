@@ -10,6 +10,10 @@ Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
         hearts: 2,
         spades: 3
     };
+
+    exports.method = function (x) {
+        return x;
+    };
 });
 
 

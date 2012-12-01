@@ -159,6 +159,27 @@ class PrepareAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode result
             return
 
+        if GetAttribute[of VarArgsAttribute](node.Target) and not node.ContainsAnnotation('varargs-processed'):
+            node['varargs-processed'] = true
+            if node.Arguments[-1] isa ListLiteralExpression:
+                last = node.Arguments[-1] as ListLiteralExpression
+                node.Arguments.Remove(last)
+                for itm in last.Items:
+                    node.Arguments.Add(itm)
+                return
+
+            params = ListLiteralExpression()
+            for i in range(0, len(node.Arguments)-1):
+                params.Items.Add( node.Arguments[i] )
+            mie = [| $(params).concat($(node.Arguments[-1])) |]
+            if node.Target isa MemberReferenceExpression:
+                target = (node.Target as MemberReferenceExpression).Target
+            else:
+                target = [| Boo.UNDEF |]
+            node = [| $(node.Target).apply($target, $mie) |]
+            ReplaceCurrentNode node
+
+
         /*
         rts = TypeSystemServices.RuntimeType
         rtsInvoke = ResolveMethod(rts, 'Invoke')

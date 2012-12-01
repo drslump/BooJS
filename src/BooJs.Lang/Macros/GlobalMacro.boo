@@ -34,3 +34,4 @@ macro global:
         decl.Type = SimpleTypeReference('duck')
 
     return stmt
+

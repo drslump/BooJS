@@ -120,7 +120,6 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     override def Initialize(ctxt as CompilerContext):
         super(ctxt)
         _methodCache = my(RuntimeMethodCache) #EnvironmentProvision[of RuntimeMethodCache]()
-        ReturnValueType = TypeSystemServices.Map(BooJs.Lang.Builtins.ReturnValue)
 
     override def Run():
         if len(Errors) > 0:
@@ -259,6 +258,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         # Check if it can be optimized in the generated output
         elif IsLiteralRange(node.Iterator):
             # Nothing to do here, we will process it before generating the Javascript
+            TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, node.Declarations[0].Name)
             Visit node.Block
         # If it's an array create an optimizable version of the loop
         elif IsArray(node.Iterator):

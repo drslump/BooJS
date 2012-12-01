@@ -1,2 +1,3 @@
 #!/bin/sh
-env mono --debug src/boojs/bin/Debug/boojs.exe "$@"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+env mono --debug $DIR/src/boojs/bin/Debug/boojs.exe "$@"

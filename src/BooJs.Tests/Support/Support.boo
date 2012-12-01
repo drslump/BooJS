@@ -10,5 +10,8 @@ enum Card:
     hearts
     spades
 
+def method(x):
+    return x
+
 
 

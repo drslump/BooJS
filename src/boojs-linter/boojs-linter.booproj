@@ -9,6 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>boojslinter</RootNamespace>
     <AssemblyName>boojs-linter</AssemblyName>
+    <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,4 +57,5 @@
       <Name>BooJs.Compiler</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

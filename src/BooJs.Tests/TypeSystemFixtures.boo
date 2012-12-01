@@ -9,6 +9,10 @@ import NUnit.Framework
 class TypesystemFixtures:
 
   [Test]
+  def test_async_await():
+    FixtureRunner.run('tests/fixtures/typesystem/async-await.boo')
+
+  [Test]
   def test_block_expressions():
     FixtureRunner.run('tests/fixtures/typesystem/block-expressions.boo')
 

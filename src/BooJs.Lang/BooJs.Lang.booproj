@@ -82,6 +82,8 @@
     <Compile Include="Browser\Dom3.boo" />
     <Compile Include="Browser\globals.boo" />
     <Compile Include="jQuery.boo" />
+    <Compile Include="Macros\MetaAttribute.boo" />
+    <Compile Include="Macros\NewMeta.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

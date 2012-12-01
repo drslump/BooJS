@@ -10,8 +10,7 @@ class Builtins:
     static public final BOO_COMPILER_VERSION = '%%COMPILER_VERSION%%'
     static public final BOO_RUNTIME_VERSION = 'defined in boo.js'
 
-    static public final STOP = 'STOP'
-
+    static public final STOP = {}
 
 
 
