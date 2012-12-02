@@ -4,6 +4,7 @@ import System
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem.Internal
+import Boo.Lang.PatternMatching
 
 class ProcessGenerators(AbstractTransformerCompilerStep):
 """
@@ -118,13 +119,17 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
     def HasTryStatement(node as Block) as bool:
         for st in node.Statements:
-            return true if st.NodeType == NodeType.TryStatement
-            if wst = st as WhileStatement:
-                return true if HasTryStatement(wst.Block)
-            elif ist = st as IfStatement:
-                return true if HasTryStatement(ist.TrueBlock) or HasTryStatement(ist.FalseBlock)
-            elif bst = st as Block:
-                return true if HasTryStatement(bst)
+            match st:
+                case TryStatement():
+                    return true
+                case wst=WhileStatement():
+                    return HasTryStatement(wst.Block)
+                case ist=IfStatement():
+                    return HasTryStatement(ist.TrueBlock) or HasTryStatement(ist.FalseBlock)
+                case bst=Block():
+                    return HasTryStatement(bst)
+                otherwise:
+                    continue
 
         return false
 

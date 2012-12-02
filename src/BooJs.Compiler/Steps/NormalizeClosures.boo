@@ -2,6 +2,7 @@ namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
+import Boo.Lang.PatternMatching
 
 class NormalizeClosures(AbstractFastVisitorCompilerStep):
 """
@@ -47,18 +48,15 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
         Visit node.Right
 
     private def ExistsVariable(node as Node, name) as bool:
-        if node isa BlockExpression:
-            params = (node as BlockExpression).Parameters
-            if params.Contains({param as ParameterDeclaration| param.Name == name}):
-                return true
-
-        if node isa Method:
-            params = (node as Method).Parameters
-            if params.Contains({param as ParameterDeclaration| param.Name == name}):
-                return true
-            locals = (node as Method).Locals
-            if locals.Contains({local as Local| local.Name == name}):
-                return true
+        match node:
+            case blk=BlockExpression():
+                params = blk.Parameters
+                return true if blk.Parameters.Contains({param as ParameterDeclaration| param.Name == name})
+            case m=Method():
+                return true if m.Parameters.Contains({param as ParameterDeclaration| param.Name == name})
+                return true if m.Locals.Contains({local as Local| local.Name == name})
+            otherwise:
+                return false
 
         return false
 

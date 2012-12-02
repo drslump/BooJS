@@ -22,8 +22,8 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         items = node.Expressions
 
         # Trim the expression
-        while IsEmptyString(items.First): items.Remove(items.First)
-        while IsEmptyString(items.Last): items.Remove(items.Last)
+        items.Remove(items.First) while IsEmptyString(items.First)
+        items.Remove(items.Last) while IsEmptyString(items.Last)
 
         if len(items) < INTERPOLATION_MAX_ITEMS:
             repl = items.First

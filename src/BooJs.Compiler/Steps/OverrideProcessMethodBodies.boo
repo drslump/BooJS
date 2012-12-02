@@ -139,7 +139,7 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     override def LeaveDeclarationStatement(node as DeclarationStatement):
         # If the declaration has been annotated as global via the `global` macro
         # we must avoid generating a declaration for it, either removing it
-        # or just setting a value to it if the used supplied an initializer
+        # or just setting a value to it if the user supplied an initializer
         decl = node.Declaration
         if decl.ContainsAnnotation('global'):
             if not decl.Type:

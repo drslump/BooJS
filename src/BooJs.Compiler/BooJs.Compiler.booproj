@@ -116,15 +116,22 @@
     <Compile Include="Steps\SafeAccess.boo" />
     <Compile Include="Steps\ApplyPlaceholderParameters.boo" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\escodegen.js">
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
-      <LogicalName>escodegen.js</LogicalName>
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Visitors\" />
     <Folder Include="Steps\Macros\" />
+    <Folder Include="resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Boo.debug.js">
+      <Link>resources\Boo.debug.js</Link>
+      <LogicalName>Boo.debug.js</LogicalName>
+      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Boo.js">
+      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+      <Link>resources\Boo.js</Link>
+      <LogicalName>Boo.js</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

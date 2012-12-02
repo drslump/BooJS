@@ -6,6 +6,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps(AbstractTransformerCompilerStep)
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.Compiler(CompilerContext)
+import Boo.Lang.PatternMatching
 
 import BooJs.Compiler.TypeSystem.RuntimeMethodCache as RuntimeMethodCache
 
@@ -119,7 +120,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     override def Initialize(ctxt as CompilerContext):
         super(ctxt)
-        _methodCache = my(RuntimeMethodCache) #EnvironmentProvision[of RuntimeMethodCache]()
+        _methodCache = my(RuntimeMethodCache)
 
     override def Run():
         if len(Errors) > 0:
@@ -323,35 +324,41 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     """ Replaces the continue keyword with a return and the break one with a return of Boo.STOP
     """
         for st in node.Statements:
-            if st.NodeType == NodeType.ContinueStatement:
-                node.Replace(st, ReturnStatement(st.LexicalInfo))
-            elif st.NodeType == NodeType.BreakStatement:
-                boo = CodeBuilder.CreateTypedReference('Boo', TypeSystemServices.BuiltinsType)
-                node.Replace(st, ReturnStatement(st.LexicalInfo, Expression: [| $boo.STOP |]))
-            elif st.NodeType == NodeType.Block:
-                ProcessContinueBreakForEach(st as Block)
-            elif ifst = st as IfStatement:
-                ProcessContinueBreakForEach(ifst.TrueBlock)
-                ProcessContinueBreakForEach(ifst.FalseBlock) if ifst.FalseBlock
-            elif tryst = st as TryStatement:
-                ProcessContinueBreakForEach(tryst.ProtectedBlock)
-                for hdlr in tryst.ExceptionHandlers:
-                    ProcessContinueBreakForEach(hdlr.Block)
-                ProcessContinueBreakForEach(tryst.EnsureBlock) if tryst.EnsureBlock
+            match st:
+                case ContinueStatement():
+                    node.Replace(st, ReturnStatement(st.LexicalInfo))
+                case BreakStatement():
+                    boo = CodeBuilder.CreateTypedReference('Boo', TypeSystemServices.BuiltinsType)
+                    node.Replace(st, ReturnStatement(st.LexicalInfo, Expression: [| $boo.STOP |]))
+                case bst=Block():
+                    ProcessContinueBreakForEach(bst)
+                case ist=IfStatement():
+                    ProcessContinueBreakForEach(ist.TrueBlock)
+                    ProcessContinueBreakForEach(ist.FalseBlock) if ist.FalseBlock
+                case tst=TryStatement():
+                    ProcessContinueBreakForEach(tst.ProtectedBlock)
+                    for hdlr in tst.ExceptionHandlers:
+                        ProcessContinueBreakForEach(hdlr.Block)
+                    ProcessContinueBreakForEach(tst.EnsureBlock) if tst.EnsureBlock
+                otherwise:
+                    continue
 
     protected def FlagBreaks(tmpref as ReferenceExpression, block as Block):
     """ Prepends all break statements with an unflagging operation for the Then block
     """
         for st in block.Statements:
-            if ifst = st as IfStatement:
-                FlagBreaks(tmpref, ifst.TrueBlock)
-                FlagBreaks(tmpref, ifst.FalseBlock) if ifst.FalseBlock
-            elif tryst = st as TryStatement:
-                FlagBreaks(tmpref, tryst.ProtectedBlock)
-                FlagBreaks(tmpref, tryst.EnsureBlock) if tryst.EnsureBlock
-                for hdlr in tryst.ExceptionHandlers:
-                    FlagBreaks(tmpref, hdlr.Block)
-            elif brkst = st as BreakStatement:
-                idx = block.Statements.IndexOf(brkst)
-                block.Insert(idx, [| $tmpref &= ~Boo.LOOP_THEN |])
-                return
+            match st:
+                case ist=IfStatement():
+                    FlagBreaks(tmpref, ist.TrueBlock)
+                    FlagBreaks(tmpref, ist.FalseBlock) if ist.FalseBlock
+                case tst=TryStatement():
+                    FlagBreaks(tmpref, tst.ProtectedBlock)
+                    FlagBreaks(tmpref, tst.EnsureBlock) if tst.EnsureBlock
+                    for hdlr in tst.ExceptionHandlers:
+                        FlagBreaks(tmpref, hdlr.Block)
+                case BreakStatement():
+                    idx = block.Statements.IndexOf(st)
+                    block.Insert(idx, [| $tmpref &= ~Boo.LOOP_THEN |])
+                    return
+                otherwise:
+                    continue
