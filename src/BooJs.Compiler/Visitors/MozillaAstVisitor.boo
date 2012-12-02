@@ -127,10 +127,10 @@ Transforms a Boo AST into a Mozilla AST
 
         for ns in mapping.Keys:
             if ns in asmrefs:
-                print '{0} => {1}' % (ns, mapping[ns] + ':' + asmrefs[ns])
+                context().TraceInfo('Namespace mapping {0} => {1}', ns, mapping[ns] + ':' + asmrefs[ns])
                 deps.Add( Moz.Literal(ns + ':' + asmrefs[ns]) )
             else:
-                print '{0} => {1}' % (ns, mapping[ns])
+                context().TraceInfo('Namespace mapping {0} => {1}', ns, mapping[ns])
                 deps.Add( Moz.Literal(ns) )
             refs.Add( Moz.Identifier(mapping[ns]) )
 
