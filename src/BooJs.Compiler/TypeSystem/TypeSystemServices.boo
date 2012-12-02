@@ -72,6 +72,8 @@ class TypeSystemServices(BooServices):
         AddPrimitiveType("object", ObjectType)
         AddPrimitiveType("callable", ICallableType)
         AddPrimitiveType("duck", DuckType)
+        # Make TypeScript folks feel more at home :)
+        AddPrimitiveType("any", DuckType)
 
         AddLiteralPrimitiveType("bool", BoolType)
         AddLiteralPrimitiveType("int", LongType)
