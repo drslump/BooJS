@@ -4,25 +4,6 @@ continue 2
 break 0
 return 11
 """
-def foo():
-	print bar()
-	
-def bar():
-	return 'bar'
-
-/*
-a = [1,2,3]
-b = a + (4,5,6)
-
-a.push(4,5,6)
-
-c = 10
-*/
-
-foo()
-
-
-/*
 def loop_with_return():
     for i in range(3):
         return i if i > 0
@@ -42,4 +23,3 @@ for i in range(3):
     print 'break', i
 
 print 'return', loop_with_return() + 10
-*/
