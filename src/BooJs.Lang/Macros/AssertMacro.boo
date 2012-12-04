@@ -5,6 +5,15 @@ import Boo.Lang.Compiler.Ast
 
 macro assert:
     return unless CompilerContext.Current.Parameters.Debug
-    cond, = assert.Arguments
-    message = cond.ToCodeString()
-    yield [| raise BooJs.Lang.Builtins.AssertionError($message) if not $cond |]
+
+    argc = len(assert.Arguments)
+    if argc != 1 and argc != 2:
+        raise "assert <condition> [, <message>]"
+        
+    if 2 == argc:
+        cond, msg = assert.Arguments
+    else:
+        cond, = assert.Arguments
+        msg = [| $(cond.ToCodeString()) |]
+        
+    return [| raise BooJs.Lang.Builtins.AssertionError($msg) unless $cond |]
