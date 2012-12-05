@@ -49,10 +49,17 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = nextstate
 
         def OnReturnStatement(node as ReturnStatement):
-            # Handle as a yield
-            ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
-            OnYieldStatement(ynode)
-            # Next state will always stop the generator
+            # If it has an expression just handle as a yield
+            if node.Expression:
+                ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
+                OnYieldStatement(ynode)
+            # Otherwise just create a new state where the generator terminates
+            else:
+                nextstate = CreateState()
+                Current.Add([| __state = $(nextstate) |])
+                State = nextstate
+
+            # At this point we want to always stop the generator
             Current.Add([| raise Boo.STOP |])
 
         def OnWhileStatement(node as WhileStatement):
