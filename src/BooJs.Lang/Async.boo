@@ -105,11 +105,10 @@ internal class Promise(IPromise):
     def always(fn as callable(object)) as Promise:
         pass
 
-    [Transform( then($1, $2, $3) )]
-    virtual def @then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
+    def @then(okHandler as callable, errorHandler as callable, progressHandler as callable) as IPromise:
         pass
 
-    virtual def cancel():
+    def cancel():
         pass
 
 
