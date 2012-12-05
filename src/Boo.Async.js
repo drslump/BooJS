@@ -157,21 +157,16 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
                     result = generator.send(value);
                 }
 
-                // Handle multiple promises
-                if (result && result.length === +result.length) {
-                    result = when(result);
-                }
-
+                // Handle immediate values
                 if (!result || typeof result.then !== 'function') {
-                    throw new TypeError('The value yielded from the generator is not a Promise');
+                    result = when(result);
                 }
 
                 // Register the continuation for the generator
                 result.then(function (v) { consume(v); }, function (e) { consume(e, true); });
-
             } catch (e) {
                 generator.close();
-                if (e === Boo.StopIteration) {
+                if (e === Boo.STOP) {
                     defer.resolve(value);
                 } else {
                     defer.reject(e);
@@ -185,6 +180,13 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
     }
 
     function when(promises) {
+        // Detect arrays and array like objects
+        var is_array = true;
+        if (typeof promises !== 'object' || promises.length !== +promises.length) {
+            promises = [promises];
+            is_array = false;
+        }
+
         var n = promises.length,
             remaining = n,
             result = new Array(n),
@@ -205,7 +207,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
         defer = new Deferred(cancel);
         if (n === 0) {
-            defer.resolve(result);
+            defer.resolve(is_array ? result : result[0]);
         }
 
         Boo.each(Boo.range(n), function (i) {
@@ -228,7 +230,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
                 }
                 result[i] = value;
                 if (remaining === 0) {
-                    defer.resolve(result);
+                    defer.resolve(is_array ? result : result[0]);
                 }
             }, function (error) {
                 pending[i] = null;

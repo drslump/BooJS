@@ -48,6 +48,13 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             # Continue in the re-entry state
             State = nextstate
 
+        def OnReturnStatement(node as ReturnStatement):
+            # Handle as a yield
+            ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
+            OnYieldStatement(ynode)
+            # Next state will always stop the generator
+            Current.Add([| raise Boo.STOP |])
+
         def OnWhileStatement(node as WhileStatement):
             # Loop always starts in a new step
             State = loopstate = CreateState()

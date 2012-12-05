@@ -55,7 +55,7 @@
         LOOP_OR: 1,
         LOOP_THEN: 2,
         // Used as a unique indentifier when we want to stop iterating a generator
-        STOP: typeof StopIteration !== 'undefined' ? StopIteration : {}
+        STOP: typeof StopIteration !== 'undefined' ? StopIteration : {name: 'StopIteration'}
     };
 
     // Assertion error

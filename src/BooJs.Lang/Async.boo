@@ -120,9 +120,10 @@ enum DeferredState:
     Cancelled
 
 class Deferred:
+    
+    static public onError as callable
 
     public promise = Promise(self)
-
 
     def constructor():
         pass
