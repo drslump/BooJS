@@ -20,14 +20,14 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
 
     function Promise(deferred) {
         return {
-            then: function (ok, error, progress) {
-                return deferred.then(ok, error, progress);
-            },
             cancel: function () {
                 deferred.cancel();
             },
+            then: function (ok, error, progress) {
+                return deferred.then(ok, error, progress);
+            },
             done: function (fn) {
-                deferred.then(fn);
+                return deferred.then(fn);
             },
             fail: function (fn) {
                 return deferred.then(null, fn);
@@ -245,7 +245,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
         return defer.promise;
     }
 
-    function sleep(ms) {
+    function sleep(ms, callback) {
         function check() {
             var elapsed = +(new Date()) - start;
             if (elapsed < ms) {
@@ -262,6 +262,10 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             }),
             start = +(new Date()),
             id = setTimeout(check, ms);
+
+        if (callback) {
+            defer.then(callback);
+        }
 
         return defer.promise;
     }

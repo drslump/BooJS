@@ -159,3 +159,5 @@ def when(*promises as (object)) as IPromise:
 
 def sleep(ms as int) as IPromise:
     pass
+def sleep(ms as int, fn as callable) as IPromise:
+    pass
