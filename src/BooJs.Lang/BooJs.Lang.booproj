@@ -84,6 +84,7 @@
     <Compile Include="jQuery.boo" />
     <Compile Include="Macros\MetaAttribute.boo" />
     <Compile Include="Macros\NewMeta.boo" />
+    <Compile Include="Macros\TraceMacro.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

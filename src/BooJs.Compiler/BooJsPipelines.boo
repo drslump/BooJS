@@ -1,71 +1,110 @@
 namespace BooJs.Compiler.Pipelines
 
+import Boo.Lang.Compiler(CompilerPipeline)
 import Boo.Lang.Compiler.Steps
+import Boo.Lang.Compiler.Pipelines as BooPipelines
 import BooJs.Compiler.Steps as Steps
 
 
-class Compile(Boo.Lang.Compiler.Pipelines.Compile):
-    def constructor():
-        # TODO: Do we need this?
-        Insert 0, Steps.InitializeEntityNameMatcher()
+def PatchBooPipeline(pipe as CompilerPipeline):
 
-        # Process safe member access operator
-        InsertAfter Parsing, Steps.SafeAccess()
-        InsertAfter Parsing, Steps.ApplyPlaceholderParameters()
+    # TODO: Do we need this?
+    pipe.Insert(0, Steps.InitializeEntityNameMatcher())
 
-        Replace IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces()
+    # Process safe member access operator
+    pipe.InsertAfter(Parsing, Steps.SafeAccess())
+    pipe.InsertAfter(Parsing, Steps.ApplyPlaceholderParameters())
+    # Make sure the parsing generated AST fits our needs
+    pipe.InsertAfter(Parsing, Steps.AdaptParsingAst())
 
-        # Make sure the parsing generated AST fits our needs
-        InsertAfter Parsing, Steps.AdaptParsingAst()
+    # Check for unsupported features
+    unsupported = Steps.UnsupportedFeatures()
+    pipe.InsertAfter(Parsing, unsupported)
+    pipe.InsertAfter(MacroAndAttributeExpansion, unsupported)
 
-        # Check for unsupported features
-        unsupported = Steps.UnsupportedFeatures()
-        InsertAfter Parsing, unsupported
-        InsertAfter MacroAndAttributeExpansion, unsupported
+    if pipe.Find(IntroduceGlobalNamespaces) != -1:
+        pipe.Replace(IntroduceGlobalNamespaces, Steps.IntroduceGlobalNamespaces())
 
+    if pipe.Find(ExpandDuckTypedExpressions) != -1:
+        pipe.Replace(ExpandDuckTypedExpressions, Steps.ExpandDuckTypedExpressions())
+    if pipe.Find(ExpandVarArgsMethodInvocations) != -1:
+        pipe.Replace(ExpandVarArgsMethodInvocations, Steps.ExpandVarArgsMethodInvocations())
 
-        Replace ExpandDuckTypedExpressions, Steps.ExpandDuckTypedExpressions()
+    # TODO: Not sure we need this. It just seems to convert closure blocks
+    #       to compiler generated classes.
+    if pipe.Find(ProcessClosures) != -1:
+        pipe.Remove(ProcessClosures)
 
-        Replace ExpandVarArgsMethodInvocations, Steps.ExpandVarArgsMethodInvocations()
+    # TODO: Not sure we need this. The nodes should be already bound to the
+    #       correct values, this only seems to be needed to support the
+    #       additional instrumentation used by Boo to support callables.
+    if pipe.Find(InjectCallableConversions) != -1:
+        pipe.Remove(InjectCallableConversions)
 
-        # TODO: Not sure we need this. It just seems to convert closure blocks
-        #       to compiler generated classes.
-        Remove ProcessClosures
+    # No need to cache/precompile regexp in Javascript
+    if pipe.Find(CacheRegularExpressionsInStaticFields) != -1:
+        pipe.Remove(CacheRegularExpressionsInStaticFields)
 
-        # TODO: Not sure we need this. The nodes should be already bound to the
-        #       correct values, this only seems to be needed to support the
-        #       additional instrumentation used by Boo to support callables.
-        Remove InjectCallableConversions
+    # Disable int literals range checks
+    if pipe.Find(CheckLiteralValues) != -1:
+        pipe.Remove(CheckLiteralValues)
 
-        # No need to cache/precompile regexp in Javascript
-        Remove CacheRegularExpressionsInStaticFields
-
+    if pipe.Find(ProcessMethodBodiesWithDuckTyping) != -1:
         # Undo some of the stuff performed by ProcessMethodBodies
-        InsertAfter ProcessMethodBodiesWithDuckTyping, Steps.UndoProcessMethod()
+        pipe.InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.UndoProcessMethod())
         # Apply modifications to support method overloading
-        InsertAfter ProcessMethodBodiesWithDuckTyping, Steps.MethodOverloading()
+        pipe.InsertAfter(ProcessMethodBodiesWithDuckTyping, Steps.MethodOverloading())
         # Override some of the stuff in the gigantic ProcessMethodBodies step
-        Replace ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies()
+        pipe.Replace(ProcessMethodBodiesWithDuckTyping, Steps.OverrideProcessMethodBodies())
 
-        # Customize slicing expressions
-        Replace ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions()
+    # Customize slicing expressions
+    if pipe.Find(ExpandComplexSlicingExpressions) != -1:
+        pipe.Replace(ExpandComplexSlicingExpressions, Steps.ExpandComplexSlicingExpressions())
 
-        # Relax boolean conversions
-        Replace InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions()
+    # Relax boolean conversions
+    if pipe.Find(InjectImplicitBooleanConversions) != -1:
+        pipe.Replace(InjectImplicitBooleanConversions, Steps.InjectImplicitBooleanConversions())
 
-        # Normalize generator expressions
-        #InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
+    # Normalize generator expressions
+    #InsertAfter(MacroAndAttributeExpansion, Steps.NormalizeGeneratorExpression())
 
-        # Normalize literals
-        InsertAfter NormalizeTypeAndMemberDefinitions, Steps.NormalizeLiterals()
+    # Use our custom generators processing
+    if pipe.Find(BranchChecking) != -1:
+        pipe.Replace(BranchChecking, Steps.BranchChecking())  # Lift limitation for yield staments in try/except blocks
+    if pipe.Find(ProcessGenerators) != -1:
+        pipe.Replace(ProcessGenerators, Steps.ProcessGenerators())
 
-        # Use a custom implementation for iterations
-        InsertBefore NormalizeIterationStatements, Steps.NormalizeLoops()
-        Remove NormalizeIterationStatements
-        Remove OptimizeIterationStatements
+    # Normalize literals
+    if pipe.Find(NormalizeTypeAndMemberDefinitions) != -1:
+        pipe.InsertAfter(NormalizeTypeAndMemberDefinitions, Steps.NormalizeLiterals())
 
-        # Simplify the unpack operations
-        InsertAfter NormalizeStatementModifiers, Steps.NormalizeUnpack()
+    # Use a custom implementation for iterations
+    if pipe.Find(NormalizeIterationStatements) != -1:
+        pipe.InsertBefore(NormalizeIterationStatements, Steps.NormalizeLoops())
+        pipe.Remove(NormalizeIterationStatements)
+    if pipe.Find(OptimizeIterationStatements) != -1:
+        pipe.Remove(OptimizeIterationStatements)
+
+    # Simplify the unpack operations
+    if pipe.Find(NormalizeStatementModifiers) != -1:
+        pipe.InsertAfter(NormalizeStatementModifiers, Steps.NormalizeUnpack())
+
+
+class Parse(BooPipelines.Parse):
+    def constructor():
+        PatchBooPipeline(self)
+
+class ExpandMacros(BooPipelines.ExpandMacros):
+    def constructor():
+        PatchBooPipeline(self)
+
+class ResolveExpressions(BooPipelines.ResolveExpressions):
+    def constructor():
+        PatchBooPipeline(self)
+
+class Compile(BooPipelines.Compile):
+    def constructor():
+        PatchBooPipeline(self)
 
         # Adapt try/except statements
         Add Steps.ProcessTry()
@@ -78,15 +117,8 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
 
         Add Steps.NormalizeGeneratorExpression()
 
-        # Use our custom generators processing
-        Replace BranchChecking, Steps.BranchChecking()  # Lift limitation for yield staments in try/except blocks
-        Replace ProcessGenerators, Steps.ProcessGenerators()
-
         # Support `goto`
         Add Steps.ProcessGoto()
-
-        # Disable int literals range checks
-        Remove CheckLiteralValues
 
         # Generate assembly
         # TODO: This should be optional
@@ -98,7 +130,6 @@ class Compile(Boo.Lang.Compiler.Pipelines.Compile):
         Add Steps.MozillaAst()
 
         #for step in self: print step
-
 
 class PrintBoo(Compile):
     def constructor():

@@ -22,7 +22,7 @@ class SaveFileTest:
     [Test]
     def embedded_assembly():
         comp = setup_compiler(CODE)
-        comp.Parameters.EmbedAssembly = true
+        (comp.Parameters as CompilerParameters).EmbedAssembly = true
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
@@ -34,7 +34,7 @@ class SaveFileTest:
     [Test]
     def non_embedded_assembly():
         comp = setup_compiler(CODE)
-        comp.Parameters.EmbedAssembly = false
+        (comp.Parameters as CompilerParameters).EmbedAssembly = false
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
@@ -43,7 +43,7 @@ class SaveFileTest:
     [Test]
     def generate_sourcemap():
         comp = setup_compiler(CODE)
-        comp.Parameters.SourceMap = ''
+        (comp.Parameters as CompilerParameters).SourceMap = ''
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
@@ -55,11 +55,11 @@ class SaveFileTest:
     [Test]
     def generate_sourcemap_custom_name():
         comp = setup_compiler(CODE)
-        comp.Parameters.SourceMap = 'srcmap.map'
+        (comp.Parameters as CompilerParameters).SourceMap = 'srcmap.map'
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
         assert content.IndexOf('//@ sourceMappingURL = srcmap.map') >= 0
 
-        content = File.ReadAllText(comp.Parameters.SourceMap)
+        content = File.ReadAllText((comp.Parameters as CompilerParameters).SourceMap)
         assert content.IndexOf(result.GeneratedAssemblyFileName) >= 0

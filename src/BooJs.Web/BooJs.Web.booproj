@@ -45,6 +45,9 @@
     <Reference Include="Nancy.Hosting.Self">
       <HintPath>lib\Nancy.Hosting.Self.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Ide">
+      <HintPath>..\..\vendors\boo-md-addins\build\Boo.Ide.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.boo" />
@@ -55,6 +58,5 @@
       <Name>BooJs.Compiler</Name>
     </ProjectReference>
   </ItemGroup>
-
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

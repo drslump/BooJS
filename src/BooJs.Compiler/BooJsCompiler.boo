@@ -11,16 +11,13 @@ import Boo.Lang.Compiler.TypeSystem.Services(DowncastPermissions)
 import BooJs.Compiler.TypeSystem as BooJsTypeSystem
 
 
-class BooJsCompiler:
+class BooJsCompiler(BooCompiler):
 """ Implements our own compiler façade instead of using the original one.
 """
-    [Getter(Parameters)]
-    private _parameters as CompilerParameters
-
     def constructor(params as CompilerParameters):
-        _parameters = params
+        super(params)
 
-    def Run(unit as CompileUnit):
+    new def Run(unit as CompileUnit):
         if not unit:
             raise ArgumentNullException("compileUnit");
         if not Parameters.Pipeline:
@@ -31,7 +28,7 @@ class BooJsCompiler:
 
         return ctxt
 
-    def Run():
+    new def Run():
         return Run(CompileUnit())
         
 

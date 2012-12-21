@@ -29,7 +29,7 @@ class CommandLine(AbstractCommandLine):
                 yield fname
         
     IsValid:
-        get: return len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
+        get: return self.HintServer or len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
         
     [Option("Output directory", ShortForm: "o", LongForm: "out")]
     public OutputDirectory = "."
@@ -65,9 +65,29 @@ class CommandLine(AbstractCommandLine):
     [Option("Root prefix for source map files", LongForm: "sourcemap-root")]
     public SourceMapRoot as string = null
 
-    [Option("display this help and exit", LongForm: "help")]
+    # TODO: Add option to launch external program on compilation failure
+    [Option("Watch files and recompile", ShortForm: "w", LongForm: "watch")]
+    public Watch as bool = false
+
+    [Option("Start HTTP server on the given port", ShortForm: "s", LongForm: "server")]
+    public Server as int = 8899
+
+    [Option("Display this help and exit", LongForm: "help")]
     public DoHelp = false
-        
+
+    [Option("Hints for member autocompletion (based on character offset)", LongForm: "hint-members")]
+    public HintMembers as bool = false
+    [Option("Hints for locals (based on line number)", LongForm: "hint-locals")]
+    public HintLocals as bool = false
+    [Option("Hints for method overloads (based on method name and line)", LongForm: "hint-overloads")]
+    public HintOverloads as string = null
+    [Option("Hints for target of symbol (based on line and column)", LongForm: "hint-target")]
+    public HintTarget as bool = false
+    [Option("Hints for parsing errors", LongForm: "hint-parse")]
+    public HintParse as bool = false
+    [Option("Launch the compiler in hints mode", LongForm: "hint-server")]
+    public HintServer as bool = false
+
     [Argument]
     def AddSourceFile([required] sourceFile as string):
         _sourceFiles.Add(sourceFile)

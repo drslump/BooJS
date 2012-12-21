@@ -1,10 +1,12 @@
 import System
 import Nancy
 import Nancy.Hosting.Self
+import Nancy.Helpers
 
 
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
+import Boo.Ide(ProjectIndex)
 
 
 class Main(NancyModule):
@@ -17,6 +19,36 @@ class Main(NancyModule):
 
 
         Get["/"] = { x | return "Hello World" }
+
+        Post['/autocomplete'] = do(x):
+
+            form = Request.Form as duck
+            filename = HttpUtility.UrlDecode(form['filename'].Value)
+            code = HttpUtility.UrlDecode(form['code'].Value)
+
+            line as int
+            column as int
+            int.TryParse(form['line'].Value, line)
+            int.TryParse(form['column'].Value, column)
+
+            print filename, line, column
+            print code
+
+
+            hints = DynamicDictionary()
+
+            index = ProjectIndex()
+            result = index.ProposalsFor(filename, code)
+            for itm in result:
+                hints[ itm.Name ] = itm.Description
+                print itm.Name, itm.Description
+
+            locals = index.LocalsAt(filename, code, line)
+            for itm in locals:
+                hints[ itm ] = itm
+                print itm
+
+            return hints
 
         Post['/compile'] = do(x):
 

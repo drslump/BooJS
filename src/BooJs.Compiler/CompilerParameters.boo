@@ -18,6 +18,13 @@ class CompilerParameters(BooCompilerParameters):
     [Property(SourceMapRoot)]
     _sourceMapRoot = null
 
+
+    def constructor():
+        super(true)
+
+    def constructor(loadDefault as bool):
+        super(BooCompilerParameters.SharedTypeSystemProvider, loadDefault)
+
     def constructor(provider as IReflectionTypeSystemProvider):
         super(provider)
 
