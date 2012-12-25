@@ -75,6 +75,11 @@ class Commands:
                         print '{0}|{1}|{2}' % (m.Name, m.Entity.EntityType, m.Entity.ToString())
             */
 
+            # Collect current module members
+            for m in module.Members:
+                continue if m.Name[-6:] == 'Module'
+                print '{0}|{1}|{2}' % (m.Name, m.Entity.EntityType, m.Entity.ToString())
+
             # TODO: This logic only seems to work for external references (Reflection)
             for imp in module.Imports:
                 #print 'IMPORT:', imp, imp.Entity, imp.Entity.EntityType
@@ -112,14 +117,16 @@ class Commands:
 
         print TERMINATOR
 
-    static def target(args as (string)):
+    static def target(index as ProjectIndex, line as string):
         pass
 
     static def parse(index as ProjectIndex, line as string):
         filename = line
         code = File.ReadAllText(filename)
 
-        index.Parse(filename, code)
+        #index.Parse(filename, code)
+        index.WithModule(filename, code) do(module):
+            pass
 
         for warn in index.Context.Warnings:
             print "${warn.Code}|${warn.LexicalInfo.Line}|${warn.LexicalInfo.Column}|${warn.Message}"
@@ -131,7 +138,7 @@ class Commands:
 
 def hints(cmdline as CommandLine):
 
-    index = ProjectIndex()
+    index = (ProjectIndex.BooJs() if not cmdline.HintsBoo else ProjectIndex.Boo())
     for refe in cmdline.References:
         index.AddReference(refe)
 
