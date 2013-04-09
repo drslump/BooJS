@@ -135,6 +135,33 @@ class Commands:
 
         print TERMINATOR
 
+    static def entity(index as ProjectIndex, line as string):
+        # filename@ln:col
+        parts = line.Split(char('@'))
+        filename = parts[0]
+        parts = parts[1].Split(char(':'))
+        ln as int
+        int.TryParse(parts[0], ln)
+        col as int
+        int.TryParse(parts[1], col)
+
+        code = File.ReadAllText(filename)
+
+        ent = index.EntityAt(filename, code, ln, col)
+
+        # For internal entities we have access to their node's lexical info
+        if ientity = ent as Boo.Lang.Compiler.TypeSystem.IInternalEntity:
+            li = ientity.Node.LexicalInfo
+            print '{0}|{1}|{2}@{3}' % (ent.FullName, ent.EntityType, li.FileName, li.Line)
+        # External entities do not have lexical information
+        # TODO: The compiler may be made to include this info as custom attributes in debug mode?
+        else:
+            print '{0}|{1}' % (ent.FullName, ent.EntityType)
+
+        print TERMINATOR
+
+
+
 
 def hints(cmdline as CommandLine):
 
