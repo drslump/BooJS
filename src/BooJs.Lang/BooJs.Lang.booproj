@@ -85,6 +85,11 @@
     <Compile Include="Macros\MetaAttribute.boo" />
     <Compile Include="Macros\NewMeta.boo" />
     <Compile Include="Macros\TraceMacro.boo" />
+    <Compile Include="Browser\Canvas.boo" />
+    <Compile Include="Browser\WebGL.boo" />
+    <Compile Include="Globals\TypedArrays.boo" />
+    <Compile Include="Browser\Html.boo" />
+    <Compile Include="Browser\Events.boo" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
