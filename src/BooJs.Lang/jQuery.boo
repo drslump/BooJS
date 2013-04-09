@@ -1,3 +1,5 @@
+namespace Apis
+
 import BooJs.Lang.Globals(Object)
 import BooJs.Lang.Builtins(ICallable)
 import BooJs.Lang.Extensions
@@ -110,6 +112,8 @@ class jQuery(ICallable):
     def constructor(elements as (DOM.Element)):
         pass
     def constructor(callback as callable):
+        pass
+    def constructor(any as object):
         pass
 
 

@@ -201,7 +201,7 @@ interface Entity(Node):
     notationName as string:
         get
 
-class Document(Node):
+class Document(Element):
     //readonly attribute DocumentType     doctype;
     final public doctype as DocumentType
     //readonly attribute DOMImplementation  implementation;

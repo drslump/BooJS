@@ -2,8 +2,30 @@ namespace Browser
 
 import BooJs.Lang.Extensions
 
+
 [extern]
 class window:
+    interface Storage:
+
+        self[idx as string] as object:
+            get
+            set
+
+        length as int:
+            get
+
+        def getItem(key as string) as object
+        def setItem(key as string, data as object)
+        def removeItem(key as string)
+        def clear()
+        def key(idx as int) as string
+
+
+    static public localStorage as Storage
+
+    static public requestAnimationFrame as callable
+
+
     static def setTimeout(func as callable, delay as int) as object:
         pass
     static def clearTimeout(id):
