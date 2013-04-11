@@ -53,6 +53,9 @@
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
+    <Reference Include="fastJSON">
+      <HintPath>..\..\lib\fastJSON.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
