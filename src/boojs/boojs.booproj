@@ -43,6 +43,9 @@
     <Reference Include="Boo.Ide">
       <HintPath>..\..\lib\Boo.Ide.dll</HintPath>
     </Reference>
+    <Reference Include="fastJSON">
+      <HintPath>..\..\lib\fastJSON.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.boo" />
