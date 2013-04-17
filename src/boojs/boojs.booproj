@@ -37,11 +37,11 @@
     <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Boo.Lang.Parser">
+      <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
+    </Reference>
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
-    </Reference>
-    <Reference Include="Boo.Ide">
-      <HintPath>..\..\lib\Boo.Ide.dll</HintPath>
     </Reference>
     <Reference Include="fastJSON">
       <HintPath>..\..\lib\fastJSON.dll</HintPath>
@@ -53,7 +53,13 @@
     <Compile Include="CommandLine.boo" />
     <Compile Include="Watcher.boo" />
     <Compile Include="Hints.boo" />
-    <Compile Include="ProjectIndex.boo" />
+    <Compile Include="Hints\ProjectIndex.boo" />
+    <Compile Include="Hints\globals.boo" />
+    <Compile Include="Hints\Commands.boo" />
+    <Compile Include="Hints\Messages.boo" />
+    <Compile Include="Hints\OutlineVisitor.boo" />
+    <Compile Include="Hints\ContentAssistProcessor.boo" />
+    <Compile Include="Hints\ExpressionResolution.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
