@@ -1,0 +1,17 @@
+# Used only for autocompletion support in SublimeBoo.
+# For building please use msbuild/xbuild and the .booproj file
+
+# Libs
+-r:../../lib/Boo.Lang.dll
+-r:../../lib/Boo.Lang.Compiler.dll
+-r:../../lib/Boo.Lang.Useful.dll
+-r:../../lib/fastJSON.dll
+
+# Project deps
+-r:bin/Debug/BooJs.Compiler.dll
+
+# Define the output assembly so we can use it for code completion
+-o:bin/Debug/boojs.exe
+
+# Force standard Boo hinting mode
+-hints-boo

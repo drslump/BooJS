@@ -4,48 +4,48 @@ import System.IO
 import Boo.Lang.Useful.CommandLine from Boo.Lang.Useful
 
 class CommandLine(AbstractCommandLine):
-    
+
     [getter(Classpaths)]
     _classpaths = List[of string]()
-    
+
     [getter(References)]
     _references = List[of string]()
-    
+
     _sourceFiles = List[of string]()
-    
+
     _srcDirs = List[of string]()
 
     def constructor(argv):
         Parse(argv)
-        
+
     def SourceFiles():
-        
+
         for srcFile as string in _sourceFiles:
             yield srcFile
-            
+
         for srcDir in _srcDirs:
             for fname in Directory.GetFiles(srcDir, "*.boo"):
                 continue unless fname.EndsWith("boo")
                 yield fname
-        
+
     IsValid:
         get: return self.HintsServer or len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
-        
+
     [Option("Output directory", ShortForm: "o", LongForm: "out")]
     public OutputDirectory = "."
-        
+
     [Option("Prints the resulting bytecode to stdout (js, boo).", ShortForm: 'p', LongForm: "print")]
     public PrintCode = false
-    
+
     [Option("Enables duck typing.", LongForm: "ducky")]
     public Ducky = false
-    
+
     [Option("Enables writing debug symbols.", LongForm: "debug")]
     public Debug = false
-    
+
     [Option("Enables verbose mode.", LongForm: "verbose")]
     public Verbose = false
-    
+
     [Option("Embeds the types metadata assembly into the generated file (enabled by default).", LongForm: "embedasm")]
     public EmbedAssembly = true
 

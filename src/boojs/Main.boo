@@ -10,8 +10,6 @@ import BooJs.Compiler
 import BooJs.Compiler.CompilerParameters as JsCompilerParameters
 import BooJs.Compiler.CompilerContext as JsCompilerContext
 
-import Boo.Ide
-
 
 def loadAssembly(name as string):
     if SysIO.File.Exists(name):
@@ -31,7 +29,7 @@ def parseCommandLine(argv as (string)):
 
 def selectPipeline(cmdLine as CommandLine):
     return Pipelines.SaveJs()
-    
+
 def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     params.Debug = cmdLine.Debug
     params.OutputAssembly = getOutputDirectory(cmdLine)
@@ -55,7 +53,7 @@ def showErrorsWarnings(cmdLine as CommandLine, result as JsCompilerContext):
         System.Console.Error.WriteLine( warning )
     for error in result.Errors:
         System.Console.Error.WriteLine( error.ToString(cmdLine.Verbose) )
-    
+
 def getOutputDirectory(cmdLine as CommandLine):
     return cmdLine.OutputDirectory
 

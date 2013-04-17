@@ -70,8 +70,8 @@ class Node(INode):
 
 
 class SourceLocation:
-""" Source location information of the node consisting of a start position (the position of 
-    the first character of the parsed source region) and an end position (the position of 
+""" Source location information of the node consisting of a start position (the position of
+    the first character of the parsed source region) and an end position (the position of
     the first character after the parsed source region)
 """
     public source as string
@@ -89,11 +89,11 @@ class Program(Node):
     public body = List[of IStatement]()
 
 class Function(Node):
-""" A function declaration or expression. The body of the function may be a block 
+""" A function declaration or expression. The body of the function may be a block
     statement, or in the case of an expression closure, an expression (Mozilla specific).
-    If the generator flag is true, the function is a generator function, i.e., contains a 
+    If the generator flag is true, the function is a generator function, i.e., contains a
     yield expression in its body (other than in a nested function).
-    If the expression flag is true, the function is an expression closure and the body 
+    If the expression flag is true, the function is an expression closure and the body
     field is an expression.
 """
     public id as Identifier
@@ -145,7 +145,7 @@ class WithStatement(Node, IStatement):
     public body as IStatement
 
 class SwitchStatement(Node, IStatement):
-""" A switch statement. The lexical flag is metadata indicating whether the switch statement 
+""" A switch statement. The lexical flag is metadata indicating whether the switch statement
     contains any unnested let declarations (and therefore introduces a new lexical scope).
 """
     public discriminant as IExpression
@@ -250,9 +250,9 @@ class ArrayExpression(Node, IExpression):
     public elements = List[of IExpression]()
 
 class ObjectExpression(Node, IExpression):
-""" An object expression. A literal property in an object expression can have 
-    either a string or number as its value. Ordinary property initializers have 
-    a kind value "init"; getters and setters have the kind values "get" and "set", 
+""" An object expression. A literal property in an object expression can have
+    either a string or number as its value. Ordinary property initializers have
+    a kind value "init"; getters and setters have the kind values "get" and "set",
     respectively.
 """
     public properties = List[of ObjectExpressionProp]()
@@ -321,8 +321,8 @@ class CallExpression(Node, IExpression):
     public arguments = List[of IExpression]()
 
 class MemberExpression(Node, IExpression):
-""" A member expression. If computed === true, the node corresponds to a computed 
-    e1[e2] expression and property is an Expression. If computed === false, the 
+""" A member expression. If computed === true, the node corresponds to a computed
+    e1[e2] expression and property is an Expression. If computed === false, the
     node corresponds to a static e1.x expression and property is an Identifier.
 """
     public object as IExpression
@@ -337,14 +337,14 @@ class MemberExpression(Node, IExpression):
         property = Identifier(prop)
 
 class SwitchCase(Node):
-""" A case (if test is an Expression) or default (if test === null) clause in the body of a 
+""" A case (if test is an Expression) or default (if test === null) clause in the body of a
     switch statement.
 """
     public test as IExpression = null
     public consequent = List[of IStatement]()
 
 class CatchClause(Node):
-""" A catch clause following a try block. The optional guard property corresponds to the 
+""" A catch clause following a try block. The optional guard property corresponds to the
     optional expression guard on the bound variable.
     Note: The guard expression is SpiderMonkey-specific.
 """
