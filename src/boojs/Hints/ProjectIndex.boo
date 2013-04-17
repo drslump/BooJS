@@ -83,6 +83,7 @@ class ProjectIndex:
             return m if m.LexicalInfo.FileName == fileName
         return null
 
+
 class LocationFinder(DepthFirstVisitor):
     _entity as Boo.Lang.Compiler.TypeSystem.IEntity
     _line as int
@@ -183,12 +184,13 @@ static class CompletionProposer:
         match expression:
             case MemberReferenceExpression(Target: target=Expression(ExpressionType)):
                 match target.Entity:
-                    case IType():
-                        members = StaticMembersOf(ExpressionType)
                     case ns=INamespace(EntityType: EntityType.Namespace):
                         members = ns.GetMembers()
+                    case IType():
+                        members = StaticMembersOf(ExpressionType)
                     otherwise:
-                        members = InstanceMembersOf(ExpressionType)
+                        parent = expression.GetAncestor[of TypeDefinition]()
+                        members = InstanceMembersOf(ExpressionType, parent.Entity)
 
                 membersByName = members.GroupBy({ member | member.Name })
                 for member in membersByName:
@@ -196,8 +198,8 @@ static class CompletionProposer:
             otherwise:
                 pass
 
-    def InstanceMembersOf(type as IType):
-        for member in AccessibleMembersOf(type):
+    def InstanceMembersOf(type as IType, parent as IType):
+        for member in AccessibleMembersOf(type, parent):
             match member:
                 case IAccessibleMember(IsStatic):
                     yield member unless IsStatic
@@ -205,16 +207,19 @@ static class CompletionProposer:
                     yield member
 
     def StaticMembersOf(type as IType):
-        for member in AccessibleMembersOf(type):
+        for member in AccessibleMembersOf(type, null):
             match member:
                 case IAccessibleMember(IsStatic):
                     yield member if IsStatic
                 otherwise:
                     yield member
 
-    def AccessibleMembersOf(type as IType):
+    def AccessibleMembersOf(type as IType, parent as IType):
         currentType = type
         while currentType is not null:
+            is_same = parent == currentType
+            is_subclass = parent and parent.IsSubclassOf(currentType)
+
             for member in currentType.GetMembers():
                 if IsSpecialName(member.Name):
                     continue
@@ -223,8 +228,8 @@ static class CompletionProposer:
                         continue
                     case IEvent():
                         yield member
-                    case IAccessibleMember(IsPublic):
-                        if IsPublic:
+                    case IAccessibleMember(IsPublic, IsProtected):
+                        if is_same or IsPublic or (IsProtected and is_subclass):
                             yield member
                     otherwise:
                         continue
