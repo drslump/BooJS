@@ -46,6 +46,21 @@
     <Reference Include="fastJSON">
       <HintPath>..\..\lib\fastJSON.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\lib\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\lib\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
+      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
+      <Name>BooJs.Compiler</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.boo" />
@@ -58,14 +73,6 @@
     <Compile Include="Hints\Commands.boo" />
     <Compile Include="Hints\Messages.boo" />
     <Compile Include="Hints\OutlineVisitor.boo" />
-    <Compile Include="Hints\ContentAssistProcessor.boo" />
-    <Compile Include="Hints\ExpressionResolution.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
-      <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
-      <Name>BooJs.Compiler</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

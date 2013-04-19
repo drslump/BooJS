@@ -15,6 +15,8 @@ class QueryMessage:
     public offset as int
     public line as int
     public column as int
+    # If true tries to return additional information (slower)
+    public extra as bool
     # If true includes null values in the response
     public nulls as bool
 
@@ -24,12 +26,13 @@ class HintsMessage:
         node as string
         type as string
         name as string
-        doc as string
+        full as string
         info as string
 
-        file as string
-        line as int?
-        column as int?
+        # Extra information
+        doc as string
+        params as List[of string]
+        loc as string  # {file}:{ln}:{col}
 
     public hints = List[of Hint]()
 

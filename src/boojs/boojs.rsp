@@ -6,6 +6,9 @@
 -r:../../lib/Boo.Lang.Compiler.dll
 -r:../../lib/Boo.Lang.Useful.dll
 -r:../../lib/fastJSON.dll
+-r:../../lib/Mono.Cecil.dll
+-r:../../lib/Mono.Cecil.Pdb.dll
+-r:../../lib/Mono.Cecil.Mdb.dll
 
 # Project deps
 -r:bin/Debug/BooJs.Compiler.dll

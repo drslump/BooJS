@@ -13,11 +13,16 @@ import Boo.Lang.PatternMatching
 
 import BooJs.Compiler(newBooJsCompiler, Pipelines)
 
+import Mono(Cecil)
+
 
 class ProjectIndex:
 
     [getter(Context)]
     _context as CompilerContext
+
+    [getter(AssemblyDefinitions)]
+    _asmdefs = List[of Cecil.AssemblyDefinition]()
 
     _compiler as BooCompiler
     _parser as BooCompiler
@@ -58,6 +63,20 @@ class ProjectIndex:
         asm = _compiler.Parameters.LoadAssembly(reference, true)
         _compiler.Parameters.References.Add(asm)
 
+        # Cecil
+        asmdef = Cecil.AssemblyDefinition.ReadAssembly(reference)
+        #symbolPath = System.IO.Path.ChangeExtension(asmdef.MainModule.FullyQualifiedName, '.pdb')
+        symbolPath = asmdef.MainModule.FullyQualifiedName
+        if not System.IO.File.Exists(symbolPath + '.mdb'):
+            print '# No symbols file for', asmdef.MainModule.FullyQualifiedName
+            return
+
+        reader = Cecil.Mdb.MdbReaderProvider().GetSymbolReader(asmdef.MainModule, symbolPath)
+        asmdef.MainModule.ReadSymbols(reader)
+
+        if asmdef.MainModule.HasSymbols:
+            _asmdefs.Add(asmdef)
+
     virtual def WithParser(fname as string, code as string, action as System.Action[of Module]):
         input = _parser.Parameters.Input
         input.Add(IO.StringInput(fname, code))
@@ -85,7 +104,7 @@ class ProjectIndex:
 
 
 class LocationFinder(DepthFirstVisitor):
-    _entity as Boo.Lang.Compiler.TypeSystem.IEntity
+    _entity as IEntity
     _line as int
     _column as int
 
@@ -108,14 +127,18 @@ class LocationFinder(DepthFirstVisitor):
 
 class CursorLocationFinder(DepthFirstVisitor):
 
+    _mark as string
     _node as Expression
+
+    def constructor(mark as string):
+        _mark = mark
 
     def FindIn(root as Node):
         VisitAllowingCancellation(root)
         return _node
 
     override def LeaveMemberReferenceExpression(node as MemberReferenceExpression):
-        if node.Name == '__cursor_location__':
+        if node.Name == _mark:
             Found(node)
 
     protected def Found(node):
@@ -172,10 +195,11 @@ class LocalAccumulator(FastDepthFirstVisitor):
         if _line < method.LexicalInfo.Line or _line > method.EndSourceLocation.Line: return
         if not method.LexicalInfo.FullPath.Equals(_filename, StringComparison.OrdinalIgnoreCase): return
 
-        for local in method.Locals:
-            _results.Add(local.Entity)
         for param in method.Parameters:
             _results.Add(param.Entity)
+        for local in method.Locals:
+            if _line >= local.LexicalInfo.Line:
+                _results.Add(local.Entity)
 
 
 static class CompletionProposer:

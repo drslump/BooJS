@@ -4,15 +4,25 @@ import Boo.Lang.Compiler(Ast)
 import Boo.Lang.Compiler.TypeSystem
 import Boo.Lang.PatternMatching
 
+import Boo.Lang.Environments(my)
+
+import Mono(Cecil)
+
 
 class Commands:
 
     static def parse(index as ProjectIndex, query as QueryMessage):
+    """ Parse the given code reporting back any errors and warnings issued by
+        the compiler.
+        If extra information is requested the parse is performed with a type
+        resolving compiler pipeline which will detect more errors than invalid
+        syntax.
+    """
         msg = ParseMessage()
 
-        fn = index.WithParser
-        if query.params and len(query.params) and query.params[0]:
-            fn = index.WithCompiler
+        fn = index.WithCompiler
+        if query.extra:
+            fn = index.WithParser
 
         fn(query.fname, query.code) do (module):
             for warn in index.Context.Warnings:
@@ -22,41 +32,59 @@ class Commands:
 
         return msg
 
-    static def entity(index as ProjectIndex, query as QueryMessage):
-        msg = HintsMessage()
-        index.WithCompiler(query.fname, query.code) do (module):
-            ent = LocationFinder(query.line, query.column).FindIn(module)
-            ProcessEntity(msg, ent) if ent
-
-        /*
-        # For internal entities we have access to their node's lexical info
-        if ientity = ent as Boo.Lang.Compiler.TypeSystem.IInternalEntity:
-            ProcessEntity(msg, ent)
-        # External entities do not have lexical information
-        # TODO: Use Cecil to load symbols pdb/mdb and query the assemblies by FullName
-        else:
-            ProcessEntity(msg, ent)
-        */
-
-        return msg
-
     static def outline(index as ProjectIndex, query as QueryMessage):
-    """ Obtain an outline tree for the source code """
+    """ Obtain an outline tree for the source code
+    """
         root = NodeMessage()
         index.WithParser(query.fname, query.code) do (module):
             module.Accept(OutlineVisitor(root))
 
         return root
 
+    static def entity(index as ProjectIndex, query as QueryMessage):
+    """ Get information about a given entity based on the line and column of its
+        first letter.
+        If an additional param with true is given then we query based on the entity
+        full name, in order to obtain all possible candidates.
+    """
+        msg = HintsMessage()
+
+        index.WithCompiler(query.fname, query.code) do (module):
+            ent = LocationFinder(query.line, query.column).FindIn(module)
+            if ent:
+                if query.params and len(query.params) and query.params[0]:
+                    # It seems like Boo only provides ambiguous information for internal
+                    # entities. Here we resolve again based on the entity full name to get
+                    # all possible candidates.
+                    nrs = my(Boo.Lang.Compiler.TypeSystem.Services.NameResolutionService)
+                    all = nrs.ResolveQualifiedName(ent.FullName)
+                    if all:
+                        ProcessEntity(index, msg, all, query.extra)
+                        return
+
+                ProcessEntity(index, msg, ent, query.extra)
+
+        return msg
+
     static def locals(index as ProjectIndex, query as QueryMessage):
+    """ Obtain hints for local symbols available in a method. This includes
+        parameter definitions, method variables, closure variables and loop
+        variables.
+    """
         msg = HintsMessage()
         index.WithCompiler(query.fname, query.code) do (module):
             for entity in LocalAccumulator(query.fname, query.line).FindIn(module):
-                ProcessEntity(msg, entity)
+                ProcessEntity(index, msg, entity, query.extra)
 
         return msg
 
     static def members(index as ProjectIndex, query as QueryMessage):
+    """ Obtain hints for completing a member reference expression. If the
+        reported offset is not just after a dot it will query all symbols
+        available at that point, this includes local symbols and members of
+        the enclosing type.
+    """
+
         ofs = query.offset
         left = query.code.Substring(0, ofs)
         right = query.code.Substring(ofs)
@@ -67,13 +95,12 @@ class Commands:
             do_locals = true
             left += '.'
 
-        pairs = {
-            '(': ')', '{': '}', '[': ']',
-            ')': '(', '}': '{', ']': '['
-        }
-
-        # Parse the code backwards from the offset to detect open parens
-        # Note: We just go back at most 1000 chars, should cover most cases
+        # Parse a chunk of code backwards from the offset to detect open parens.
+        # This allows to fix invalid syntax before feeding the code to the compiler,
+        # this method will usually be used for autocompletion so if we are in the
+        # middle of writing params to a function the syntax will not be valid at
+        # that point.
+        pairs = { '(': ')', '{': '}', '[': ']', ')': '(', '}': '{', ']': '[' }
         stack = []
         cnt = 0
         while cnt++ < (len(stack)+1) * 50 and ofs - cnt >= 0:
@@ -86,26 +113,24 @@ class Commands:
                 stack.Add(s)
 
         # Close any found open parens just after the offset
-        if len(stack):
-            code = '{0}__cursor_location__ {1} ; # {2}' % (
-                left,
-                join([pairs[x] for x in stack], '') + ' ; # ',
-                right
-            )
-        else:
-            code = '{0}__cursor_location__ ; # {1}' % (left, right)
+        code = '{0}__cursor_location__ {1} ; # {2}' % (
+            left,
+            join([pairs[x] for x in stack], '') + ' ; # ',
+            right
+        )
 
-        # for ln in code.Split(char('\n')):
-        #     System.Console.Error.WriteLine('# ' + ln)
+        for ln in code.Split(char('\n')):
+            if ' ; # ' in ln:
+                print '#', ln
 
         # Find member proposals for the cursor location
         msg = HintsMessage()
         index.WithCompiler(query.fname, code) do (module):
-            node as Ast.Node = CursorLocationFinder().FindIn(module)
+            node as Ast.Node = CursorLocationFinder('__cursor_location__').FindIn(module)
             if node:
                 # Obtain member proposals
                 for ent in CompletionProposer.ForExpression(node):
-                    ProcessEntity(msg, ent)
+                    ProcessEntity(index, msg, ent, query.extra)
 
                 if do_locals:
                     # Use cursor expression line if one wasn't explicitly given
@@ -122,7 +147,8 @@ class Commands:
 
                     accum = LocalAccumulator(query.fname, query.line)
                     for ent in accum.FindIn(node):
-                        ProcessEntity(msg, ent)
+                        ProcessEntity(index, msg, ent, query.extra)
+
 
         return msg
 
@@ -137,10 +163,10 @@ class Commands:
                         continue unless mm.IsStatic
                         continue if mm.IsInternal
                         continue if mm.Name == 'Main'
-                        ProcessEntity(msg, mm.Entity)
+                        ProcessEntity(index, msg, mm.Entity, query.extra)
                     continue
 
-                ProcessEntity(msg, m.Entity)
+                ProcessEntity(index, msg, m.Entity, query.extra)
 
             # Process imported symbols
             mre = Ast.MemberReferenceExpression()
@@ -148,7 +174,8 @@ class Commands:
             for imp in module.Imports:
                 # Handle aliases imports
                 if imp.Alias and imp.Alias.Entity:
-                    ProcessEntity(msg, imp.Alias.Entity, imp.Alias.Name)
+                    # TODO: Do we actually need to pass imp.Alias.Name ???
+                    ProcessEntity(index, msg, imp.Alias.Entity, imp.Alias.Name, query.extra)
                     continue
 
                 # Namespace imports. We fake a member reference expression for the namespace
@@ -159,17 +186,72 @@ class Commands:
                 for ent in entities:
                     # Filter out namespace members not actually imported
                     continue if mie and not mie.Arguments.Contains({n as Ast.ReferenceExpression | n.Name == ent.Name})
-                    ProcessEntity(msg, ent)
+                    ProcessEntity(index, msg, ent, query.extra)
 
         return msg
 
-    static def ProcessEntity(msg as HintsMessage, entity as IEntity):
-        ProcessEntity(msg, entity, entity.Name)
+    static def LocationForToken(index as ProjectIndex, entity as IEntity):
+    """ Find location information for the given entity.
+        Returns null if we couldn't find any information or a tuple
+        with the filename, the line and the column.
+    """
+        def find_seq(m as Cecil.MethodDefinition):
+            return unless m.HasBody
+            seq = m.Body.Instructions[0].SequencePoint
+            return unless seq and seq.Document
+            # Target the previous line
+            return '{0}:{1}:{2}' % (
+                seq.Document.Url,
+                seq.StartLine - 1,
+                seq.StartColumn + 1)
 
-    static def ProcessEntity(msg as HintsMessage, entity as IEntity, name as string):
+        # Internal entities provide their lexical information in their node
+        if ie = entity as IInternalEntity:
+            return '{0}:{1}:{2}' % (
+                ie.Node.LexicalInfo.FileName,
+                ie.Node.LexicalInfo.Line,
+                ie.Node.LexicalInfo.Column)
+
+        ee = entity as IExternalEntity
+        if not ee:
+            print '# Unable to get location info for:', entity, entity.EntityType
+            return null
+
+        # Get the metadata token from the entity
+        token = Cecil.MetadataToken(ee.MemberInfo.MetadataToken)
+
+        # Lookup the token in each module
+        for asmdef in index.AssemblyDefinitions:
+            for mod in asmdef.Modules:
+                match definition=mod.LookupToken(token):
+                    case null:
+                        continue
+                    case method=Cecil.MethodDefinition():
+                        continue unless method.Name == entity.Name
+                        return find_seq(method)
+                    case prop=Cecil.PropertyDefinition():
+                        continue unless prop.Name == entity.Name
+                        return find_seq(prop.GetMethod)
+                    # TODO: Support types and field
+                    otherwise:
+                        print '# DEF', definition
+
+        return null
+
+    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity):
+    """ hello world! """
+        ProcessEntity(index, msg, entity, false)
+
+    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity, extra as bool):
+    """ en un pais de la mancha """
+        ProcessEntity(index, msg, entity, entity.Name, extra)
+
+    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity, name as string, extra as bool):
+    """ lorem ipsum dolor sit """
+        # Unroll ambiguous entities
         if entity.EntityType == EntityType.Ambiguous:
             for ent in (entity as Ambiguous).Entities:
-                ProcessEntity(msg, ent, name)
+                ProcessEntity(index, msg, ent, name, extra)
             return
 
         # Ignore compiler generated variables
@@ -180,18 +262,17 @@ class Commands:
             name = name.Substring(0, name.IndexOf('$'))
 
         hint = HintsMessage.Hint()
-        hint.name = name
         hint.node = entity.EntityType.ToString()
-        hint.doc = docStringFor(entity)
+        hint.full = entity.FullName
+        hint.name = name
 
-        # Lexical info is cheap to obtain for internal entities
-        if ientity = entity as IInternalEntity:
-            hint.file = ientity.Node.LexicalInfo.FileName
-            hint.line = ientity.Node.LexicalInfo.Line
-            hint.column = ientity.Node.LexicalInfo.Column
+        if extra:
+            hint.doc = docStringFor(entity)
+            hint.loc = LocationForToken(index, entity)
 
         match entity:
             case t=IType():
+                # TODO: for extra include inherited types in params
                 info = []
                 info.Add('Array') if t.IsArray
                 info.Add('Interface') if t.IsInterface
@@ -202,42 +283,42 @@ class Commands:
                     info.Add('Abstract') if t.IsAbstract
                     info.Add('Final') if t.IsFinal
 
-                hint.type = t.FullName
                 hint.info = join(info, ',')
-            case ns=INamespace(EntityType: EntityType.Namespace):
-                hint.type = ns.FullName
-            case p=IProperty():
-                hint.type = p.FullName
-                hint.info = p.Type.ToString()
-            case f=IField():
-                hint.type = f.FullName
-                hint.info = f.Type.ToString()
-            case e=IEvent():
-                hint.type = e.FullName
-                hint.info = e.Type.ToString()
-            case em=ExternalMethod():
-                hint.type = em.FullName
-                params = []
-                try:
-                    for p in em.GetParameters():
-                        params.Add(p.Name + ': ' + p.Type)
-                except:
-                    pass
-                hint.info = '(' + join(params, ', ') + '): ' + em.ReturnType
-            case lc=ILocalEntity():
-                hint.type = lc.FullName
-                hint.info = lc.Type.ToString()
-            case ie=IInternalEntity():
-                hint.type = ie.FullName
-                match ie.Node:
-                    case im=Ast.Method():
-                        params = [] #[p.Name + ': ' + p.Type for p in im.Parameters]
-                        hint.info = '(' + join(params, ', ') + '): ' + im.ReturnType
-                    otherwise:
-                        hint.info = '' + ie
 
+            case ns=INamespace(EntityType: EntityType.Namespace):
+                pass
+            case p=IProperty():
+                hint.type = p.Type.ToString()
+            case f=IField():
+                hint.type = f.Type.ToString()
+            case e=IEvent():
+                hint.type = e.Type.ToString()
+            case lc=ILocalEntity():
+                hint.type = lc.Type.ToString()
+            case em=ExternalMethod():
+                hint.type = em.ReturnType.ToString()
+                if extra:
+                    hint.params = List[of string]()
+                    try:
+                        for em_p in em.GetParameters():
+                            hint.params.Add(em_p.Name + ': ' + em_p.Type)
+                    except ex:
+                        System.Console.Error.WriteLine('#' + ex.ToString().Replace('\n', '\n#'))
+            case ie=IInternalEntity():
+                if im = ie.Node as Ast.Method:
+                    hint.type = im.ReturnType.ToString()
+                    if extra:
+                        hint.params = List[of string]()
+                        try:
+                            for im_p in im.Parameters:
+                                hint.params.Add(im_p.Name + ': ' + im_p.Type)
+                        except ex:
+                            System.Console.Error.WriteLine('#' + ex.ToString().Replace('\n', '\n#'))
+                else:
+                    print '# internal', entity, entity.EntityType
+                    hint.info = entity.ToString()
             otherwise:
                 print '# otherwise', entity, entity.EntityType
+                hint.info = entity.ToString()
 
         msg.hints.Add(hint)
-
