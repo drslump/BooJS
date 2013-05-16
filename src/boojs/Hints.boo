@@ -30,7 +30,7 @@ internal class PrefixedTraceListener(TraceListener):
         return _prefix + join(lines, '\n#')
 
     override def Write(msg as string):
-        WriteLine(msg) 
+        WriteLine(msg)
 
     override def WriteLine(msg as string):
         # HACK: I can't figure out how to obtain the trace as an object before it's formatted
@@ -65,9 +65,6 @@ def hints(cmdline as CommandLine):
 
     # Initialize the json serializer
     json = JavaScriptSerializer()
-
-    if Stopwatch.IsHighResolution:
-        Trace.TraceInformation('Using a Low resolution timer. Reported times may not be accurate')
 
     stopwatch = Stopwatch()
     while true:   # Loop indefinitely

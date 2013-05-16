@@ -23,7 +23,7 @@
     <genwarnings>false</genwarnings>
     <ConsolePause>false</ConsolePause>
     <nostdlib>false</nostdlib>
-    <DefineConstants />
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
