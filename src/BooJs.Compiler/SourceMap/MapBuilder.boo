@@ -3,8 +3,6 @@ namespace BooJs.Compiler.SourceMap
 import System.Collections.Generic(Dictionary)
 import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
 
-import fastJSON(JSON, JSONParameters)
-
 
 class MapBuilder:
 
@@ -98,6 +96,5 @@ class MapBuilder:
         return d
 
     def ToJSON() as string:
-        json_params = JSONParameters()
-        json_params.UseExtensions = false
-        return JSON.Instance.ToJSON(ToDict(), json_params)
+        js = JavaScriptSerializer()
+        return js.Serialize(ToDict())
