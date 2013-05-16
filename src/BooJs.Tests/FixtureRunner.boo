@@ -30,7 +30,7 @@ class ConsoleMock(ObjectInstance):
         _output.Clear()
 
 static class Window:
-    timers = List[of Timer]()
+    timers = Boo.Lang.List[of Timer]()
 
     def hasTimers():
         return len(timers) > 0
