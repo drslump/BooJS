@@ -1,26 +1,55 @@
 """
 TODO: Check http://jolt.codeplex.com/wikipage?title=Jolt.XmlDocComments
 
-Note: While fastJSON is much faster that JavaScriptSerializer the time spend 
-      serializing is not much, thus for the time being is preferred to avoid
-      including an additional dependency.
+Note: While fastJSON is much faster than JavaScriptSerializer the time spend 
+      serializing is not much, thus we can probably avoid having an additional
+      dependency.
 
-TODO: Use System.Diagnostics.Trace with a custom formatter to prefix with '#'
 """
 namespace boojs
 
 import System.IO
 import System(Console)
-import System.Diagnostics(Stopwatch)
-import System.Web.Script.Serialization
+import System.Diagnostics(Stopwatch, Trace, TraceListener, TraceEventCache, TraceEventType)
+import System.Web.Script.Serialization(JavaScriptSerializer) from "System.Web.Extensions"
 
-import boojs.Hints(ProjectIndex, Commands)
-import boojs.Hints.Messages.Query as QueryMessage
+import Boo.Hints(ProjectIndex, Commands)
+import Boo.Hints.Messages.Query as QueryMessage
+
+
+internal class PrefixedTraceListener(TraceListener):
+""" Dumps trace messages to the console using a prefix 
+"""
+    _prefix = '#'
+
+    def constructor(prefix as string):
+        _prefix = prefix
+
+    protected def format(msg as string):
+        lines = msg.Split(char('\n'))
+        return _prefix + join(lines, '\n#')
+
+    override def Write(msg as string):
+        WriteLine(msg) 
+
+    override def WriteLine(msg as string):
+        # HACK: I can't figure out how to obtain the trace as an object before it's formatted
+        parts = msg.Split(char(':'))
+        msg = join(parts[2:], ':').TrimStart()
+        if parts[0].Contains('Information'):
+            Console.Out.WriteLine(format(msg))
+        else:
+            Console.Error.WriteLine(format(msg))
 
 
 def hints(cmdline as CommandLine):
+    # Setup trace system to use our formatter 
+    Trace.AutoFlush = true
+    Trace.Listeners.Clear()
+    Trace.Listeners.Add(PrefixedTraceListener('#'))
 
-    index = (ProjectIndex.BooJs() if not cmdline.HintsBoo else ProjectIndex.Boo())
+    # TODO: Use a BooJs compiler
+    index = ProjectIndex.Boo()
     for refe in cmdline.References:
         index.AddReference(refe)
 
@@ -37,9 +66,8 @@ def hints(cmdline as CommandLine):
     # Initialize the json serializer
     json = JavaScriptSerializer()
 
-
     if Stopwatch.IsHighResolution:
-        print '#Using a Low resolution timer. Reported times may not be accurate.'
+        Trace.TraceInformation('Using a Low resolution timer. Reported times may not be accurate')
 
     stopwatch = Stopwatch()
     while true:   # Loop indefinitely
@@ -75,9 +103,11 @@ def hints(cmdline as CommandLine):
             stopwatch.Start()
 
             result = method.Invoke(commands, (query,))
-            print json.Serialize(result)
+            Console.Out.WriteLine(json.Serialize(result))
 
             stopwatch.Stop()
-            print '#Command <{0}(extra:{1})> took {2}ms for {3}' % (query.command, query.extra, stopwatch.ElapsedMilliseconds, query.fname)
+            Trace.TraceInformation('Command <{0}(extra:{1})> took {2}ms for {3}' % (query.command, query.extra, stopwatch.ElapsedMilliseconds, query.fname))
         except ex:
-            Console.Error.WriteLine(join(ex.ToString().Split(char('\n')), '\n#'))
+            # Print stack trace as debug messages
+            lines = ex.ToString().Split(char('\n'))
+            Console.Error.WriteLine(join(lines, '\n#'))

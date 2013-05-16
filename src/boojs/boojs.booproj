@@ -44,6 +44,9 @@
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Hints">
+      <HintPath>..\..\lib\Boo.Hints.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
@@ -57,20 +60,6 @@
     <Compile Include="CommandLine.boo" />
     <Compile Include="Watcher.boo" />
     <Compile Include="Hints.boo" />
-    <!-- <Compile Include="Hints\globals.boo" /> -->
-    <Compile Include="Hints\globals.boo" />
-    <Compile Include="Hints\Commands.boo" />
-    <Compile Include="Hints\ProjectIndex.boo" />
-    <Compile Include="Hints\Messages\Query.boo" />
-    <Compile Include="Hints\Messages\Hints.boo" />
-    <Compile Include="Hints\Messages\Node.boo" />
-    <Compile Include="Hints\Messages\Parse.boo" />
-    <Compile Include="Hints\Visitors\Outline.boo" />
-    <Compile Include="Hints\Visitors\LineFinder.boo" />
-    <Compile Include="Hints\Visitors\IdentFinder.boo" />
-    <Compile Include="Hints\Visitors\LocalsFinder.boo" />
-    <Compile Include="Hints\ISymbolFinder.boo" />
-    <Compile Include="Hints\SymbolFinder\Dummy.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>
