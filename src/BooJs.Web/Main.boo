@@ -6,7 +6,6 @@ import Nancy.Helpers
 
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
-import Boo.Ide(ProjectIndex)
 
 
 class Main(NancyModule):
@@ -36,18 +35,6 @@ class Main(NancyModule):
 
 
             hints = DynamicDictionary()
-
-            index = ProjectIndex()
-            result = index.ProposalsFor(filename, code)
-            for itm in result:
-                hints[ itm.Name ] = itm.Description
-                print itm.Name, itm.Description
-
-            locals = index.LocalsAt(filename, code, line)
-            for itm in locals:
-                hints[ itm ] = itm
-                print itm
-
             return hints
 
         Post['/compile'] = do(x):
