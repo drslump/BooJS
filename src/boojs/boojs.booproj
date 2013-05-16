@@ -37,23 +37,12 @@
     <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="Boo.Lang.Parser">
       <HintPath>..\..\lib\Boo.Lang.Parser.dll</HintPath>
     </Reference>
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
-    </Reference>
-    <Reference Include="fastJSON">
-      <HintPath>..\..\lib\fastJSON.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\lib\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\lib\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\lib\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -68,11 +57,20 @@
     <Compile Include="CommandLine.boo" />
     <Compile Include="Watcher.boo" />
     <Compile Include="Hints.boo" />
-    <Compile Include="Hints\ProjectIndex.boo" />
+    <!-- <Compile Include="Hints\globals.boo" /> -->
     <Compile Include="Hints\globals.boo" />
     <Compile Include="Hints\Commands.boo" />
-    <Compile Include="Hints\Messages.boo" />
-    <Compile Include="Hints\OutlineVisitor.boo" />
+    <Compile Include="Hints\ProjectIndex.boo" />
+    <Compile Include="Hints\Messages\Query.boo" />
+    <Compile Include="Hints\Messages\Hints.boo" />
+    <Compile Include="Hints\Messages\Node.boo" />
+    <Compile Include="Hints\Messages\Parse.boo" />
+    <Compile Include="Hints\Visitors\Outline.boo" />
+    <Compile Include="Hints\Visitors\LineFinder.boo" />
+    <Compile Include="Hints\Visitors\IdentFinder.boo" />
+    <Compile Include="Hints\Visitors\LocalsFinder.boo" />
+    <Compile Include="Hints\ISymbolFinder.boo" />
+    <Compile Include="Hints\SymbolFinder\Dummy.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

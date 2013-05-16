@@ -1,12 +1,21 @@
+"""
+TODO: Check http://jolt.codeplex.com/wikipage?title=Jolt.XmlDocComments
+
+Note: While fastJSON is much faster that JavaScriptSerializer the time spend 
+      serializing is not much, thus for the time being is preferred to avoid
+      including an additional dependency.
+
+TODO: Use System.Diagnostics.Trace with a custom formatter to prefix with '#'
+"""
 namespace boojs
 
 import System.IO
 import System(Console)
 import System.Diagnostics(Stopwatch)
+import System.Web.Script.Serialization
 
-import fastJSON(JSON, JSONParameters)
-
-import boojs.Hints(ProjectIndex, Commands, QueryMessage)
+import boojs.Hints(ProjectIndex, Commands)
+import boojs.Hints.Messages.Query as QueryMessage
 
 
 def hints(cmdline as CommandLine):
@@ -19,8 +28,15 @@ def hints(cmdline as CommandLine):
     if cmdline.OutputDirectory and File.Exists(cmdline.OutputDirectory):
         index.AddReference(cmdline.OutputDirectory)
 
-    json_params = JSONParameters()
-    json_params.UseExtensions = false
+    # Complete index setup
+    index.Init()
+
+    # Initialize the commands
+    commands = Commands(index)
+
+    # Initialize the json serializer
+    json = JavaScriptSerializer()
+
 
     if Stopwatch.IsHighResolution:
         print '#Using a Low resolution timer. Reported times may not be accurate.'
@@ -35,7 +51,7 @@ def hints(cmdline as CommandLine):
 
         try:
             stopwatch.Start()
-            query = JSON.Instance.ToObject[of QueryMessage](line)
+            query = json.Deserialize[of QueryMessage](line)
             stopwatch.Stop()
         except ex:
             Console.Error.WriteLine('Malformed command')
@@ -58,12 +74,10 @@ def hints(cmdline as CommandLine):
         try:
             stopwatch.Start()
 
-            result = method.Invoke(null, (index, query))
-
-            json_params.SerializeNullValues = query.nulls
-            print JSON.Instance.ToJSON(result, json_params)
+            result = method.Invoke(commands, (query,))
+            print json.Serialize(result)
 
             stopwatch.Stop()
-            print '#Command <{0}(extra:{1})> took {2}ms' % (query.command, query.extra, stopwatch.ElapsedMilliseconds)
+            print '#Command <{0}(extra:{1})> took {2}ms for {3}' % (query.command, query.extra, stopwatch.ElapsedMilliseconds, query.fname)
         except ex:
-            Console.Error.WriteLine('Error: ' + ex)
+            Console.Error.WriteLine(join(ex.ToString().Split(char('\n')), '\n#'))

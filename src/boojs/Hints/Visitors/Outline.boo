@@ -1,10 +1,13 @@
-namespace boojs.Hints
+namespace boojs.Hints.Visitors
 
+import boojs.Hints.Messages.Node as NodeMessage
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.PatternMatching
 
+import boojs.Hints(describeParams, describeReturnType)
 
-class OutlineVisitor(DepthFirstVisitor):
+
+class Outline(DepthFirstVisitor):
 
     _node as NodeMessage
 

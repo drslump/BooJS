@@ -1,160 +1,342 @@
 namespace boojs.Hints
 
+import System.Collections.Generic(Dictionary)
 import Boo.Lang.Compiler(Ast)
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.PatternMatching
-
 import Boo.Lang.Environments(my)
-
-import Mono(Cecil)
+import Boo.Lang.Compiler.TypeSystem
+import Boo.Lang.Compiler.TypeSystem.Services(NameResolutionService)
+import Boo.Lang.PatternMatching
 
 
 class Commands:
 
-    static def parse(index as ProjectIndex, query as QueryMessage):
+    [Getter(Index)]
+    _index as ProjectIndex
+
+    def constructor(index as ProjectIndex):
+        _index = index
+
+    virtual def parse(query as Messages.Query) as Messages.Parse:
     """ Parse the given code reporting back any errors and warnings issued by
         the compiler.
+
         If extra information is requested the parse is performed with a type
         resolving compiler pipeline which will detect more errors than invalid
         syntax.
     """
-        msg = ParseMessage()
+        msg = Messages.Parse()
 
-        fn = index.WithCompiler
+        fn = Index.WithParser
         if query.extra:
-            fn = index.WithParser
+            fn = Index.WithCompiler
 
         fn(query.fname, query.code) do (module):
-            for warn in index.Context.Warnings:
-                msg.warning(warn.Code, warn.Message, warn.LexicalInfo.Line, warn.LexicalInfo.Column)
-            for error in index.Context.Errors:
-                msg.error(error.Code, error.Message, error.LexicalInfo.Line, error.LexicalInfo.Column)
+            for warn in Index.Context.Warnings:
+                msg.warnings.Add(
+                    Messages.Parse.Error(code: warn.Code, message: warn.Message, line: warn.LexicalInfo.Line, column: warn.LexicalInfo.Column)
+                )
+            for error in Index.Context.Errors:
+                msg.errors.Add(
+                    Messages.Parse.Error(code: error.Code, message: error.Message, line: error.LexicalInfo.Line, column: error.LexicalInfo.Column)
+                )
 
         return msg
 
-    static def outline(index as ProjectIndex, query as QueryMessage):
+    virtual def outline(query as Messages.Query) as Messages.Node:
     """ Obtain an outline tree for the source code
     """
-        root = NodeMessage()
-        index.WithParser(query.fname, query.code) do (module):
-            module.Accept(OutlineVisitor(root))
+        root = Messages.Node()
+        Index.WithParser(query.fname, query.code) do (module):
+            module.Accept(Visitors.Outline(root))
 
         return root
 
-    static def entity(index as ProjectIndex, query as QueryMessage):
+    virtual def namespaces(query as Messages.Query) as Messages.Hints:
+    """ Obtain the list of top level namespaces available in the compiler
+    """
+        msg = Messages.Hints()
+        msg.scope = 'namespaces'
+        # Run inside a parse to make sure we have the environment properly setup
+        Index.WithParser('namespaces.cmd', '') do (module):
+            nrs = my(NameResolutionService)
+            for member in nrs.GlobalNamespace.GetMembers():
+                continue if member.EntityType != EntityType.Namespace
+                ProcessEntity(msg, member, query.extra)
+
+        return msg
+
+    virtual def builtins(query as Messages.Query) as Messages.Hints:
+    """ Obtain the list of builtins available in the current compiler
+    """
+        msg = Messages.Hints()
+        msg.scope = 'builtins'
+        # Run inside a parse to make sure we have the environment properly setup
+        Index.WithParser('builtins.cmd', '') do (module):
+            tss = my(TypeSystemServices)
+
+            # HACK: Uses reflection to obtain the map of primitives since it's private
+            fi = tss.GetType().GetField('_primitives', BindingFlags.NonPublic | BindingFlags.Instance)
+            prims as Dictionary[of string, IEntity] = fi.GetValue(tss)
+            for prim in prims:
+                ProcessEntity(msg, prim.Value, prim.Key, query.extra)
+
+            # Get builtins
+            for member in Index.StaticMembersOf(tss.BuiltinsType):
+                ProcessEntity(msg, member, query.extra)
+
+        return msg
+
+    virtual def entity(query as Messages.Query) as Messages.Hints:
     """ Get information about a given entity based on the line and column of its
         first letter.
         If an additional param with true is given then we query based on the entity
         full name, in order to obtain all possible candidates.
     """
-        msg = HintsMessage()
+        msg = Messages.Hints()
+        msg.scope = 'entity'
 
-        index.WithCompiler(query.fname, query.code) do (module):
-            ent = LocationFinder(query.line, query.column).FindIn(module)
+        Index.WithCompiler(query.fname, query.code) do (module):
+            ent = Visitors.LineFinder(query.line, query.column).FindIn(module)
             if ent:
-                if query.params and len(query.params) and query.params[0]:
+                if query.GetBoolParam(0):
                     # It seems like Boo only provides ambiguous information for internal
                     # entities. Here we resolve again based on the entity full name to get
                     # all possible candidates.
-                    nrs = my(Boo.Lang.Compiler.TypeSystem.Services.NameResolutionService)
+                    nrs = my(NameResolutionService)
                     all = nrs.ResolveQualifiedName(ent.FullName)
                     if all:
-                        ProcessEntity(index, msg, all, query.extra)
+                        ProcessEntity(msg, all, query.extra)
                         return
 
-                ProcessEntity(index, msg, ent, query.extra)
+                ProcessEntity(msg, ent, query.extra)
 
         return msg
 
-    static def locals(index as ProjectIndex, query as QueryMessage):
+    virtual def locals(query as Messages.Query) as Messages.Hints:
     """ Obtain hints for local symbols available in a method. This includes
         parameter definitions, method variables, closure variables and loop
         variables.
     """
-        msg = HintsMessage()
-        index.WithCompiler(query.fname, query.code) do (module):
-            for entity in LocalAccumulator(query.fname, query.line).FindIn(module):
-                ProcessEntity(index, msg, entity, query.extra)
+        msg = Messages.Hints()
+        msg.scope = 'locals'
+
+        Index.WithCompiler(query.fname, query.code) do (module):
+            for entity in Visitors.LocalsFinder(query.fname, query.line).FindIn(module):
+                ProcessEntity(msg, entity, query.extra)
 
         return msg
 
-    static def members(index as ProjectIndex, query as QueryMessage):
-    """ Obtain hints for completing a member reference expression. If the
-        reported offset is not just after a dot it will query all symbols
-        available at that point, this includes local symbols and members of
-        the enclosing type.
+    protected def GetUnbalancedParens(code as string):
+    """ Given a piece of code find out if it ends with unbalanced parens or brackets.
+        The algorithm is approximate, it may not always give correct results in some 
+        complicated code but it should hopefully help to fix most invalid syntax before
+        feeding the code to the compiler. Since this method will be used for auto
+        completion, it will usually be called while the user is at the middle of writing
+        a correct statement but not fully valid at that point.
     """
+        def consume_comment(code as string, ofs as int):
+            orig = ofs
+            while ofs and code[ofs - 1] != char('\n'):
+                ofs -= 1
+                if code[ofs] == char('#'):
+                    return ofs
+            return orig
+
+        def consume_quoted(code as string, ofs as int, ch as char):
+            while ofs and code[ofs - 1] != ch: 
+                ofs -= 1
+            return ofs
+
+        mapping = {
+            char('('): char(')'),
+            char('{'): char('}'),
+            char('['): char(']'),
+        }
+
+        closed = []
+        unbalanced = []
+
+        ofs = len(code)
+        while ofs:
+            ofs -= 1
+            ch = code[ofs]
+
+            if ofs and ch == char('\n'):
+                ofs = consume_comment(code, ofs)
+
+                # Consume white space
+                while ofs and char.IsWhiteSpace(code[ofs - 1]):
+                    ofs -= 1
+                ch = code[ofs]
+
+                if not char.IsPunctuation(ch) and ch not in (char('+'),):
+                    break
+
+            if ch in (char(')'), char('}'), char(']')):
+                closed.Add(ch)
+            elif ch in (char('('), char('{'), char('[')):
+                if len(closed) and closed[-1] == mapping[ch]:
+                    closed.Pop()
+                else:
+                    unbalanced.Add(mapping[ch])
+            elif ch in (char('"'), "'"[0], char('`')):
+                ofs = consume_quoted(code, ofs, ch)
+
+        return unbalanced
+
+    protected def GetImportNamespace(code as string) as string:
+    """ If the code ends with an import statement returns the target namespace.
+    """
+        # Handle explicit symbol imports with the form `import System(IO, Diagnost`
+        if code.LastIndexOf('(') > code.LastIndexOf(')'):
+            ofs = code.LastIndexOf('(')
+        else:
+            ofs = len(code)
+
+        # Get the line where the offset is
+        ofs = code.LastIndexOf('\n', ofs) + 1
+        line = code.Substring(ofs)
+
+        m = /^(import|from)\s+([\w\.]+)?/.Match(line)
+        if not m.Success:
+            return null
+        return m.Groups[2].Value.TrimEnd(char('.'))
+
+    protected def FilterPrefix(msg as Messages.Hints, prefix as string):
+        if prefix:
+            msg.hints.RemoveAll({ h | not h.name.StartsWith(prefix) })
+        return msg
+
+    virtual def complete(query as Messages.Query) as Messages.Hints:
+    """ Obtain hints for completing an expression. If the reported offset is not just 
+        after a dot it will use any ident before it as a prefix. If still a dot is not
+        found then it will query all symbols available at that point, this includes 
+        local and global symbols as well as members of the enclosing type.
+
+        When the first argument is true it will skip querying for global symbols, this 
+        is useful for editor plugins that cache globals on their own for performance 
+        reasons.
+    """
+        msg = Messages.Hints()
+        msg.scope = 'complete'
 
         ofs = query.offset
+        skip_globals = query.GetBoolParam(0)
+
+        # Consume the previous word if there is one and use it to filter results.
+        prefix = ''
+        while ofs and char.IsLetterOrDigit(query.code[ofs - 1]):
+            prefix = query.code[ofs - 1] + prefix
+            ofs--
+
         left = query.code.Substring(0, ofs)
         right = query.code.Substring(ofs)
 
-        # Add a dot (for OmittedExpression) if no dot is found
-        do_locals = false
-        if char('.') != left[ofs-1]:
-            do_locals = true
+        # Extract the line where the offset is
+        line = left.Substring(left.LastIndexOf(char('\n')) + 1)
+
+        # We may be inside an import statement but defining an alias
+        if not line.EndsWith(' as '):
+            # Check if it's an import statement
+            ns = GetImportNamespace(left)
+            if ns is not null:
+                # Query top-level namespaces
+                if ns == '': 
+                    msg = namespaces(query)
+                    msg.scope = 'import'
+                    return FilterPrefix(msg, prefix)
+                else:
+                    # Perform the query against the namespace
+                    query.code = ns + '.'
+                    query.offset = len(query.code)
+                    msg = complete(query)
+                    msg.scope = 'import'
+                    # TODO: What can we actually import in Boo?
+                    msg.hints.RemoveAll({ h | h.node not in ('Ambiguous', 'Namespace', 'Type', 'Macro') })
+                    return FilterPrefix(msg, prefix)
+
+        # Detect if we are interested only on members
+        if line.EndsWith('.'):
+            msg.scope = 'members'
+        else:
+            # In some contexts we are only interested on types
+            if line =~ /(\sas|\sof|\[of)\s+\(?$/ or line =~ /\b(class|struct|interface)\s[^\(]+\(/:
+                msg.scope = 'type'
+            # When naming stuff we don't want completions
+            elif line =~ /\b(class|struct|interface|enum|macro|def)\s+$/:
+                msg.scope = 'name'
+                return msg
+            # Parameter definitions don't need completions (note that types are handled above)
+            elif line =~ /(def\s\w+|def|do)\s*\([^)]*$/:
+                msg.scope = 'name'
+                return msg
+
+            # Include a dot so we obtain members via an omitted target expression
             left += '.'
 
-        # Parse a chunk of code backwards from the offset to detect open parens.
-        # This allows to fix invalid syntax before feeding the code to the compiler,
-        # this method will usually be used for autocompletion so if we are in the
-        # middle of writing params to a function the syntax will not be valid at
-        # that point.
-        pairs = { '(': ')', '{': '}', '[': ']', ')': '(', '}': '{', ']': '[' }
-        stack = []
-        cnt = 0
-        while cnt++ < (len(stack)+1) * 50 and ofs - cnt >= 0:
-            s = left[ofs-cnt].ToString()
-            continue if s not in pairs
-            # Remove balanced parens or add a new one to the stack
-            if len(stack) and stack[-1] == pairs[s]:
-                stack.Pop()
-            else:
-                stack.Add(s)
-
-        # Close any found open parens just after the offset
+        # Construct the code with our placeholder for the cursor. It finds unbalanced parens in 
+        # the left hand side of the code to try and complete any unclosed statements, the rest of
+        # the line where the cursor is placed is commented out.
+        unbalanced = GetUnbalancedParens(left)
+        print '#unbalanced', unbalanced
         code = '{0}__cursor_location__ {1} ; # {2}' % (
             left,
-            join([pairs[x] for x in stack], '') + ' ; # ',
+            join(unbalanced, ''),
             right
         )
 
         for ln in code.Split(char('\n')):
-            if ' ; # ' in ln:
+            if ln.IndexOf(';' + ' ' + '#') >= 0:
                 print '#', ln
 
-        # Find member proposals for the cursor location
-        msg = HintsMessage()
-        index.WithCompiler(query.fname, code) do (module):
-            node as Ast.Node = CursorLocationFinder('__cursor_location__').FindIn(module)
-            if node:
-                # Obtain member proposals
-                for ent in CompletionProposer.ForExpression(node):
-                    ProcessEntity(index, msg, ent, query.extra)
+        # Find proposals for the cursor location
+        Index.WithCompiler(query.fname, code) do (module):
+            mre as Ast.MemberReferenceExpression = Visitors.IdentFinder('__cursor_location__').FindIn(module)
+            if not mre:
+                print '#MRE not found!'
+                return
 
-                if do_locals:
-                    # Use cursor expression line if one wasn't explicitly given
-                    query.line = query.line or node.LexicalInfo.Line
+            # Obtain member proposals
+            for ent in Index.MembersOf(mre.Target):
+                ProcessEntity(msg, ent, query.extra)
 
-                    # Optimize by finding the top most block and only parse it
-                    while node.ParentNode.NodeType not in (Ast.NodeType.Module, Ast.NodeType.ClassDefinition):
-                        node = node.ParentNode
+            # Query globals
+            if not skip_globals and msg.scope != 'members':
+                msg.hints += globals(query).hints
 
-                    # Undo the optimization if the line is not inside its scope to work
-                    # around closures being transformed by the compiler
-                    if query.line < node.LexicalInfo.Line or query.line > node.EndSourceLocation.Line:
-                        node = module
+            # Query locals
+            if msg.scope not in ('members', 'type'):
+                # Use cursor expression line if one wasn't explicitly given
+                query.line = query.line or mre.LexicalInfo.Line
 
-                    accum = LocalAccumulator(query.fname, query.line)
-                    for ent in accum.FindIn(node):
-                        ProcessEntity(index, msg, ent, query.extra)
+                # Optimize by finding the top most block
+                node as Ast.Node = mre.Target
+                while node.ParentNode.NodeType not in (Ast.NodeType.Module, Ast.NodeType.ClassDefinition):
+                    node = node.ParentNode
 
+                # Undo the optimization if the line is not inside its scope, this should
+                # work around closures being transformed to internal classes by the compiler.
+                if query.line < node.LexicalInfo.Line or query.line > node.EndSourceLocation.Line:
+                    node = module
+
+                # Collect local variables at the cursor position
+                finder = Visitors.LocalsFinder(query.fname, query.line)
+                for ent in finder.FindIn(node):
+                    ProcessEntity(msg, ent, query.extra)
+
+        # filter results based on prefix
+        msg = FilterPrefix(msg, prefix)
+
+        if msg.scope == 'type':
+            msg.hints.RemoveAll({ h | h.node not in ('Namespace', 'Type') })
 
         return msg
 
-    static def globals(index as ProjectIndex, query as QueryMessage):
-        msg = HintsMessage()
-        index.WithCompiler(query.fname, query.code) do (module):
+    virtual def globals(query as Messages.Query) as Messages.Hints:
+        msg = Messages.Hints()
+        msg.scope = 'globals'
+
+        Index.WithCompiler(query.fname, query.code) do (module):
             # Collect current module members
             for m in module.Members:
                 # Globals are wrapped inside a Module class
@@ -163,125 +345,90 @@ class Commands:
                         continue unless mm.IsStatic
                         continue if mm.IsInternal
                         continue if mm.Name == 'Main'
-                        ProcessEntity(index, msg, mm.Entity, query.extra)
+                        ProcessEntity(msg, mm.Entity, query.extra)
                     continue
 
-                ProcessEntity(index, msg, m.Entity, query.extra)
+                ProcessEntity(msg, m.Entity, query.extra)
 
             # Process imported symbols
-            mre = Ast.MemberReferenceExpression()
-            mre.Target = Ast.ReferenceExpression()
+            refexp = Ast.ReferenceExpression()
             for imp in module.Imports:
                 # Handle aliases imports
                 if imp.Alias and imp.Alias.Entity:
                     # TODO: Do we actually need to pass imp.Alias.Name ???
-                    ProcessEntity(index, msg, imp.Alias.Entity, imp.Alias.Name, query.extra)
+                    ProcessEntity(msg, imp.Alias.Entity, imp.Alias.Name, query.extra)
                     continue
 
                 # Namespace imports. We fake a member reference expression for the namespace
-                mre.Target.Entity = imp.Entity
+                refexp.Entity = imp.Entity
                 mie = imp.Expression as Ast.MethodInvocationExpression
 
-                entities = CompletionProposer.ForExpression(mre)
+                entities = Index.MembersOf(refexp)
                 for ent in entities:
                     # Filter out namespace members not actually imported
                     continue if mie and not mie.Arguments.Contains({n as Ast.ReferenceExpression | n.Name == ent.Name})
-                    ProcessEntity(index, msg, ent, query.extra)
+                    ProcessEntity(msg, ent, query.extra)
 
         return msg
 
-    static def LocationForToken(index as ProjectIndex, entity as IEntity):
-    """ Find location information for the given entity.
-        Returns null if we couldn't find any information or a tuple
-        with the filename, the line and the column.
-    """
-        def find_seq(m as Cecil.MethodDefinition):
-            return unless m.HasBody
-            seq = m.Body.Instructions[0].SequencePoint
-            return unless seq and seq.Document
-            # Target the previous line
-            return '{0}:{1}:{2}' % (
-                seq.Document.Url,
-                seq.StartLine - 1,
-                seq.StartColumn + 1)
-
-        # Internal entities provide their lexical information in their node
-        if ie = entity as IInternalEntity:
-            return '{0}:{1}:{2}' % (
-                ie.Node.LexicalInfo.FileName,
-                ie.Node.LexicalInfo.Line,
-                ie.Node.LexicalInfo.Column)
-
-        ee = entity as IExternalEntity
-        if not ee:
-            print '# Unable to get location info for:', entity, entity.EntityType
-            return null
-
-        # Get the metadata token from the entity
-        token = Cecil.MetadataToken(ee.MemberInfo.MetadataToken)
-
-        # Lookup the token in each module
-        for asmdef in index.AssemblyDefinitions:
-            for mod in asmdef.Modules:
-                match definition=mod.LookupToken(token):
-                    case null:
-                        continue
-                    case method=Cecil.MethodDefinition():
-                        continue unless method.Name == entity.Name
-                        return find_seq(method)
-                    case prop=Cecil.PropertyDefinition():
-                        continue unless prop.Name == entity.Name
-                        return find_seq(prop.GetMethod)
-                    # TODO: Support types and field
-                    otherwise:
-                        print '# DEF', definition
-
+    protected def DocStringFor(entity as IEntity):
+        if target = entity as IInternalEntity:
+            if not string.IsNullOrEmpty(target.Node.Documentation):
+                return target.Node.Documentation
         return null
 
-    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity):
-    """ hello world! """
-        ProcessEntity(index, msg, entity, false)
+    protected def ProcessEntity(msg as Messages.Hints, entity as IEntity):
+        ProcessEntity(msg, entity, false)
 
-    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity, extra as bool):
-    """ en un pais de la mancha """
-        ProcessEntity(index, msg, entity, entity.Name, extra)
+    protected def ProcessEntity(msg as Messages.Hints, entity as IEntity, extra as bool):
+        ProcessEntity(msg, entity, entity.Name, extra)
 
-    static def ProcessEntity(index as ProjectIndex, msg as HintsMessage, entity as IEntity, name as string, extra as bool):
-    """ lorem ipsum dolor sit """
-        # Unroll ambiguous entities
-        if entity.EntityType == EntityType.Ambiguous:
-            for ent in (entity as Ambiguous).Entities:
-                ProcessEntity(index, msg, ent, name, extra)
-            return
+    protected def ProcessEntity(msg as Messages.Hints, entity as IEntity, name as string, extra as bool):
 
         # Ignore compiler generated variables
         return if name.StartsWith('$')
 
-        # Overloads in BooJs are renamed to xxx$0, xxx$1 ...
-        if name =~ /\$\d+$/:
-            name = name.Substring(0, name.IndexOf('$'))
-
-        hint = HintsMessage.Hint()
+        hint = Messages.Hints.Hint()
+        hint.name = name
         hint.node = entity.EntityType.ToString()
         hint.full = entity.FullName
-        hint.name = name
+
+        # Unroll ambiguous entities
+        if ambiguous = entity as Ambiguous:
+            if extra:
+                # In extra mode process each entity on its own
+                for ent in (entity as Ambiguous).Entities:
+                    ProcessEntity(msg, ent, name, extra)
+                return
+
+            # In non extra mode report the number of overloads
+            hint.info = len(ambiguous.Entities).ToString()
+            # For overloaded methods assume all have the same return type
+            if ambiguous.AllEntitiesAre(EntityType.Method):
+                hint.type = (ambiguous.Entities[0] as IMethodBase).ReturnType.ToString()
+            msg.hints.Add(hint)
+            return
 
         if extra:
-            hint.doc = docStringFor(entity)
-            hint.loc = LocationForToken(index, entity)
+            hint.doc = DocStringFor(entity)
+            hint.loc = Index.GetSourceLocation(entity)
 
         match entity:
             case t=IType():
                 # TODO: for extra include inherited types in params
                 info = []
-                info.Add('Array') if t.IsArray
-                info.Add('Interface') if t.IsInterface
-                info.Add('Enum') if t.IsEnum
-                info.Add('Value') if t.IsValueType
+                info.Add('array') if t.IsArray
+                info.Add('interface') if t.IsInterface
+                info.Add('enum') if t.IsEnum
+                info.Add('value') if t.IsValueType
                 if t.IsClass:
-                    info.Add('Class')
-                    info.Add('Abstract') if t.IsAbstract
-                    info.Add('Final') if t.IsFinal
+                    info.Add('class')
+                    info.Add('abstract') if t.IsAbstract
+                    info.Add('final') if t.IsFinal
+
+                tss = my(TypeSystemServices)
+                if tss.IsPrimitive(hint.full):
+                    info.Add('primitive')
 
                 hint.info = join(info, ',')
 

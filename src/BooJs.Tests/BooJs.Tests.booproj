@@ -53,11 +53,18 @@
     <Reference Include="Boo.Lang.PatternMatching">
       <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.Interpreter">
+      <HintPath>..\..\lib\Boo.Lang.Interpreter.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\boojs\boojs.booproj">
+      <Project>{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}</Project>
+      <Name>boojs</Name>
+    </ProjectReference>    
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
       <Project>{576D8BA6-B55E-4984-853E-387133D3EC48}</Project>
       <Name>BooJs.Compiler</Name>
@@ -72,6 +79,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HintsTests.boo" />
     <Compile Include="FixtureRunner.boo" />
     <Compile Include="OperatorsFixtures.boo" />
     <Compile Include="StatementsFixtures.boo" />

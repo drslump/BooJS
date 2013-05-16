@@ -1,9 +1,10 @@
 namespace boojs.Hints
 
-import System(StringComparison)
+import System(Console, StringComparison)
+import System.IO(Path, FileSystemWatcher, FileSystemEventArgs)
 import System.Linq.Enumerable
 
-import Boo.Lang.Environments
+import Boo.Lang.Environments(my, ActiveEnvironment)
 import Boo.Lang.Compiler(BooCompiler, CompilerContext, Steps, IO)
 import Boo.Lang.Compiler.Pipelines as BooPipelines
 import Boo.Lang.Compiler.Ast
@@ -13,20 +14,18 @@ import Boo.Lang.PatternMatching
 
 import BooJs.Compiler(newBooJsCompiler, Pipelines)
 
-import Mono(Cecil)
-
 
 class ProjectIndex:
 
     [getter(Context)]
     _context as CompilerContext
 
-    [getter(AssemblyDefinitions)]
-    _asmdefs = List[of Cecil.AssemblyDefinition]()
-
+    _symbolFinder as ISymbolFinder
+    _references = List[of string]()
     _compiler as BooCompiler
     _parser as BooCompiler
     _implicitNamespaces as List
+
 
     static def Boo():
         compiler = BooCompiler()
@@ -56,181 +55,105 @@ class ProjectIndex:
         _parser = parser
         _implicitNamespaces = implicitNamespaces
 
-    virtual def AddReference(assembly as System.Reflection.Assembly):
-        _compiler.Parameters.References.Add(assembly)
+        # Instantiate the Cecil based symbol finder if available
+        try:
+            asm = System.Reflection.Assembly.Load('boojs.Hints.SymbolFinder.Cecil')
+            Cecil as duck = asm.GetType('boojs.Hints.SymbolFinder.Cecil')
+            _symbolFinder = Cecil()
+            print '#Enabled Cecil symbol finder for external entities.'
+        except ex as System.IO.FileNotFoundException:
+            print '#Cecil symbol finder not available.'
+            _symbolFinder = SymbolFinder.Dummy()
+        except ex as System.TypeLoadException:
+            Console.Error.WriteLine('#Error loading Cecil symbol finder. Make sure Mono.Cecil.dll, Mono.Cecil.Pdb.dll and Mono.Cecil.Mdb.dll are available.')
+            _symbolFinder = SymbolFinder.Dummy()
 
     virtual def AddReference(reference as string):
-        asm = _compiler.Parameters.LoadAssembly(reference, true)
-        _compiler.Parameters.References.Add(asm)
+        _references.Add(Path.GetFullPath(reference))
 
-        # Cecil
-        asmdef = Cecil.AssemblyDefinition.ReadAssembly(reference)
-        #symbolPath = System.IO.Path.ChangeExtension(asmdef.MainModule.FullyQualifiedName, '.pdb')
-        symbolPath = asmdef.MainModule.FullyQualifiedName
-        if not System.IO.File.Exists(symbolPath + '.mdb'):
-            print '# No symbols file for', asmdef.MainModule.FullyQualifiedName
-            return
+    virtual def Init():
+        def handler(sender, e as FileSystemEventArgs):
+            return unless e.FullPath in _references
+            print '#!REFERENCE_MODIFIED:', e.FullPath
 
-        reader = Cecil.Mdb.MdbReaderProvider().GetSymbolReader(asmdef.MainModule, symbolPath)
-        asmdef.MainModule.ReadSymbols(reader)
+        paths = []
+        for reference in _references:
+            asm = _compiler.Parameters.LoadAssembly(reference, true)
+            _compiler.Parameters.References.Add(asm)
 
-        if asmdef.MainModule.HasSymbols:
-            _asmdefs.Add(asmdef)
+            _symbolFinder.LoadAssembly(reference)
+
+            # Monitor directory containing the reference
+            path = Path.GetDirectoryName(reference)
+            if path not in paths:
+                paths.Add(path)
+                print '#Setting up file system watcher for', path
+                fsw = FileSystemWatcher(path)
+                fsw.EnableRaisingEvents = true
+                fsw.Created += handler
+                fsw.Changed += handler
+                fsw.Deleted += handler
 
     virtual def WithParser(fname as string, code as string, action as System.Action[of Module]):
+    """ Execute the given callback after processing the code with the parsing pipeline
+    """
         input = _parser.Parameters.Input
         input.Add(IO.StringInput(fname, code))
         try:
             _context = _parser.Run()
             ActiveEnvironment.With(_context.Environment) do:
-                action(GetModuleForFileFromContext(_context, fname))
+                modules = [m for m in _context.CompileUnit.Modules if m.LexicalInfo.FileName == fname]
+                action(modules[0])
         ensure:
             input.Clear()
 
     virtual def WithCompiler(fname as string, code as string, action as System.Action[of Module]):
+    """ Execute the given callback after processing the code with the compiler pipeline
+    """
         input = _compiler.Parameters.Input
         input.Add(IO.StringInput(fname, code))
         try:
             _context = _compiler.Run()
             ActiveEnvironment.With(_context.Environment) do:
-                action(GetModuleForFileFromContext(_context, fname))
+                modules = [m for m in _context.CompileUnit.Modules if m.LexicalInfo.FileName == fname]
+                action(modules[0])
         ensure:
             input.Clear()
 
-    private def GetModuleForFileFromContext(context as CompilerContext, fileName as string):
-        for m in context.CompileUnit.Modules:
-            return m if m.LexicalInfo.FileName == fileName
-        return null
+    virtual def GetSourceLocation(ent as IEntity) as string:
+    """ Query the configured symbol finder for the source location of an entity
+    """
+        return _symbolFinder.GetSourceLocation(ent)
 
-
-class LocationFinder(DepthFirstVisitor):
-    _entity as IEntity
-    _line as int
-    _column as int
-
-    def constructor(line as int, column as int):
-        _line = line
-        _column = column
-
-    def FindIn(root as Node):
-        VisitAllowingCancellation(root)
-        return _entity
-
-    override def Visit(node as Node):
-        if node and not node.IsSynthetic and node.LexicalInfo is not null and node.Entity is not null:
-            if node.LexicalInfo.Line == _line and node.LexicalInfo.Column == _column:
-                _entity = node.Entity
-                Cancel()
-
-        super(node)
-
-
-class CursorLocationFinder(DepthFirstVisitor):
-
-    _mark as string
-    _node as Expression
-
-    def constructor(mark as string):
-        _mark = mark
-
-    def FindIn(root as Node):
-        VisitAllowingCancellation(root)
-        return _node
-
-    override def LeaveMemberReferenceExpression(node as MemberReferenceExpression):
-        if node.Name == _mark:
-            Found(node)
-
-    protected def Found(node):
-        _node = node
-        Cancel()
-
-
-class LocalAccumulator(FastDepthFirstVisitor):
-    _filename as string
-    _line as int
-    _results as System.Collections.Generic.List of IEntity
-
-    def constructor(filename as string, line as int):
-        _filename = System.IO.Path.GetFullPath(filename)
-        _line = line
-
-    def FindIn(root as Node):
-        _results = System.Collections.Generic.List of IEntity()
-        Visit(root)
-        return _results
-
-    override def OnMethod(method as Method):
-        AddMethodParams(method)
-        Visit method.Body
-
-    override def OnConstructor(method as Constructor):
-        AddMethodParams(method)
-        Visit method.Body
-
-    override def OnBlockExpression(node as BlockExpression):
-        return if node.LexicalInfo is null
-        return if _line < node.LexicalInfo.Line
-        return if _line > GetEndLine(node.Body) + 1
-
-        for param in node.Parameters:
-            _results.Add(param.Entity)
-
-        Visit node.Body
-
-    override def OnForStatement(node as ForStatement):
-        return if node.LexicalInfo is null
-        return if _line < node.LexicalInfo.Line
-        return if _line > GetEndLine(node.Block) + 1
-
-        for decl in node.Declarations:
-            _results.Add(decl.Entity)
-
-    protected def GetEndLine(block as Block):
-        last = block.LastStatement
-        return (last.LexicalInfo.Line if last else block.LexicalInfo.Line)
-
-    private def AddMethodParams(method as Method):
-        if method.LexicalInfo is null: return
-        if _line < method.LexicalInfo.Line or _line > method.EndSourceLocation.Line: return
-        if not method.LexicalInfo.FullPath.Equals(_filename, StringComparison.OrdinalIgnoreCase): return
-
-        for param in method.Parameters:
-            _results.Add(param.Entity)
-        for local in method.Locals:
-            if _line >= local.LexicalInfo.Line:
-                _results.Add(local.Entity)
-
-
-static class CompletionProposer:
-
-    def ForExpression(expression as Expression):
-        match expression:
-            case MemberReferenceExpression(Target: target=Expression(ExpressionType)):
-                match target.Entity:
-                    case ns=INamespace(EntityType: EntityType.Namespace):
-                        members = ns.GetMembers()
-                    case IType():
-                        members = StaticMembersOf(ExpressionType)
-                    otherwise:
-                        parent = expression.GetAncestor[of TypeDefinition]()
-                        members = InstanceMembersOf(ExpressionType, parent.Entity)
-
-                membersByName = members.GroupBy({ member | member.Name })
-                for member in membersByName:
-                    yield Entities.EntityFromList(member.ToList())
+    virtual def MembersOf(node as Expression):
+    """ Query the member entities for the given expression
+    """
+        match node.Entity:
+            case ns=INamespace(EntityType: EntityType.Namespace):
+                members = ns.GetMembers()
+            case IType():
+                members = StaticMembersOf(node.ExpressionType)
             otherwise:
-                pass
+                parent = node.GetAncestor[of TypeDefinition]()
+                members = InstanceMembersOf(node.ExpressionType, parent.Entity)
 
-    def InstanceMembersOf(type as IType, parent as IType):
-        for member in AccessibleMembersOf(type, parent):
+        byName = members.GroupBy({ m | m.Name })
+        for m in byName:
+            yield Entities.EntityFromList(m.ToList())
+
+    virtual def InstanceMembersOf(type as IType):
+        for member in InstanceMembersOf(type, null):
+            yield member
+
+    virtual def InstanceMembersOf(type as IType, enclosing as IType):
+        for member in AccessibleMembersOf(type, enclosing):
             match member:
                 case IAccessibleMember(IsStatic):
                     yield member unless IsStatic
                 otherwise:
                     yield member
 
-    def StaticMembersOf(type as IType):
+    virtual def StaticMembersOf(type as IType):
         for member in AccessibleMembersOf(type, null):
             match member:
                 case IAccessibleMember(IsStatic):
@@ -238,15 +161,17 @@ static class CompletionProposer:
                 otherwise:
                     yield member
 
-    def AccessibleMembersOf(type as IType, parent as IType):
-        currentType = type
-        while currentType is not null:
-            is_same = parent == currentType
-            is_subclass = parent and parent.IsSubclassOf(currentType)
+    virtual def AccessibleMembersOf(type as IType):
+        for m in AccessibleMembersOf(type, null):
+            yield m
 
-            for member in currentType.GetMembers():
-                if IsSpecialName(member.Name):
-                    continue
+    virtual def AccessibleMembersOf(type as IType, enclosing as IType):
+        current = type
+        while current is not null:
+            is_same = enclosing == current
+            is_subclass = enclosing and enclosing.IsSubclassOf(current)
+            for member in current.GetMembers():
+                continue if IsSpecialName(member.Name)
                 match member:
                     case IConstructor():
                         continue
@@ -257,16 +182,17 @@ static class CompletionProposer:
                             yield member
                     otherwise:
                         continue
-            if currentType.IsInterface:
-                currentType = (currentType.GetInterfaces() as IType*).FirstOrDefault() or my(TypeSystemServices).ObjectType
+
+            if current.IsInterface:
+                # TODO: Walk thru all the interfaces
+                current = (current.GetInterfaces() as IType*).FirstOrDefault() or \
+                          null  # my(TypeSystemServices).ObjectType
             else:
-                currentType = currentType.BaseType
+                current = current.BaseType
 
-    _specialPrefixes = { "get_": 1, "set_": 1, "add_": 1, "remove_": 1, "op_": 1 }
-
-    def IsSpecialName(name as string):
+    _specialPrefixes = ('get', 'set', 'add', 'remove', 'op')
+    protected def IsSpecialName(name as string):
         index = name.IndexOf('_')
         return false if index < 0
+        return name[:index] in _specialPrefixes
 
-        prefix = name[:index + 1]
-        return prefix in _specialPrefixes
