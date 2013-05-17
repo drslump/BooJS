@@ -60,6 +60,10 @@ def hints(cmdline as CommandLine):
     # Complete index setup
     index.Init()
 
+    # Register to get notified about modification to references
+    index.ReferenceModified += def (reference):
+        print '#!ReferenceModified:', reference
+
     # Initialize the commands
     commands = Commands(index)
 
