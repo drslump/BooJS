@@ -12,8 +12,8 @@ value
 """
 h = { "key" : "value", "foo": 3 }
 
-# Literal hashes are mapped to simple Javascript objects (notice the order of the values).
-for key, value in [(k, v) for v, k in h].sort():
+# Literal hashes are mapped to simple Javascript objects
+for key, value in [(k, v) for k, v in h].sort():
     print key, '=', value
 
 # We can also use enumerate to get an array of (k, v) pairs

@@ -12,10 +12,14 @@ console.prop += 10
 print console.prop
 
 global myobj
-try: myobj.foo()
-except: print 'myobj is not defined'
+try: 
+	myobj.foo()
+except: 
+	print 'myobj is not defined'
 
-try: global myint as int = 10
-except: print "myint is not defined"
+try: 
+	global myint as int = 10
+except: 
+	print "myint is not defined"
 
 

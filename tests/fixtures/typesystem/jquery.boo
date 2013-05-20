@@ -1,4 +1,4 @@
-import jQuery
+import Apis(jQuery)
 
 # Static method
 assert true == jQuery.isArray([1,2,3])

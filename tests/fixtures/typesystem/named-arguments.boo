@@ -7,7 +7,7 @@ baz:
 -baz: 
 """
 
-import jQuery
+import Apis(jQuery)
 
 def named(opts as Hash):
     named('', opts)
