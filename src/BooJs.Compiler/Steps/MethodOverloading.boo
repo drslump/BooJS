@@ -4,6 +4,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem(Ambiguous, Internal, EntityType)
 
+
 class MethodOverloading(AbstractFastVisitorCompilerStep):
 """
 Method overloading is performed by suffixing the original method name with a unique
@@ -21,8 +22,8 @@ identifier to ensure there are no name collisions in the generated javascript co
         cls = node.DeclaringType
         if not cls.ContainsAnnotation('method-overload-{0}' % node.Name):
             cls.Annotate('method-overload-{0}' % node.Name)
-            type = NameResolutionService.Resolve(cls.Entity, node.Name, EntityType.Method)
-            if type isa Boo.Lang.Compiler.TypeSystem.Ambiguous:
+            overloads = [m for m in cls.Members if m.Name == node.Name]
+            if len(overloads) > 1:
                 # Create a new method with the original name to raise an error if called
                 m = node.CloneNode()
                 cls.Members.Insert(cls.Members.IndexOf(node), m)
@@ -31,9 +32,9 @@ identifier to ensure there are no name collisions in the generated javascript co
                 m.Body.Add([| raise 'Overloaded method' |])
                 Visit m
 
-                entities = (type as Ambiguous).Entities
-                for i, entity as Internal.InternalMethod in enumerate(entities):
-                    entity.Method.Name += '$' + i
+                # Rename overloads to include a unique suffix
+                for i, m in enumerate(overloads):
+                    m.Name += '$' + i
 
         super(node)
 
