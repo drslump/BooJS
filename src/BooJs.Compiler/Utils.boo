@@ -27,15 +27,15 @@ def isExtern(info as System.Reflection.MemberInfo):
     return attr is not null
 
 def isFactory(node as Node):
-    entity = node.Entity as Reflection.ExternalType
-    if not entity and node.Entity isa IConstructor:
-        entity = (node.Entity as IConstructor).DeclaringType
-
-    return false if not entity
-
-    attr as ExternAttribute = System.Attribute.GetCustomAttribute(entity.ActualType, typeof(ExternAttribute), false)
-    return (attr.Factory if attr else false)
-
+    match node.Entity:
+        case it=Internal.InternalConstructor():
+            # TODO: Obtain attribute from internal type
+            return false
+        case et=Reflection.ExternalType():
+            attr as ExternAttribute = System.Attribute.GetCustomAttribute(et.ActualType, typeof(ExternAttribute), false)
+            return (attr.Factory if attr else false)
+        otherwise:
+            return false
 
 
 def resolveRuntimeMethod(methodName as string):
