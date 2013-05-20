@@ -26,9 +26,9 @@
 	</target>
 
 	<target name="compile" depends="copy-libs">
-		<booc target="library" output="${build.dir}/BooJs.Macros.dll"
+		<booc target="library" output="${build.dir}/BooJs.Lang.Extensions.dll"
 			  debug="true">
-			<sources basedir="src/Boojs.Macros">
+			<sources basedir="src/Boojs.Lang.Extensions">
 				<include name="*.boo" />
 			</sources>
 		</booc>
@@ -36,7 +36,7 @@
 		<booc target="library" output="${build.dir}/BooJs.Lang.dll"
 			  debug="true">
 			<sources basedir="src/BooJs.Lang">
-				<include name="*.boo" />
+				<include name="**/*.boo" />
 			</sources>
 		</booc>
 	
@@ -69,32 +69,33 @@
 			<arg value="-out:${path::get-full-path(build.dir)}" />
 			<arg value="-verbose" />
 		</exec -->
-		<exec program="mono" 
-			  verbose="true"
-			  failonerror="true"
-			  output="test.boo.js">
-			<arg value="--debug" /> <!-- Run mono in debug mode -->
-
-			<arg value="${build.dir}/boojs.exe" />
-			<arg value="-verbose" />
-			<arg value="test.boo" />
-		</exec>
 	</target>
 
-	<target name="test" depends="copy-libs boojs">
-		<booc target="library" output="${build.dir}/BooJs.Compiler.Test.dll">
-			<sources basedir="src/BooJs.Compiler.Test">
+	<target name="tests" depends="tests-build, tests-run" />
+
+	<target name="tests-build" depends="boojs">
+		<booc target="library" output="${build.dir}/BooJs.Tests.dll">
+			<sources basedir="src/BooJs.Tests">
 				<include name="*.boo" />
 			</sources>
 			<references>
-				<include name="src/BooJs.Compiler.Test/lib/Jurassic.dll" />
+				<include name="src/BooJs.Tests/lib/Jurassic.dll" />
 			</references>
 		</booc>
+	</target>
 
+	<target name="tests-run" depends="tests-build">
 		<!-- nunit2 verbose="true" failonerror="true">
 			<formatter type="Plain" />
-		    <test assemblyname="${build.dir}/BooJs.Compiler.Test.dll" />
+		    <test assemblyname="${build.dir}/BooJs.Tests.dll" />
 		</nunit2 -->
+		<exec program="${boo.dir}/nunit/nunit-console.exe" managed="Strict">
+			<arg value="-nologo" />
+			<arg value="-labels" />
+			<arg value="-output=${build.dir}/tests.output.txt" />
+			<arg value="${build.dir}/BooJs.Tests.dll" />
+		</exec>
+
 	</target>
 
 	<target name="clean">
