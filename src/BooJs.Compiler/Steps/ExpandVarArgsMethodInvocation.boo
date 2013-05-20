@@ -4,6 +4,7 @@ import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.TypeSystem
 
+
 class ExpandVarArgsMethodInvocations(AbstractFastVisitorCompilerStep):
 """
     This is a direct port of Boo's one. Using the original though there is a bug with

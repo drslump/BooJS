@@ -66,7 +66,6 @@ class EmitAssembly(BooEmitAssembly):
             OnMethod(node)
 
 
-
     static stripper = Stripper()
 
     def Run():
@@ -93,4 +92,3 @@ class EmitAssembly(BooEmitAssembly):
 
         # Restore the AST to its previous step now that the assembly has been generated
         CompileUnit.Modules = saved
-

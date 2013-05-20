@@ -34,7 +34,6 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
         _slice2 = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice2')
         _slice3 = NameResolutionService.ResolveMethod(TypeSystemServices.RuntimeServicesType, 'slice3')
 
-
     # Implement Boo 0.9.6's AstNodePredicates
     def IsComplexSlicing(node as SlicingExpression) as bool:
         return node.Indices.Contains({idx| IsComplexSlice(idx)})
@@ -50,13 +49,11 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
             return (slice.Begin as IntegerLiteralExpression).Value < 0
         return true
 
-
     def IsString(target as IType) as bool:
         return TypeSystemServices.StringType == target
 
     def IsList(target as IType) as bool:
         return IsAssignableFrom(TypeSystemServices.ListType, target)
-
 
     def OnSlicingExpression(node as SlicingExpression):
         super(node)
@@ -79,8 +76,8 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
             idx.End = CodeBuilder.CreateNullLiteral() if idx.End == OmittedExpression.Default
 
     def ExpandComplexSlicing(node as SlicingExpression):
-        # HACK: We're placing this step before types are bound to the references, thus we don't
-        #       know at this point what type it is.
+        # HACK: We're placing this step before types are bound to the references, thus we 
+        #       don't know at this point what type it is.
         type = GetExpressionType(node.Target)
         if true or IsString(type) or IsList(type) or type.IsArray:
             slice = node.Indices[0]

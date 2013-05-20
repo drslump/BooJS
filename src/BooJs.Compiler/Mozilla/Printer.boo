@@ -29,11 +29,10 @@ abstract class Printer(Visitor):
         Member
         Primary
 
-
     [getter(Writer)]
     protected _writer as TextWriter
-    [property(IndentText)]
-    protected _indentText = "  "
+
+    property IndentText = "  "
 
     protected _indent = 0
     protected _needsIndenting = true
@@ -79,7 +78,6 @@ abstract class Printer(Visitor):
         '/': Precedence.Multiplicative
     }
 
-
     def constructor(writer as TextWriter):
         raise System.ArgumentNullException('writer') if writer is null
         _writer = writer
@@ -103,7 +101,7 @@ abstract class Printer(Visitor):
 
     virtual def Write(s as string):
         # Dump accumulated white space if actually writing something
-        if len(_accumulator) and not /^\s*$/.IsMatch(s):
+        if len(_accumulator) and s !~ /^\s*$/:
             s = _accumulator + s
             _accumulator = ''
 
@@ -131,7 +129,7 @@ abstract class Printer(Visitor):
 
     virtual def WriteIndented():
         if _needsIndenting:
-            Write(_indentText * _indent)
+            Write(IndentText * _indent)
             _needsIndenting = false;
 
     virtual def WriteLine():

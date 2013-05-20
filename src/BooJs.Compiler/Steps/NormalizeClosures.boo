@@ -4,6 +4,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.PatternMatching
 
+
 class NormalizeClosures(AbstractFastVisitorCompilerStep):
 """
     Detect locals inside closures and assign them to the parent method
@@ -25,7 +26,7 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
     def OnBinaryExpression(node as BinaryExpression):
         if node.Operator == BinaryOperatorType.Assign:
             name = node.Left.ToString()
-            if /^\$locals\.\$/.IsMatch(name):
+            if name =~ /^\$locals\.\$/:
                 name = name.Substring(len('$locals.$'))
 
             name = name.Split(char('.'))[0]
@@ -59,4 +60,3 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
                 return false
 
         return false
-

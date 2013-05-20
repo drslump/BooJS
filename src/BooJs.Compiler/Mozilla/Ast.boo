@@ -5,15 +5,18 @@ namespace BooJs.Compiler.Mozilla
 
 import System
 
+
 interface INode:
 """ All node types implement this interface. The type field is a string representing the
     AST variant type. You can use this field to determine which interface a node implements.
 """
     def Apply(visitor as Visitor)
 
+
 interface IStatement(INode):
 """ Any statement """
     pass
+
 
 interface IDeclaration(IStatement):
 """ Any declaration node. Note that declarations are considered statements;
@@ -23,11 +26,13 @@ interface IDeclaration(IStatement):
 """
     pass
 
+
 interface IExpression(IPattern):
 """ Any expression node. Since the left-hand side of an assignment may
     be any expression in general, an expression can also be a pattern.
 """
     pass
+
 
 interface IPattern(INode):
 """ JavaScript 1.7 introduced destructuring assignment and binding forms. All binding
@@ -42,6 +47,7 @@ interface IPattern(INode):
     not arbitrary expressions.
 """
     pass
+
 
 class Node(INode):
     public loc as SourceLocation
@@ -74,19 +80,20 @@ class SourceLocation:
     the first character of the parsed source region) and an end position (the position of
     the first character after the parsed source region)
 """
+    struct Position:
+    """ Each Position object consists of a line number (1-indexed) and a column number (0-indexed) """
+        line as int
+        column as int
+
     public source as string
     public start as Position?
     public end as Position?
-
-struct Position:
-""" Each Position object consists of a line number (1-indexed) and a column number (0-indexed) """
-    line as int
-    column as int
 
 
 class Program(Node):
 """ A complete program source tree. """
     public body = List[of IStatement]()
+
 
 class Function(Node):
 """ A function declaration or expression. The body of the function may be a block
@@ -102,13 +109,16 @@ class Function(Node):
     public generator as bool = false
     public expression as bool = false
 
+
 class EmptyStatement(Node, IStatement):
 """ An empty statement, i.e., a solitary semicolon. """
     pass
 
+
 class BlockStatement(Node, IStatement):
 """ A block statement, i.e., a sequence of statements surrounded by braces. """
     public body = List[of IStatement]()
+
 
 class ExpressionStatement(Node, IStatement):
 """ An expression statement, i.e., a statement consisting of a single expression. """
@@ -120,29 +130,35 @@ class ExpressionStatement(Node, IStatement):
     def constructor(expression as IExpression):
         self.expression = expression
 
+
 class IfStatement(Node, IStatement):
 """ An if statement. """
     public test as IExpression
     public consequent as IStatement
     public alternate as IStatement
 
+
 class LabeledStatement(Node, IStatement):
 """ A labeled statement, i.e., a statement prefixed by a break/continue label. """
     public label as Identifier
     public body as IStatement
 
+
 class BreakStatement(Node, IStatement):
 """ A break statement. """
     public label as Identifier
+
 
 class ContinueStatement(Node, IStatement):
 """ A continue statement. """
     public label as Identifier
 
+
 class WithStatement(Node, IStatement):
 """ A with statement. """
     public object as IExpression
     public body as IStatement
+
 
 class SwitchStatement(Node, IStatement):
 """ A switch statement. The lexical flag is metadata indicating whether the switch statement
@@ -152,9 +168,11 @@ class SwitchStatement(Node, IStatement):
     public cases = List[of SwitchCase]()
     public lexical as bool = false
 
+
 class ReturnStatement(Node, IStatement):
 """ A return statement. """
     public argument as IExpression
+
 
 class ThrowStatement(Node, IStatement):
 """ A throw statement. """
@@ -166,21 +184,25 @@ class ThrowStatement(Node, IStatement):
     def constructor(argument as IExpression):
         self.argument = argument
 
+
 class TryStatement(Node, IStatement):
 """ A try statement. Multiple catch clauses are SpiderMonkey-specific. """
     public block as BlockStatement
     public handlers = List[of CatchClause]()
     public finalizer as BlockStatement
 
+
 class WhileStatement(Node, IStatement):
 """ A while statement. """
     public test as IExpression
     public body as IStatement
 
+
 class DoWhileStatement(Node, IStatement):
 """ A do/while statement. """
     public body as IStatement
     public test as IExpression
+
 
 class ForStatement(Node, IStatement):
 """ A for statement. """
@@ -188,6 +210,7 @@ class ForStatement(Node, IStatement):
     public test as IExpression
     public update as IExpression
     public body as IStatement
+
 
 class ForInStatement(Node, IStatement):
 """ A for/in statement, or, if each is true, a for each/in statement.
@@ -198,23 +221,26 @@ class ForInStatement(Node, IStatement):
     public body as IStatement
     public each as bool = false
 
+
 class DebuggerStatement(Node, IStatement):
 """ A debugger statement.
     Note: The debugger statement is new in ECMAScript 5th edition
 """
     pass
 
+
 class FunctionDeclaration(Function, IDeclaration):
 """ A function declaration.
     Note: The id field cannot be null.
 """
+    struct FunctionDeclarationMeta:
+        thunk as bool
+        closed as bool
+        generator as bool
+        expression as bool
+
     public meta as FunctionDeclarationMeta?
 
-struct FunctionDeclarationMeta:
-    thunk as bool
-    closed as bool
-    generator as bool
-    expression as bool
 
 class VariableDeclaration(Node, IDeclaration):
 """ A variable declaration, via one of var, let, or const. """
@@ -226,6 +252,7 @@ class VariableDeclaration(Node, IDeclaration):
 
     def constructor(decls as List[of VariableDeclarator]):
         declarations = decls
+
 
 class VariableDeclarator(Node):
 """ A variable declarator.
@@ -241,13 +268,16 @@ class VariableDeclarator(Node):
     def constructor(id as string):
         self.id = Identifier(id)
 
+
 class ThisExpression(Node, IExpression):
 """ A this expression """
     pass
 
+
 class ArrayExpression(Node, IExpression):
 """ An array expression. """
     public elements = List[of IExpression]()
+
 
 class ObjectExpression(Node, IExpression):
 """ An object expression. A literal property in an object expression can have
@@ -255,30 +285,33 @@ class ObjectExpression(Node, IExpression):
     a kind value "init"; getters and setters have the kind values "get" and "set",
     respectively.
 """
-    public properties = List[of ObjectExpressionProp]()
+    struct Prop:
+        public key as IExpression # Literal | Identifier
+        public value as IExpression
+        public kind as string # "init" | "get" | "set"
 
-struct ObjectExpressionProp:
-    public key as IExpression # Literal | Identifier
-    public value as IExpression
-    public kind as string # "init" | "get" | "set"
+        def constructor(key as string, value as IExpression):
+            self.key = Literal(key)
+            self.value = value
 
-    def constructor(key as string, value as IExpression):
-        self.key = Literal(key)
-        self.value = value
+    public properties = List[of Prop]()
+
 
 class FunctionExpression(Function, IExpression):
 """ A function expression. """
+    struct FunctionExpressionMeta:
+        thunk as bool
+        closed as bool
+        generator as bool
+        expression as bool
+
     public meta as FunctionExpressionMeta?
 
-struct FunctionExpressionMeta:
-    thunk as bool
-    closed as bool
-    generator as bool
-    expression as bool
 
 class SequenceExpression(Node, IExpression):
 """ A sequence expression, i.e., a comma-separated sequence of expressions. """
     public expressions = List[of IExpression]()
+
 
 class UnaryExpression(Node, IExpression):
 """ A unary operator expression. """
@@ -286,9 +319,11 @@ class UnaryExpression(Node, IExpression):
     public argument as IExpression
     public prefix as bool = true
 
+
 class UpdateExpression(UnaryExpression, IExpression):
 """ An update (increment or decrement) operator expression. """
     pass
+
 
 class BinaryExpression(Node, IExpression):
 """ A binary operator expression. """
@@ -296,13 +331,16 @@ class BinaryExpression(Node, IExpression):
     public left as IExpression
     public right as IExpression
 
+
 class AssignmentExpression(BinaryExpression, IExpression):
 """ An assignment operator expression. """
     pass
 
+
 class LogicalExpression(BinaryExpression, IExpression):
 """ A logical operator expression. """
     pass
+
 
 class ConditionalExpression(Node, IExpression):
 """ A conditional expression, i.e., a ternary ?/: expression. """
@@ -310,15 +348,18 @@ class ConditionalExpression(Node, IExpression):
     public alternate as IExpression
     public consequent as IExpression
 
+
 class NewExpression(Node, IExpression):
 """ A new expression. """
     public _constructor as IExpression
     public arguments = List[of IExpression]()
 
+
 class CallExpression(Node, IExpression):
 """ A function or method call expression. """
     public callee as IExpression
     public arguments = List[of IExpression]()
+
 
 class MemberExpression(Node, IExpression):
 """ A member expression. If computed === true, the node corresponds to a computed
@@ -336,12 +377,14 @@ class MemberExpression(Node, IExpression):
         self.object = obj
         property = Identifier(prop)
 
+
 class SwitchCase(Node):
 """ A case (if test is an Expression) or default (if test === null) clause in the body of a
     switch statement.
 """
     public test as IExpression = null
     public consequent = List[of IStatement]()
+
 
 class CatchClause(Node):
 """ A catch clause following a try block. The optional guard property corresponds to the
@@ -352,6 +395,7 @@ class CatchClause(Node):
     public guard as IExpression
     public body as BlockStatement
 
+
 class Identifier(Node, IExpression):
 """ An identifier. Note that an identifier may be an expression or a destructuring pattern. """
     public name as string
@@ -361,6 +405,7 @@ class Identifier(Node, IExpression):
 
     def constructor(name as string):
         self.name = name
+
 
 class Literal(Node, IExpression):
 """ A literal token. Note that a literal can be an expression. """
@@ -385,41 +430,46 @@ class ComprehensionBlock(Node):
     public right as IExpression
     public each as bool
 
+
 class LetStatement(Node, IStatement):
 """ A let statement.
     Note: The let statement form is SpiderMonkey-specific.
 """
+    struct LetStatementDecl:
+        id as IPattern
+        init as IExpression
+
     public head = List[of LetStatementDecl]()
     public body as IStatement
 
-struct LetStatementDecl:
-    id as IPattern
-    init as IExpression
 
 class LetExpression(Node, IExpression):
 """ A let expression.
     Note: The let expression form is SpiderMonkey-specific.
 """
+    struct LetExpressionHead:
+        public id as IPattern
+        public init as IExpression
+
     public head = List[of LetExpressionHead]()
     public body as IExpression
 
-struct LetExpressionHead:
-    public id as IPattern
-    public init as IExpression
 
 class ObjectPattern(Node, IPattern):
 """ An object-destructuring pattern. A literal property in an object pattern can have either a
     string or number as its value.
 """
+    struct ObjectPatternProp:
+        public key as IExpression  # Literal | Identifier
+        public value as IPattern
+
     public properties = List[of ObjectPatternProp]()
 
-struct ObjectPatternProp:
-    public key as IExpression  # Literal | Identifier
-    public value as IPattern
 
 class ArrayPattern(Node, IPattern):
 """ An array-destructuring pattern. """
     public elements = List[of IPattern]() # null
+
 
 class GeneratorExpression(Node, IExpression):
 """ A generator expression. As with array comprehensions, the blocks array corresponds to the sequence
@@ -431,6 +481,7 @@ class GeneratorExpression(Node, IExpression):
     public blocks = List[of ComprehensionBlock]()
     public filter as IExpression
 
+
 class GraphExpression(Node, IExpression):
 """ A graph expression, aka "sharp literal," such as #1={ self: #1# }.
     Note: Graph expressions are SpiderMonkey-specific.
@@ -438,17 +489,20 @@ class GraphExpression(Node, IExpression):
     public index as int
     public expression as Literal
 
+
 class GraphIndexExpression(Node, IExpression):
 """ A graph index expression, aka "sharp variable," such as #1#.
     Note: Graph index expressions are SpiderMonkey-specific.
 """
     public index as uint
 
+
 class YieldExpression(Node, IExpression):
 """ A yield expression.
     Note: yield expressions are SpiderMonkey-specific.
 """
     public argument as IExpression
+
 
 class ComprehensionExpression(Node, IExpression):
 """ An array comprehension. The blocks array corresponds to the sequence of for and for each blocks.

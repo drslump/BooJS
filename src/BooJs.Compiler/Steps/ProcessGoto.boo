@@ -3,11 +3,12 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
+
 class ProcessGoto(AbstractTransformerCompilerStep):
 """
     Process labels and goto statements
 
-    The supported uses are very limited. It's only possible to jump to a label
+    The supported uses are limited. It's only possible to jump to a label
     previously defined in the same function. No jumps to forward labels are
     allowed.
 
@@ -15,8 +16,8 @@ class ProcessGoto(AbstractTransformerCompilerStep):
     possible (similarly on how generators are transformed for example), it would be
     difficult to implement for the benefits it provides.
 
-    TODO: Check implementation constraints. Referenced label can only
-          be present in the same method and above the goto statement
+    TODO: Check implementation constraints. Referenced label can only be present in 
+          the same method and above the goto statement
 """
     override def Run():
         if len(Errors) > 0:

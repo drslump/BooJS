@@ -1,7 +1,6 @@
 namespace BooJs.Compiler.Mozilla
 
 import System.IO(TextWriter)
-import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
 
 import Boo.Lang.Compiler.Ast(Module)
 
@@ -13,9 +12,7 @@ class JsPrinter(Printer):
 """
     Generates Javascript source code from the Mozilla AST
 """
-    [property(SourceMap)]
-    _srcmap as MapBuilder = null
-
+    property SourceMap as MapBuilder = null
 
     def constructor(writer as TextWriter):
         super(writer)
@@ -26,9 +23,8 @@ class JsPrinter(Printer):
         if SourceMap and node and node.loc:
             identifier = node as Identifier
             ident = (identifier.name if identifier else null)
-            pos as Position = node.loc.start
+            pos as SourceLocation.Position = node.loc.start
             SourceMap.Map(node.loc.source, pos.line-1, pos.column, Line, Column, ident)
-
 
         # Output provided verbatim source code (ie: for eval calls)
         if node.verbatim is not null:
@@ -48,8 +44,7 @@ class JsPrinter(Printer):
         # Add source map to the runtime
         # TODO: Sourcemaps should be per assembly not module
         if SourceMap and CompilerContext.Current.Parameters.Debug:
-            srcmap = SourceMap.ToDict()
-            Write 'Boo.sourcemap({0});', JavaScriptSerializer().Serialize(srcmap)
+            Write 'Boo.sourcemap({0});', SourceMap.ToJSON()
             WriteLine
 
 
@@ -113,7 +108,7 @@ class JsPrinter(Printer):
         WriteLine '{'
         Indent
         l = len(node.properties)-1
-        for idx as int, prop as ObjectExpressionProp in enumerate(node.properties):
+        for idx as int, prop as ObjectExpression.Prop in enumerate(node.properties):
             WriteIndented
             Visit prop.key
             Write ': '

@@ -50,6 +50,7 @@ class ProcessTry(AbstractTransformerCompilerStep):
 
     # Keep track of enclosing method
     protected _method as Method
+    
     def OnMethod(node as Method):
         last = _method
         _method = node

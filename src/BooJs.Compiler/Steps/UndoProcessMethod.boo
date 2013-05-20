@@ -7,12 +7,11 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
 """
     Boo's ProcessMethodBodies performs some quite complex computations to 
     infer types and to support 'dynamic' features using a non dynamic version
-    of the CLI. 
+    of the CLI.
 
     This step tries to undo some of the changes performed to the AST in order
     to have a cleaner way to generate Javascript which is fully dynamic.
 """
-    
     override def Run():
         if len(Errors) > 0:
             return
@@ -21,7 +20,6 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
     override def EnterMethod(node as Method):
     """ Remove the injected \$locals variable
     """
-
         for local in node.Locals:
             if local.Name == '$locals':
                 node.Locals.Remove(local)
@@ -64,7 +62,6 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
 
             target = target.Target
 
-
     def EnterMemberReferenceExpression(node as MemberReferenceExpression):
     """ Fix closure references
             \$locals.\$foo = 1  ->  foo = 1
@@ -90,7 +87,6 @@ class UndoProcessMethod(AbstractTransformerCompilerStep):
             parent = parent.ParentNode
 
         return false
-
 
     override def LeaveRaiseStatement(node as RaiseStatement):
         # Boo allows to re-raise an exception by omitting the exception argument. We always capture

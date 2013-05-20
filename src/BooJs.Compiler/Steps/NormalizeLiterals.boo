@@ -3,6 +3,7 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
+
 class NormalizeLiterals(AbstractTransformerCompilerStep):
 
     static public final INTERPOLATION_MAX_ITEMS = 3
@@ -40,4 +41,3 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
     """ Convert timespan literal values to milliseconds
     """
         ReplaceCurrentNode IntegerLiteralExpression(Value: node.Value.TotalMilliseconds)
-

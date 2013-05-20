@@ -6,16 +6,18 @@ import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem.Internal
 import Boo.Lang.PatternMatching
 
+
 class ProcessGenerators(AbstractTransformerCompilerStep):
 """
-    Specialized step to process generators replacing Boo's one.
+    Specialized step to process generators replacing Boo's one. Code is 
+    transformed to a reentrant state machine, allowing to halt execution
+    where a yield is found and resume later on from that same point.
 """
     class TransformGenerator(FastDepthFirstVisitor):
         [getter(States)]
         _states = StatementCollection()
 
-        [property(State)]
-        _state as int = 0
+        property State as int = 0
 
         Current as Block:
             get: return States[State]
@@ -124,7 +126,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
             # Continue in the after state
             State = afterstate
-
 
     override def Run():
         if len(Errors) > 0:

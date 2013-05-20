@@ -8,6 +8,7 @@ import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity, IMethod,
                                     BuiltinFunction, BuiltinFunctionType)
 import Boo.Lang.Compiler.Steps.Generators(GeneratorItemTypeInferrer)
 
+
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """ Overrides some methods of the step to skip some modification made originally
 """
@@ -35,7 +36,6 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
     # Obtain an instance to call ProcessMethodBodies private methods
     pmb = Pmb(self)
-
 
     override def Initialize(context as Boo.Lang.Compiler.CompilerContext):
         super(context)
@@ -196,5 +196,3 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
         enumerableType = (TypeSystemServices as BooJs.Compiler.TypeSystem.TypeSystemServices).IGeneratorGenericType
         return enumerableType.GenericInfo.ConstructType(itemType)
-
-

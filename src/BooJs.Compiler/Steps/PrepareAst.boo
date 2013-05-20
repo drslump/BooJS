@@ -13,7 +13,6 @@ import BooJs.Lang.Extensions
 import System.Runtime.CompilerServices(CompilerGeneratedAttribute)
 
 
-
 class PrepareAst(AbstractTransformerCompilerStep):
 """
     Prepare the AST for its conversion to Javascript
@@ -27,7 +26,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     [getter(BooMethodCache)]
     private _booMethodCache as BooRuntimeMethodCache
-
 
     protected def GetAttribute[of T(System.Attribute)](node as Node) as T:
         entity = node.Entity as TypeSystem.IExternalEntity
@@ -124,7 +122,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     def OnReferenceExpression(node as ReferenceExpression):
         ReplaceCurrentNode ProcessReference(node)
-
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         if TransformAttribute.HasAttribute(node):
@@ -223,9 +220,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode Visit(ue)
             return
 
-
         super(node)
-
 
     def OnMethod(node as Method):
     """ Process locals and detect the Main method to move its statements into the Module globals
@@ -271,7 +266,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
             st = DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
             node.Body.Insert(0, st)
-
 
         # Detect the Main method and move its statements to the Module globals
         if IsEntryPoint(node):
@@ -401,7 +395,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
         else:
             raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
 
-
     def OnUnaryExpression(node as UnaryExpression):
         # Logical Not folding
         if node.Operator == UnaryOperatorType.LogicalNot:
@@ -427,7 +420,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         super(node)
 
-
     def OnBlock(node as Block):
 
         Visit node.Statements
@@ -443,5 +435,4 @@ class PrepareAst(AbstractTransformerCompilerStep):
                     ofs++
             else:
                 ofs++
-
 

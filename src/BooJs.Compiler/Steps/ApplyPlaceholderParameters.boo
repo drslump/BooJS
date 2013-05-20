@@ -3,6 +3,7 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
 import Boo.Lang.Compiler.Ast
 
+
 class ApplyPlaceholderParameters(AbstractFastVisitorCompilerStep):
 """
     Like in Scala, underscores in anonymous functions (block expressions) are
@@ -12,6 +13,7 @@ class ApplyPlaceholderParameters(AbstractFastVisitorCompilerStep):
         map data, { arg1 as duck, arg2 as duck | arg1 + arg2 * 2 }
 """
     _blocks = List[of BlockExpression]()
+
     Block as BlockExpression:
         get: return (_blocks[-1] if len(_blocks) else null)
 
@@ -32,8 +34,3 @@ class ApplyPlaceholderParameters(AbstractFastVisitorCompilerStep):
             node.Name = Context.GetUniqueName('arg')
             decl = ParameterDeclaration(Name: node.Name, Type: SimpleTypeReference('duck'))
             Block.Parameters.Add(decl)
-
-
-
-
-

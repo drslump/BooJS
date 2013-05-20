@@ -22,7 +22,8 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     - If it contains a yield statement is converted to a while equivalent loop.
     - If it has an Or or Then block it's converted to a while loop
     - If it is an array we convert it to a for in range
-    - When the iterator is the range method it's left to be optimized when converting to the Mozilla AST
+    - When the iterator is the range method it's left to be optimized when converting 
+      to the Mozilla AST
     - If it contains a return convert to a while loop
     - If iterator is not an array iterate it with Boo.each()
 
@@ -56,11 +57,11 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
 
     Boo's for statement does not allow to specify a receiving variable for the key like it's
-    done in CoffeeScript (for v,k in hash), however it allows to defines multiple variables
+    done in CoffeeScript (for v, k in hash), however it allows to defines multiple variables
     for unpacking. So the solution is to disable the support for unpacking and use it instead
     to obtain the key.
 
-        for v,k in obj: ...
+        for v, k in obj: ...
         ---
         Boo.each(obj, {v,k| ...})
 """

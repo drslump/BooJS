@@ -7,6 +7,7 @@ import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
 
 import BooJs.Compiler.Utils
 
+
 class ProcessImports(AbstractTransformerCompilerStep):
 """
     Process imports
@@ -16,7 +17,6 @@ class ProcessImports(AbstractTransformerCompilerStep):
     _mappings = {}
     _asmrefs = {}
     _nsidx = 0
-
 
     protected def FindNamespace(fqn as string) as string:
         parts = fqn.Split(char('.'))
@@ -110,7 +110,6 @@ class ProcessImports(AbstractTransformerCompilerStep):
                 rhs.Add(parts[-1])
 
             parts = parts[:-1]
-
 
     protected def IsModule(fqn as string) as bool:
         try:

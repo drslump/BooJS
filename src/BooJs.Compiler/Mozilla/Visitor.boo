@@ -1,5 +1,6 @@
 namespace BooJs.Compiler.Mozilla
 
+
 abstract class Visitor:
 
     virtual def Visit(node as Node):

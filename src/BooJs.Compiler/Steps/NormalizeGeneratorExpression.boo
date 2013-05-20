@@ -3,15 +3,16 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
+
 class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 """
     Converts generator expressions to a simpler form using a sequence/eval
 """
-
     _depth = 0
 
     # Keep track of last visited method
     _method as Method
+    
     def OnMethod(node as Method):
         last = _method
         _method = node

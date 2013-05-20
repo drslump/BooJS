@@ -12,7 +12,6 @@ Transforms the Boo AST into a Mozilla AST
 """
     _visitor = MozillaAstVisitor()
 
-
     override def Run():
         return if len(Errors)
 

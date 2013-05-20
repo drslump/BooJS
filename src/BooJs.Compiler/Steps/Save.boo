@@ -42,7 +42,6 @@ class Save(AbstractCompilerStep):
         # Finally set the generated filename in the context
         ctxt.GeneratedAssemblyFileName = fname
 
-
     def GetCompressedAssembly():
         fname = Path.GetFileName(Context.GeneratedAssemblyFileName)
         builder = ContextAnnotations.GetAssemblyBuilder(Context)

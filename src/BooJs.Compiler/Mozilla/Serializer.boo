@@ -43,10 +43,10 @@ class MozillaJavaScriptConverter(JavaScriptConverter):
             loc.source = dict['source'] if dict.ContainsKey('source')
             if dict.ContainsKey('start') and dict['start']:
                 h = dict['start'] as IDictionary[of string,object]
-                loc.start = Position(line: h['line'], column: h['column'])
+                loc.start = SourceLocation.Position(line: h['line'], column: h['column'])
             if dict.ContainsKey('end') and dict['end']:
                 h = dict['end'] as IDictionary[of string,object]
-                loc.end = Position(line: h['line'], column: h['column'])
+                loc.end = SourceLocation.Position(line: h['line'], column: h['column'])
 
             return loc
 

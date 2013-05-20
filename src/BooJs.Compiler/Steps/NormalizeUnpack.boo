@@ -3,6 +3,7 @@ namespace BooJs.Compiler.Steps
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
+
 class NormalizeUnpack(AbstractTransformerCompilerStep):
 """
     Boo allows to unpack an enumerable into local variables using the following construct:
