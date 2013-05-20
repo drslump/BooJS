@@ -162,8 +162,6 @@ class FixtureRunner:
             _comp.Parameters.Debug = true
             _comp.Parameters.GenerateInMemory = true
 
-
-
         # Reset the output writer
         _comp.Parameters.OutputWriter = System.IO.StringWriter()
         return _comp
@@ -204,6 +202,9 @@ class FixtureRunner:
 
     static def runTest(code as string, expected as string):
 
+        print '----------------------------------------------[code]-'
+        print code.Trim()
+
         # TODO: Check if we can reuse the same engine
         using engine = setupInterpreter():
 
@@ -226,8 +227,6 @@ class FixtureRunner:
                           jsobj.GetPropertyValue('boo_line')
                       ), '')
 
-            print '----------------------------------------------[code]-'
-            print code.Trim()
             print '--------------------------------------------[output]-'
             print console.output()
             print '-----------------------------------------------------'
