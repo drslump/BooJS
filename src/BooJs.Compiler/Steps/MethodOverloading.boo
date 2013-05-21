@@ -25,18 +25,41 @@ identifier to ensure there are no name collisions in the generated javascript co
             overloads = [m for m in cls.Members if m.Name == node.Name]
             if len(overloads) > 1:
                 # Create a new method with the original name to raise an error if called
-                m = node.CloneNode()
-                cls.Members.Insert(cls.Members.IndexOf(node), m)
-                m.Parameters.Clear()
-                m.Body.Clear()
-                m.Body.Add([| raise 'Overloaded method' |])
-                Visit m
+                method = node.CloneNode()
+                cls.Members.Insert(cls.Members.IndexOf(node), method)
+                method.Parameters.Clear()
+                method.Body.Clear()
 
-                # Rename overloads to include a unique suffix
-                for i, m in enumerate(overloads):
+                specs = ArrayLiteralExpression()
+                funcs = ArrayLiteralExpression()
+                for i, m as Method in enumerate(overloads):
+                    spec = ArrayLiteralExpression()
+                    for p in m.Parameters:
+                        spec.Items.Add(
+                            StringLiteralExpression(Value: p.Type.Entity.FullName)
+                        )
+                    specs.Items.Add(spec)
+
+                    # Rename overloads to include a unique suffix
                     m.Name += '$' + i
+                    funcs.Items.Add(
+                        ReferenceExpression(Name: m.Name)
+                    )
+
+                method.Body = [|
+                    body:
+                        return Boo.overload(
+                            arguments,
+                            $specs,
+                            $funcs
+                        )
+
+                |].Block
 
         super(node)
+
+    def OnConstructor(node as Constructor):
+        OnMethod(node)
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
         return unless node.Target isa ReferenceExpression

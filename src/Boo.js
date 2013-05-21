@@ -1,8 +1,8 @@
-// Boo.Js Runtime
+// BooJs Runtime
 // MIT license
-// Copyright 2012 Iván -DrSlump- Montes <drslump@pollinimini.net>
+// Copyright 2012-2013 Iván -DrSlump- Montes <drslump@pollinimini.net>
 
-/*jshint indent:4 lastsemic:false curly:false */
+/*jshint indent:4, lastsemic:false, curly:false */
 /*global StopIteration: false */
 
 (function (exports, undefined) {
@@ -24,11 +24,12 @@
         '[object Number]': 'Number',
         '[object Array]': 'Array',
         '[object Function]': 'Function',
-        '[object RegExp]': 'RegExp'
+        '[object RegExp]': 'RegExp',
+        '[object Date]': 'Date'
     };
     // Tells the type of a variable according to the following rules:
-    //  - Undefineds and Nulls are reported as null
-    //  - Objects without primitives are reported as Object (except for Array and RegExp)
+    //  - Undefineds and Nulls are coerced to null
+    //  - Non primitive objects are reported as Object (except for Array, Date and RegExp)
     function typeOf(v) {
         var t = typeof(v);
         if (t in type_lookup) return type_lookup[t];
@@ -39,7 +40,7 @@
         return type_lookup[t] || 'Object';
     }
     // Checks if the type of a value is the one given (multiple expected types supported)
-    function typeIs(v, expected) {
+    function typeIs(v, expected /* or_expected ... */) {
         var i, t = typeOf(v);
         for (i = 1; i < arguments.length; i++) {
             if (t === arguments[i]) return true;
@@ -54,7 +55,7 @@
         // Used in loops to flag branching
         LOOP_OR: 1,
         LOOP_THEN: 2,
-        // Used as a unique indentifier when we want to stop iterating a generator
+        // Used as an unique identifier when we want to stop iterating a generator
         STOP: typeof StopIteration !== 'undefined' ? StopIteration : {name: 'StopIteration'}
     };
 
@@ -81,13 +82,13 @@
     // AMD style module loader. All Boo modules (files) wrap their
     // contents in a call to this function. This implementation is
     // intentionally very naive, expecting all dependencies to be
-    // already loaded in the correct order. It can be overriden
+    // already loaded in the correct order. It could be overridden
     // to support on demand loading using RequireJs or CommonJs.
     Boo.define = function (name, deps, factory) {
         var i, dep, args, member, module,
             refs = [];
 
-        // Support function signature without dependencies
+        // Check if we were called without dependencies
         if (!typeIs(deps, 'Array')) {
             factory = deps;
             deps = [];
@@ -98,7 +99,7 @@
             mod_waiting[name] = [name, deps, factory];
         }
 
-        // Evaluate dependencies (the fist element is always 'exports')
+        // Evaluate dependencies
         for (i = 0; i < deps.length; i++) {
             dep = deps[i];
 
@@ -147,7 +148,7 @@
 
     // AMD style dependency retriever. It should be used to access Boo generated
     // types from Javascript code. Boo does not generate global variables for the
-    // defined types so you need to obtain a reference to them thru this function.
+    // defined types so you need to obtain a reference to them with this function.
     Boo.require = function (deps, callback) {
         // Single argument just obtains a previously defined module
         if (arguments.length === 1) {
@@ -167,12 +168,12 @@
         callback.apply(undefined, args);
     };
 
-    // Registers a source map. Does nothing by default.
+    // Registers a source map. Does nothing by default, it's overridden for debug.
     Boo.sourcemap = function (srcmap) {
     };
 
     // Note: We don't use the native forEach method since this is custom tailored
-    //       to the generated code. It handles unpacking and iteration stopage.
+    //       to the generated code. It handles unpacking and iteration stoppage.
     var each = Boo.each = function (obj, iterator, context) {
         if (obj === null || typeof obj === 'undefined') return;
         if (typeof obj === 'string') obj = obj.split('');
@@ -181,7 +182,7 @@
         if (obj.length === +obj.length) {
             // Mode is computed based on the following rules:
             //   - If the callback only has one argument the value is passed as is
-            //   - If it has more than one the argument is unpacked (apply style invocation)
+            //   - If it has more than one the argument it gets unpacked (apply style invocation)
             var l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
             for (i = 0; i < l; i++) {
                 if (i in obj && iterator[mode](context, obj[i]) === Boo.STOP) return;
@@ -208,15 +209,15 @@
     // Generator factory
     Boo.generator = function (closure) {
         // Convert array/object to a generator
-        if (!typeIs(closure, 'Function')) {
+        if (typeof closure === 'function') {
             // Forward generators
-            if (closure && hop(closure, 'next') && hop(closure, 'close') &&
+            if (hop(closure, 'next') && hop(closure, 'close') &&
                 typeof closure.next === 'function' && typeof closure.close === 'function') {
                 return closure;
             }
 
             var idx = 0, data = closure;
-            
+
             if (!typeIs(data, 'Array'))
                 data = Boo.Hash.values(data);
 
@@ -267,9 +268,9 @@
         return values;
     };
 
-    // Generate a list of pairs of key, value
+    // Generate a list of key,value pairs
     var enumerate = Boo.enumerate = function (enumerable) {
-        // Strings/Arrays can be solved using zip/range
+        // Strings/Arrays can be solved using zip+range
         if (enumerable.length === +enumerable.length)
             return zip([range(enumerable.length), enumerable]);
 
@@ -307,7 +308,7 @@
 
     // Obtain a reversed version of the given array
     Boo.reversed = function (list) {
-        var result = cat([list]);
+        var result = Boo.enumerable(list);
         result.reverse();
         return result;
     };
@@ -338,7 +339,7 @@
         list = Boo.enumerable(list);
 
         var i = 0, l = +list.length;
-     
+
         if (arguments.length < 3) {
             if (l === 0) throw new TypeError("Array length is 0 and no third argument");
             value = list[0];
@@ -348,12 +349,12 @@
             callback = value;
             value = tmp;
         }
-     
+
         while (i < l) {
             if (i in list) value = callback.call(undefined, value, list[i], i, list);
             ++i;
         }
-     
+
         return value;
     };
 
@@ -495,7 +496,7 @@
         // Special handling for arrays (just in case we run into cross-frame issues)
         if (type === Array) {
             return typeOf(value) === 'Array';
-        // Special handling for hash (any object except arrays/regexps can be casted to a hash)
+        // Special handling for hash (any object except arrays/dates/regexps can be casted to a hash)
         } else if (type === Boo.Hash) {
             return typeIs(value, 'Object');
         }
@@ -570,7 +571,7 @@
         op_Equality: function (lhs, rhs) {
             if (lhs.length !== rhs.length) return false;
             for (var i = 0; i < lhs.length; i++) {
-                if (lhs[i] == rhs[i]) continue;
+                if (lhs[i] === rhs[i]) continue;
                 // Check nested arrays
                 if (typeIs(lhs[i], 'Array') && typeIs(rhs[i], 'Array') && Boo.Array.op_Equality(lhs[i], rhs[i]))
                     continue;
@@ -664,52 +665,77 @@
     };
 
 
-    ////////// Class //////////////////////////////////////////////////////
+    ////////// Events support /////////////////////////////////////////////////
 
-    // Class factory. Inherits from the first item in the `extend` array,
-    // registering additional items as interfaces.
-    Boo.Class = function (extend, constructor, statics, instance) {
-        var prop, base, cls = constructor;
+    Boo.Event = function () {
+        var handlers = [];
 
-        cls.prototype.constructor = cls;
-        if (extend.length) {
-            base = extend.shift();
-            cls.prototype = new base;
-            cls.$boo$interfaces = extend;
+        function fire() {
+            var args = arguments;
+            Boo.each(handlers, function (hdlr) {
+                hdlr.apply(fire, args);
+            });
         }
 
-        for (prop in statics) if (hop(statics, prop))
-            cls[prop] = statics[prop];
-        for (prop in instance) if (hop(instance, prop))
-            cls.prototype[prop] = instance[prop];
+        fire.add = function (hdlr) {
+            handlers.push(hdlr);
+            return hdlr;
+        };
 
-        return cls;
+        fire.remove = function (hdlr) {
+            var idx = handlers.indexOf(hdlr);
+            if (idx >= 0) {
+                handlers.splice(idx);
+            }
+            return idx >= 0;
+        };
+
+        return fire;
     };
 
-    /*
-    Person = Boo.Class([Base, IEnumerable], function (){
+    // function foo() {
+    //     return Boo.overload(
+    //         arguments,
+    //         [
+    //             [],
+    //             [String, Boo.Hash]
+    //         ],
+    //         [foo$0, foo$1]
+    //     );
+    // }
+    // function foo$0() {}
+    // function foo$1(str, dict) {}
 
-    }, {
-        Flag: 'flag',
-        foo: function Person$foo() {}
-    }, {
-        bar: 'field',
-        baz: function Person$baz() {}
-    });
+    Boo.overload = function (args, specs, funcs) {
+        // Pre-filter based on the number of args
+        var matching = [];
+        for (var i = 0; i < specs.length; i++) {
+            if (args.length === specs[i].length) {
+                matching.push(i);
+            }
+        }
 
-    Person = function () {};
-    // Basic inheritance
-    Person.prototype = new Base();
-    Person.prototype.constructor = Person;
-    // Interface metadata (used by isa testing)
-    Person.$boo$interfaces = [IEnumerable];
-    // Static members
-    Person.Flag = 'flag';
-    Person.foo = function Person$bar() {};   // Name functions to help debugging
-    // Instance members
-    Person.prototype.bar = 'field';
-    Person.prototype.baz = function Person$baz() {};
-    */
+        if (0 === matching.length) {
+            throw new Error('No valid overload found for the number of arguments');
+        }
+
+        // If there only a match just execute it
+        if (matching.length === 1) {
+            return funcs[matching[0]].apply(this, args);
+        }
+
+        // Filter based on types
+        throw new Error('Overloads based on parameter types are not supported yet');
+    };
+
+
+    ///////// Shims ////////////////////////////////////////////////////////
+
+    Boo.create = Object.create || function (o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+    };
 
 
     exports.Boo = Boo;
