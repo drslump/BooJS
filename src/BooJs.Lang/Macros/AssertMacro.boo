@@ -3,6 +3,7 @@ namespace BooJs.Lang.Macros
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
 
+
 macro assert:
     return unless CompilerContext.Current.Parameters.Debug
 

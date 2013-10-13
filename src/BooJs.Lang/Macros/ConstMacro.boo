@@ -15,4 +15,3 @@ macro const:
         |]
     otherwise:
         raise System.ArgumentException('Expected an assignment (ie: const foo = 10)')
-

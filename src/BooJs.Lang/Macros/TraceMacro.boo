@@ -3,6 +3,7 @@ namespace BooJs.Lang.Macros
 import Boo.Lang.Compiler(CompilerContext)
 import Boo.Lang.Compiler.Ast(StringLiteralExpression)
 
+
 macro trace:
     return unless CompilerContext.Current.Parameters.Debug
 

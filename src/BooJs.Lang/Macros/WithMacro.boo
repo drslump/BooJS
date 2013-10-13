@@ -4,7 +4,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler(CompilerContext)
 
 
-class OmittedExpressionFinder(FastDepthFirstVisitor):
+internal class OmittedExpressionFinder(FastDepthFirstVisitor):
 
     _target as ReferenceExpression
 
