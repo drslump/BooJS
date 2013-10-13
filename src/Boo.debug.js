@@ -1,8 +1,8 @@
-// Boo.Js Runtime Debugging extensions
+// BooJs Runtime - Debugging extensions
 // MIT license
-// Copyright 2012 Iván -DrSlump- Montes <drslump@pollinimini.net>
+// Copyright 2012-2013 Iván -DrSlump- Montes <drslump@pollinimini.net>
 
-/*jshint indent:4 lastsemic:false curly:false */
+/*jshint indent:4, lastsemic:false, curly:false */
 /*global Boo:true */
 
 (function (exports, undefined) {
@@ -15,15 +15,15 @@
 
     var _define = Boo.define;
     Boo.define = function () {
-        var args = arguments;
         // HACK: Delay triggering to allow the sourcemap to be registered
+        var args = arguments;
         setTimeout(function () { run_and_process_exception(_define, args); }, 0);
     };
 
     var _require = Boo.require;
     Boo.require = function () {
-        var args = arguments;
         // HACK: Delay triggering to allow the sourcemap to be registered
+        var args = arguments;
         setTimeout(function () { run_and_process_exception(_require, args); }, 0);
     };
 

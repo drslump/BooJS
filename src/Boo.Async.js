@@ -1,4 +1,8 @@
-/*global Boo: false, setImmediate: false, setTimeout: false */
+// BooJs Runtime - Async extensions
+// MIT license
+// Copyright 2012-2013 Iván -DrSlump- Montes <drslump@pollinimini.net>
+
+/*global Boo: true, setImmediate: false, setTimeout: false */
 
 Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
     'use strict';
@@ -11,7 +15,7 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
     };
 
     // Find the best implementation for the enqueue (next-tick) function
-    var enqueue = (typeof process === 'object' && typeof process.nextTick === 'function')
+    var enqueue = (typeof process === 'object' && process !== null && typeof process.nextTick === 'function')
                 ? process.nextTick
                 // http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html
                 : (typeof setImmediate === 'function')
@@ -197,7 +201,6 @@ Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
             if (defer.getState() !== DeferredState.Unresolved) {
                 return;
             }
-
             for (var i = 0; i < n; i++) {
                 if (pending[i]) {
                     pending[i].cancel();
