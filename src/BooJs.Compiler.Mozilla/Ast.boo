@@ -4,6 +4,7 @@ Implementation of Mozilla's SpiderMonkey Parser API
 namespace BooJs.Compiler.Mozilla
 
 import System
+import System.Reflection(BindingFlags)
 
 
 interface INode:

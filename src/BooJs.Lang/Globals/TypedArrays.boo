@@ -155,11 +155,3 @@ class DataView(ArrayBufferView):
         pass
     def setFloat64(ofs as uint, v as double, littleEndian as bool):
         pass
-
-
-
-
-
-
-
-

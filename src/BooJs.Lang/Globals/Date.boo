@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Globals
 
+
 # TODO: Check which methods are 5th edition
 class Date(Object):
 

@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Globals
 
+
 class Error(Object):
 
     public message as string

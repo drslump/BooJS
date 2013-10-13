@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Globals
 
+
 class Function(Object, ICallable):
 
     # ICallable interface

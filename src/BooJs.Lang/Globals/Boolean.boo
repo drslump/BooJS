@@ -1,5 +1,6 @@
 namespace BooJs.Lang.Globals
 
+
 class Boolean(Object):
 
     def constructor():
