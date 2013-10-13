@@ -1,6 +1,7 @@
 namespace boojs
 
 import BooJs.Compiler
+import BooJs.Compiler.Pipelines
 import Boo.Lang.Compiler.IO(FileInput)
 
 
