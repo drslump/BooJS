@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.TypeSystem</RootNamespace>
     <AssemblyName>BooJs.Compiler.TypeSystem</AssemblyName>
+    <BooBinPath>..\..\lib\</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -31,10 +32,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Boo.Lang, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <Reference Include="Boo.Lang.PatternMatching, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\lib\Boo.Lang.Compiler.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.boo" />
+    <Compile Include="DowncastPermissions.boo" />
+    <Compile Include="ReflectionProvider.boo" />
+    <Compile Include="RuntimeMethodCache.boo" />
+    <Compile Include="TypeSystemServices.boo" />
+  </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
+      <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
+      <Name>BooJs.Lang</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
