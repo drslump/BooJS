@@ -1,10 +1,10 @@
-namespace Apis
+namespace BooJs.Lang.Apis
 
 import BooJs.Lang.Globals(Object)
 import BooJs.Lang.Builtins(ICallable)
 import BooJs.Lang.Extensions
-import Browser.Dom2 as DOM
-import Async(IPromise)
+import BooJs.Lang.Browser.Dom2 as DOM
+import BooJs.Lang.Async(IPromise)
 
 [Extern(Factory:true)]
 class jQuery(ICallable):

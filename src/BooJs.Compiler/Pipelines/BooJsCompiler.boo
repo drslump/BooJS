@@ -1,4 +1,4 @@
-﻿namespace BooJs.Compiler
+﻿namespace BooJs.Compiler.Pipelines
 
 import System
 
@@ -9,6 +9,7 @@ import Boo.Lang.Compiler.TypeSystem(TypeSystemServices)
 import Boo.Lang.Compiler.TypeSystem.Services(DowncastPermissions)
 
 import BooJs.Compiler.TypeSystem as BooJsTypeSystem
+# import BooJs.Compiler.Pipelines as Pipelines
 
 
 class BooJsCompiler(BooCompiler):
@@ -33,7 +34,7 @@ class BooJsCompiler(BooCompiler):
         
 
 def newBooJsCompiler():
-    return newBooJsCompiler(Pipelines.SaveJs())
+    return newBooJsCompiler(SaveJs())
 
 def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     # Register our custom type system provider

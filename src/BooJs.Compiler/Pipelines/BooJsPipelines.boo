@@ -131,18 +131,28 @@ class Compile(BooPipelines.Compile):
 
         #for step in self: print step
 
+
+class CompileToMemory(BooPipelines.CompileToMemory):
+    def constructor():
+        PatchBooPipeline(self)
+
+
 class PrintBoo(Compile):
     def constructor():
         Add PrintBoo()
+
 
 class PrintJs(Compile):
     def constructor():
         Add Steps.PrintJs()
 
+
 class PrintAst(Compile):
     def constructor():
         Add Steps.PrintAst()
 
+
 class SaveJs(Compile):
     def constructor():
         Add Steps.Save()
+

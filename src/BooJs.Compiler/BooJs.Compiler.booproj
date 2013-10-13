@@ -12,27 +12,25 @@
     <BooBinPath>..\..\lib\</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
     <nostdlib>false</nostdlib>
-    <ConsolePause>false</ConsolePause>
-    <genwarnings>false</genwarnings>
-    <DefineConstants />
+    <ConsolePause>False</ConsolePause>
+    <genwarnings>False</genwarnings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
     <nostdlib>false</nostdlib>
-    <ConsolePause>false</ConsolePause>
-    <genwarnings>false</genwarnings>
-    <DefineConstants />
+    <ConsolePause>False</ConsolePause>
+    <genwarnings>False</genwarnings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Boo.Lang">
@@ -63,15 +61,24 @@
       <Project>{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}</Project>
       <Name>BooJs.Lang.Extensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BooJs.Compiler.Mozilla\BooJs.Compiler.Mozilla.booproj">
+      <Project>{B52B76BB-B275-4EE3-AE06-3B930C452C72}</Project>
+      <Name>BooJs.Compiler.Mozilla</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Compiler.SourceMap\BooJs.Compiler.SourceMap.booproj">
+      <Project>{7FF045EF-2398-424B-AD00-0D8804A753BD}</Project>
+      <Name>BooJs.Compiler.SourceMap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BooJs.Compiler.TypeSystem\BooJs.Compiler.TypeSystem.booproj">
+      <Project>{04A70369-236F-4E54-8C59-9A5ADEB9EBE2}</Project>
+      <Name>BooJs.Compiler.TypeSystem</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.boo" />
-    <Compile Include="BooJsCompiler.boo" />
-    <Compile Include="BooJsPipelines.boo" />
     <Compile Include="CompilerContext.boo" />
     <Compile Include="CompilerParameters.boo" />
     <Compile Include="CompilerPipeline.boo" />
-    <Compile Include="Mozilla\Ast.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
     <Compile Include="Steps\NormalizeLoops.boo" />
@@ -83,55 +90,48 @@
     <Compile Include="Steps\InjectImplicitBooleanConversions.boo" />
     <Compile Include="Steps\OverrideProcessMethodBodies.boo" />
     <Compile Include="Steps\ProcessTry.boo" />
-    <Compile Include="SourceMap\Base64VLQ.boo" />
-    <Compile Include="SourceMap\MapBuilder.boo" />
     <Compile Include="Steps\NormalizeUnpack.boo" />
     <Compile Include="Steps\NormalizeClosures.boo" />
     <Compile Include="Steps\NormalizeMethodInvocation.boo" />
     <Compile Include="Steps\NormalizeGeneratorExpression.boo" />
     <Compile Include="Steps\ExpandComplexSlicingExpressions.boo" />
     <Compile Include="Steps\MethodOverloading.boo" />
-    <Compile Include="TypeSystem\ReflectionProvider.boo" />
-    <Compile Include="TypeSystem\RuntimeMethodCache.boo" />
     <Compile Include="Steps\ExpandDuckTypedExpressions.boo" />
     <Compile Include="Steps\IntroduceGlobalNamespaces.boo" />
     <Compile Include="Steps\MozillaAst.boo" />
-    <Compile Include="Mozilla\Serializer.boo" />
-    <Compile Include="Mozilla\Visitor.boo" />
-    <Compile Include="Mozilla\Printer.boo" />
-    <Compile Include="Mozilla\JsPrinter.boo" />
     <Compile Include="Visitors\MozillaAstVisitor.boo" />
     <Compile Include="Steps\PrintAst.boo" />
-    <Compile Include="Mozilla\AstPrinter.boo" />
     <Compile Include="Steps\PrepareAst.boo" />
     <Compile Include="Steps\ExpandVarArgsMethodInvocation.boo" />
-    <Compile Include="TypeSystem\DowncastPermissions.boo" />
     <Compile Include="Steps\EmitAssembly.boo" />
     <Compile Include="Steps\Save.boo" />
     <Compile Include="Utils.boo" />
-    <Compile Include="TypeSystem\TypeSystemServices.boo" />
     <Compile Include="Steps\AdaptParsingAst.boo" />
     <Compile Include="Steps\BranchChecking.boo" />
     <Compile Include="Steps\ProcessImports.boo" />
     <Compile Include="Steps\SafeAccess.boo" />
     <Compile Include="Steps\ApplyPlaceholderParameters.boo" />
+    <Compile Include="Pipelines\BooJsCompiler.boo" />
+    <Compile Include="Pipelines\BooJsPipelines.boo" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Visitors\" />
     <Folder Include="Steps\Macros\" />
     <Folder Include="resources\" />
+    <Folder Include="Pipelines\" />
+    <Folder Include="TypeSystem\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Boo.debug.js">
       <Link>resources\Boo.debug.js</Link>
       <LogicalName>Boo.debug.js</LogicalName>
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
     </EmbeddedResource>
     <EmbeddedResource Include="..\Boo.js">
-      <Gettext-ScanForTranslations>false</Gettext-ScanForTranslations>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
       <Link>resources\Boo.js</Link>
       <LogicalName>Boo.js</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

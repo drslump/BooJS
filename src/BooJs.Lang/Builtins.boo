@@ -13,9 +13,8 @@ class Builtins:
     static public final STOP = {}
 
 
-
     class Duck(Object, Boo.Lang.IQuackFu):
-    """ Implementes the IQuackFu interface
+    """ Implements the IQuackFu interface
     """
         def QuackGet(name as string, params as (object)) as object:
             pass
@@ -34,7 +33,7 @@ class Builtins:
 
 
     [EnumeratorItemType(typeof(Object))]
-    class Hash(Object, Iterable, IQuackFu):  # The IQuackFoo allows to access items as members (dot notation)
+    class Hash(Object, Iterable, IQuackFu):  # The IQuackFu allows to access items as members (dot notation)
     """ Simple hash/dictionary based on Javascript's object
     """
         [Transform( $2.hasOwnProperty($1) )]
@@ -77,7 +76,7 @@ class Builtins:
         def constructor(msg as string):
             pass
 
-
+    # TODO: Is this used right now?
     class ReturnValue:
         public value as object
 

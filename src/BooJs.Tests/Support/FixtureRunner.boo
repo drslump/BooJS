@@ -1,3 +1,5 @@
+namespace BooJs.Tests.Support
+
 import NUnit.Framework
 
 import System.IO(Path, Directory, StreamReader)
@@ -6,6 +8,7 @@ import System.Timers(Timer)
 
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
+import BooJs.Compiler.Pipelines as Pipelines
 
 # The JavaScript interpretter
 import Jurassic(ScriptEngine, JavaScriptException, CompatibilityMode)
@@ -63,7 +66,7 @@ static class Window:
 
 class FixtureRunner:
 
-    static _comp as BooJsCompiler
+    static _comp as Pipelines.BooJsCompiler
     static _engine as ScriptEngine
 
     static _tests_path as string
@@ -158,7 +161,7 @@ class FixtureRunner:
                 if timer.ElapsedMilliseconds > 100:
                     print 'Slow Step {0}: {1}ms' % (args.Step.GetType().Name, timer.ElapsedMilliseconds)
 
-            _comp = newBooJsCompiler(pipeline)
+            _comp = Pipelines.newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true
             _comp.Parameters.GenerateInMemory = true
 

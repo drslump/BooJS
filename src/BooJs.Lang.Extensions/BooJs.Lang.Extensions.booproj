@@ -12,27 +12,25 @@
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants />
     <ErrorReport>prompt</ErrorReport>
     <culture />
     <nostdlib>false</nostdlib>
-    <ConsolePause>false</ConsolePause>
-    <genwarnings>false</genwarnings>
-    <ducky>false</ducky>
+    <ConsolePause>False</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ducky>False</ducky>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants />
     <ErrorReport>prompt</ErrorReport>
     <culture />
     <nostdlib>false</nostdlib>
-    <ConsolePause>false</ConsolePause>
-    <genwarnings>false</genwarnings>
-    <ducky>false</ducky>
+    <ConsolePause>False</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ducky>False</ducky>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Boo.Lang">

@@ -4,7 +4,6 @@ import System.IO(TextWriter)
 
 import Boo.Lang.Compiler.Ast(Module)
 
-import BooJs.Compiler(CompilerContext)
 import BooJs.Compiler.SourceMap(MapBuilder)
 
 
@@ -13,6 +12,7 @@ class JsPrinter(Printer):
     Generates Javascript source code from the Mozilla AST
 """
     property SourceMap as MapBuilder = null
+    property Debug as bool = false
 
     def constructor(writer as TextWriter):
         super(writer)
@@ -43,7 +43,7 @@ class JsPrinter(Printer):
 
         # Add source map to the runtime
         # TODO: Sourcemaps should be per assembly not module
-        if SourceMap and CompilerContext.Current.Parameters.Debug:
+        if SourceMap and Debug:
             Write 'Boo.sourcemap({0});', SourceMap.ToJSON()
             WriteLine
 

@@ -8,7 +8,7 @@
     <ProjectGuid>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Lang</RootNamespace>
-    <UsePartialTypes>false</UsePartialTypes>
+    <UsePartialTypes>False</UsePartialTypes>
     <AssemblyName>BooJs.Lang</AssemblyName>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -16,19 +16,19 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <BooBinPath>..\..\lib</BooBinPath>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
-    <genwarnings>false</genwarnings>
-    <ConsolePause>false</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
     <NoStdLib>false</NoStdLib>
     <Ducky>false</Ducky>
@@ -37,16 +37,15 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release</OutputPath>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
-    <genwarnings>false</genwarnings>
-    <ConsolePause>false</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>TRACE;DEBUG;IGNOREKEYFILE,MSBUILD</DefineConstants>
@@ -104,7 +103,6 @@
     <Folder Include="Runtime\" />
     <Folder Include="Globals\" />
     <Folder Include="Macros\" />
-    <Folder Include="Api\" />
     <Folder Include="Browser\" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />

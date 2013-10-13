@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Mozilla</RootNamespace>
     <AssemblyName>BooJs.Compiler.Mozilla</AssemblyName>
+    <BooBinPath>..\..\lib\</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -31,10 +32,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="Boo.Lang, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
-    <Reference Include="Boo.Lang.PatternMatching, Version=2.0.9.4, Culture=neutral, PublicKeyToken=32c39770e9a21a67" />
+    <Reference Include="Boo.Lang">
+      <HintPath>..\..\lib\Boo.Lang.dll</HintPath>
+    </Reference>
+    <Reference Include="Boo.Lang.PatternMatching">
+      <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.boo" />
+    <Compile Include="Ast.boo" />
+    <Compile Include="AstPrinter.boo" />
+    <Compile Include="JsPrinter.boo" />
+    <Compile Include="Printer.boo" />
+    <Compile Include="Serializer.boo" />
+    <Compile Include="Visitor.boo" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BooJs.Compiler.SourceMap\BooJs.Compiler.SourceMap.booproj">
+      <Project>{7FF045EF-2398-424B-AD00-0D8804A753BD}</Project>
+      <Name>BooJs.Compiler.SourceMap</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
 </Project>

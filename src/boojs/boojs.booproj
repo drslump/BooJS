@@ -7,21 +7,21 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{18EC5CD9-B3EF-423B-BF50-2A17234F7F3D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <UsePartialTypes>false</UsePartialTypes>
+    <UsePartialTypes>False</UsePartialTypes>
     <RootNamespace>BooJs</RootNamespace>
     <AssemblyName>boojs</AssemblyName>
     <OldToolsVersion>3.5</OldToolsVersion>
     <BooBinPath>..\..\lib</BooBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
-    <genwarnings>false</genwarnings>
-    <ConsolePause>false</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
@@ -29,12 +29,11 @@
     <DebugType>none</DebugType>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <ducky>false</ducky>
+    <ducky>False</ducky>
     <culture />
-    <genwarnings>false</genwarnings>
-    <ConsolePause>false</ConsolePause>
+    <genwarnings>False</genwarnings>
+    <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
-    <DefineConstants />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Web.Extensions" />

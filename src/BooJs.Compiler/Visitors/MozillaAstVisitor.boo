@@ -14,7 +14,7 @@ class MozillaAstVisitor(FastDepthFirstVisitor):
 """
 Transforms a Boo AST into a Mozilla AST
 """
-    # Holds the latest conversion from Boo node to a Moz node
+    # Holds the latest conversion from a Boo node to a Moz node
     _return as Moz.Node
 
     protected def Return(node as Moz.Node):
@@ -28,7 +28,7 @@ Transforms a Boo AST into a Mozilla AST
     protected def loc(node as Node):
         obj = Moz.SourceLocation()
         obj.source = node.LexicalInfo.FileName
-        obj.start = Moz.Position(line: node.LexicalInfo.Line, column: node.LexicalInfo.Column-1)
+        obj.start = Moz.SourceLocation.Position(line: node.LexicalInfo.Line, column: node.LexicalInfo.Column-1)
 
         # Compute an approximate end position if not available
         if node.EndSourceLocation and node.EndSourceLocation.Line >= 0:
@@ -41,7 +41,7 @@ Transforms a Boo AST into a Mozilla AST
                 column = 0
             column += len(parts[-1])
 
-        obj.end = Moz.Position(line: line, column: column)
+        obj.end = Moz.SourceLocation.Position(line: line, column: column)
 
         return obj
 
@@ -94,16 +94,21 @@ Transforms a Boo AST into a Mozilla AST
     def OnHashLiteralExpression(node as HashLiteralExpression):
         n = Moz.ObjectExpression(loc: loc(node))
         for pair in node.Items:
-            prop = Moz.ObjectExpressionProp(key: Apply(pair.First), value: Apply(pair.Second))
+            prop = Moz.ObjectExpression.Prop(key: Apply(pair.First), value: Apply(pair.Second))
             n.properties.Add(prop)
         Return n
 
     def OnEnumDefinition(node as EnumDefinition):
+        # Create an object with the enum values
         o = Moz.ObjectExpression(loc: loc(node))
         for member as EnumMember in node.Members:
             assert member.Initializer != null, 'Enum definition without an initializer value!'
-            prop = Moz.ObjectExpressionProp(key: Moz.Literal(value: member.Name), value: Apply(member.Initializer))
-            o.properties.Add(prop)
+            o.properties.Add(
+                Moz.ObjectExpression.Prop(
+                    key: Moz.Literal(value: member.Name), 
+                    value: Apply(member.Initializer)
+                )
+            )
 
         # Assign the object to a variable
         v = Moz.VariableDeclarator(loc: loc(node))
@@ -116,7 +121,6 @@ Transforms a Boo AST into a Mozilla AST
 
     def OnModule(node as Module):
         n = Moz.Program(loc: loc(node))
-
 
         deps = List of Moz.IExpression() { Moz.Literal('exports'), Moz.Literal('Boo') }
         refs = List of Moz.IPattern() { Moz.Identifier('exports'), Moz.Identifier('Boo') }
@@ -134,7 +138,6 @@ Transforms a Boo AST into a Mozilla AST
                 deps.Add( Moz.Literal(ns) )
             refs.Add( Moz.Identifier(mapping[ns]) )
 
-
         # Use Boo.define to bootstrap the module contents
         call = Moz.CallExpression()
         call.callee = Moz.MemberExpression(
@@ -146,7 +149,6 @@ Transforms a Boo AST into a Mozilla AST
         fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
         call.arguments.Add(fn)
         n.body.Add(Moz.ExpressionStatement(call))
-
 
         st as Moz.IStatement
         for member in node.Members:
@@ -160,16 +162,24 @@ Transforms a Boo AST into a Mozilla AST
                 fn.body.body.Add(st)
 
         # Export public symbols
-        for member in (node.Members[0] as ClassDefinition).Members:
-            continue unless member.IsVisible
+        members = TypeMemberCollection()
+        for member in node.Members:
+            if member.IsSynthetic and member.Name.EndsWith('Module'):
+                members.AddRange((member as ClassDefinition).Members)
+            else:
+                members.Add(member)
 
-            expr = Moz.BinaryExpression()
-            expr.left = Moz.MemberExpression(
-                object: Moz.Identifier('exports'),
-                property: Moz.Identifier(member.Name)
+        for member in members:
+            continue unless member.IsPublic and not member.IsInternal
+
+            expr = Moz.BinaryExpression(
+                left: Moz.MemberExpression(
+                    object: Moz.Identifier('exports'),
+                    property: Moz.Identifier(member.Name)
+                ),
+                operator: '=',
+                right: Moz.Identifier(member.Name)
             )
-            expr.operator = '=';
-            expr.right = Moz.Identifier(member.Name)
 
             st = Moz.ExpressionStatement(expr)
             fn.body.body.Add(st)
@@ -198,23 +208,167 @@ Transforms a Boo AST into a Mozilla AST
     def OnClassDefinition(node as ClassDefinition):
         n = Moz.BlockStatement()
 
-        st as Moz.IStatement
-        for member in node.Members:
-            st = Apply(member)
-            if st is null:
-                continue
-            elif st isa Moz.BlockStatement:
-                n.body += (st as Moz.BlockStatement).body
-            else:
-                n.body.Add(st)
+        # Detect module class and output its members directly
+        if node.IsSynthetic and node.IsFinal and node.Name.EndsWith('Module'):
+            members = [m for m in node.Members if m.NodeType != NodeType.Constructor]
+            st as Moz.IStatement
+            for member in members:
+                match Apply(member):
+                    case null:
+                        continue
+                    case bs=Moz.BlockStatement():
+                        n.body += bs.body
+                    case _:
+                        n.body.Add(_)
+                        
+            Return n
+            return
 
-        Return n
+        # TODO: Handle visibility (internals should not be exposed)
+
+        # Bar = (function () {
+        #
+        #     // Constructor
+        #     function Bar() {
+        #         // Initialize fields (TODO: can this be moved to the prototype?)
+        #         this.field = '';
+        #
+        #         // Constructor code (TODO: how to handle overloads?)
+        #         // ...
+        #     }
+        #     // Setup inheritance
+        #     Bar.prototype = Boo.create(Foo.prototype);
+        #     Bar.prototype.constructor = Bar;
+        #
+        #     // Reflect metadata
+        #     Bar.prototype.$boo$interfaces = [IEnumerator];
+        #
+        #     // Instance members
+        #     Bar.prototype.foo = function Bar$foo() {
+        #         Foo.prototype.foo.call(this);
+        #     };
+        #
+        #     // Static members
+        #     Bar.bars = function Bar$bars() {};
+        #
+        #     // Static constructor
+        #     // ...
+        #
+        #     return Bar;
+        # })();
+
+        block = Moz.BlockStatement()
+
+        # js: function Bar() {}
+        cons = Moz.FunctionDeclaration(loc: loc(node))
+        cons.body = Moz.BlockStatement()
+        cons.id = Moz.Identifier(node.Name)
+        block.body.Add(cons)
+
+
+        # Initialize fields
+        # TODO: Shouldn't fields with primitive initializers be moved to the prototype?
+        # TODO: Boo already moves field initialization to the constructors
+        for f as Field in [m for m in node.Members if m.NodeType == NodeType.Field]:
+            assign = Moz.AssignmentExpression(operator:'=')
+            assign.left = Moz.Identifier(loc:loc(f), name:'this.' + f.Name)
+            assign.right = Apply(f.Initializer)
+            cons.body.body.Add(Moz.ExpressionStatement(assign))
+
+        # Handle constructors
+        members = [m for m in node.Members if m.NodeType == NodeType.Constructor]
+        for c as Constructor in members:
+            continue if not c
+            cons.body.body.Add(Apply(c))
+
+        # Setup inheritance
+        # js: Bar.prototype = Boo.create(Foo.prototype)
+        assign = Moz.AssignmentExpression(operator:'=')
+        assign.left = Moz.Identifier(name:node.Name + '.prototype')
+        assign.right = Moz.CallExpression()
+        (assign.right as Moz.CallExpression).callee = Moz.Identifier('Boo.create')
+        (assign.right as Moz.CallExpression).arguments.Add(
+            Moz.Identifier(
+                ('Object' if typeSystem().IsSystemObject(node.BaseTypes.First.Entity) 
+                    else node.BaseTypes.First.Entity.FullName) + '.prototype'
+            )
+        )
+        block.body.Add(Moz.ExpressionStatement(assign))
+
+        # js: Bar.prototype.constructor = Bar
+        assign = Moz.AssignmentExpression(operator:'=')
+        assign.left = Moz.Identifier(name:node.Name + '.prototype.constructor')
+        assign.right = Moz.Identifier(name:node.Name)
+        block.body.Add(Moz.ExpressionStatement(assign))
+
+        # Metadata
+        # js: Bar.prototype.$boo$interfaces = [ IEnumerable ]
+        interfaces = Moz.ArrayExpression()
+        for t in node.BaseTypes:
+            continue if t is node.BaseTypes.First
+            continue if typeSystem().IsSystemObject(t.Entity)
+            interfaces.elements.Add(
+                Moz.Identifier(t.Entity.FullName)
+            )
+        assign = Moz.AssignmentExpression(operator:'=')
+        assign.left = Moz.Identifier(name:node.Name + '.prototype.$boo$interfaces')
+        assign.right = interfaces
+        block.body.Add(Moz.ExpressionStatement(assign))
+
+        # Instance members
+        # js: Bar.prototype.bar = function Bar$bar (arg) { }
+        members = [m for m in node.Members if m.NodeType == NodeType.Method and not m.IsStatic]
+        for method as Method in members:
+            assign = Moz.AssignmentExpression(operator:'=')
+            assign.left = Moz.Identifier(name:node.Name + '.prototype.' + method.Name)
+            fn = Apply(method) as Moz.FunctionDeclaration
+            assign.right = Moz.FunctionExpression(
+                loc: fn.loc,
+                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '$')),
+                params: fn.params,
+                body: fn.body
+            )
+            block.body.Add(Moz.ExpressionStatement(assign))
+
+        # Static members
+        # js: Bar.sbar = function Bar_sbar (arg) { }
+        members = [m for m in node.Members if m.NodeType == NodeType.Method and m.IsStatic]
+        for method as Method in members:
+            assign = Moz.AssignmentExpression(operator:'=')
+            assign.left = Moz.Identifier(name:node.Name + '.' + method.Name)
+            fn = Apply(method) as Moz.FunctionDeclaration
+            assign.right = Moz.FunctionExpression(
+                loc: fn.loc,
+                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '_')),
+                params: fn.params,
+                body: fn.body
+            )
+            block.body.Add(Moz.ExpressionStatement(assign))
+
+        # Wrap everything in a self calling function and assign to a variable
+        # js: Bar = (function(){ })()
+        decl = Moz.VariableDeclarator(loc:loc(node))
+        decl.id = Moz.Identifier(node.Name)
+        decl.init = Moz.CallExpression(callee: Moz.FunctionExpression(body:block))
+        decl_st = Moz.VariableDeclaration(loc:loc(node), kind:'var')
+        decl_st.declarations.Add(decl)
+
+        Return decl_st
 
     def OnField(node as Field):
         pass
 
     def OnConstructor(node as Constructor):
-        pass
+        OnMethod(node)
+        return
+
+        ifst = Moz.IfStatement()
+        # TODO: Apply test based on arguments and constructor parameters
+        ifst.test = Moz.Identifier(name:'true')
+
+        ifst.consequent = Apply(node.Body)
+
+        Return ifst
 
     def OnMethod(node as Method):
         n = Moz.FunctionDeclaration(loc: loc(node))
@@ -475,7 +629,9 @@ Transforms a Boo AST into a Mozilla AST
 
             # Detect calls to eval() with a simple string argument to define a
             # verbatim version of the expression.
-            if node.Target.Entity is my(RuntimeMethodCache).Eval and \
+            # cache = my(RuntimeMethodCache)
+            cache = My[of RuntimeMethodCache].Instance
+            if node.Target.Entity is cache.Eval and \
                len(node.Arguments) == 1 and \
                node.Arguments[0].NodeType == NodeType.StringLiteralExpression:
                 n.verbatim = (node.Arguments[0] as StringLiteralExpression).Value
