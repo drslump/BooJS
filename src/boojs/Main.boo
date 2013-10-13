@@ -7,6 +7,7 @@ import System.IO as SysIO
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
+import BooJs.Compiler.Pipelines(SaveJs, newBooJsCompiler)
 import BooJs.Compiler.CompilerParameters as JsCompilerParameters
 import BooJs.Compiler.CompilerContext as JsCompilerContext
 
@@ -28,7 +29,7 @@ def parseCommandLine(argv as (string)):
         return null
 
 def selectPipeline(cmdLine as CommandLine):
-    return Pipelines.SaveJs()
+    return SaveJs()
 
 def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     params.Debug = cmdLine.Debug
