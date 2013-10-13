@@ -9,6 +9,8 @@ import Boo.Lang.Compiler.Steps(ContextAnnotations)
 
 
 # TODO: Do not remove non visible types which are referenced (inherited, arguments, etc.)
+# TODO: Perhaps it's better to leave this without removing anything. The size savings
+#       are not that much and we may introduce subtle bugs.
 class EmitAssembly(BooEmitAssembly):
 
     private class Stripper(DepthFirstTransformer):

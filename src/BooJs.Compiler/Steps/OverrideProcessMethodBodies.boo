@@ -1,5 +1,6 @@
 namespace BooJs.Compiler.Steps
 
+import System.Reflection
 import Boo.Lang.Environments
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.Ast
@@ -14,7 +15,7 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 """
 
     class Pmb(IQuackFu):
-    """ Uses reflection to call private methods in the ancestor class ProcessMethodBodies via a
+    """ Uses reflection to call private methods in the ancestor class ProcessMethodBodies via the
         IQuackFu api.
     """
         pmb = typeof(ProcessMethodBodies)

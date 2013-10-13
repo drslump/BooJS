@@ -16,7 +16,7 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         return str and str.Value == ''
 
     def LeaveExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
-    """ We build either as string concatenation or as a literal array and then join it to form the string
+    """ We build either as a string concatenation or as a literal array and a join
             "foo \$bar" => 'foo' + bar
             "foo \$bar \$baz" -> ['foo', bar, ' ', baz].join('')
     """

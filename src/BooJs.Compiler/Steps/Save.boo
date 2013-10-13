@@ -21,13 +21,15 @@ class Save(AbstractCompilerStep):
         fname = GetFileName()
         using writer = StreamWriter(fname):
             printer = JsPrinter(writer)
+            printer.Debug = params.Debug
+
             if params.SourceMap is not null:
                 printer.SourceMap = MapBuilder(
                     File: fname,
                     SourceRoot: params.SourceMapRoot
                 )
 
-            unit = ctxt.MozillaUnit
+            unit = ctxt['MozillaUnit']
             printer.Visit(unit)
 
             if params.EmbedAssembly:

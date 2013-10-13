@@ -19,7 +19,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     choose a proper loop strategy. This should be done in the future using a compiler
     step.
 
-    - If it contains a yield statement is converted to a while equivalent loop.
+    - If it contains a yield statement it's converted to an equivalent while loop.
     - If it has an Or or Then block it's converted to a while loop
     - If it is an array we convert it to a for in range
     - When the iterator is the range method it's left to be optimized when converting 

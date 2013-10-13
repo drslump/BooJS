@@ -96,4 +96,3 @@ Desugarizes the safe access operator.
         # Break the targets chain into a ternary operation
         tern = [| ($node if ($tmp = $(ue.Operand)) is not null else null) |]
         return tern
-

@@ -12,5 +12,5 @@ class PrintJs(AbstractCompilerStep):
         return if len(Errors)
 
         printer = JsPrinter(OutputWriter)
-        unit = (Context as JsContext).MozillaUnit
+        unit = Context['MozillaUnit'] #(Context as JsContext).MozillaUnit
         printer.Visit(unit)
