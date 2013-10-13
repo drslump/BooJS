@@ -5,11 +5,11 @@ Ref: http://www.w3.org/TR/html-markup/canvas.html
 Ref: http://www.w3.org/TR/2dcontext/
 """
 
-namespace Browser
+namespace BooJs.Lang.Browser
 
 import BooJs.Lang.Extensions
 import BooJs.Lang.Globals
-import Browser.Dom3(Element)
+import BooJs.Lang.Browser.Dom3(Element)
 
 
 [Extern]
@@ -71,20 +71,16 @@ interface CanvasRenderingContext2D(CanvasDrawingStyles, CanvasPathMethods):
 
     # compositing
     globalAlpha as double:  # (default 1.0)
-        get
-        set
+        get; set
     globalCompositeOperation as string:  # (default source-over)
-        get
-        set
+        get; set
 
     # colors and styles (see also the CanvasDrawingStyles interface)
     strokeStyle as object:  # DOMString or CanvasGradient or CanvasPattern  (default black)
-        get
-        set
+        get; set
 
     fillStyle as object:  # DOMString or CanvasGradient or CanvasPattern  (default black)
-        get
-        set
+        get; set
 
     def createLinearGradient(x0 as double, y0 as double, x1 as double, y1 as double) as CanvasGradient
     def createRadialGradient(x0 as double, y0 as double, r0 as double, x1 as double, y1 as double, r1 as double) as CanvasGradient
@@ -93,17 +89,13 @@ interface CanvasRenderingContext2D(CanvasDrawingStyles, CanvasPathMethods):
 
     # shadows
     shadowOffsetX as double:  # (default 0)
-        get
-        set
+        get; set
     shadowOffsetY as double:  # (default 0)
-        get
-        set
+        get; set
     shadowBlur as double:  # (default 0)
-        get
-        set
+        get; set
     shadowColor as string:  # (default transparent black)
-        get
-        set
+        get; set
 
     # rects
     def clearRect(x as double, y as double, w as double, h as double)
@@ -155,35 +147,27 @@ interface CanvasRenderingContext2D(CanvasDrawingStyles, CanvasPathMethods):
 interface CanvasDrawingStyles:
     # line caps/joins
     lineWidth as double:  # (default 1)
-        get
-        set
+        get; set
     lineCap as string:  # "butt", "round", "square" (default "butt")
-        get
-        set
+        get; set
     lineJoin as string:  # "round", "bevel", "miter" (default "miter")
-        get
-        set
+        get; set
     miterLimit as double:  # (default 10)
-        get
-        set
+        get; set
 
     # dashed lines
     def setLineDash(segments as (double))   # default empty
     def getLineDash() as (double)
     lineDashOffset as double:
-        get
-        set
+        get; set
 
     # text
     font as string:  # (default 10px sans-serif)
-        get
-        set
+        get; set
     textAlign as string:  # "start", "end", "left", "right", "center" (default: "start")
-        get
-        set
+        get; set
     textBaseline as string:  # "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
-        get
-        set
+        get; set
 
 
 interface CanvasPathMethods:
@@ -238,28 +222,21 @@ interface TextMetrics:
 
 interface HitRegionOptions:
     path as Path:
-        get
-        set
+        get; set
     id as string:
-        get
-        set
+        get; set
     parentID as string:
-        get
-        set
+        get; set
     cursor as string:   # "inherit"
-        get
-        set
+        get; set
     # for control-backed regions
     control as Element:
-        get
-        set
+        get; set
     # for unbacked regions:
     label as string:
-        get
-        set
+        get; set
     role as string:
-        get
-        set
+        get; set
 
 interface ImageData:
     width as uint:

@@ -2,10 +2,10 @@
 #
 # ref: http://www.khronos.org/registry/webgl/specs/latest/
 
-namespace Browser
+namespace BooJs.Lang.Browser
 
 import BooJs.Lang.Globals
-import Browser.Dom2(Element)
+import BooJs.Lang.Browser.Dom2(Element)
 
 
 interface WebGLObject:

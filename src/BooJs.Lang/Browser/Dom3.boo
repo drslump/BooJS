@@ -3,9 +3,9 @@ Interfaces for DOM Level 3
 
 Ref: http://www.w3.org/TR/DOM-Level-3-Core/idl-definitions.html
 """
-namespace Browser.Dom3
+namespace BooJs.Lang.Browser.Dom3
 
-import Browser.Dom2 as Dom2
+import BooJs.Lang.Browser.Dom2 as Dom2
 
 
 interface Node(Dom2.Node):

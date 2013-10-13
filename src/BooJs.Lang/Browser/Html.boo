@@ -1,6 +1,6 @@
-namespace Browser
+namespace BooJs.Lang.Browser
 
-import Browser.Dom3(Element, NodeList)
+import BooJs.Lang.Browser.Dom3(Element, NodeList)
 
 
 callable EventListenerKeyboard(ev as KeyboardEvent) as object

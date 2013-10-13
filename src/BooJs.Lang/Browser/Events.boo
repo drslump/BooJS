@@ -1,6 +1,6 @@
-namespace Browser
+namespace BooJs.Lang.Browser
 
-import Browser.Dom3(Document, DOMStringList)
+import BooJs.Lang.Browser.Dom3(Document, DOMStringList)
 
 
 interface StyleMedia:
