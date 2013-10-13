@@ -2,8 +2,10 @@
   Automatically generated!
   Fixture test cases from tests/fixtures/typesystem
 """
+namespace BooJs.Tests
 
 import NUnit.Framework
+import BooJs.Tests.Support(FixtureRunner)
 
 [TestFixture]
 class TypesystemFixtures:

@@ -1,8 +1,13 @@
+namespace BooJs.Tests
+
+import BooJs.Tests.Support
+
 import NUnit.Framework
 
 import System.IO(File, StringWriter)
 import Boo.Lang.Compiler.IO(StringInput)
 import BooJs.Compiler
+import BooJs.Compiler.Pipelines
 
 [TestFixture]
 class SaveFileTest:

@@ -2,6 +2,9 @@
   Automatically generated!
   Fixture test cases from tests/fixtures/statements
 """
+namespace BooJs.Tests
+
+import BooJs.Tests.Support
 
 import NUnit.Framework
 
