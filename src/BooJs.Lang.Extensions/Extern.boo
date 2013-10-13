@@ -19,11 +19,8 @@ class ExternAttribute(Attribute):
         pass
 """
 
-    [Property(Name)]
-    _name as string
-
-    [Property(Factory)]
-    _factory = false
+    property Name as string
+    property Factory = false
 
     def constructor():
         pass

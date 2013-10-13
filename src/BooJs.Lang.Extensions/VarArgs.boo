@@ -9,6 +9,8 @@ class VarArgsAttribute(Attribute):
 
     [VarArgs] def push(itm as object, *other as (object)):
         pass
+
+    TODO: This should be better handled from the Extern attribute
 """
     pass
 

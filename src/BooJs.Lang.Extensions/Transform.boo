@@ -91,7 +91,6 @@ class TransformAttribute(AbstractAstAttribute):
 
         anode.Attributes.Add(attr)
 
-
     static def HasAttribute(node as Node) as bool:
         entity = node.Entity as TypeSystem.IExternalEntity
         if entity and entity.MemberInfo:
