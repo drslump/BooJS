@@ -226,18 +226,26 @@ Transforms a Boo AST into a Mozilla AST
 
         # TODO: Handle visibility (internals should not be exposed)
 
-        # Bar = (function () {
-        #
+        # Bar = (function (__super__) {
         #     // Constructor
         #     function Bar() {
-        #         // Initialize fields (TODO: can this be moved to the prototype?)
+        #         // Allow the intantiation without using the `new` operator (TODO: do we really want this?)
+        #         if (!(this instanceof Bar)) { 
+        #             return new (Function.prototype.bind.apply(Bar, [this].concat(Array.prototype.slice.call(arguments)) )); 
+        #         }
+        #
+        #         // Initialize fields (TODO: can this be moved to the prototype? at least the non private ones)
         #         this.field = '';
+        #
+        #         // Bind instance methods (TODO: Support annotation to avoid binding)
+        #         this.foo = Boo.bind(this.foo, this);
         #
         #         // Constructor code (TODO: how to handle overloads?)
         #         // ...
         #     }
+        #
         #     // Setup inheritance
-        #     Bar.prototype = Boo.create(Foo.prototype);
+        #     Bar.prototype = Boo.create(__super__.prototype);
         #     Bar.prototype.constructor = Bar;
         #
         #     // Reflect metadata
@@ -245,8 +253,16 @@ Transforms a Boo AST into a Mozilla AST
         #
         #     // Instance members
         #     Bar.prototype.foo = function Bar$foo() {
-        #         Foo.prototype.foo.call(this);
+        #         __super__.prototype.foo.call(this);
         #     };
+        #
+        #
+        #     // Inherit "static" properties (TODO: Is this actually needed?)
+        #     for (var prop in __super__) {
+        #         if (__super__.hasOwnProperty(prop)) {
+        #             Bar[prop] = __super__[prop];
+        #         }
+        #     }
         #
         #     // Static members
         #     Bar.bars = function Bar$bars() {};
@@ -255,7 +271,7 @@ Transforms a Boo AST into a Mozilla AST
         #     // ...
         #
         #     return Bar;
-        # })();
+        # })(Foo);
 
         block = Moz.BlockStatement()
 
@@ -280,6 +296,21 @@ Transforms a Boo AST into a Mozilla AST
         for c as Constructor in members:
             continue if not c
             cons.body.body.Add(Apply(c))
+
+        # Static members
+        # js: Bar.sbar = function Bar_sbar (arg) { }
+        members = [m for m in node.Members if m.NodeType == NodeType.Method and m.IsStatic]
+        for method as Method in members:
+            assign = Moz.AssignmentExpression(operator:'=')
+            assign.left = Moz.Identifier(name:node.Name + '.' + method.Name)
+            fn = Apply(method) as Moz.FunctionDeclaration
+            assign.right = Moz.FunctionExpression(
+                loc: fn.loc,
+                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '_')),
+                params: fn.params,
+                body: fn.body
+            )
+            block.body.Add(Moz.ExpressionStatement(assign))
 
         # Setup inheritance
         # js: Bar.prototype = Boo.create(Foo.prototype)
@@ -330,20 +361,6 @@ Transforms a Boo AST into a Mozilla AST
             )
             block.body.Add(Moz.ExpressionStatement(assign))
 
-        # Static members
-        # js: Bar.sbar = function Bar_sbar (arg) { }
-        members = [m for m in node.Members if m.NodeType == NodeType.Method and m.IsStatic]
-        for method as Method in members:
-            assign = Moz.AssignmentExpression(operator:'=')
-            assign.left = Moz.Identifier(name:node.Name + '.' + method.Name)
-            fn = Apply(method) as Moz.FunctionDeclaration
-            assign.right = Moz.FunctionExpression(
-                loc: fn.loc,
-                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '_')),
-                params: fn.params,
-                body: fn.body
-            )
-            block.body.Add(Moz.ExpressionStatement(assign))
 
         # Wrap everything in a self calling function and assign to a variable
         # js: Bar = (function(){ })()
@@ -431,7 +448,9 @@ Transforms a Boo AST into a Mozilla AST
         Return ifst
 
     def OnForStatement(node as ForStatement):
-        # Only for statements over range should have survived
+        # TODO: Optimize range(items.length) to cache the length value
+
+        # Only those for statements iterating over simple `range` should have survived
         mie = node.Iterator as MethodInvocationExpression
         if len(mie.Arguments) == 1:
             start = Moz.Literal(0)
@@ -440,10 +459,7 @@ Transforms a Boo AST into a Mozilla AST
             start = Apply(mie.Arguments[0])
             length = Apply(mie.Arguments[1])
 
-        if node.ContainsAnnotation('loop-index'):
-            index = Moz.Identifier(node['loop-index'])
-        else:
-            index = Moz.Identifier(node.Declarations[0].Name)
+        index = Moz.Identifier(node.Declarations[0].Name)
 
         fst = Moz.ForStatement(loc: loc(node))
         fst.init = Moz.AssignmentExpression(

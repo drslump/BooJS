@@ -219,33 +219,55 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         mie = [| $each($(node.Iterator), $callback) |]
         return ExpressionStatement(mie)
 
-    protected def ForToArray(node as ForStatement) as Statement:
+    protected def ForToIndex(node as ForStatement) as Statement:
+    """ Converts a for-in loop iterating over the values of an Array to a loop
+        iterating over the indexes in that Array.
+
+            for v in items:
+            ---
+            for i in range(items.length):
+                v = items[i]
+
+    """
+
         Visit node.Block
 
-        tmpref = TempLocalInMethod(CurrentMethod, node.Iterator.Entity, Context.GetUniqueName('for'))
+        result = Block()
+        result.Add(node)
 
-        # Annotate the loop index name for the printer
-        node['loop-index'] = Context.GetUniqueName('idx')
-        tmpidx = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, node['loop-index'])
+        # If the target iterator is already a reference there is no need to alias it to a temp
+        iter as ReferenceExpression
+        if node.Iterator.NodeType == NodeType.ReferenceExpression:
+            iter = node.Iterator
+        else:
+            iter = TempLocalInMethod(
+                CurrentMethod, (node.Iterator.Entity as ITypedEntity).Type, Context.GetUniqueName('for'))
+            result.Insert(0, [| $iter = $(node.Iterator) |])
+
+        # Create a temporary variable to hold the iteration index
+        tmpidx = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, Context.GetUniqueName('idx'))
 
         # Handle declaration unpacking
-        if len(node.Declarations) > 1:
+        decls = node.Declarations
+        if len(decls) > 1:
             eval = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
             tmpupk = TempLocalInMethod(CurrentMethod, node.Iterator.ExpressionType, Context.GetUniqueName('upk'))
-            eval.Arguments.Add([| $tmpupk = $tmpref[$tmpidx] |])
-            for i as int, decl as Declaration in enumerate(node.Declarations):
+            eval.Arguments.Add([| $tmpupk = $iter[$tmpidx] |])
+            for i as int, decl as Declaration in enumerate(decls):
                 eval.Arguments.Add([| $(ReferenceExpression(decl.Name)) = $tmpupk[$i] |])
             node.Block.Insert(0, eval)
         else:
-            node.Block.Insert(0, [| $(ReferenceExpression(node.Declarations[0].Name)) = $tmpref[$tmpidx] |])
+            node.Block.Insert(0, [| $(ReferenceExpression(decls[0].Name)) = $iter[$tmpidx] |])
 
-        result = [|
-            $tmpref = $(node.Iterator)
-            $node
-        |]
+        # Replace any declarations by the temporal variable holding the index
+        decls.Clear()
+        decls.Add(Declaration(Name: tmpidx.Name))
 
-        # Override the iterator so it's properly processed by the printer
-        node.Iterator = CodeBuilder.CreateMethodInvocation([| BooJs.Lang.Builtins.range |], MethodCache.Range1, [| $tmpref.length |])
+        # Override the iterator so we iterate over the indexes
+        node.Iterator = CodeBuilder.CreateMethodInvocation(
+            [| BooJs.Lang.Builtins.range |], 
+            MethodCache.Range1, 
+            [| $iter.length |])
 
         return result
 
@@ -264,7 +286,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             Visit node.Block
         # If it's an array create an optimizable version of the loop
         elif IsArray(node.Iterator):
-            ReplaceCurrentNode ForToArray(node)
+            ReplaceCurrentNode ForToIndex(node)
         # If it has a return statement use a while
         elif HasReturn(node):
             ReplaceCurrentNode ForToWhile(node)
