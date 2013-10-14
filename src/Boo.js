@@ -255,6 +255,8 @@
 
         // Wrap the closure into a generator like object
         return {
+            // In BooJs Iterators and Iterables share the same interface
+            iterator: function () { return this; },
             next: closure,  // next()
             send: closure,  // send(value)
             'throw': function (error) {
