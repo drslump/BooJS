@@ -198,6 +198,10 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
         statemachine as Statement
         statemachine = [|
+            # NOTE: To simplify we will raise the sent error from the top of the generator
+            #       function and not from the current step. Unless real world scenarios show
+            #       that it's desirable to have it raised from more exact locations, it doesn't
+            #       seem to have a great value added in contrast to its cost.
             if __error:
                 raise __error
 
