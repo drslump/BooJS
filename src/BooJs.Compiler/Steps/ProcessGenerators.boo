@@ -1,6 +1,7 @@
 namespace BooJs.Compiler.Steps
 
 import System
+import Boo.Lang.Compiler(CompilerErrorFactory)
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 import Boo.Lang.Compiler.TypeSystem.Internal
@@ -40,6 +41,9 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             Current.Add(node)
 
         def OnYieldStatement(node as YieldStatement):
+            if node.GetAncestor(NodeType.IfStatement) or node.GetAncestor(NodeType.UnlessStatement):
+                raise CompilerErrorFactory.NotImplemented(node, 'Yield is not currently supported inside if or unless statements')
+
             # Create a re-entry state
             nextstate = CreateState()
 
@@ -51,6 +55,9 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = nextstate
 
         def OnReturnStatement(node as ReturnStatement):
+            if node.GetAncestor(NodeType.IfStatement) or node.GetAncestor(NodeType.UnlessStatement):
+                raise CompilerErrorFactory.NotImplemented(node, 'Return is not currently supported inside if or unless statements')
+
             # If it has an expression just handle as a yield
             if node.Expression:
                 ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
@@ -67,7 +74,13 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
         def OnWhileStatement(node as WhileStatement):
             # Loop always starts in a new step
-            State = loopstate = CreateState()
+            loopstate = CreateState()
+
+            # Make sure the current state ends up in the loop one
+            Current.Add([| __state = $(loopstate) |])
+            Current.Add(_gotostatemachine)
+
+            State = loopstate
 
             # Create new step for exiting the loop but don't use it yet
             exitstate = CreateState()
@@ -92,7 +105,13 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
         def OnTryStatement(node as TryStatement):
             # A try block always initiates an state
-            State = trystate = CreateState()
+            trystate = CreateState()
+
+            # Make sure the current state ends up in the new one
+            Current.Add([| __state = $(trystate) |])
+            Current.Add(_gotostatemachine)
+
+            State = trystate
 
             # Register ensure block
             if node.EnsureBlock:
@@ -127,6 +146,21 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
             # Continue in the after state
             State = afterstate
+
+        def OnUnlessStatement(node as UnlessStatement):
+        """ We just include them in the current state, no special processing is performed
+            currently. This means that neither yield nor return statements can be used inside.
+        """
+            super(node)
+            Current.Add(node)
+
+        def OnIfStatement(node as IfStatement):
+        """ We just include them in the current state, no special processing is performed
+            currently. This means that neither yield nor return statements can be used inside.
+        """
+            super(node)
+            Current.Add(node)
+
 
     override def Run():
         if len(Errors) > 0:
