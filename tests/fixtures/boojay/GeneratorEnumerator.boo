@@ -6,7 +6,7 @@ def producer() as string*:
 	yield "a string"
 
 def consume(strings as string*):
-	enumerator = strings
+	enumerator = strings.iterator()
 	try:
 		while true:	print enumerator.next().toUpperCase()
 	except:
