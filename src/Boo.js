@@ -744,11 +744,13 @@
 
     ///////// Shims ////////////////////////////////////////////////////////
 
-    Boo.create = Object.create || function (o) {
+    Boo.create = Object.create || (function () {
         function F() {}
-        F.prototype = o;
-        return new F();
-    };
+        return function (o) {
+            F.prototype = o;
+            return new F();
+        };
+    })();
 
     // TODO: Perhaps we should require an Ecma 5th edition environment as base
     Boo.indexOf = function (arr, find, i) {
