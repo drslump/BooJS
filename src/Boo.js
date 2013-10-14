@@ -6,10 +6,14 @@
 /*global StopIteration: false */
 
 (function (exports, undefined) {
+
     // Short alias for hasOwnProperty
     function hop(obj, prop) {
         return Object.prototype.hasOwnProperty.call(obj, prop);
     }
+
+    // Just skip if the runtime is already loaded
+    if (hop(exports, 'Boo')) return;
 
     // Map of typeof and Object.toString values
     var type_lookup = {
@@ -83,13 +87,13 @@
     var mod_waiting = {},
         mod_defined = { 'Boo': Boo };
 
-    // AMD style module loader. All Boo modules (files) wrap their
-    // contents in a call to this function. This implementation is
-    // intentionally very naive, expecting all dependencies to be
-    // already loaded in the correct order. It could be overridden
-    // to support on demand loading using RequireJs or CommonJs.
+    // AMD style module loader. All Boo modules (files) wrap their contents in
+    // a call to this function. This implementation is intentionally very naive, 
+    // expecting all dependencies to be already loaded in the correct order. It 
+    // can be overridden to support on demand loading using RequireJs or 
+    // CommonJs for example.
     Boo.define = function (name, deps, factory) {
-        var i, dep, args, member, module,
+        var i, l, dep, args, member, module,
             refs = [];
 
         // Check if we were called without dependencies
@@ -104,24 +108,28 @@
         }
 
         // Evaluate dependencies
-        for (i = 0; i < deps.length; i++) {
+        for (i = 0, l = deps.length; i < l; i++) {
             dep = deps[i];
 
-            // Handle exports in a special way
+            // Handle exports in a special way. It works like an alias to the
+            // module namespace being defined.
             if (dep === 'exports') {
                 refs[i] = mod_defined[name] = mod_defined[name] || {};
                 continue;
             }
 
             // Ignore assembly filenames
+            // TODO: Is this still being used?
             if (dep.indexOf(':') !== -1) {
                 dep = dep.substring(0, dep.indexOf(':'));
             }
 
             // If the dependency is waiting to be resolved, do it now
             if (hop(mod_waiting, dep)) {
+                // Pop the dependant module from the waiting list
                 args = mod_waiting[dep];
                 delete mod_waiting[dep];
+                // Flag the dependency as being defined
                 mod_defined[dep] = mod_defined[dep] || null;
                 Boo.define.apply(this, args);
             }
@@ -129,19 +137,19 @@
             // The module should now be available
             if (!hop(mod_defined, dep)) {
                 delete mod_waiting[dep];
-                throw new Error('Unable to load module ' + dep);
+                throw new Error('Unable to load module "' + dep + '"');
             }
 
             // Set the dependency as a reference
             refs[i] = mod_defined[dep];
         }
 
-        // Execute the module and pass references to its dependencies
+        // Execute the module passing references to its dependencies as args
         factory.apply(undefined, refs);
         delete mod_waiting[name];
 
         // Register nested namespaces
-        // TODO: Handle nested levels
+        // TODO: Handle nested levels?
         module = mod_defined[name];
         for (member in module) {
             if (hop(module, member) && typeIs(module[member], 'Object')) {
@@ -158,14 +166,14 @@
         if (arguments.length === 1) {
             if (hop(mod_defined, deps))
                 return mod_defined[deps];
-            throw new Error('Module ' + deps + ' not found');
+            throw new Error('Module "' + deps + '" not found');
         }
 
         // Collect all dependencies
-        var i, args = [];
-        for (i = 0; i < deps.length; i++) {
+        var i, l, args = [];
+        for (i = 0, l = deps.length; i < l; i++) {
             if (!hop(mod_defined, deps[i]))
-                throw new Error('Module ' + deps[i] + ' not found');
+                throw new Error('Module "' + deps[i] + '" not found');
             args[i] = mod_defined[deps[i]];
         }
 
@@ -176,32 +184,41 @@
     Boo.sourcemap = function (srcmap) {
     };
 
-    // Note: We don't use the native forEach method since this is custom tailored
-    //       to the generated code. It handles unpacking and iteration stoppage.
+    // Note: We don't use the native forEach method since this we need custom
+    //       tailored logic four our generated code. Basically we need to handle
+    //       unpacking and iteration stoppage.
     function boo_each(obj, iterator, context) {
         if (obj === null || typeof obj === 'undefined') return;
         if (typeof obj === 'string') obj = obj.split('');
 
-        var i;
-        if (obj.length === +obj.length) {
-            // Mode is computed based on the following rules:
-            //   - If the callback only has one argument the value is passed as is
-            //   - If it has more than one the argument it gets unpacked (apply style invocation)
-            var l = obj.length, mode = iterator.length === 1 ? 'call' : 'apply';
+        // Mode is computed based on the following rules:
+        //   - If the callback only has one argument the value is passed as is
+        //   - If it has more than one the argument it gets unpacked (apply style invocation)
+        var mode = iterator.length === 1 ? 'call' : 'apply',
+            i, l = obj.length;
+
+        if (l === +l) {
+            // Iterate over arrays (or array like objects)
             for (i = 0; i < l; i++) {
                 if (i in obj && iterator[mode](context, obj[i]) === Boo.STOP) return;
             }
         } else if (typeof obj.next === 'function') {
-            i = 0;
+            // Iterate using an iterator
             try {
-                while (iterator.call(context, obj.next(), i) !== Boo.STOP) { i++; }
+                do {
+                    i = iterator[mode](context, obj.next());
+                } while (i !== Boo.STOP);
             } catch (e) {
                 if (e !== Boo.STOP) throw e;
             } finally {
-                obj.close();
+                // Check if it's actually a generator and needs cleaning up
+                if (typeof obj.close === 'function') {
+                    obj.close();
+                }
             }
         } else {
             // For dictionaries we always pass the key and the value
+            // TODO: Shouldn't we just pass the key?
             for (i in obj) {
                 if (hop(obj, i)) {
                     if (iterator.call(context, i, obj[i]) === Boo.STOP) return;
@@ -211,21 +228,24 @@
     }
     Boo.each = boo_each;
 
-    // Generator factory
+    // Generator factory. Given a method to obtain a next element will wrap it into a 
+    // generator like object. The method must accept two params, a sent value and an sent
+    // error from the outside.
     Boo.generator = function (closure) {
-        // Convert array/object to a generator
-        if (typeof closure === 'function') {
+        // Wrap array/object into a generator function
+        if (typeof closure === 'object') {
             // Forward generators
             if (hop(closure, 'next') && hop(closure, 'close') &&
                 typeof closure.next === 'function' && typeof closure.close === 'function') {
                 return closure;
             }
 
-            var idx = 0, data = closure;
+            // Operate only over the values of dicts 
+            if (!typeIs(closure, 'Array'))
+                closure = Boo.Hash.values(closure);
 
-            if (!typeIs(data, 'Array'))
-                data = Boo.Hash.values(data);
-
+            var idx = 0,
+                data = closure;
             closure = function (v, e) {
                 if (typeof e !== 'undefined') throw e;
                 if (idx >= data.length) throw Boo.STOP;
@@ -233,6 +253,7 @@
             };
         }
 
+        // Wrap the closure into a generator like object
         return {
             next: closure,  // next()
             send: closure,  // send(value)
@@ -261,10 +282,13 @@
         }
 
         var values = [];
+
+        // Check if the options are out of range
         if (step > 0 && start >= stop || step < 0 && start <= stop) {
             return values;
         }
 
+        // Generate an array with the specified sequence
         while (step > 0 ? start < stop : start > stop) {
             values.push(start);
             start += step;
@@ -274,12 +298,13 @@
     }
     Boo.range = boo_range;
 
-    // Generate a list of key,value pairs
+    // Generate a list of key,value pairs from an enumerable value
     function boo_enumerate(enumerable) {
         // Strings/Arrays can be solved using zip+range
         if (enumerable.length === +enumerable.length)
             return boo_zip([boo_range(enumerable.length), enumerable]);
 
+        // TODO: Only dicts are supported
         var result = [];
         boo_each(enumerable, function (k, v) {
             result.push([k, v]);
@@ -295,7 +320,7 @@
         }
     };
 
-    // Concatenates the elements of the arrays given as argument
+    // Concatenates the elements of the enumerables given as argument
     Boo.cat = function (args) {
         var values = [], fn = function (v) { values.push(v); };
 
@@ -313,7 +338,7 @@
         return list.join(arguments.length > 1 ? sep : ' ');
     };
 
-    // Obtain a reversed version of the given array
+    // Obtain a reversed version of the given enumerable
     Boo.reversed = function (list) {
         var result = Boo.enumerable(list);
         result.reverse();
@@ -340,8 +365,10 @@
     };
 
     // Reduces a list of items to a single one by using a callback receiving an accumulator and the next item
-    function boo_reduce(list, callback, value) {
-        if (list === null || list === undefined) throw new TypeError("Object is null or undefined");
+    function boo_reduce(list, callback, init_value) {
+        if (list === null || list === undefined) {
+            throw new TypeError("Object is null or undefined");
+        }
 
         // Make sure we always work with an array
         list = Boo.enumerable(list);
@@ -349,44 +376,47 @@
         var i = 0, l = +list.length;
 
         if (arguments.length < 3) {
-            if (l === 0) throw new TypeError("Array length is 0 and no third argument");
-            value = list[0];
+            if (l === 0) throw new TypeError("Enumerable length is 0 but no third argument was given");
+            init_value = list[0];
             i = 1;
+        // Here we allow the init_value to be given before the callback
         } else if (typeof callback !== 'function') {
             var tmp = callback;
-            callback = value;
-            value = tmp;
+            callback = init_value;
+            init_value = tmp;
         }
 
         while (i < l) {
-            if (i in list) value = callback.call(undefined, value, list[i], i, list);
+            if (i in list) init_value = callback.call(undefined, init_value, list[i], i, list);
             ++i;
         }
 
-        return value;
+        return init_value;
     }
     Boo.reduce = boo_reduce;
 
     // Builds a list of lists using one item from each given array (zip shortest)
     function boo_zip(args) {
         var i, fn, result = [],
-            all_arrays = boo_reduce(args, true, function (a, b) { return a && typeIs(b, 'Array'); });
+            all_arrays = boo_reduce(args, true, function (a, b) { return a && typeIs(b, 'Array', 'String'); });
 
         if (all_arrays) {
-            var shortest = boo_reduce(args, function (a, b) {
-                return a.length < b.length ? a : b;
+            // Find the length of the shortest array from the args
+            var shortest = boo_reduce(args, Number.MAX_VALUE, function (a, b) {
+                return a < b.length ? a : b.length;
             });
 
             fn = function (arg) { return arg[i]; };
-            for (i = 0; i < shortest.length; i++) {
+            for (i = 0; i < shortest; i++) {
                 result[i] = boo_map(args, fn);
             }
         } else {
             // If there is a generator among them
             fn = function (arg) { return arg[i]; };
-            args = boo_map(args, Boo.generator);
             // Initialize
-            for (i = 0; i < args.length; i++) args[i] = args[i]();
+            for (i = 0; i < args.length; i++) {
+                args[i] = (Boo.generator(args[i]))();
+            }
             // Consume
             while (true) {
                 try {
@@ -415,7 +445,11 @@
         var result, value;
         if (typeIs(enumerable, 'Number')) {
             result = new Array(enumerable);
-            value = type === 'int' || type === 'uint' || type === 'double' ? 0 : type === 'bool' ? false : null;
+            // Initialize to default values
+            value = type === 'int' || type === 'uint' || type === 'double' ? 0
+                  : type === 'bool' ? false
+                  : type === 'string' ? ''
+                  : null;
             for (var i = 0, l = enumerable.length; i < l; i++) {
                 result[i] = value;
             }
@@ -443,12 +477,14 @@
 
         // Index access
         if (arguments.length === 2) {
-            return value.slice(begin, begin + 1)[0];
+            return value[begin];
         }
 
         end = end || value.length;
         if (end < 0) end += value.length;
         step = step || (begin <= end ? 1 : -1);
+
+        // Optimize common case
         if (begin < end && step === 1) {
             return value.slice(begin, end);
         }
@@ -477,7 +513,7 @@
     // Check if a value is null (or undefined)
     Boo.isNull = function (value) {
         //return typeOf(value) === 'Null';
-        return value === null || value === undefined || typeof value === 'undefined';
+        return value === null || typeof value === 'undefined';
     };
 
     // Check the type of a value
@@ -531,11 +567,7 @@
 
     // Casts a value to the given type, resulting in a null if it's not possible
     function boo_trycast(value, type) {
-        try {
-            return boo_cast(value, type);
-        } catch (e) {
-            return null;
-        }
+        return boo_isa(value, type) ? value : null;
     }
     Boo.trycast = boo_trycast;
 
@@ -744,6 +776,7 @@
 
     ///////// Shims ////////////////////////////////////////////////////////
 
+    // We use Object.create to emulate simple inheritance via prototypes
     Boo.create = Object.create || (function () {
         function F() {}
         return function (o) {
@@ -752,7 +785,13 @@
         };
     })();
 
-    // TODO: Perhaps we should require an Ecma 5th edition environment as base
+    // Greatly simplified bind algorithm, just supporting fixing the `this` scope
+    // TODO: Native bind method seems to be quite slow currently, perhaps we should just ignore it
+    Boo.bind = typeof Function.prototype.bind === 'function'
+             ? function (fn, self) { return Function.prototype.bind.call(fn, self); }
+             : function (fn, self) { return function () { return fn.apply(self, arguments); }; };
+
+    // Mostly for old Internet Explorers
     Boo.indexOf = function (arr, find, i) {
         i = i || 0;
         if (i < 0) i = 0;
