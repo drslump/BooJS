@@ -2,6 +2,7 @@
 test
 0, 1, 2, 3, 4
 An exception occurred
+
 """
 def foo(raiseException as bool) as int*:
 	try:
