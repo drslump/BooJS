@@ -59,6 +59,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             else:
                 nextstate = CreateState()
                 Current.Add([| __state = $(nextstate) |])
+                Current.Add(_gotostatemachine)
                 State = nextstate
 
             # At this point we want to always stop the generator
