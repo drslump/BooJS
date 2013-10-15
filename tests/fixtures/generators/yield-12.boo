@@ -1,4 +1,4 @@
-#IGNORE: Yield not supported
+#IGNORE: Classes not supported
 """
 0
 1

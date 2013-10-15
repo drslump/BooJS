@@ -1,4 +1,4 @@
-#IGNORE: Yield not supported
+#IGNORE: Classes not supported
 import System
 import System.Collections
 

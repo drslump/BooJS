@@ -1,4 +1,3 @@
-#IGNORE: Combined generated expressions require support for yield
 """
 1, 5
 1, 3

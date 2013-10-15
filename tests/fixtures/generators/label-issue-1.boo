@@ -1,4 +1,3 @@
-#IGNORE: yield not supported
 """
 foo
 baz
