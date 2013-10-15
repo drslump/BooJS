@@ -13,6 +13,8 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
     In this step we convert that operation to the following statements:
 
         @(upk = (10, 20, 30), a = upk[0], b = upk[1], c = upk[2])
+
+    TODO: Shall we allow to unpack generators too?
 """
     static final REFERENCE_NAME = '__upk'
 
@@ -27,19 +29,18 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
         super(node)
 
     def OnUnpackStatement(node as UnpackStatement):
-        # Create a local for the unpack holder and flag it as used
-        local = CodeBuilder.DeclareLocal(_method, REFERENCE_NAME, TypeSystemServices.ListType)
-        local.IsUsed = true
 
-        # Build the sequence to unpack the values
-        upkref = CodeBuilder.CreateLocalReference(REFERENCE_NAME, local)
         seq = CodeBuilder.CreateEvalInvocation(node.LexicalInfo)
-        be = CodeBuilder.CreateAssignment(node.LexicalInfo, upkref, node.Expression)
-        seq.Arguments.Add(be)
-        for i as int, decl as Declaration in enumerate(node.Declarations):
-            refe = ReferenceExpression(decl.LexicalInfo, decl.Name)
-            slice = CodeBuilder.CreateSlicing(upkref, i)
-            be = CodeBuilder.CreateAssignment(decl.LexicalInfo, refe, slice)
-            seq.Arguments.Add(be)
 
-        ReplaceCurrentNode ExpressionStatement(node.LexicalInfo, seq)
+        # If the target to unpack is a reference just use it
+        upkref as ReferenceExpression
+        if node.Expression.NodeType == NodeType.ReferenceExpression:
+            upkref = node.Expression
+        else:
+            upkref = ReferenceExpression(Name: REFERENCE_NAME)
+            seq.Arguments.Add( [| $upkref = $(node.Expression) |] )
+
+        for i as int, decl as Declaration in enumerate(node.Declarations):
+            seq.Arguments.Add( [| $(ReferenceExpression(decl.Name)) = $(upkref)[$i] |] )
+
+        ReplaceCurrentNode ExpressionStatement(node.LexicalInfo, Expression: seq)
