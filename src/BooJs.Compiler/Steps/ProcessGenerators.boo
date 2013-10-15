@@ -123,16 +123,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             if node.EnsureBlock:
                 Current.Add( [| __final.pop()() |] )
 
-            # Create a new state for the exception handler
-            exceptstate = CreateState()
-
-            # Register the states covered by this protected block
-            tryblock = States[trystate] as Block
-            catchst = [| $exceptstate |]
-            for state in range(trystate, exceptstate):
-                catchst = [| __catch[$state] = $catchst |]
-            tryblock.Insert(0, catchst)
-
             # Create a new state for exiting the try/except block
             afterstate = CreateState()
 
@@ -140,9 +130,20 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             Current.Add( [| __state = $afterstate |] )
             Current.Add(_gotostatemachine)
 
-            # Produce the exception handler
-            State = exceptstate
-            Visit node.ExceptionHandlers
+            if not node.ExceptionHandlers.IsEmpty:
+                # Create a new state for the exception handler
+                exceptstate = CreateState()
+
+                # Register the states covered by this protected block
+                tryblock = States[trystate] as Block
+                catchst = [| $exceptstate |]
+                for state in range(trystate, exceptstate):
+                    catchst = [| __catch[$state] = $catchst |]
+                tryblock.Insert(0, catchst)
+
+                # Produce the exception handler
+                State = exceptstate
+                Visit node.ExceptionHandlers
 
             # Continue in the after state
             State = afterstate
