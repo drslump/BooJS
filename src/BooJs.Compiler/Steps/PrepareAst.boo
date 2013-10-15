@@ -222,17 +222,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         super(node)
 
-    def OnMethod(node as Method):
-    """ Process locals and detect the Main method to move its statements into the Module globals
-    """
-        # Skip compiler generated methods
-        if node.IsSynthetic and node.IsInternal:
-            RemoveCurrentNode
-            return
-
+    protected def LocalsToDecls(locals as LocalCollection):
         # Convert locals back to simple declaration statements
         found = ['$locals']
-        for local in node.Locals:
+        for local in locals:
             # Avoid duplicates
             if local.Name is null or local.Name in found:
                 continue
@@ -264,7 +257,29 @@ class PrepareAst(AbstractTransformerCompilerStep):
                 elif entity.Type == TypeSystemServices.StringType:
                     initializer = StringLiteralExpression('')
 
-            st = DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
+            yield DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
+
+    def OnBlockExpression(node as BlockExpression):
+    """ Convert locals annotation to declarations
+    """
+        if node.ContainsAnnotation('locals'):
+            for st in LocalsToDecls(node['locals']):
+                node.Body.Insert(0, st)
+            node.RemoveAnnotation('locals')
+
+        Visit node.Body
+
+    def OnMethod(node as Method):
+    """ Process locals and detect the Main method to move its statements into the Module globals
+    """
+        print 'M', node
+        # Skip compiler generated methods
+        if node.IsSynthetic and node.IsInternal:
+            RemoveCurrentNode
+            return
+        print 'm', node
+
+        for st in LocalsToDecls(node.Locals):
             node.Body.Insert(0, st)
 
         # Detect the Main method and move its statements to the Module globals

@@ -20,6 +20,13 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
 
     def OnBlockExpression(node as BlockExpression):
         _nodes.Push(node)
+
+        # Check if the block expression is bound to a generator method
+        if method = node.Body.ParentNode as Method:
+            ientity = method.Entity as Boo.Lang.Compiler.TypeSystem.Internal.InternalMethod
+            if ientity and ientity.IsGenerator:
+                node['locals'] = method.Locals
+
         super(node)
         _nodes.Pop()
 
@@ -34,9 +41,8 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
 
             exists = false
             for n in _nodes:
-                if ExistsVariable(n, name):
-                    exists = true
-                    break
+                exists = ExistsVariable(n, name)
+                break if exists
 
             if not exists:
                 try:
@@ -53,6 +59,10 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
             case blk=BlockExpression():
                 params = blk.Parameters
                 return true if blk.Parameters.Contains({param as ParameterDeclaration| param.Name == name})
+
+                if blk.ContainsAnnotation('locals'):
+                    return (blk['locals'] as LocalCollection).Contains({local as Local| local.Name == name})
+
             case m=Method():
                 return true if m.Parameters.Contains({param as ParameterDeclaration| param.Name == name})
                 return true if m.Locals.Contains({local as Local| local.Name == name})

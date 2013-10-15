@@ -151,6 +151,11 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         return type and type.IsArray
 
     protected def ForToWhile(node as ForStatement) as Statement:
+        # Make sure any nested loops are processed too
+        Visit node.Block
+        Visit node.OrBlock
+        Visit node.ThenBlock
+
         mie = CodeBuilder.CreateMethodInvocation([| Boo.generator |], MethodCache.Generator, node.Iterator)
         tmpref = TempLocalInMethod(CurrentMethod, mie.ExpressionType, Context.GetUniqueName('for'))
 

@@ -394,13 +394,7 @@ Transforms a Boo AST into a Mozilla AST
             p = Moz.Identifier(loc: loc(param), name: param.Name)
             n.params.Add(p)
 
-        b = Moz.BlockStatement()
-        for local in node.Locals:
-            st = Apply(local)
-            b.body.Add(st) if st
-
-        b.body += (Apply(node.Body) as Moz.BlockStatement).body
-        n.body = b
+        n.body = Apply(node.Body)
         Return n
 
     def OnDeclarationStatement(node as DeclarationStatement):
@@ -412,7 +406,6 @@ Transforms a Boo AST into a Mozilla AST
         vd = Moz.VariableDeclaration(loc: loc(node), kind: 'var')
         vd.declarations.Add(v)
         Return vd
-
 
     def OnBlock(node as Block):
         b = Moz.BlockStatement(loc: loc(node))
