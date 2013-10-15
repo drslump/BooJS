@@ -1,8 +1,8 @@
-#IGNORE: Timespans not supported
+#NOTE: BooJs converts timestamps to milliseconds
 """
-02:00:00
-00:01:06
-00:54:00
+7200000
+66000
+3240000
 """
 print 2h
 print 66s

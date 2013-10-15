@@ -14,7 +14,8 @@ Array True
 Hash-literal True
 Hash-array False
 Hash-Hash True
-Hash-Type True
+Hash-Object True
+Hash-Date False
 Number-int True
 Number-double True
 Date True
@@ -45,7 +46,8 @@ print 'Array', [1, 2] isa Array
 print 'Hash-literal', a_hash isa Hash
 print 'Hash-array', (1, 2) isa Hash
 print 'Hash-Hash', Hash(a:10) isa Hash
-print 'Hash-Type', a_date isa Hash
+print 'Hash-Object', a_hash isa Hash
+print 'Hash-Date', a_date isa Hash
 print 'Number-int', a_int isa Number
 print 'Number-double', a_double isa Number
 print 'Date', a_date isa Date

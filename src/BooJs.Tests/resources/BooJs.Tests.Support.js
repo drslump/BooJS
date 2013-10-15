@@ -14,6 +14,14 @@ Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
     exports.method = function (x) {
         return x;
     };
+
+    exports.Character = function (name) {
+        return {Name: name};
+    };
+
+    exports.square = function (x) {
+        return x * x;
+    };
 });
 
 

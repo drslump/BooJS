@@ -1,3 +1,4 @@
+#IGNORE: Not compatible with Jurassic engine
 """
 0
 >1
@@ -21,9 +22,10 @@
 >9
 """
 
-for i in range(10):
+max = 10
+for i in range(max):
 	continue if i % 2
 	print i
-	for j in range(i, 10):
-		continue if 0 == j % 2
+	for j in range(i, max):
+		continue unless j % 2
 		print ">$j"

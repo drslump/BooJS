@@ -209,7 +209,8 @@ Transforms a Boo AST into a Mozilla AST
         n = Moz.BlockStatement()
 
         # Detect module class and output its members directly
-        if node.IsSynthetic and node.IsFinal and node.Name.EndsWith('Module'):
+        # TODO: FORCE DISABLE OF CLASSES FOR THE TIME BEING
+        if true or node.IsSynthetic and node.IsFinal and node.Name.EndsWith('Module'):
             members = [m for m in node.Members if m.NodeType != NodeType.Constructor]
             st as Moz.IStatement
             for member in members:

@@ -1,4 +1,3 @@
-#IGNORE: Integer division not supported
 """
 2
 2

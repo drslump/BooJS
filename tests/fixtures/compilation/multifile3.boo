@@ -1,7 +1,6 @@
-#IGNORE: Namespaces not supported yet
 """
 9
 """
-namespace MultiFileTest
+namespace BooJs.Tests.Support
 
 print square(3)
