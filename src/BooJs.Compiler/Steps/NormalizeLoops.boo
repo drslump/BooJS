@@ -240,8 +240,13 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         if node.Iterator.NodeType == NodeType.ReferenceExpression:
             iter = node.Iterator
         else:
-            iter = TempLocalInMethod(
-                CurrentMethod, (node.Iterator.Entity as ITypedEntity).Type, Context.GetUniqueName('for'))
+            ent as ITypedEntity
+            if node.Iterator.NodeType == NodeType.ArrayLiteralExpression:
+                ent = (node.Iterator as ArrayLiteralExpression).Type.Entity
+            else:
+                ent = node.Iterator.Entity
+
+            iter = TempLocalInMethod(CurrentMethod, ent.Type, Context.GetUniqueName('for'))
             result.Insert(0, [| $iter = $(node.Iterator) |])
 
         # Create a temporary variable to hold the iteration index
