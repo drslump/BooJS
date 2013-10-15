@@ -77,28 +77,30 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             loopstate = CreateState()
 
             # Make sure the current state ends up in the loop one
-            Current.Add([| __state = $(loopstate) |])
-            Current.Add(_gotostatemachine)
-
-            State = loopstate
-
-            # Create new step for exiting the loop but don't use it yet
-            exitstate = CreateState()
-
-            # Check if we should skip the loop by negating the condition
-            ifs = [|
-                if not $(node.Condition):
-                    __state = $(exitstate)
-                    $(_gotostatemachine)
-            |]
-            Current.Add(ifs)
+            if State != loopstate - 1:
+                Current.Add([| __state = $(loopstate) |])
+                Current.Add(_gotostatemachine)
 
             # Process the loop body
+            State = loopstate
             Visit node.Block
 
             # Go back to the start of the loop to check if we have more iterations left
             Current.Add([| __state = $(loopstate) |])
             Current.Add(_gotostatemachine)
+
+            # Create new step for exiting the loop but don't use it yet
+            exitstate = CreateState()
+
+            # Check if we should skip the loop by negating the condition
+            State = loopstate
+            ifs = [|
+                if not $(node.Condition):
+                    __state = $(exitstate)
+                    $(_gotostatemachine)
+            |]
+            # Place it as the first statement in the loop state
+            Current.Insert(0, ifs)
 
             # Continue in the exit step previously created
             State = exitstate
