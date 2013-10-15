@@ -272,12 +272,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
     def OnMethod(node as Method):
     """ Process locals and detect the Main method to move its statements into the Module globals
     """
-        print 'M', node
         # Skip compiler generated methods
         if node.IsSynthetic and node.IsInternal:
             RemoveCurrentNode
             return
-        print 'm', node
 
         for st in LocalsToDecls(node.Locals):
             node.Body.Insert(0, st)
