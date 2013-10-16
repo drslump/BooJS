@@ -12,5 +12,5 @@ class Bar(Foo):
 		super()
 		print 'Bar.foo'
 
-bar = Bar('foo')
+bar = Bar()
 bar.foo()

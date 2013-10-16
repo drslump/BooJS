@@ -71,5 +71,6 @@ TODO: We need to refactor this to first rewrite method definitions and later upd
     """
         return unless node.Target isa ReferenceExpression
         target = node.Target as ReferenceExpression
-        if ent = target.Entity as Internal.InternalMethod:
+        # TODO: Make sure it works for constructors
+        if ent = target.Entity as Internal.InternalMethod and ent.EntityType != EntityType.Constructor:
             target.Name = ent.Name

@@ -5,6 +5,7 @@ import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
 
 import Boo.Lang.Environments
+import Boo.Lang.Compiler.TypeSystem(EntityType)
 import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache
 import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
 import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
@@ -114,7 +115,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
         # TODO: This detection algorithm is very weak! We need to come out with something better
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
-            print node
+            # Anything not being a constructor is excluded
+            if node.Entity.EntityType != EntityType.Constructor:
+                return node
+
             mre = MemberReferenceExpression(node.LexicalInfo)
             mre.ExpressionType = node.ExpressionType
             mre.Entity = node.Entity
@@ -145,6 +149,9 @@ class PrepareAst(AbstractTransformerCompilerStep):
         # TODO: This detection algorithm is very weak! We need to come out with something better
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
+            # Anything not being a constructor is excluded
+            if node.Entity.EntityType != EntityType.Constructor:
+                return
             #refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
             #ReplaceCurrentNode refexp
             node.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
