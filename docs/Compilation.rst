@@ -71,7 +71,7 @@ complies with the type contracts it needs to know what the valid types are for u
 a symbol. Since Javascript is not typed, once we have compiled some Boo code the 
 compiler wouldn't be able to apply those type checks without having access to the 
 original .boo files. To avoid having to compile again and again all the source in
-your project the compiler will embed type information as a comment ``//@ booAssembly``
+your project the compiler will embed type information as a comment ``//# booAssembly``
 in the generated javascript file, this allows the compiler to have all the needed 
 information when referencing an already compiled library.
 
