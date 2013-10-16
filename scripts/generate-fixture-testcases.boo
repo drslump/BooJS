@@ -23,7 +23,9 @@ print '"""'
 print "  Automatically generated!"
 print "  Fixture test cases from $path"
 print '"""'
+print 'namespace BooJs.Tests'
 print ''
+print 'import BooJs.Tests.Support'
 print 'import NUnit.Framework'
 print ''
 print '[TestFixture]'
