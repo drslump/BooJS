@@ -5,7 +5,7 @@
 """
 
 def arithmetic_mean(lst as (double)) as double:
-    sum = reduce(lst, {a as double, b as double| a+b}, 0)
+    sum as int = reduce(lst, {a as double, b as double| a+b}, 0)
     return sum / len(lst)
  
 def geometic_mean(lst as double*) as double:
@@ -13,7 +13,7 @@ def geometic_mean(lst as double*) as double:
     return Math.pow(product, 1/len(lst))
  
 def harmonic_mean(lst as double*) as double:
-    sum as double = reduce(lst, {a as int, b as int| a+1/b}, 0)
+    sum as double = reduce(lst, 0, {a as int, b as int| a + 1 / b})
     return len(lst) / sum
  
 lst = [1,2,3,4,5,6,7,8,9,10]

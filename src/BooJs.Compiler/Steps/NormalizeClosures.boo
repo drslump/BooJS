@@ -2,6 +2,7 @@ namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler.Ast
 import Boo.Lang.Compiler.Steps
+import Boo.Lang.Compiler.TypeSystem.Internal(InternalMethod)
 import Boo.Lang.PatternMatching
 
 
@@ -23,8 +24,8 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
 
         # Check if the block expression is bound to a generator method
         if method = node.Body.ParentNode as Method:
-            ientity = method.Entity as Boo.Lang.Compiler.TypeSystem.Internal.InternalMethod
-            if ientity and ientity.IsGenerator:
+            # node['locals'] = method.Locals
+            if (method.Entity as InternalMethod).IsGenerator:
                 node['locals'] = method.Locals
 
         super(node)

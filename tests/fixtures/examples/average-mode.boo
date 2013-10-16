@@ -2,13 +2,13 @@
 6
 4,1
 """
-def mode(lst as Array) as Array:
+def mode(lst as (int)) as (int):
     counter = {}
     modes = []
     max = 0
 
     for v in lst:
-        counter[v] = (counter[v] or 0) + 1
+        counter[v] = int.parse(counter[v] or 0) + 1
         cur as int = counter[v]
         if cur == max:
             modes.push(v)

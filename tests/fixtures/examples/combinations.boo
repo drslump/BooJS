@@ -14,7 +14,11 @@
 def comb(m as int, lst as (int)) as ((int)):
     return [[]] if not m
     return [] if not len(lst)
-    return ( lst.slice(0,1) + a for a in comb(m-1, lst.slice(1)) ) + comb(m, lst.slice(1))
+    # return ( lst.slice(0,1) + a for a in comb(m-1, lst.slice(1)) ) + comb(m, lst.slice(1))
+    return ( 
+    	lst.slice(0,1) + a 
+    	for a as (int) in comb(m-1, lst.slice(1)) 
+    ) as ((int)) + comb(m, lst.slice(1))
 
 for l in comb(3, range(5)):
     print join(l, ', ')
