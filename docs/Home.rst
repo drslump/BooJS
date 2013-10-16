@@ -7,6 +7,7 @@ Browse the documentation in this wiki.
 - `Comparison with Javascript <wiki/Comparison-with-Javascript>`_
 - `Compilation <wiki/Compilation>`_
 - `Macros <wiki/Macros>`_
+- `Runtime <wiki/Runtime`_
 - `Async library <wiki/Async>`_
 
 **Resources**
