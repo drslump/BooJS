@@ -17,7 +17,8 @@
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>
@@ -27,7 +28,8 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>
@@ -99,6 +101,7 @@
     <Compile Include="SaveFile.boo" />
     <Compile Include="ArraysFixtures.boo" />
     <Compile Include="Support\FixtureRunner.boo" />
+    <Compile Include="ClassesFixtures.boo" />
   </ItemGroup>
   <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
