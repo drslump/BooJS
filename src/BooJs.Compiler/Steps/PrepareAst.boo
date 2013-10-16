@@ -111,9 +111,13 @@ class PrepareAst(AbstractTransformerCompilerStep):
             return node
 
         # Members of the module are placed in the top scope
+        # TODO: This detection algorithm is very weak! We need to come out with something better
         ientity = node.Entity as TypeSystem.IMember
-        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.IsFinal:
+        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
+            print node
             mre = MemberReferenceExpression(node.LexicalInfo)
+            mre.ExpressionType = node.ExpressionType
+            mre.Entity = node.Entity
             mre.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
             mre.Name = node.Name.Split(char('.'))[-1]
             return mre
@@ -138,8 +142,9 @@ class PrepareAst(AbstractTransformerCompilerStep):
                 return
 
         # Members of the module are placed in the top scope
-        ientity = node.Target.Entity as TypeSystem.Internal.AbstractInternalType
-        if node.Target.IsSynthetic and ientity and ientity.IsClass and ientity.IsFinal:
+        # TODO: This detection algorithm is very weak! We need to come out with something better
+        ientity = node.Entity as TypeSystem.IMember
+        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
             #refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
             #ReplaceCurrentNode refexp
             node.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
