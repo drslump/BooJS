@@ -18,6 +18,10 @@ class Number(Object):
     static final NEGATIVE_INFINITY as double
     static final POSITIVE_INFINITY as double
 
+    [Transform( Boo['cast']($1, 'double') )]
+    static def parse(v) as double:
+        pass
+
     [Transform( Number() )]
     def constructor():
         pass
@@ -57,6 +61,10 @@ class NumberInt(Number):
     static def op_Multiply(lhs as int, rhs as string) as string:
         pass
 
+    [Transform( Boo['cast']($1, 'int') )]
+    static def parse(v) as int:
+        pass
+
     [Transform( Number() )]
     def constructor():
         pass
@@ -66,6 +74,10 @@ class NumberInt(Number):
         pass
 
 class NumberUInt(NumberInt):
+    [Transform( Boo['cast']($1, 'uint') )]
+    static def parse(v) as uint:
+        pass
+
     [Transform( Number() )]
     def constructor():
         pass
