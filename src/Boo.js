@@ -563,6 +563,16 @@
         if (!boo_isa(value, type))
             throw new Boo.CastError(typeOf(value), type);
 
+        // Apply specific conversions
+        if (type === 'int' || type === 'uint')
+            return parseInt(value, 10);
+        else if (type === 'double')
+            return parseFloat(value);
+        else if (type === 'bool')
+            return !!value;
+        else if (type === 'string')
+            return value.toString();
+
         return value;
     }
     Boo.cast = boo_cast;
