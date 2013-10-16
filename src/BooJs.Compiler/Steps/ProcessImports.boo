@@ -19,6 +19,9 @@ class ProcessImports(AbstractTransformerCompilerStep):
     _nsidx = 0
 
     protected def FindNamespace(fqn as string) as string:
+    """ Given a fully qualified name it will check backwards until it 
+        finds the containing namespace
+    """
         parts = fqn.Split(char('.'))
         while len(parts):
             type = NameResolutionService.ResolveQualifiedName(join(parts, '.'))
@@ -81,14 +84,16 @@ class ProcessImports(AbstractTransformerCompilerStep):
 
     def OnReferenceExpression(node as ReferenceExpression):
         # Only process external types
+        # NOTE: Shouldn't we check here against Entity?
         if etype = node.ExpressionType as ExternalType:
             name = etype.FullName
+
         # Handle aliases with multiple references: import Foo(Bar, Baz) as MyFoo
-        elif entity = node.Entity as Boo.Lang.Compiler.TypeSystem.Core.SimpleNamespace:
-            if entity.FullName:
-                name = entity.FullName
+        elif esimple = node.Entity as Boo.Lang.Compiler.TypeSystem.Core.SimpleNamespace:
+            if esimple.FullName:
+                name = esimple.FullName
             else:
-                for member in entity.GetMembers():
+                for member in esimple.GetMembers():
                     if member isa ExternalType:
                         name = (member as ExternalType).ActualType.Namespace
                         break;
@@ -96,6 +101,7 @@ class ProcessImports(AbstractTransformerCompilerStep):
         if not name:
             return
 
+        # Find a mapping containing the full name of the entity
         parts = name.Split(char('.'))
         rhs = []
         while len(parts):
@@ -105,15 +111,17 @@ class ProcessImports(AbstractTransformerCompilerStep):
                 node.Name = join(rhs, '.')
                 break
 
-            # Detect module classes to skip them
+            # Skip module classes
             if not IsModule(name):
                 rhs.Add(parts[-1])
 
             parts = parts[:-1]
 
     protected def IsModule(fqn as string) as bool:
+    """ Checks if the given fully qualified name actually resolves into a module
+    """
         try:
             type = NameResolutionService.ResolveQualifiedName(fqn) as ExternalType
-            return type and type.IsClass and type.IsFinal and type.Name =~ /^\w+Module$/
+            return type and type.IsClass and type.IsFinal and type.Name.EndsWith('Module')
         except:
             return false

@@ -5,6 +5,8 @@ import Boo.Lang.Compiler.TypeSystem
 
 
 class InitializeEntityNameMatcher(AbstractCompilerStep):
+""" Configures the name matching logic to use. 
+"""
     override def Run():
         NameResolutionService.EntityNameMatcher = NameMatcher
     

@@ -5,7 +5,8 @@ import Boo.Lang.Compiler.TypeSystem.Core
 
 
 class IntroduceGlobalNamespaces(BooStep):
-
+""" Configures the default namespaces available to the compiled code
+"""
     override def Run():
         NameResolutionService.Reset()
 
@@ -18,4 +19,3 @@ class IntroduceGlobalNamespaces(BooStep):
             # Make pattern maching macros globally available
             SafeGetNamespace('Boo.Lang.PatternMatching')
         )
-

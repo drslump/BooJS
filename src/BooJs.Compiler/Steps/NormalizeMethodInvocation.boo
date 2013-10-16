@@ -11,8 +11,8 @@ import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
 
 class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
 """
-    Normalize method invocations to undo some of the instrumentation performend by Boo's 
-    ProcessMethodBodies step. Since Javascript is highly dynamic there is no need to call 
+    Normalize method invocations to undo some of the instrumentation performend by Boo's
+    ProcessMethodBodies step. Since Javascript is highly dynamic there is no need to call
     special interface methods for things like array access or calling anonymous functions.
 """
     [getter(MethodCache)]

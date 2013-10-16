@@ -17,6 +17,11 @@ identifier to ensure there are no name collisions in the generated javascript co
     def foo$0(s as string):
     def foo$1(i as int):
     foo$1(10)
+
+TODO: We need to refactor this to first rewrite method definitions and later update
+      any references to them.
+      Another option is avoid rewriting their references and include the logic
+      of checking the actual name when actually generating the final code.
 """
     def OnMethod(node as Method):
         cls = node.DeclaringType
@@ -62,8 +67,9 @@ identifier to ensure there are no name collisions in the generated javascript co
         OnMethod(node)
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
+    """ Make sure we update the name too on the calling sites
+    """
         return unless node.Target isa ReferenceExpression
         target = node.Target as ReferenceExpression
-        ent = target.Entity as Internal.InternalMethod
-        if ent:
+        if ent = target.Entity as Internal.InternalMethod:
             target.Name = ent.Name
