@@ -34,11 +34,11 @@ class Save(AbstractCompilerStep):
 
             if params.EmbedAssembly:
                 writer.WriteLine()
-                writer.WriteLine('//@ booAssembly=' + GetCompressedAssembly())
+                writer.WriteLine('//# booAssembly=' + GetCompressedAssembly())
 
             if printer.SourceMap:
                 mapname = params.SourceMap or GetFileName() + '.map'
-                writer.WriteLine('//@ sourceMappingURL=' + Path.GetFileName(mapname))
+                writer.WriteLine('//# sourceMappingURL=' + Path.GetFileName(mapname))
                 File.WriteAllText(mapname, printer.SourceMap.ToJSON())
 
         # Finally set the generated filename in the context

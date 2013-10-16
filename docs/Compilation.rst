@@ -112,12 +112,12 @@ To exit the watcher mode just press ``ctrl-c`` to terminate the compiler process
 SourceMaps
 ----------
 
-Google Chrome (other browsers will probably support it shortly) offer support for
-mapping a Javascript file with the files that were used to generate it, .boo files 
-in our case. When we enable the sourcemap feature in the compiler two things will
-happen, first a new file will be generated containing a json payload with the 
-sourcemap metadata (version 3), secondly a special comment will be included in the 
-generated javascript file indicating the location of the sourcemap metadata.
+Google Chrome and Firefox (other browsers will probably support it shortly) offer 
+support for mapping a Javascript file with the files that were used to generate it, 
+.boo files in our case. When we enable the sourcemap feature in the compiler two 
+things will happen, first a new file will be generated containing a json payload 
+with the sourcemap metadata (version 3), secondly a special comment will be included 
+in the generated javascript file indicating the location of the sourcemap metadata.
 
 When debugging a javascript file in a sourcemap supporting environment, we would
 be able to operate on the original Boo code instead of the generated Javascript one, 

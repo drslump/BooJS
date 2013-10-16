@@ -37,7 +37,7 @@ class CompilerParameters(BooCompilerParameters):
         asm = null
         using sr = StreamReader(fname):
             while sr.Peek() >= 0:
-                m = /^\s*\/\/@\s*booAssembly\s*=\s*([^\s]+)/.Match(sr.ReadLine())
+                m = /^\s*\/\/[@#]\s*booAssembly\s*=\s*([^\s]+)/.Match(sr.ReadLine())
                 if m.Success:
                     asm = DecompressAssembly(m.Groups[1].Value)
                     break

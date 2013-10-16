@@ -5,6 +5,15 @@ import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Ex
 
 
 class MapBuilder:
+""" 
+    Spec: https://docs.google.com/a/pollinimini.net/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k
+
+    Note: We can use this visualization tool to check if the generated source maps
+          are any good: http://sokra.github.io/source-map-visualization
+
+    TODO: Support 'data urls' to embed the source map in the generated js file comment
+    TODO: Support `sourcesContent` to provide original Boo code embedded in the map
+"""
 
     final static VERSION = 3
 
