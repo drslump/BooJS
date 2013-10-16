@@ -1,5 +1,8 @@
 """
+0.9.5.6
+0.0.1
 """
-assert len(BOO_RUNTIME_VERSION) > 0
-assert len(BOO_COMPILER_VERSION) > 0
-assert BOO_COMPILER_VERSION != '%%' + 'COMPILER_VERSION' + '%%'
+assert len(__COMPILER_VERSION__) > 0
+print __COMPILER_VERSION__
+assert len(__RUNTIME_VERSION__) > 0
+print __RUNTIME_VERSION__

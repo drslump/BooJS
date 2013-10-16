@@ -6,9 +6,7 @@ import BooJs.Lang.Extensions
 
 class Builtins:
 
-    [Transform( '%%COMPILER_VERSION%%' )]
-    static public final BOO_COMPILER_VERSION = '%%COMPILER_VERSION%%'
-    static public final BOO_RUNTIME_VERSION = 'defined in boo.js'
+    static public final __RUNTIME_VERSION__ = 'defined in boo.js'
 
     static public final STOP = {}
 
