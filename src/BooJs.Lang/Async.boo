@@ -8,11 +8,11 @@ import Boo.Lang.Compiler.Ast
 import BooJs.Lang.Extensions
 
 
-[Transform( __value )]
-def __value() as object:
+[Transform( _value_ )]
+def _value_() as object:
     pass
-[Transform( __value )]
-def __valuelist() as (object):
+[Transform( _value_ )]
+def _valuelist_() as (object):
     pass
 
 
@@ -74,12 +74,12 @@ macro await:
         yield [| yield $( ArrayLiteralExpression(Items: exprs) ) |]
 
     if len(decls) == 1:
-        yield [| $(decls[0]) = Async.__value() |]
+        yield [| $(decls[0]) = Async._value_() |]
     elif len(decls) > 1:
         unpack = UnpackStatement()
         for decl as ReferenceExpression in decls:
             unpack.Declarations.Add(Declaration(Name: decl.Name))
-        unpack.Expression = [| Async.__valuelist() |]
+        unpack.Expression = [| Async._valuelist_() |]
         yield unpack
 
 

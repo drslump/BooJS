@@ -17,7 +17,8 @@
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>
@@ -27,7 +28,8 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>
@@ -113,6 +115,7 @@
     <Compile Include="Steps\ApplyPlaceholderParameters.boo" />
     <Compile Include="Pipelines\BooJsCompiler.boo" />
     <Compile Include="Pipelines\BooJsPipelines.boo" />
+    <Compile Include="UniqueNameProvider.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Visitors\" />

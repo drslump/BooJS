@@ -8,8 +8,6 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 """
     Converts generator expressions to a simpler form using a sequence/eval
 """
-    _depth = 0
-
     # Keep track of last visited method
     _method as Method
     
@@ -29,20 +27,14 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 
         super(node)
 
-    def EnterGeneratorExpression(node as GeneratorExpression):
-        _depth++
-        return true
-
     def LeaveGeneratorExpression(node as GeneratorExpression):
     """ Convert generator expressions to a sequence:
 
-        ( i*2 for i in range(3) )  =>  @(__gen = [], Boo.each(range(3), { i | __gen.push(i*2) }), __gen)
+        ( i*2 for i in range(3) )  =>  @(_gen_ = [], Boo.each(range(3), { i | _gen_.push(i*2) }), _gen_)
 
     """
-        _depth--
-
         # Make sure the gen temporary variable is declared
-        genref = ReferenceExpression(node.LexicalInfo, '__gen' + _depth)
+        genref = ReferenceExpression(node.LexicalInfo, Context.GetUniqueName('gen'))
         _method.Locals.Add(Local(node.LexicalInfo, genref.Name))
 
         if node.Filter and node.Filter.Type == StatementModifierType.If:

@@ -30,13 +30,13 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     for i in arr:
     ---
-    for __idx in range(len(arr)):
-        i = arr[__idx]
+    for _idx_ in range(len(arr)):
+        i = arr[_idx_]
 
     for x, y in arr:
     ---
-    for __idx in range(len(arr)):
-        x, y = arr[__idx]
+    for _idx_ in range(len(arr)):
+        x, y = arr[_idx_]
 
     for i in iter:
     ---
@@ -46,14 +46,14 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     for i in ducky():
     ---
-    __for1 = Boo.generator(ducky())
+    _for1_ = Boo.generator(ducky())
     try:
-        while @(i = __for.next(), true):
+        while @(i = _for_.next(), true):
             pass
     except e if e is Boo.STOP:
         pass
     ensure:
-        __for1.close()
+        _for1_.close()
 
 
     Boo's for statement does not allow to specify a receiving variable for the key like it's
@@ -179,7 +179,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             $tmpref = $mie
             try:
                 $whilest
-            except __e if __e is Boo.STOP:
+            except _ex_ if _ex_ is Boo.STOP:
                 pass
             ensure:
                 $tmpref.close()

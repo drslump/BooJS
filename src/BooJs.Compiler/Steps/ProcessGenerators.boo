@@ -16,11 +16,11 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
     TODO: Support yielding inside conditional statements
 """
-    static final REF_VALUE = ReferenceExpression(Name:'__value')
-    static final REF_ERROR = ReferenceExpression(Name:'__error')
-    static final REF_STATE = ReferenceExpression(Name:'__state')
-    static final REF_EXCEPT = ReferenceExpression(Name:'__except')
-    static final REF_ENSURE = ReferenceExpression(Name:'__ensure')
+    static final REF_VALUE = ReferenceExpression(Name:'_value_')
+    static final REF_ERROR = ReferenceExpression(Name:'_error_')
+    static final REF_STATE = ReferenceExpression(Name:'_state_')
+    static final REF_EXCEPT = ReferenceExpression(Name:'_except_')
+    static final REF_ENSURE = ReferenceExpression(Name:'_ensure_')
     static final REF_STATEMACHINE = ReferenceExpression(Name:'statemachine')
     static final JUMP = GotoStatement(Label: REF_STATEMACHINE)
 
@@ -85,7 +85,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             loopstate = CreateState()
 
             # Make sure the current state ends up in the loop one
-            Current.Add([| __state = $(loopstate) |])
+            Current.Add([| $REF_STATE = $(loopstate) |])
             if State != loopstate - 1:
                 Current.Add(JUMP)
 
@@ -276,7 +276,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                         $(REF_ENSURE).pop()()
 
                     # Re-raise the exception
-                    raise __e
+                    raise _ex_
             |]
 
         # Make the method return a generator

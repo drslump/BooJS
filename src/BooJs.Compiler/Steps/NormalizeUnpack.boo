@@ -16,7 +16,7 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
 
     TODO: Shall we allow to unpack generators too?
 """
-    static final REFERENCE_NAME = '__upk'
+    static final REFERENCE_NAME = 'upk'
 
     _method as Method = null
 
@@ -37,7 +37,7 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
         if node.Expression.NodeType == NodeType.ReferenceExpression:
             upkref = node.Expression
         else:
-            upkref = ReferenceExpression(Name: REFERENCE_NAME)
+            upkref = ReferenceExpression(Name: Context.GetUniqueName(REFERENCE_NAME))
             seq.Arguments.Add( [| $upkref = $(node.Expression) |] )
 
         for i as int, decl as Declaration in enumerate(node.Declarations):

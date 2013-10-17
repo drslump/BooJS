@@ -30,20 +30,20 @@ class ProcessTry(AbstractTransformerCompilerStep):
 
         try:
             raise 'error'
-        except __e:
+        except _ex_:
             if a == b:                  # except a==b
                 print 'Exception cached when a==b'
-            elif __e isa Exception:     # except as Exception
+            elif _ex_ isa Exception:     # except as Exception
                 print 'Exception catched'
-            elif __e isa Exception:     # except e as Exception
-                e = __e
+            elif _ex_ isa Exception:     # except e as Exception
+                e = _ex_
                 print e.ToString()
             elif true:                  # except e
-                e = __e
+                e = _ex_
                 print e.message
             else:                       # failure
                 print 'failed (but not catched)'
-                raise __e
+                raise _ex_
         ensure:
             print 'run if all ok or not catched'
 """
@@ -64,14 +64,14 @@ class ProcessTry(AbstractTransformerCompilerStep):
             handler = ExceptionHandler(node.FailureBlock.LexicalInfo)
             handler.Block = node.FailureBlock
             # Rethrow again the error
-            handler.Block.Add([| raise __e |])
+            handler.Block.Add([| raise _ex_ |])
             node.ExceptionHandlers.Add(handler)
             node.FailureBlock = null
 
         if len(node.ExceptionHandlers):
             # Generate the parent handler to capture the exception in a variable
             handler = ExceptionHandler()
-            handler.Declaration = Declaration(Name:'__e')
+            handler.Declaration = Declaration(Name:'_ex_')
             block = handler.Block
 
             for hdl in node.ExceptionHandlers:
@@ -83,15 +83,15 @@ class ProcessTry(AbstractTransformerCompilerStep):
                 if hdl.Declaration and hdl.Declaration.Name and hdl.Declaration.Type:
                     _method.Locals.Add(Local(hdl.Declaration, false))
                     reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
-                    cond.Condition = [| __e isa $(hdl.Declaration.Type) and $reference = __e |]
+                    cond.Condition = [| _ex_ isa $(hdl.Declaration.Type) and $reference = _ex_ |]
                 # except e
                 elif hdl.Declaration and hdl.Declaration.Name:
                     _method.Locals.Add(Local(hdl.Declaration, false))
                     reference = ReferenceExpression(hdl.Declaration.LexicalInfo, Name: hdl.Declaration.Name)
-                    cond.Condition = [| $reference = __e |]
+                    cond.Condition = [| $reference = _ex_ |]
                 # except as Exception
                 elif hdl.Declaration and hdl.Declaration.Type:
-                    cond.Condition = [| __e isa $(hdl.Declaration.Type) |]
+                    cond.Condition = [| _ex_ isa $(hdl.Declaration.Type) |]
                 else:
                     cond.Condition = [| true |]
 
@@ -116,4 +116,4 @@ class ProcessTry(AbstractTransformerCompilerStep):
     override def OnRaiseStatement(node as RaiseStatement):
         # If no exception is given just launch the captured one
         if not node.Exception:
-            node.Exception = [| __e |]
+            node.Exception = [| _ex_ |]

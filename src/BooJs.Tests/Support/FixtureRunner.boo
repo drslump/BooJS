@@ -160,6 +160,7 @@ class FixtureRunner:
             pipeline.AfterStep += def(pipeline, args):
                 if timer.ElapsedMilliseconds > 100:
                     print 'Slow Step {0}: {1}ms' % (args.Step.GetType().Name, timer.ElapsedMilliseconds)
+                # print args.Step, args.Context.CompileUnit
 
             _comp = Pipelines.newBooJsCompiler(pipeline)
             _comp.Parameters.Debug = true

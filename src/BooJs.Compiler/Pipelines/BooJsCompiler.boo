@@ -5,9 +5,11 @@ import System
 import Boo.Lang.Environments
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.Ast
+import Boo.Lang.Compiler.Services.UniqueNameProvider as BooUniqueNameProvider
 import Boo.Lang.Compiler.TypeSystem(TypeSystemServices)
 import Boo.Lang.Compiler.TypeSystem.Services(DowncastPermissions)
 
+import BooJs.Compiler(UniqueNameProvider)
 import BooJs.Compiler.TypeSystem as BooJsTypeSystem
 # import BooJs.Compiler.Pipelines as Pipelines
 
@@ -42,7 +44,8 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
         TypeSystemServices: { BooJsTypeSystem.TypeSystemServices() },
-        DowncastPermissions: { BooJsTypeSystem.DowncastPermissions() }
+        DowncastPermissions: { BooJsTypeSystem.DowncastPermissions() },
+        BooUniqueNameProvider: { UniqueNameProvider() }
     }
 
     # Load language runtime assemblies
