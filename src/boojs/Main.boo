@@ -5,6 +5,7 @@ import System.Reflection
 import System.Diagnostics(Trace, TraceLevel, TextWriterTraceListener)
 import System.IO as SysIO
 import Boo.Lang.Compiler
+import Boo.Lang.Compiler.CompilerContext as BooCompilerContext
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 import BooJs.Compiler.Pipelines(SaveJs, newBooJsCompiler)
@@ -49,7 +50,7 @@ def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     for fname in cmdLine.SourceFiles():
         params.Input.Add(FileInput(fname))
 
-def showErrorsWarnings(cmdLine as CommandLine, result as JsCompilerContext):
+def showErrorsWarnings(cmdLine as CommandLine, result as BooCompilerContext):
     for warning in result.Warnings:
         System.Console.Error.WriteLine( warning )
     for error in result.Errors:

@@ -26,7 +26,7 @@ class BooJsCompiler(BooCompiler):
         if not Parameters.Pipeline:
             raise InvalidOperationException(Boo.Lang.Resources.StringResources.BooC_CantRunWithoutPipeline)
 
-        ctxt = CompilerContext(Parameters, unit)
+        ctxt = BooJs.Compiler.CompilerContext(Parameters, unit)
         Parameters.Pipeline.Run(ctxt)
 
         return ctxt
@@ -40,7 +40,7 @@ def newBooJsCompiler():
 
 def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
     # Register our custom type system provider
-    params = CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider, false)
+    params = BooJs.Compiler.CompilerParameters(BooJsTypeSystem.ReflectionProvider.SharedTypeSystemProvider, false)
     # Setup the environment by setting our customized type system services
     params.Environment = DeferredEnvironment() {
         TypeSystemServices: { BooJsTypeSystem.TypeSystemServices() },

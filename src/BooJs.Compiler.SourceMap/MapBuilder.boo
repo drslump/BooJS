@@ -55,16 +55,13 @@ class MapBuilder:
     protected def encode(value as int, offset as int):
         return encode(value - offset)
 
-    protected def new_line():
-        last_tcolumn = 0
-        last_tline += 1
-        mappings.Add(segments.Join(','))
-        segments.Clear()
-
     def Map(source as string, sline as int, scolumn as int, tline as int, tcolumn as int, ident as string):
         # Adjust new lines
         while last_tline < tline:
-            new_line()
+            last_tcolumn = 0
+            last_tline += 1
+            mappings.Add(join(segments, ','))
+            segments.Clear()
 
         # The generated column
         segment = encode(tcolumn, last_tcolumn)

@@ -1,5 +1,7 @@
 namespace BooJs.Compiler.Steps
 
+import System(Convert)
+import System.Text(Encoding)
 import System.IO(Path, File, Directory, StreamWriter, MemoryStream, Compression)
 
 import Boo.Lang.Compiler.Steps(AbstractCompilerStep, ContextAnnotations)
@@ -37,9 +39,16 @@ class Save(AbstractCompilerStep):
                 writer.WriteLine('//# booAssembly=' + GetCompressedAssembly())
 
             if printer.SourceMap:
-                mapname = params.SourceMap or GetFileName() + '.map'
-                writer.WriteLine('//# sourceMappingURL=' + Path.GetFileName(mapname))
-                File.WriteAllText(mapname, printer.SourceMap.ToJSON())
+                # Dump it inline
+                if params.SourceMap == '-':
+                    uri = 'data:application/json;charset=utf-8;base64,' + Convert.ToBase64String(
+                        Encoding.UTF8.GetBytes(printer.SourceMap.ToJSON())
+                    )
+                    writer.WriteLine('//# sourceMappingURL=' + uri)
+                else:
+                    mapname = params.SourceMap or GetFileName() + '.map'
+                    writer.WriteLine('//# sourceMappingURL=' + Path.GetFileName(mapname))
+                    File.WriteAllText(mapname, printer.SourceMap.ToJSON())
 
         # Finally set the generated filename in the context
         ctxt.GeneratedAssemblyFileName = fname
@@ -54,7 +63,7 @@ class Save(AbstractCompilerStep):
                 bytes = File.ReadAllBytes(Context.GeneratedAssemblyFileName)
                 gzip.Write(bytes, 0, len(bytes))
 
-            base64 = System.Convert.ToBase64String(gzipped.ToArray())
+            base64 = Convert.ToBase64String(gzipped.ToArray())
 
         Context.TraceVerbose('Embedding metadata assembly (binary / base64): {0} / {2}' % (len(bytes), len(base64)))
 
