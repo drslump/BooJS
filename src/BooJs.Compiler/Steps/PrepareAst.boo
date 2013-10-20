@@ -116,7 +116,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
             # Anything not being a constructor is excluded
-            if node.Entity.EntityType != EntityType.Constructor:
+            if node.Entity.EntityType != EntityType.Constructor and not ientity.IsStatic:
                 return node
 
             mre = MemberReferenceExpression(node.LexicalInfo)
@@ -150,10 +150,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
         ientity = node.Entity as TypeSystem.IMember
         if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
             # Anything not being a constructor is excluded
-            if node.Entity.EntityType != EntityType.Constructor:
+            if node.Entity.EntityType != EntityType.Constructor and not ientity.IsStatic:
                 return
-            #refexp = ReferenceExpression(node.Name, LexicalInfo: node.LexicalInfo)
-            #ReplaceCurrentNode refexp
             node.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
             return
 
