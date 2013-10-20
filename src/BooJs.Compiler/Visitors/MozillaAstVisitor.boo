@@ -46,24 +46,7 @@ Transforms a Boo AST into a Mozilla AST
 
         return obj
 
-    _nameProvider = UniqueNameProvider()
-    _renamed = {}
-    protected def RenameIdent(name as  string) as string:
-    """ HACK: Since we can't override the default UniqueNameProvider we have to do some dirty
-              regexp replace :(
-    """
-        return name unless name =~ /\$\d+$/
-
-        if name not in _renamed:
-            parts = name.Split(char('$'))
-            _renamed[name] = _nameProvider.GetUniqueName(*parts[1:-1])
-    
-        return _renamed[name]
-
     def Run(node as Node) as Moz.Node:
-        _renamed = {}
-        _nameProvider.Reset()
-
         Visit node
         return _return
 
@@ -436,7 +419,7 @@ Transforms a Boo AST into a Mozilla AST
     def OnDeclarationStatement(node as DeclarationStatement):
         # TODO: Generate type annotated comments
         v = Moz.VariableDeclarator(loc: loc(node))
-        v.id = Moz.Identifier(name: RenameIdent(node.Declaration.Name))
+        v.id = Moz.Identifier(name: node.Declaration.Name)
         v.init = Apply(node.Initializer)
 
         vd = Moz.VariableDeclaration(loc: loc(node), kind: 'var')
@@ -490,7 +473,7 @@ Transforms a Boo AST into a Mozilla AST
             start = Apply(mie.Arguments[0])
             length = Apply(mie.Arguments[1])
 
-        index = Moz.Identifier(RenameIdent(node.Declarations[0].Name))
+        index = Moz.Identifier(node.Declarations[0].Name)
 
         fst = Moz.ForStatement(loc: loc(node))
         fst.init = Moz.AssignmentExpression(
@@ -604,7 +587,7 @@ Transforms a Boo AST into a Mozilla AST
         Return t
 
     def OnReferenceExpression(node as ReferenceExpression):
-        Return Moz.Identifier(loc: loc(node), name: RenameIdent(node.Name))
+        Return Moz.Identifier(loc: loc(node), name: node.Name)
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
         n = Moz.MemberExpression(loc: loc(node), property: Moz.Identifier(loc: loc(node), name: node.Name))
