@@ -11,7 +11,7 @@ class UniqueNameProvider(BooUniqueNameProvider):
 """
 	_counters = {}
 
-	new def GetUniqueName(*parts as (string)):
+	override def GetUniqueName(*parts as (string)):
 		prefix = join(parts, '_')
 		if prefix not in _counters:
 			_counters[prefix] = 0
