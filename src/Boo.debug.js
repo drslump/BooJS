@@ -8,6 +8,9 @@
 (function (exports, undefined) {
     var sourcemaps = [];
 
+    // Allow to override the console with a mock
+    Boo.console = console;
+
     // Override the sourcemap registry implementation
     Boo.sourcemap = function (srcmap) {
         sourcemaps.push(srcmap);
@@ -35,7 +38,6 @@
         try {
             fn.apply(Boo, args);
         } catch (e) {
-            console.log(e.stack);
             /*
             NOTE: Check for format examples: https://github.com/eriwen/javascript-stacktrace/blob/master/test/CapturedExceptions.js
 
@@ -132,10 +134,10 @@
                 }
 
                 var msg = e.name + ': ' + e.message + '\n   ' + stack.join('\n   ');
-                if ('warn' in console) {
-                    console.warn(msg);
-                } else if ('log' in console) {
-                    console.log(msg);
+                if ('warn' in Boo.console) {
+                    Boo.console.warn(msg);
+                } else if ('log' in Boo.console) {
+                    Boo.console.log(msg);
                 } else {
                     // If the console is not available replace the exception message
                     e.message = msg;
