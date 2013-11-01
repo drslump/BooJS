@@ -86,7 +86,7 @@
 
                     // Handle stuff like evals
                     // at eval (eval at <anonymous> (file:///generators.html:213:22), <anonymous>:17:11)
-                    if (/\beval\b/.test(frame) && (m = frame.match(/:(\d+):(\d+)\)[^ ]*$/)) {
+                    if (/\beval\b/.test(frame) && (m = frame.match(/:(\d+):(\d+)\)[^ ]*$/))) {
                         ident = '<anonymous>';
                         file = '<anonymous>';
                         line = parseInt(m[1], 10) - 1;
