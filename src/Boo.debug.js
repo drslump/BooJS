@@ -95,7 +95,7 @@
                         line = parseInt(m[3], 10) - 1;
                         column = m[4] ? parseInt(m[5], 10) - 1 : -1;
                     // Unrecognized
-                    } else if (m = frame.match(/((?:\w+:\/\/)?[\w\d\.\/\\_-]+):(\d+)([:,](\d+))?/)) {
+                    } else if (m = frame.match(/((?:\w+:\/\/)?[\w\d\.\/\\_=\+-]+):(\d+)([:,](\d+))?/)) {
                         ident = '<anonymous>';
                         file = m[1];
                         line = parseInt(m[2], 10) - 1;
