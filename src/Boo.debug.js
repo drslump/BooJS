@@ -102,6 +102,14 @@
                         file = m[1];
                         line = parseInt(m[2], 10) - 1;
                         column = m[3] ? parseInt(m[4], 10) - 1 : -1;
+                    // Handle stuff like evals
+                    // at eval (eval at <anonymous> (file:///generators.html:213:22), <anonymous>:17:11)
+                    } else if (m = frame.match(/:(\d+):(\d+)\)[^ ]*$/)) {
+                        ident = '<anonymous>';
+                        file = '<anonymous>';
+                        line = parseInt(m[1], 10) - 1;
+                        column = parseInt(m[2], 10) - 1;
+
                     // Unfortunately nothing useful was found
                     } else {
                         // If it's indented it looks like a frame so perhaps we may be interested in it
