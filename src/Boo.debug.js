@@ -84,8 +84,15 @@
                         continue;
                     }
 
+                    // Handle stuff like evals
+                    // at eval (eval at <anonymous> (file:///generators.html:213:22), <anonymous>:17:11)
+                    if (/\beval\b/.test(frame) && (m = frame.match(/:(\d+):(\d+)\)[^ ]*$/)) {
+                        ident = '<anonymous>';
+                        file = '<anonymous>';
+                        line = parseInt(m[1], 10) - 1;
+                        column = parseInt(m[2], 10) - 1;
                     // Chrome: 'at func (file:///path/to/file.js:4:9)'
-                    if (m = frame.match(/^\s+at\s+([^\s]+)\s+\((.+?):(\d+):(\d+)\)$/)) {
+                    } else if (m = frame.match(/^\s+at\s+([^\s]+)\s+\((.+?):(\d+):(\d+)\)$/)) {
                         ident = m[1].replace('Object.<anonymous>', '<anonymous>').replace('Object.', '');
                         file = m[2];
                         line = parseInt(m[3], 10) - 1;
@@ -102,13 +109,6 @@
                         file = m[1];
                         line = parseInt(m[2], 10) - 1;
                         column = m[3] ? parseInt(m[4], 10) - 1 : -1;
-                    // Handle stuff like evals
-                    // at eval (eval at <anonymous> (file:///generators.html:213:22), <anonymous>:17:11)
-                    } else if (m = frame.match(/:(\d+):(\d+)\)[^ ]*$/)) {
-                        ident = '<anonymous>';
-                        file = '<anonymous>';
-                        line = parseInt(m[1], 10) - 1;
-                        column = parseInt(m[2], 10) - 1;
 
                     // Unfortunately nothing useful was found
                     } else {
