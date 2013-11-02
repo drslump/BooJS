@@ -1,10 +1,17 @@
 namespace BooJs.Lang.Globals
 
+import BooJs.Lang.Extensions
+
 
 class Object(System.Object):
 """
 Serves as base for all JS types
 """
+    [Transform( $1 + $2 )]
+    static def op_Addition(lhs as object, rhs as string) as string:
+        pass
+
+
     public prototype as Object
 
     def hasOwnProperty(key as string) as bool:

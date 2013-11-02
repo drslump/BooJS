@@ -23,6 +23,10 @@ class String(Object, Iterable):
     static def op_Addition(lhs as string, rhs as double) as string:
         pass
 
+    [Transform( $1 + $2 )]
+    static def op_Addition(lhs as string, rhs as object) as string:
+        pass
+
     # Multiply operator: 'foo' * 2 --> 'foofoo'
     [Transform( Boo.String.op_Multiply($1, $2) )]
     static def op_Multiply(lhs as string, rhs as int) as string:
