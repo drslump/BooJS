@@ -1,3 +1,4 @@
-#!/bin/sh
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-env mono --debug $DIR/build/boojs.exe "$@"
+#!/bin/bash
+
+BASEDIR=$(dirname $0)
+env mono --debug $BASEDIR/src/boojs/bin/Debug/boojs.exe "$@"

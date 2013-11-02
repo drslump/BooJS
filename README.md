@@ -34,14 +34,14 @@ but also has a pretty intelligent compiler to help you in your development.
 
 ## Documentation
 
-BooJs specific features are being documented in the [github wiki](/drslump/boojs/wiki/) and automatically
-published in [ReadTheDocs](http://boojs.readthedocs.org).
+BooJs specific features are being documented in the [docs directory](/drslump/boojs/tree/master/docs) 
+and automatically published in [ReadTheDocs](http://boojs.readthedocs.org).
 
 ## Requirements
 
 The compiler works on Windows, Mac and Linux using the .Net or Mono runtimes.
 
-  - .Net 4.0 or Mono 2.x
+  - .Net 4.0 or Mono 3.x
 
 ## Building
 
@@ -58,12 +58,12 @@ The compiler works on Windows, Mac and Linux using the .Net or Mono runtimes.
   - Imperative idioms - 95%
   - Functional idioms - 90%
   - Closures (annonymous functions) - 75%
-  - Classes
+  - Classes - 10%
   - Namespaces and packaging - 75%
-  - Method overloading - 20%
+  - Method overloading - 40%
   - Operator overloading - 95%
-  - Events (Delegation / Observer pattern)
-  - Source Maps - 95%
+  - Events (Delegation / Observer pattern) - 10%
+  - Source Maps - 100%
   - Meta-programming (Macros, Syntactic attributes) - 70%
   - Preprocessor - 10%
   - Type hinted interfaces for common Javascript APIs (DOM, jQuery, HTML5...) 50%
