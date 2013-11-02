@@ -5,7 +5,6 @@ BASEDIR=$(dirname $0)
 if [ -x /usr/local/bin/cli ]; then
     env /usr/local/bin/cli $MONO_OPTIONS $BASEDIR/booi.exe $BOOI_OPTIONS "$@"
 else
-	echo "$BASEDIR/booi.exe"
     env mono $MONO_OPTIONS $BASEDIR/booi.exe $BOOI_OPTIONS "$@"
 fi
 

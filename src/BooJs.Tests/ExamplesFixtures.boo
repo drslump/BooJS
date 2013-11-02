@@ -1,4 +1,3 @@
-lib/booi.exe
 """
   Automatically generated!
   Fixture test cases from tests/fixtures/examples

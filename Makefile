@@ -14,7 +14,8 @@ HELPTEXT = "\
 \n    compile-tests  - compile the tests            \
 \n    test           - run uptodate tests           \
 \n    run            - run pre compiled tests       \
-\n    clean                      					\
+\n    clean          -             					\
+\n    rebuild        - compile everything           \
 \n    help                       					\
 \n                                                  \
 \n  Notes                        					\
@@ -54,7 +55,7 @@ else
 	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 endif
 
-rebuild: generate-fixtures compile compile-tests
+rebuild: clean compile generate-fixtures compile-tests
 
 generate-fixtures:
 	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
