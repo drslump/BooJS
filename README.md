@@ -46,6 +46,8 @@ The compiler works on Windows, Mac and Linux using the .Net or Mono runtimes.
 ## Building
 
     $ msbuild src/boojs.sln   (xbuild in Mono)
+    
+For advanced build options run `make help`.
 
 ## Running
 
