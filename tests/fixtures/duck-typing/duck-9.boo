@@ -1,3 +1,4 @@
+#IGNORE: Type system, adapt to supported types
 _bool as bool = true
 _sbyte as System.SByte = cast(System.IConvertible, 2).ToSByte(null)
 _byte as byte = 2
