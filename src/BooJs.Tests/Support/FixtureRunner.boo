@@ -172,35 +172,37 @@ class FixtureRunner:
 
     static def setupInterpreter():
         if not self._engine:
-            self._engine = ScriptEngine()
+            engine = ScriptEngine()
             # Try to target older browser with ES3 (JS 1.5)
-            self._engine.CompatibilityMode = CompatibilityMode.ECMAScript3
+            engine.CompatibilityMode = CompatibilityMode.ECMAScript3
             # Force strict mode
-            self._engine.ForceStrictMode = true
+            engine.ForceStrictMode = true
 
             # TODO: Does this help us somehow to get better error reports?
             #engine.EnableDebugging = true
 
             # Configure the global environment
-            self._engine.SetGlobalFunction('setTimeout', Window.setTimeout)
+            engine.SetGlobalFunction('setTimeout', Window.setTimeout)
 
-            console = ConsoleMock(self._engine)
-            self._engine.SetGlobalValue('console', console)
+            console = ConsoleMock(engine)
+            engine.SetGlobalValue('console', console)
 
             # Load runtime
             stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('Boo.js')
             reader = System.IO.StreamReader(stream)
-            self._engine.Execute(reader.ReadToEnd())
+            engine.Execute(reader.ReadToEnd())
 
             # Patch the runtime to be compatible with Jurassic
-            self._engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
+            engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
 
             # Load tests support types
             stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('BooJs.Tests.Support.js')
             reader = System.IO.StreamReader(stream)
-            self._engine.Execute(reader.ReadToEnd())
+            engine.Execute(reader.ReadToEnd())
 
-            self._engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.Async.js')
+            engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.Async.js')
+            
+            self._engine = engine
 
         return self._engine
 
@@ -209,7 +211,6 @@ class FixtureRunner:
         print '----------------------------------------------[code]-'
         print code.Trim()
 
-        # TODO: Check if we can reuse the same engine
         using engine = setupInterpreter():
 
           console as ConsoleMock = engine.GetGlobalValue('console')
@@ -221,19 +222,13 @@ class FixtureRunner:
             Assert.AreEqual(expected, console.output())
           except ex:
             Window.clearTimers()
-
-            jsex = ex as Jurassic.JavaScriptException
-            if jsex:
-                jsobj = jsex.ErrorObject as Jurassic.Library.ObjectInstance
-                if jsobj and jsobj.HasProperty('boo_filename'):
-                  print join(('Exception: "', ex.Message, '" at ',
-                          jsobj.GetPropertyValue('boo_filename'), ':',
-                          jsobj.GetPropertyValue('boo_line')
-                      ), '')
+            
+            if jsex = ex as Jurassic.JavaScriptException:
+                print '---------------------------------------------[error]-'
+                print "{0} at {1}@{2}:{3}" % (jsex.Message, jsex.FunctionName, jsex.SourcePath, jsex.LineNumber)
 
             print '--------------------------------------------[output]-'
             print console.output()
             print '-----------------------------------------------------'
 
             raise
-
