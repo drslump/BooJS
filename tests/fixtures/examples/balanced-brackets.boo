@@ -15,4 +15,4 @@ def balanced(txt):
     return braced == 0
 
 for s in ('[]', '[[]', '[]]', '[[][]]', '[[[]]'):
-	print s, balanced(s)
+    print s, balanced(s)

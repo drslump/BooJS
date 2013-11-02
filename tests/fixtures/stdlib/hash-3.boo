@@ -19,14 +19,14 @@ for key, value in [(k, v) for k, v in h].sort():
 # We can also use enumerate to get an array of (k, v) pairs
 for key, value in enumerate(h).sort():
     print key, '=', value
-	
+    
 # .items() is an alias to enumerate(h)
 for key, value in h.items().sort():
-	print key, '=', value
+    print key, '=', value
 
 # .keys() obtains only the keys
 for key in h.keys():
-	print key
+    print key
 
 # .values() obtains only the keys
 for value in h.values():
