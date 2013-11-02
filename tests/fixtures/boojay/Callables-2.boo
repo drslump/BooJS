@@ -1,3 +1,4 @@
+#IGNORE: Callable types definitions not supported yet
 """
 4
 8
