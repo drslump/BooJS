@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.TypeSystem</RootNamespace>
     <AssemblyName>BooJs.Compiler.TypeSystem</AssemblyName>
-    <BooBinPath>..\..\lib\</BooBinPath>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -42,11 +42,11 @@
     <Compile Include="RuntimeMethodCache.boo" />
     <Compile Include="TypeSystemServices.boo" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">
       <Project>{D910050A-F1F8-4773-9E34-8252BBE1CDFE}</Project>
       <Name>BooJs.Lang</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

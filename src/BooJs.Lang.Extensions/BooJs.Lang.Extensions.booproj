@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Lang.Extensions</RootNamespace>
     <AssemblyName>BooJs.Lang.Extensions</AssemblyName>
-    <BooBinPath>..\..\lib</BooBinPath>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -48,5 +48,5 @@
     <Compile Include="Extern.boo" />
     <Compile Include="VarArgs.boo" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

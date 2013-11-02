@@ -7,9 +7,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EF0D7427-0168-48BF-A021-0956B9D1C22A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>BooJs.Test</RootNamespace>
-    <AssemblyName>BooJs.Test</AssemblyName>
-    <BooBinPath>..\..\lib</BooBinPath>
+    <RootNamespace>BooJs.Tests</RootNamespace>
+    <AssemblyName>BooJs.Tests</AssemblyName>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -103,7 +103,6 @@
     <Compile Include="Support\FixtureRunner.boo" />
     <Compile Include="ClassesFixtures.boo" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <Folder Include="Support\" />
     <Folder Include="resources\" />
@@ -119,4 +118,5 @@
       <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
     </EmbeddedResource>
   </ItemGroup>
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

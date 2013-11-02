@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler</RootNamespace>
     <AssemblyName>BooJs.Compiler</AssemblyName>
-    <BooBinPath>..\..\lib\</BooBinPath>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -136,5 +136,5 @@
       <LogicalName>Boo.js</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

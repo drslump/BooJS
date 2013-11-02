@@ -15,10 +15,10 @@
     <Strict>False</Strict>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <BooBinPath>..\..\lib</BooBinPath>
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug</OutputPath>
@@ -105,11 +105,11 @@
     <Folder Include="Macros\" />
     <Folder Include="Browser\" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang.Extensions\BooJs.Lang.Extensions.booproj">
       <Project>{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}</Project>
       <Name>BooJs.Lang.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

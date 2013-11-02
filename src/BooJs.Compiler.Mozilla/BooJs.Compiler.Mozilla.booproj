@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.Mozilla</RootNamespace>
     <AssemblyName>BooJs.Compiler.Mozilla</AssemblyName>
-    <BooBinPath>..\..\lib\</BooBinPath>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -53,5 +53,5 @@
       <Name>BooJs.Compiler.SourceMap</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

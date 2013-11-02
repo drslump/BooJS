@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Compiler.SourceMap</RootNamespace>
     <AssemblyName>BooJs.Compiler.SourceMap</AssemblyName>
-    <BooBinPath>..\..\lib\</BooBinPath>
+    <BooToolPath Condition=" '$(BooToolPath)' == '' ">$(MSBuildProjectDirectory)/../../lib</BooToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -43,5 +43,5 @@
     <Compile Include="Base64VLQ.boo" />
     <Compile Include="MapBuilder.boo" />
   </ItemGroup>
-  <Import Project="..\..\lib\Boo.Microsoft.Build.targets" />
+  <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>
