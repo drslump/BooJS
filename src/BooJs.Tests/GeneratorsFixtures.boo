@@ -1,3 +1,4 @@
+lib/booi.exe
 """
   Automatically generated!
   Fixture test cases from tests/fixtures/generators
@@ -5,7 +6,6 @@
 namespace BooJs.Tests
 
 import BooJs.Tests.Support
-
 import NUnit.Framework
 
 [TestFixture]

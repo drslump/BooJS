@@ -1,11 +1,12 @@
+lib/booi.exe
 """
   Automatically generated!
   Fixture test cases from tests/fixtures/typesystem
 """
 namespace BooJs.Tests
 
+import BooJs.Tests.Support
 import NUnit.Framework
-import BooJs.Tests.Support(FixtureRunner)
 
 [TestFixture]
 class TypesystemFixtures:

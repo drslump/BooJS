@@ -13,7 +13,7 @@ if not len(argv):
   print "Usage: booi script.boo -- path/to/fixtures/directory"
   return
 
-path = argv[1]
+path = argv[0]
 
 name = Path.GetFileNameWithoutExtension(path)
 name = name[:1].ToUpper() + name[1:]
