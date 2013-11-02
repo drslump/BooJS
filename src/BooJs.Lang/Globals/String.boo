@@ -32,6 +32,14 @@ class String(Object, Iterable):
     static def op_Modulus(lhs as String, rhs as Array) as string:
         pass
 
+    [Transform( RegExp($2).test($1) )]
+    static def op_Match(lhs as string, rhs as string) as bool:
+        pass
+
+    [Transform( not RegExp($2).test($1) )]
+    static def op_NotMatch(lhs as string, rhs as string) as bool:
+        pass
+
 
     # Static methods
 
