@@ -1,14 +1,13 @@
 namespace boojs
 
-import System
 import System.Reflection
-import System.Diagnostics(Trace, TraceLevel, TextWriterTraceListener)
-import System.IO as SysIO
+from System.Diagnostics import Trace, TraceLevel, TextWriterTraceListener
+from System import Environment, IO as SysIO
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.CompilerContext as BooCompilerContext
 import Boo.Lang.Compiler.IO
 import BooJs.Compiler
-import BooJs.Compiler.Pipelines(SaveJs, newBooJsCompiler)
+from BooJs.Compiler.Pipelines import SaveJs, newBooJsCompiler
 import BooJs.Compiler.CompilerParameters as JsCompilerParameters
 import BooJs.Compiler.CompilerContext as JsCompilerContext
 

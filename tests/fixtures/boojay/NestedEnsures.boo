@@ -33,7 +33,6 @@ outer ensure
 Caught: Exception from outer ensure
 =====
 """
-namespace generators
 
 def nestedEnsures():
     try:
@@ -56,13 +55,12 @@ def nestedEnsures():
         raise "Exception from outer ensure"
 
 def consume(strings as string*, count as int):
-    enumerator = strings
+    enumerator = strings.iterator()
     try:
         for i in range(count):
             print enumerator.next()
-        enumerator.close()
     except ex:
-        print "Caught: ${ex.message()}"
+        print "Caught: $(ex.message)"
 
 for i in range(5):
     print "Test ${i}"

@@ -68,9 +68,9 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
         # HACK: The ICallable interface declares a generic Call method with object arguments
         #       and return type. In order to support jQuery style APIs we detect the ICallable
         #       trying to modify it by using a better match among the methods named Call in
-        #       the declarting type.
+        #       the declaring type.
         # TODO: Perhaps it's better to keep ICallable implementation as is and use an attribute
-        #       or a custom interface to signal this behaviour.
+        #       or a custom interface to signal this behavior.
         target = node.Target as MemberReferenceExpression
         if target and target.Entity == MethodCache.ICallable_Call:
             # Find the original declaring type and fetch all its Call methods
@@ -189,10 +189,10 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     virtual protected def GetGeneratorReturnType(generator as Internal.InternalMethod) as IType:
         # TODO: DO WE NEED THIS?
 
-        // Make method return a generic IEnumerable
+        # Make method return a generic IEnumerable
         itemType = my(GeneratorItemTypeInferrer).GeneratorItemTypeFor(generator)
         if TypeSystemServices.VoidType == itemType:
-            // circunvent exception in MakeGenericType
+            # circumvent exception in MakeGenericType
             return TypeSystemServices.ErrorEntity
 
         enumerableType = (TypeSystemServices as BooJs.Compiler.TypeSystem.TypeSystemServices).IGeneratorGenericType

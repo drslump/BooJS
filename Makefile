@@ -31,7 +31,7 @@ MSBUILD_PATH=xbuild
 MSBUILD_OPTS=/nologo /verbosity:quiet
 
 NUNIT_PATH=/Library/Frameworks/Mono.framework/Commands/nunit-console4
-NUNIT_OPTS=-nologo -domain=single -output=/tmp/nunit-stdout
+NUNIT_OPTS=-nologo -domain=single -noshadow -output=/tmp/nunit-stdout
 
 
 all: test
