@@ -5,10 +5,11 @@ def stackTrace(code as callable()):
 		return x.toString()
 
 s = stackTrace:
-	cast(duck, 3).Foo()
+	s as duck = 3
+	s.Foo()
 
 // we expect to see line 3 and line 8 in there
-assert 2 == len(/exceptions-3/.match(s))	
+assert 'TypeError' == /TypeError/.exec(s)
 	
 	
 	

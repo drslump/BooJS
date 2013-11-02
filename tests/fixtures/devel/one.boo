@@ -18,7 +18,7 @@ my_String as String = 'string'
 my_RegExp as RegExp = /foobar/i
 #my_Function as Function = {x as int| x * 2}
 my_Object as Object = {}
-my_Object.foo = 'foo'
+#my_Object.foo = 'foo'
 
 # Arrays
 my_array_int as (int) = (1,2,3)
