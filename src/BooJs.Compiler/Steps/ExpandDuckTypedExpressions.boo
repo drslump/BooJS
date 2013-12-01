@@ -1,9 +1,8 @@
 namespace BooJs.Compiler.Steps
 
-import System
-import Boo.Lang.Compiler.Steps.ExpandDuckTypedExpressions as BooStep
-import Boo.Lang.Compiler.TypeSystem
-import BooJs.Lang(RuntimeServices)
+from Boo.Lang.Compiler.Steps import ExpandDuckTypedExpressions as BooStep
+from Boo.Lang.Compiler.TypeSystem import IType
+from BooJs.Lang import RuntimeServices
 
 
 class ExpandDuckTypedExpressions(BooStep):

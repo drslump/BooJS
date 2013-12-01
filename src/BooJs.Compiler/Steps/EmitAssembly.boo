@@ -1,11 +1,11 @@
 namespace BooJs.Compiler.Steps
 
-import System.IO
+from System import Guid
+from System.IO import Path
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler(CompilerContext)
-import Boo.Lang.Compiler.Steps.EmitAssembly as BooEmitAssembly
-import Boo.Lang.Compiler.Steps(ContextAnnotations)
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler import CompilerContext
+from Boo.Lang.Compiler.Steps import EmitAssembly as BooEmitAssembly, ContextAnnotations
 
 
 # TODO: Do not remove non visible types which are referenced (inherited, arguments, etc.)

@@ -1,6 +1,6 @@
 namespace Browser
 
-import BooJs.Lang.Extensions
+from BooJs.Lang.Extensions import ExternAttribute, TransformAttribute
 
 
 [extern]

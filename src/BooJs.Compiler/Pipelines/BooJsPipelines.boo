@@ -1,9 +1,8 @@
 namespace BooJs.Compiler.Pipelines
 
-import Boo.Lang.Compiler(CompilerPipeline)
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.Pipelines as BooPipelines
-import BooJs.Compiler.Steps as Steps
+from Boo.Lang.Compiler.Steps import *
+from Boo.Lang.Compiler import CompilerPipeline, Pipelines as BooPipelines
+from BooJs.Compiler import Steps
 
 
 def PatchBooPipeline(pipe as CompilerPipeline):

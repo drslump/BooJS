@@ -1,6 +1,6 @@
 namespace BooJs.Compiler.Mozilla
 
-import System.IO(TextWriter)
+from System.IO import TextWriter
 
 
 class AstPrinter(Printer):

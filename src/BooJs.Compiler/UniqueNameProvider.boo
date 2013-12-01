@@ -1,6 +1,6 @@
 namespace BooJs.Compiler
 
-import Boo.Lang.Compiler.Services.UniqueNameProvider as BooUniqueNameProvider
+from Boo.Lang.Compiler.Services import UniqueNameProvider as BooUniqueNameProvider
 
 
 class UniqueNameProvider(BooUniqueNameProvider):

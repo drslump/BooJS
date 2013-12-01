@@ -1,14 +1,13 @@
 namespace BooJs.Compiler.Steps
 
-import System(Convert)
-import System.Text(Encoding)
-import System.IO(Path, File, Directory, StreamWriter, MemoryStream, Compression)
+from System import Convert
+from System.Text import Encoding
+from System.IO import Path, File, Directory, StreamWriter, MemoryStream, Compression
 
-import Boo.Lang.Compiler.Steps(AbstractCompilerStep, ContextAnnotations)
-import BooJs.Compiler.CompilerContext as JsContext
-import BooJs.Compiler.CompilerParameters as JsParameters
-import BooJs.Compiler.Mozilla(JsPrinter)
-import BooJs.Compiler.SourceMap(MapBuilder)
+from Boo.Lang.Compiler.Steps import AbstractCompilerStep, ContextAnnotations
+from BooJs.Compiler import CompilerContext as JsContext, CompilerParameters as JsParameters
+from BooJs.Compiler.Mozilla import JsPrinter
+from BooJs.Compiler.SourceMap import MapBuilder
 
 
 class Save(AbstractCompilerStep):

@@ -1,12 +1,12 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
+from Boo.Lang.Compiler import CompilerContext
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 
-import Boo.Lang.Environments
-import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache
-import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
+from Boo.Lang.Environments import EnvironmentProvision
+from Boo.Lang.Compiler.TypeSystem.Services import RuntimeMethodCache as BooRuntimeMethodCache
+from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 
 class NormalizeMethodInvocation(AbstractTransformerCompilerStep):

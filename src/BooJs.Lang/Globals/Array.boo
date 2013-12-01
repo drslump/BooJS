@@ -1,8 +1,7 @@
 namespace BooJs.Lang.Globals
 
-import BooJs.Lang.Extensions
-
-import System(Func)
+from System import Func
+from BooJs.Lang.Extensions import TransformAttribute, VarArgsAttribute
 
 
 class Array[of T] (Object, Iterable[of T]):

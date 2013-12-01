@@ -1,6 +1,6 @@
 namespace BooJs.Lang.Globals
 
-import BooJs.Lang.Extensions
+from BooJs.Lang.Extensions import TransformAttribute
 
 
 [EnumeratorItemType(String)]

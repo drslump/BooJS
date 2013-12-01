@@ -3,8 +3,8 @@ Implementation of Mozilla's SpiderMonkey Parser API
 """
 namespace BooJs.Compiler.Mozilla
 
-import System
-import System.Reflection(BindingFlags)
+from System import MissingMethodException
+from System.Reflection import BindingFlags
 
 
 interface INode:

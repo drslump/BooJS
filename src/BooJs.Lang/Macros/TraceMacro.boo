@@ -1,7 +1,7 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.Compiler(CompilerContext)
-import Boo.Lang.Compiler.Ast(StringLiteralExpression)
+from Boo.Lang.Compiler import CompilerContext
+from Boo.Lang.Compiler.Ast import StringLiteralExpression
 
 
 macro trace:

@@ -1,7 +1,8 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.PatternMatching
+from System import ArgumentException
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.PatternMatching import *
 
 
 macro const:
@@ -14,4 +15,4 @@ macro const:
             public static final $name = $r
         |]
     otherwise:
-        raise System.ArgumentException('Expected an assignment (ie: const foo = 10)')
+        raise ArgumentException('Expected an assignment (ie: const foo = 10)')

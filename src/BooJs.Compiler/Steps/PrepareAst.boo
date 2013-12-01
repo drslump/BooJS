@@ -1,17 +1,17 @@
 namespace BooJs.Compiler.Steps
 
 import Boo.Lang.Compiler
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep, IntroduceModuleClasses
 
-import Boo.Lang.Environments
-import Boo.Lang.Compiler.TypeSystem(EntityType)
-import Boo.Lang.Compiler.TypeSystem.Services.RuntimeMethodCache as BooRuntimeMethodCache
-import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
-import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
-import BooJs.Lang.Extensions
+from Boo.Lang.Environments import EnvironmentProvision
+from Boo.Lang.Compiler.TypeSystem import EntityType
+from Boo.Lang.Compiler.TypeSystem.Services import RuntimeMethodCache as BooRuntimeMethodCache
+from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
+from BooJs.Compiler.TypeSystem import RuntimeMethodCache
+from BooJs.Lang.Extensions import TransformAttribute, VarArgsAttribute
 
-import System.Runtime.CompilerServices(CompilerGeneratedAttribute)
+from System.Runtime.CompilerServices import CompilerGeneratedAttribute
 
 
 class PrepareAst(AbstractTransformerCompilerStep):

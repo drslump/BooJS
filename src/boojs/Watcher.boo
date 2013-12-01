@@ -1,9 +1,10 @@
 namespace boojs
 
-import System.IO
-import System(Console, ConsoleColor, DateTime)
-import BooJs.Compiler(CompilerContext)
-import BooJs.Compiler.Pipelines(BooJsCompiler)
+
+from System import Console, ConsoleColor, DateTime
+from System.IO import Path, FileSystemWatcher, FileSystemEventArgs
+from BooJs.Compiler import CompilerContext
+from BooJs.Compiler.Pipelines import BooJsCompiler
 
 
 def watch(compiler as BooJsCompiler, cmdline as CommandLine):

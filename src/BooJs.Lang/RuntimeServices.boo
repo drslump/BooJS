@@ -1,6 +1,6 @@
 namespace BooJs.Lang
 
-import BooJs.Lang.Extensions
+from BooJs.Lang.Extensions import TransformAttribute
 
 
 class RuntimeServices:

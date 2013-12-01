@@ -1,6 +1,7 @@
 namespace BooJs.Lang.Extensions
 
-import System
+from System import Attribute, AttributeUsageAttribute, AttributeTargets
+
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Module | AttributeTargets.Enum | AttributeTargets.Struct)]
 class ExternAttribute(Attribute):

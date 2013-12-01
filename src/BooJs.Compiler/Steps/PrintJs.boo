@@ -1,9 +1,9 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Steps(AbstractCompilerStep)
+from Boo.Lang.Compiler.Steps import AbstractCompilerStep
 
-import BooJs.Compiler.CompilerContext as JsContext
-import BooJs.Compiler.Mozilla(JsPrinter)
+from BooJs.Compiler import CompilerContext as JsContext
+from BooJs.Compiler.Mozilla import JsPrinter
 
 
 class PrintJs(AbstractCompilerStep):

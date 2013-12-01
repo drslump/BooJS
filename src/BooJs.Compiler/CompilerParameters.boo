@@ -1,11 +1,12 @@
 namespace BooJs.Compiler
 
-import Boo.Lang.Compiler.TypeSystem.Reflection
-import Boo.Lang.Compiler.CompilerParameters as BooCompilerParameters
+from Boo.Lang.Compiler.TypeSystem.Reflection import *
+from Boo.Lang.Compiler import CompilerParameters as BooCompilerParameters
 
-import System.Reflection(Assembly)
-import System.IO(File, StreamReader, MemoryStream, Compression)
-import System(Convert)
+from System.Reflection import Assembly
+from System.IO import File, StreamReader, MemoryStream, Compression
+from System import Convert
+
 
 class CompilerParameters(BooCompilerParameters):
 

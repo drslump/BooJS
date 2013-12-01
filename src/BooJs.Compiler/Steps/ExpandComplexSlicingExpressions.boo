@@ -1,10 +1,10 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler(CompilerErrorFactory, CompilerContext)
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
-import Boo.Lang.Compiler.TypeSystem(IType, IMethod)
-import Boo.Lang.Compiler.TypeSystem.Services(TypeCompatibilityRules)
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler import CompilerErrorFactory, CompilerContext
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
+from Boo.Lang.Compiler.TypeSystem import IType, IMethod
+from Boo.Lang.Compiler.TypeSystem.Services import TypeCompatibilityRules
 
 
 class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):

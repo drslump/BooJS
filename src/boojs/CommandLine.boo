@@ -1,7 +1,7 @@
 namespace boojs
 
-import System.IO
-import Boo.Lang.Useful.CommandLine from Boo.Lang.Useful
+from System.IO import Directory, Path
+from Boo.Lang.Useful.CommandLine import *
 
 class CommandLine(AbstractCommandLine):
 

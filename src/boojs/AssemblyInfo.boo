@@ -1,5 +1,5 @@
-﻿import System.Reflection
-import System.Runtime.InteropServices
+﻿from System.Reflection import *
+from System.Runtime.InteropServices import *
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information

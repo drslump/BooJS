@@ -1,13 +1,13 @@
 namespace BooJs.Compiler.Steps
 
-import System.Reflection
-import Boo.Lang.Environments
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.TypeSystem(ExternalMethod, IExternalEntity, IMethod,
-                                    Reflection, Internal, IType,
-                                    BuiltinFunction, BuiltinFunctionType)
-import Boo.Lang.Compiler.Steps.Generators(GeneratorItemTypeInferrer)
+from System.Reflection import BindingFlags
+from Boo.Lang.Environments import my
+from Boo.Lang.Compiler.Steps import ProcessMethodBodies, ProcessMethodBodiesWithDuckTyping
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.TypeSystem import ExternalMethod, IExternalEntity, IMethod, \
+                                         Reflection, Internal, IType,              \
+                                         BuiltinFunction, BuiltinFunctionType
+from Boo.Lang.Compiler.Steps.Generators import GeneratorItemTypeInferrer
 
 
 class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):

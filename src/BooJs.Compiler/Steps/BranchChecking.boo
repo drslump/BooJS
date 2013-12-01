@@ -1,7 +1,7 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps.BranchChecking as BooStep
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import BranchChecking as BooStep
 
 
 class BranchChecking(BooStep):

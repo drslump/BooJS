@@ -1,8 +1,8 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.TypeSystem(Ambiguous, Internal, EntityType)
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
+from Boo.Lang.Compiler.TypeSystem import Ambiguous, Internal, EntityType
 
 
 class MethodOverloading(AbstractFastVisitorCompilerStep):

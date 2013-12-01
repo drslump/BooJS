@@ -1,11 +1,10 @@
 namespace BooJs.Compiler.Steps
 
-import System
-import Boo.Lang.Compiler(CompilerErrorFactory)
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.TypeSystem.Internal
-import Boo.Lang.PatternMatching
+from Boo.Lang.Compiler import CompilerErrorFactory
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
+from Boo.Lang.Compiler.TypeSystem.Internal import *
+from Boo.Lang.PatternMatching import *
 
 
 class ProcessGenerators(AbstractTransformerCompilerStep):

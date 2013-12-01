@@ -7,9 +7,9 @@ Ref: http://www.w3.org/TR/2dcontext/
 
 namespace BooJs.Lang.Browser
 
-import BooJs.Lang.Extensions
-import BooJs.Lang.Globals
-import BooJs.Lang.Browser.Dom3(Element)
+from BooJs.Lang.Extensions import ExternAttribute
+from BooJs.Lang.Browser.Dom3 import Element
+from BooJs.Lang.Globals import *
 
 
 [Extern]

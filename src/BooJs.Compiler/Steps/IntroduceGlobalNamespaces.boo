@@ -1,7 +1,7 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Steps.IntroduceGlobalNamespaces as BooStep
-import Boo.Lang.Compiler.TypeSystem.Core
+from Boo.Lang.Compiler.TypeSystem.Core import NamespaceDelegator
+from Boo.Lang.Compiler.Steps import IntroduceGlobalNamespaces as BooStep
 
 
 class IntroduceGlobalNamespaces(BooStep):

@@ -1,8 +1,8 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.TypeSystem
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.TypeSystem import *
 
 
 class ExpandVarArgsMethodInvocations(AbstractFastVisitorCompilerStep):

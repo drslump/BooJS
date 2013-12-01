@@ -1,4 +1,4 @@
-import Boo.Lang.Compiler.Ast
+from Boo.Lang.Compiler.Ast import MethodInvocationExpression
 
 
 [meta]

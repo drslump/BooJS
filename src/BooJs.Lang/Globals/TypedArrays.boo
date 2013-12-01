@@ -1,6 +1,4 @@
 # Ref: http://www.khronos.org/registry/typedarray/specs/latest/
-
-
 namespace BooJs.Lang.Globals
 
 

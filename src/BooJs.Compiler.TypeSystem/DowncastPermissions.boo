@@ -1,8 +1,8 @@
 namespace BooJs.Compiler.TypeSystem
 
-import Boo.Lang.Compiler.TypeSystem(IType)
-import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
-import Boo.Lang.Compiler.TypeSystem.Services.DowncastPermissions as BooDowncastPermissions
+from Boo.Lang.Compiler.TypeSystem import IType
+from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
+from Boo.Lang.Compiler.TypeSystem.Services import DowncastPermissions as BooDowncastPermissions
 
 
 class DowncastPermissions(BooDowncastPermissions):

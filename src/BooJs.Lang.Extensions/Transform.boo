@@ -1,10 +1,10 @@
 namespace BooJs.Lang.Extensions
 
-import System
+from System import AttributeUsageAttribute, AttributeTargets, ArgumentNullException, Enum
 
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Parser(BooParser)
+from Boo.Lang.Compiler import AbstractAstAttribute, TypeSystem
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Parser import BooParser
 
 
 [AttributeUsage(AttributeTargets.All ^ AttributeTargets.Assembly)]
@@ -84,7 +84,7 @@ class TransformAttribute(AbstractAstAttribute):
             raise 'Transforms to type {0} are not supported' % (expr.NodeType, )
 
         # Attach an attribute with the serialization
-        attr = Ast.Attribute()
+        attr = Attribute()
         attr.Name = self.GetType().FullName + '.TransformAsmAttribute'
         attr.Arguments.Add(StringLiteralExpression(expr.NodeType.ToString()))
         attr.Arguments.Add(StringLiteralExpression(expr.ToCodeString()))

@@ -1,7 +1,7 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Steps(AbstractFastVisitorCompilerStep)
-import Boo.Lang.Compiler.Ast
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
 
 
 class ApplyPlaceholderParameters(AbstractFastVisitorCompilerStep):

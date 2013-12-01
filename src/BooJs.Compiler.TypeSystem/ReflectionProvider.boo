@@ -1,10 +1,9 @@
 namespace BooJs.Compiler.TypeSystem
 
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.Compiler.TypeSystem.Reflection.ExternalType as ExternalType
-import Boo.Lang.Compiler.TypeSystem.Reflection.ReflectionTypeSystemProvider as BooProvider
+from Boo.Lang.Compiler.TypeSystem import IType, Types
+from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType, ReflectionTypeSystemProvider as BooProvider
+from BooJs.Lang import Globals, Builtins
 
-import BooJs.Lang
 
 class ReflectionProvider(BooProvider): #IReflectionTypeSystemProvider):
 """ Tells the compiler how it should interpret reflected types """

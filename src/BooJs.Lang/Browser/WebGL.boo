@@ -4,8 +4,8 @@
 
 namespace BooJs.Lang.Browser
 
-import BooJs.Lang.Globals
-import BooJs.Lang.Browser.Dom2(Element)
+from BooJs.Lang.Globals import *
+from BooJs.Lang.Browser.Dom2 import Element
 
 
 interface WebGLObject:

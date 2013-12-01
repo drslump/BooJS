@@ -1,11 +1,11 @@
 namespace BooJs.Lang.Async
 
-import System
-import Boo.Lang.Environments
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.Ast
+from System import AttributeUsageAttribute, AttributeTargets
+from Boo.Lang.Environments import my
+from Boo.Lang.Compiler import AbstractAstAttribute, CompilerWarningFactory, CompilerContext
+from Boo.Lang.Compiler.Ast import *
 
-import BooJs.Lang.Extensions
+from BooJs.Lang.Extensions import TransformAttribute
 
 
 [Transform( _value_ )]

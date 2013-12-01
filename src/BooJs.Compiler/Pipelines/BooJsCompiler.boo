@@ -1,17 +1,14 @@
 ﻿namespace BooJs.Compiler.Pipelines
 
-import System
+from System import InvalidOperationException, ArgumentNullException
+from Boo.Lang.Environments import DeferredEnvironment
+from Boo.Lang.Compiler import BooCompiler, CompilerParameters
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Services import UniqueNameProvider as BooUniqueNameProvider
+from Boo.Lang.Compiler.TypeSystem import TypeSystemServices
+from Boo.Lang.Compiler.TypeSystem.Services import DowncastPermissions
 
-import Boo.Lang.Environments
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Services.UniqueNameProvider as BooUniqueNameProvider
-import Boo.Lang.Compiler.TypeSystem(TypeSystemServices)
-import Boo.Lang.Compiler.TypeSystem.Services(DowncastPermissions)
-
-import BooJs.Compiler(UniqueNameProvider)
-import BooJs.Compiler.TypeSystem as BooJsTypeSystem
-# import BooJs.Compiler.Pipelines as Pipelines
+from BooJs.Compiler import UniqueNameProvider, CompilerContext, TypeSystem as BooJsTypeSystem
 
 
 class BooJsCompiler(BooCompiler):
@@ -26,7 +23,7 @@ class BooJsCompiler(BooCompiler):
         if not Parameters.Pipeline:
             raise InvalidOperationException(Boo.Lang.Resources.StringResources.BooC_CantRunWithoutPipeline)
 
-        ctxt = BooJs.Compiler.CompilerContext(Parameters, unit)
+        ctxt = CompilerContext(Parameters, unit)
         Parameters.Pipeline.Run(ctxt)
 
         return ctxt

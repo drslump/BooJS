@@ -1,7 +1,8 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
+
 
 class ProcessTry(AbstractTransformerCompilerStep):
 """

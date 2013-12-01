@@ -1,6 +1,7 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.MetaAttribute as BooMetaAttribute
+from Boo.Lang import MetaAttribute as BooMetaAttribute
+
 
 class MetaAttribute(BooMetaAttribute):
 """

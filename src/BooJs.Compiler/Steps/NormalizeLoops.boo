@@ -1,14 +1,13 @@
 namespace BooJs.Compiler.Steps
 
-import System
-import Boo.Lang.Environments
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps(AbstractTransformerCompilerStep)
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.Compiler(CompilerContext)
-import Boo.Lang.PatternMatching
+from Boo.Lang.Environments import my
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
+from Boo.Lang.Compiler.TypeSystem import *
+from Boo.Lang.Compiler import CompilerContext
+from Boo.Lang.PatternMatching import *
 
-import BooJs.Compiler.TypeSystem.RuntimeMethodCache as RuntimeMethodCache
+from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 
 class NormalizeLoops(AbstractTransformerCompilerStep):

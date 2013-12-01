@@ -3,15 +3,16 @@
 
 namespace BooJs.Compiler.TypeSystem
 
-import System
-import System.Collections.Generic
-import System.Reflection
+from System import StringComparer
+from System.Collections.Generic import Dictionary
+from System.Reflection import MethodInfo
 
-import Boo.Lang.Compiler.Util
-import Boo.Lang.Compiler(AbstractCompilerComponent)
-import Boo.Lang.Compiler.TypeSystem(IMethod, IMethodBase, IConstructor)
+from Boo.Lang.Compiler.Util import Methods
+from Boo.Lang.Compiler import AbstractCompilerComponent
+from Boo.Lang.Compiler.TypeSystem import IMethod, IMethodBase, IConstructor
 
-import BooJs.Lang(Builtins, Globals, RuntimeServices)
+from BooJs.Lang import Builtins, Globals, RuntimeServices
+
 
 class RuntimeMethodCache(AbstractCompilerComponent):
 

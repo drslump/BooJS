@@ -8,13 +8,13 @@ Note: While fastJSON is much faster than JavaScriptSerializer the time spend
 """
 namespace boojs
 
-import System.IO
-import System(Console)
-import System.Diagnostics(Stopwatch, Trace, TraceListener, TraceEventCache, TraceEventType)
+from System import Console
+from System.IO import File
+from System.Diagnostics import Stopwatch, Trace, TraceListener, TraceEventCache, TraceEventType
 import System.Web.Script.Serialization(JavaScriptSerializer) from "System.Web.Extensions"
 
-import Boo.Hints(ProjectIndex, Commands)
-import Boo.Hints.Messages.Query as QueryMessage
+from Boo.Hints import ProjectIndex, Commands
+from Boo.Hints.Messages import Query as QueryMessage
 
 
 internal class PrefixedTraceListener(TraceListener):

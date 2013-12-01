@@ -1,7 +1,7 @@
 namespace BooJs.Compiler.Mozilla
 
-import System
-import System.Collections.Generic(IDictionary, Dictionary)
+from System import Type
+from System.Collections.Generic import IDictionary, Dictionary
 import System.Web.Script.Serialization(JavaScriptConverter, JavaScriptSerializer) from 'System.Web.Extensions'
 
 

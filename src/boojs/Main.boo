@@ -1,15 +1,12 @@
 namespace boojs
 
-import System.Reflection
+from System import Console, Environment, IO as SysIO
+from System.Reflection import Assembly
 from System.Diagnostics import Trace, TraceLevel, TextWriterTraceListener
-from System import Environment, IO as SysIO
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.CompilerContext as BooCompilerContext
-import Boo.Lang.Compiler.IO
-import BooJs.Compiler
+from Boo.Lang.Compiler import CompilerContext as BooCompilerContext
+from Boo.Lang.Compiler.IO import FileInput
 from BooJs.Compiler.Pipelines import SaveJs, newBooJsCompiler
-import BooJs.Compiler.CompilerParameters as JsCompilerParameters
-import BooJs.Compiler.CompilerContext as JsCompilerContext
+from BooJs.Compiler import CompilerParameters as JsCompilerParameters, CompilerContext as JsCompilerContext
 
 
 def loadAssembly(name as string):
@@ -51,9 +48,9 @@ def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
 
 def showErrorsWarnings(cmdLine as CommandLine, result as BooCompilerContext):
     for warning in result.Warnings:
-        System.Console.Error.WriteLine( warning )
+        Console.Error.WriteLine( warning )
     for error in result.Errors:
-        System.Console.Error.WriteLine( error.ToString(cmdLine.Verbose) )
+        Console.Error.WriteLine( error.ToString(cmdLine.Verbose) )
 
 def getOutputDirectory(cmdLine as CommandLine):
     return cmdLine.OutputDirectory

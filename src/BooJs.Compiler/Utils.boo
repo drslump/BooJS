@@ -1,14 +1,14 @@
 namespace BooJs.Compiler.Utils
 
-import Boo.Lang.Compiler
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.Compiler.TypeSystem.Services
-import Boo.Lang.Compiler.Ast
+from Boo.Lang.Compiler import *
+from Boo.Lang.Compiler.TypeSystem import *
+from Boo.Lang.Compiler.TypeSystem.Services import *
+from Boo.Lang.Compiler.Ast import *
 
-import Boo.Lang.Environments
-import Boo.Lang.PatternMatching
+from Boo.Lang.Environments import my
+from Boo.Lang.PatternMatching import *
 
-import BooJs.Lang.Extensions(ExternAttribute)
+from BooJs.Lang.Extensions import ExternAttribute
 
 
 def isExtern(node as Node):

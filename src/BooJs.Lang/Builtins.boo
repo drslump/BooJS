@@ -1,7 +1,7 @@
 namespace BooJs.Lang
 
-import BooJs.Lang.Globals
-import BooJs.Lang.Extensions
+from BooJs.Lang.Globals import Object, Iterable, Error, Array, String
+from BooJs.Lang.Extensions import TransformAttribute
 
 
 class Builtins:

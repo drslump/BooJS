@@ -1,14 +1,13 @@
 namespace BooJs.Compiler.Visitors
 
-import Boo.Lang.Environments
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.TypeSystem
-import Boo.Lang.PatternMatching
+from Boo.Lang.Environments import My
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.TypeSystem import *
+from Boo.Lang.PatternMatching import *
 
-import BooJs.Compiler(UniqueNameProvider)
-import BooJs.Compiler.Utils
-import BooJs.Compiler.TypeSystem(RuntimeMethodCache)
-import BooJs.Compiler.Mozilla as Moz
+from BooJs.Compiler.Utils import *
+from BooJs.Compiler import UniqueNameProvider, Mozilla as Moz
+from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 
 class MozillaAstVisitor(FastDepthFirstVisitor):

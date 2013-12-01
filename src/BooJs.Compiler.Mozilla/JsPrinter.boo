@@ -1,10 +1,8 @@
 namespace BooJs.Compiler.Mozilla
 
-import System.IO(TextWriter)
-
-import Boo.Lang.Compiler.Ast(Module)
-
-import BooJs.Compiler.SourceMap(MapBuilder)
+from System.IO import TextWriter
+from Boo.Lang.Compiler.Ast import Module
+from BooJs.Compiler.SourceMap import MapBuilder
 
 
 class JsPrinter(Printer):
@@ -315,7 +313,7 @@ class JsPrinter(Printer):
             quotes = 0
             result = ''
             for ch in (node.value as string):
-                if ch == char("'"):
+                if ch == char('\''): 
                     quotes++
                     result += ch
                 elif ch == char('"'):

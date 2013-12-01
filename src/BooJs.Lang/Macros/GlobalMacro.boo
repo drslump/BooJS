@@ -1,6 +1,6 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.Compiler.Ast
+from Boo.Lang.Compiler.Ast import *
 
 
 macro global:

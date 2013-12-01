@@ -1,9 +1,8 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Steps
-
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
 # import BooJs.Compiler.CompilerContext as JsCompilerContext
-import BooJs.Compiler.Visitors(MozillaAstVisitor)
+from BooJs.Compiler.Visitors import MozillaAstVisitor
 
 
 class MozillaAst(AbstractFastVisitorCompilerStep):

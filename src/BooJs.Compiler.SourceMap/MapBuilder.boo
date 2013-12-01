@@ -1,6 +1,6 @@
 namespace BooJs.Compiler.SourceMap
 
-import System.Collections.Generic(Dictionary)
+from System.Collections.Generic import Dictionary
 import System.Web.Script.Serialization(JavaScriptSerializer) from 'System.Web.Extensions'
 
 

@@ -1,6 +1,7 @@
 namespace BooJs.Lang.Extensions
 
-import System
+from System import Attribute, AttributeUsageAttribute, AttributeTargets
+
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor)]
 class VarArgsAttribute(Attribute):

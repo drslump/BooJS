@@ -1,11 +1,11 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.TypeSystem(EntityType)
-import Boo.Lang.Compiler.TypeSystem.Reflection(ExternalType)
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
+from Boo.Lang.Compiler.TypeSystem import EntityType
+from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
 
-import BooJs.Compiler.Utils
+from BooJs.Compiler.Utils import *
 
 
 class ProcessImports(AbstractTransformerCompilerStep):

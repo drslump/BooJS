@@ -1,6 +1,6 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.ExtensionAttribute as BooExtensionAttribute
+from Boo.Lang import ExtensionAttribute as BooExtensionAttribute
 
 class ExtensionAttribute(BooExtensionAttribute):
 """

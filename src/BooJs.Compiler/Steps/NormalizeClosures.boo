@@ -1,9 +1,9 @@
 namespace BooJs.Compiler.Steps
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler.Steps
-import Boo.Lang.Compiler.TypeSystem.Internal(InternalMethod)
-import Boo.Lang.PatternMatching
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler.Steps import AbstractFastVisitorCompilerStep
+from Boo.Lang.Compiler.TypeSystem.Internal import InternalMethod
+from Boo.Lang.PatternMatching import *
 
 
 class NormalizeClosures(AbstractFastVisitorCompilerStep):

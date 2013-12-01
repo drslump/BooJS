@@ -1,9 +1,8 @@
 namespace BooJs.Compiler.TypeSystem
 
-import Boo.Lang.Compiler.TypeSystem(BuiltinFunction, IType)
-import Boo.Lang.Compiler.TypeSystem.TypeSystemServices as BooServices
+from Boo.Lang.Compiler.TypeSystem import BuiltinFunction, IType, TypeSystemServices as BooServices
 
-import BooJs.Lang(Globals, Builtins, RuntimeServices)
+from BooJs.Lang import Globals, Builtins, RuntimeServices
 
 
 class TypeSystemServices(BooServices):

@@ -1,7 +1,7 @@
 namespace BooJs.Lang.Macros
 
-import Boo.Lang.Compiler.Ast
-import Boo.Lang.Compiler(CompilerContext)
+from Boo.Lang.Compiler.Ast import *
+from Boo.Lang.Compiler import CompilerContext
 
 
 internal class OmittedExpressionFinder(FastDepthFirstVisitor):
