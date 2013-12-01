@@ -62,6 +62,17 @@ environment. For automatic loading of dependencies you can easily integrate with
 `require.js <http://requirejs.org>`_ or any other module loader that conforms to the AMD
 pattern.
 
-
 .. note:: For Node.js environments a custom wrapper for the loader is in the roadmap, it will
           take care of automatically importing referenced dependencies.
+
+
+To call BooJs modules from your Javascript code you can use ``Boo.require`` to obtain the
+desired module.
+
+::
+
+    var example = Boo.require('example');
+    example.foo("Hello");
+    // ... or ...
+    var foo = Boo.require('example').foo;
+    foo("Hello");
