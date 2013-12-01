@@ -122,7 +122,6 @@
     <Folder Include="Steps\Macros\" />
     <Folder Include="resources\" />
     <Folder Include="Pipelines\" />
-    <Folder Include="TypeSystem\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Boo.debug.js">
