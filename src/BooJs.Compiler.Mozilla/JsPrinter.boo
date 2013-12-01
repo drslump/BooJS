@@ -315,7 +315,7 @@ class JsPrinter(Printer):
             quotes = 0
             result = ''
             for ch in (node.value as string):
-                if ch == char('\''):
+                if ch == char("'"):
                     quotes++
                     result += ch
                 elif ch == char('"'):
@@ -327,7 +327,7 @@ class JsPrinter(Printer):
                 elif ch == char('\u2029'): result += '\\u2029'
                 else: result += ch
 
-            quote = ('\'' if quotes <= 0 else '"')
+            quote = ("'" if quotes <= 0 else '"')
             Write quote + result.Replace(quote, '\\' + quote) + quote
         else:
             # TODO: Properly write numbers

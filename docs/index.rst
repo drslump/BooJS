@@ -14,6 +14,7 @@ A JavaScript backend for the Boo language.
   Macros
   Overloading
   Runtime
+  Modules
   Async
 
 **Resources**

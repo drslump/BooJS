@@ -204,7 +204,6 @@ Transforms a Boo AST into a Mozilla AST
                 st = Apply(global)
                 fn.body.body.Add(st)
 
-        #n['module'] = node
         Return n
 
     def OnClassDefinition(node as ClassDefinition):

@@ -7,3 +7,5 @@ vendors/
 *.pidb
 src/**/bin/
 src/**/obj/
+*.dylib
+*.dylib.dSYM
