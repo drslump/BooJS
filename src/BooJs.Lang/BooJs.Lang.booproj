@@ -26,7 +26,8 @@
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
@@ -41,7 +42,8 @@
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
     <nostdlib>false</nostdlib>
@@ -100,7 +102,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Runtime\" />
     <Folder Include="Globals\" />
     <Folder Include="Macros\" />
     <Folder Include="Browser\" />
