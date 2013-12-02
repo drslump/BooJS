@@ -2,10 +2,10 @@
 Male: 0
 Female: 1
 """
-
 class Foo:
     static def sfoo():
-        print 'Foo:sfoo'
+        oo = 'oo'
+        print "F$oo:sf$oo"
 
     virtual def foo():
         print 'Foo:foo'
@@ -34,7 +34,7 @@ class Bar(Foo):
         self.bar()
 
 bar = Bar('foo', field:'f')
-print bar.field
+print "foo $(bar.field) bar"
 bar.foo()
 
 /*

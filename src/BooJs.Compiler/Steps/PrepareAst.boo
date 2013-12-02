@@ -171,17 +171,21 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         if GetAttribute[of VarArgsAttribute](node.Target) and not node.ContainsAnnotation('varargs-processed'):
             node['varargs-processed'] = true
-            if node.Arguments[-1] isa ListLiteralExpression:
-                last = node.Arguments[-1] as ListLiteralExpression
+            // Common case where the only param is already an array
+            if len(node.Arguments) == 1 and node.Arguments.Last isa ListLiteralExpression:
+                last = node.Arguments.Last as ListLiteralExpression
                 node.Arguments.Remove(last)
                 for itm in last.Items:
                     node.Arguments.Add(itm)
+                    
+                Visit(node.Arguments)
                 return
 
+            // Use .apply to call the method: ref.apply(target, [one, two].concat(params))
             params = ListLiteralExpression()
             for i in range(0, len(node.Arguments)-1):
                 params.Items.Add( node.Arguments[i] )
-            mie = [| $(params).concat($(node.Arguments[-1])) |]
+            mie = [| $(params).concat($(node.Arguments.Last)) |]
             if node.Target isa MemberReferenceExpression:
                 target = (node.Target as MemberReferenceExpression).Target
             else:
