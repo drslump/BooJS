@@ -120,4 +120,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
+  <ItemGroup>
+    <None Include="..\Boo.Async.js">
+      <Link>resources\Boo.Async.js</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+    </None>
+  </ItemGroup>
 </Project>

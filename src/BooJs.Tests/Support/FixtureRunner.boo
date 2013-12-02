@@ -200,7 +200,7 @@ class FixtureRunner:
             reader = System.IO.StreamReader(stream)
             engine.Execute(reader.ReadToEnd())
 
-            engine.ExecuteFile('/Users/drslump/www/boojs/src/Boo.Async.js')
+            engine.ExecuteFile('resources/Boo.Async.js')
             
             self._engine = engine
 
