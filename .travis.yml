@@ -1,20 +1,31 @@
 # Travis-CI Build for BooJs
 # see travis-ci.org for details
 
-language: c
+language: objective-c
 
-# Make sure mono is installed
+env:
+  global:
+    - EnableNuGetPackageRestore=true
+    - PKG_CONFIG_PATH=/Library/Frameworks/Mono.framework/Versions/Current/lib/pkgconfig/
+  matrix:
+    - MONO_VER="3.2.3"
+
 install:
- - echo "Installing Mono..."
- - sudo apt-get install mono-devel > /dev/null
+  # Obtain mono from a fast mirror (over 150Mb download), travis-ci seems to be hosted in NY
+  # - wget "http://switch.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
+  # - wget "http://hivelocity.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
+  - wget "http://softlayer-ams.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
+  # Install mono
+  - sudo installer -pkg "MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg" -target /
 
-# Run the Build script
-script:
+before_script:
+ # Build BooJs...
  - xbuild src/boojs.sln
 
-# Run Tests
-after_script:
- - mono --runtime=v4.0 lib/nunit/nunit-console.exe -run=BoojsFixtures src/BooJs.Tests/bin/Debug/BooJs.Test.dll
+script:
+ # Run Tests
+ - echo "Running tests..."
+ - mono --runtime=v4.0 --gc=boehm lib/nunit/nunit-console.exe -nologo -nodots -domain=none -timeout=10000 -framework=4.0 -output=stdout.txt -run=BooJs.Tests.BoojsFixtures src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 
 # Notify development list when needed
 notifications:
