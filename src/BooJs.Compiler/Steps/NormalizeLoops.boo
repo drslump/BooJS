@@ -18,12 +18,12 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     choose a proper loop strategy. This should be done in the future using a compiler
     step.
 
+    - If it contains a return convert to a while loop
     - If it contains a yield statement it's converted to an equivalent while loop.
     - If it has an Or or Then block it's converted to a while loop
     - If it is an array we convert it to a for in range
     - When the iterator is the range method it's left to be optimized when converting 
       to the Mozilla AST
-    - If it contains a return convert to a while loop
     - If iterator is not an array iterate it with Boo.each()
 
 
@@ -56,7 +56,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
 
     Boo's for statement does not allow to specify a receiving variable for the key like it's
-    done in CoffeeScript (for v, k in hash), however it allows to defines multiple variables
+    done in CoffeeScript (for v, k in hash), however it allows to define multiple variables
     for unpacking. So the solution is to disable the support for unpacking and use it instead
     to obtain the key.
 
@@ -188,11 +188,16 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
                 $tmpref.close()
         |]
 
+        # Handle `or` and `then` blocks. Or is executed when the iterator
+        # is empty while Then executes when the iterator has been fully
+        # exhausted. 
         if node.OrBlock or node.ThenBlock:
+            # Create a flag with Or and Then enabled by default
             flagref = TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, Context.GetUniqueName('flag'))
             result.Insert(1, [| $flagref = Boo.LOOP_OR | Boo.LOOP_THEN |])
 
             if node.OrBlock:
+                # Unset the Or flag once we enter the loop
                 whilest.Block.Insert(0, [| $flagref &= ~Boo.LOOP_OR |])
                 st = [|
                     if $flagref & Boo.LOOP_OR:
@@ -201,6 +206,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
                 result.Add(st)
 
             if node.ThenBlock:
+                # Unset the Then flag if we find a break in the loop body
                 FlagBreaks(flagref, whilest.Block)
                 st = [|
                     if $flagref & Boo.LOOP_THEN:
@@ -229,7 +235,8 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
     protected def ForToIndex(node as ForStatement) as Statement:
     """ Converts a for-in loop iterating over the values of an Array to a loop
-        iterating over the indexes in that Array.
+        iterating over the indexes in that Array. The is allow to later optimize
+        the `range` based loop.
 
             for v in items:
             ---
@@ -384,14 +391,26 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     """
         for st in block.Statements:
             match st:
+                case blk=Block():  # HACK: Work around nested blocks from transformations
+                    FlagBreaks(tmpref, blk)
                 case ist=IfStatement():
                     FlagBreaks(tmpref, ist.TrueBlock)
                     FlagBreaks(tmpref, ist.FalseBlock) if ist.FalseBlock
+                case ust=UnlessStatement():
+                    FlagBreaks(tmpref, ust.Block)
                 case tst=TryStatement():
                     FlagBreaks(tmpref, tst.ProtectedBlock)
                     FlagBreaks(tmpref, tst.EnsureBlock) if tst.EnsureBlock
                     for hdlr in tst.ExceptionHandlers:
                         FlagBreaks(tmpref, hdlr.Block)
+                        # TODO: Generators replace break statements for exception handlers
+                        #       looking for `Boo.STOP`. Here we assume that any exception
+                        #       handler that reaches the end is a `Boo.STOP`, not 100% correct
+                        #       but should cover most cases.
+                        hdlr.Block.Add([| $tmpref &= ~Boo.LOOP_THEN |])
+                case fst=ForStatement():
+                    FlagBreaks(tmpref, fst.OrBlock) if fst.OrBlock
+                    FlagBreaks(tmpref, fst.ThenBlock) if fst.ThenBlock
                 case BreakStatement():
                     idx = block.Statements.IndexOf(st)
                     block.Insert(idx, [| $tmpref &= ~Boo.LOOP_THEN |])

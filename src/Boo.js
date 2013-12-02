@@ -194,6 +194,7 @@
         // Mode is computed based on the following rules:
         //   - If the callback only has one argument the value is passed as is
         //   - If it has more than one the argument it gets unpacked (apply style invocation)
+        // Note: JurassicJS does not allow to use a direct reference to call/apply
         var mode = iterator.length === 1 ? 'call' : 'apply',
             i, l = obj.length;
 

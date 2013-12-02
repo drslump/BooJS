@@ -266,13 +266,13 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
     override def LeaveMethod(node as Method):
         has_try = HasTryStatement(node.Body)
 
-        # Transform the method body into a list of states
+        # Transform the method body into a state machine
         transformer = TransformGenerator()
         transformer.OnBlock(node.Body)
 
         # Remove the original method contents
         node.Body.Clear()
-        # Create a new local to keep the current step of the generator
+        # Create a new local to keep the current state of the generator
         CodeBuilder.DeclareLocal(node, REF_STATE.Name, TypeSystemServices.IntType)
         node.Body.Add( CodeBuilder.CreateAssignment(REF_STATE, IntegerLiteralExpression(0)) )
         if has_try:
@@ -289,6 +289,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         (transformer.States[0] as Block).Insert(0, valuecheck)
 
         # Wrap the steps into a switch/case construct
+        # TODO: Use Boo's native switch construct
         switch = MacroStatement(Name: 'switch')
         switch.Arguments.Add(REF_STATE)
         for idx as int, step as Block in enumerate(transformer.States):
@@ -328,7 +329,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                     # Position the generator to the terminating state
                     $REF_STATE = -1
 
-                    # Ensure all finally blocks are executed
+                    # Ensure all finally blocks are executed before exiting
                     while $(REF_ENSURE).length:
                         $(REF_ENSURE).pop()()
 
@@ -338,6 +339,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
 
         # Make the method return a generator
         generator = [|
+            # Wrap the state machine with the runtime helper
             return Boo.generator do($REF_VALUE, $REF_ERROR):
                 :statemachine
                 $statemachine
