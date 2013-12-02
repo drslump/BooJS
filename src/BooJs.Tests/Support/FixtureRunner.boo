@@ -10,7 +10,7 @@ import Boo.Lang.Compiler.IO
 import BooJs.Compiler
 import BooJs.Compiler.Pipelines as Pipelines
 
-# The JavaScript interpretter
+# The JavaScript interpreter
 import Jurassic(ScriptEngine, JavaScriptException, CompatibilityMode)
 import Jurassic.Library(ObjectInstance, FunctionInstance, JSFunctionAttribute)
 
@@ -219,8 +219,6 @@ class FixtureRunner:
           try:
             engine.Execute(code)
             Window.waitTimers()
-
-
 
             Assert.AreEqual(expected, console.output())
           except ex:

@@ -111,20 +111,31 @@ class PrepareAst(AbstractTransformerCompilerStep):
             node.Name = node.Name.Split(char('.'))[-1]
             return node
 
-        # Members of the module are placed in the top scope
-        # TODO: This detection algorithm is very weak! We need to come out with something better
-        ientity = node.Entity as TypeSystem.IMember
-        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
-            # Anything not being a constructor is excluded
-            if node.Entity.EntityType != EntityType.Constructor and not ientity.IsStatic:
-                return node
 
-            mre = MemberReferenceExpression(node.LexicalInfo)
-            mre.ExpressionType = node.ExpressionType
-            mre.Entity = node.Entity
-            mre.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
-            mre.Name = node.Name.Split(char('.'))[-1]
-            return mre
+        # Members of the module are placed in the top scope
+        intEntity = node.Entity as TypeSystem.IInternalEntity
+        if intEntity and intEntity.EntityType in (EntityType.Type, EntityType.Constructor):
+            # HACK: We should check for the Module attribute but I'm lazy right now :(
+            if intEntity.Name.EndsWith('Module'):
+                node.Name = 'exports'
+                return node
+            # Prefix type references in the same module with exports
+            if intEntity.Node.LexicalInfo.FullPath == node.LexicalInfo.FullPath:
+                mre = MemberReferenceExpression(
+                    node.LexicalInfo,
+                    Target: [| exports |],
+                    Name: node.Name,
+                    Entity: node.Entity,
+                    ExpressionType: node.ExpressionType
+                )
+                return mre
+
+        # Special handling for extension methods
+        intMethod = node.Entity as TypeSystem.Internal.InternalMethod
+        if intMethod and intMethod.IsExtension:
+            if intMethod.Node.LexicalInfo.FullPath == node.LexicalInfo.FullPath:
+                node.Name = 'exports.' + intMethod.Name 
+                return node
 
         return node
 
@@ -144,16 +155,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
                 refexp = ReferenceExpression(node.Name[1:], LexicalInfo: node.LexicalInfo)
                 ReplaceCurrentNode refexp
                 return
-
-        # Members of the module are placed in the top scope
-        # TODO: This detection algorithm is very weak! We need to come out with something better
-        ientity = node.Entity as TypeSystem.IMember
-        if ientity and ientity.DeclaringType and ientity.DeclaringType.IsClass and ientity.DeclaringType.Name == ientity.DeclaringType.FullName:
-            # Anything not being a constructor is excluded
-            if node.Entity.EntityType != EntityType.Constructor and not ientity.IsStatic:
-                return
-            node.Target = ReferenceExpression('exports', LexicalInfo: node.LexicalInfo)
-            return
 
         # Check for builtins references
         if IsBuiltin(node.Target):

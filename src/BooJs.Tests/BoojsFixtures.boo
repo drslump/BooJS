@@ -39,6 +39,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/named-arguments.boo')
 
   [Test]
+  def test_reference_same_module():
+    FixtureRunner.run('tests/fixtures/boojs/reference-same-module.boo')
+
+  [Test]
   def test_safe_member_access():
     FixtureRunner.run('tests/fixtures/boojs/safe-member-access.boo')
 
