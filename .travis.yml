@@ -14,7 +14,7 @@ script:
 
 # Run Tests
 after_script:
- - mono --runtime=v4.0 lib/nunit/nunit-console.exe -run=TypesystemFixtures src/BooJs.Tests/bin/Debug/BooJs.Test.dll
+ - mono --runtime=v4.0 lib/nunit/nunit-console.exe -run=BoojsFixtures src/BooJs.Tests/bin/Debug/BooJs.Test.dll
 
 # Notify development list when needed
 notifications:
