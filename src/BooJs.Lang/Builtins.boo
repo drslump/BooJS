@@ -1,7 +1,7 @@
 namespace BooJs.Lang
 
 from BooJs.Lang.Globals import Object, Iterable, Error, Array, String
-from BooJs.Lang.Extensions import TransformAttribute
+from BooJs.Lang.Extensions import TransformAttribute, VarArgsAttribute
 
 
 class Builtins:
@@ -89,10 +89,11 @@ class Builtins:
     static def range(start as int, stop as int, step as int) as (int):
         pass
 
+    [VarArgs]
     static def print(*list as (object)) as void:
         pass
 
-    #static def cat(*list as (object)) as (object):
+    [VarArgs]
     static def cat(*list as (object)) as Array:
     """ Concatenates the given enumerable arguments """
         pass

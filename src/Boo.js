@@ -316,17 +316,17 @@
     Boo.enumerate = boo_enumerate;
 
     // Debug method to output information
-    Boo.print = function (args) {
+    Boo.print = function () {
         if (typeof console !== undefined && console.log) {
-            console.log.apply(console, args);
+            console.log.apply(console, arguments);
         }
     };
 
     // Concatenates the elements of the enumerables given as argument
-    Boo.cat = function (args) {
-        var values = [], fn = function (v) { values.push(v); };
-
-        args = Boo.enumerable(args);
+    Boo.cat = function () {
+        var values = [], fn = function (v) { values.push(v); },
+            args = Boo.enumerable(arguments);
+            
         for (var i = 0, l = args.length; i < l; i++) {
             boo_each(args[i], fn);
         }
