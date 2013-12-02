@@ -13,8 +13,10 @@ env:
 install:
   # Obtain mono from a fast mirror (over 150Mb download), travis-ci seems to be hosted in NY
   # - wget "http://switch.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
+  # - wget "http://softlayer-ams.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
   # - wget "http://hivelocity.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  - wget "http://softlayer-ams.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
+  # Personal mirror (PLEASE DO NOT USE IT!)
+  - wget "http://s3.amazonaws.com/travis-mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
   # Install mono
   - sudo installer -pkg "MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg" -target /
 
