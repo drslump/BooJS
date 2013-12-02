@@ -196,6 +196,7 @@ class JsPrinter(Printer):
             WriteLine
 
     virtual def OnVariableDeclaration(node as VariableDeclaration):
+        startLine = Line
         WriteIndented '{0} ', node.kind
         Indent
         for idx as int, decl as VariableDeclarator in enumerate(node.declarations):
@@ -211,7 +212,7 @@ class JsPrinter(Printer):
             Trim
 
         WriteLine ';'
-        WriteLine if len(node.declarations) > 1
+        WriteLine if len(node.declarations) > 1 or Line - startLine > 2
         Dedent
 
     virtual def OnUnaryExpression(node as UnaryExpression):
