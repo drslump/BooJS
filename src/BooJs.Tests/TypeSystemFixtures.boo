@@ -11,24 +11,12 @@ import NUnit.Framework
 class TypesystemFixtures:
 
   [Test]
-  def test_async_await():
-    FixtureRunner.run('tests/fixtures/typesystem/async-await.boo')
-
-  [Test]
   def test_block_expressions():
     FixtureRunner.run('tests/fixtures/typesystem/block-expressions.boo')
 
   [Test]
   def test_double():
     FixtureRunner.run('tests/fixtures/typesystem/double.boo')
-
-  [Test]
-  def test_eval():
-    FixtureRunner.run('tests/fixtures/typesystem/eval.boo')
-
-  [Test]
-  def test_globals():
-    FixtureRunner.run('tests/fixtures/typesystem/globals.boo')
 
   [Test]
   def test_hash():
@@ -43,16 +31,8 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/int.boo')
 
   [Test]
-  def test_jquery():
-    FixtureRunner.run('tests/fixtures/typesystem/jquery.boo')
-
-  [Test]
   def test_method_overloading():
     FixtureRunner.run('tests/fixtures/typesystem/method-overloading.boo')
-
-  [Test]
-  def test_named_arguments():
-    FixtureRunner.run('tests/fixtures/typesystem/named-arguments.boo')
 
   [Test]
   def test_native_types():
@@ -75,10 +55,6 @@ class TypesystemFixtures:
     FixtureRunner.run('tests/fixtures/typesystem/range.boo')
 
   [Test]
-  def test_safe_member_access():
-    FixtureRunner.run('tests/fixtures/typesystem/safe-member-access.boo')
-
-  [Test]
   def test_slicing():
     FixtureRunner.run('tests/fixtures/typesystem/slicing.boo')
 
@@ -93,12 +69,4 @@ class TypesystemFixtures:
   [Test]
   def test_typetest():
     FixtureRunner.run('tests/fixtures/typesystem/typetest.boo')
-
-  [Test]
-  def test_underscore():
-    FixtureRunner.run('tests/fixtures/typesystem/underscore.boo')
-
-  [Test]
-  def test_version():
-    FixtureRunner.run('tests/fixtures/typesystem/version.boo')
 

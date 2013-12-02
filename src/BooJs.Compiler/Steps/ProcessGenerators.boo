@@ -13,7 +13,11 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
     transformed into a reentrant state machine, allowing to halt execution
     where a yield is found and resume later on from that same point.
 
-    TODO: Support yielding inside conditional statements
+    The generated code is convoluted but pretty fast on modern browsers, it
+    runs roughly at half the speed of an user land forEach implementation
+    and about 70% the speed of Firefox's native generators.
+    http://jsperf.com/boojs-generator-loop
+
 """
     static final REF_VALUE = ReferenceExpression(Name:'_value_')
     static final REF_ERROR = ReferenceExpression(Name:'_error_')
@@ -44,12 +48,10 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             Current.Add(node)
 
         def OnForStatement(node as ForStatement):
+            # We assume that loops with yields where converted to while statements
             Current.Add(node)
 
         def OnYieldStatement(node as YieldStatement):
-            if node.GetAncestor(NodeType.IfStatement) or node.GetAncestor(NodeType.UnlessStatement):
-                raise CompilerErrorFactory.NotImplemented(node, 'Yield is not currently supported inside if or unless statements')
-
             # Create a re-entry state
             nextstate = CreateState()
 
@@ -61,9 +63,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = nextstate
 
         def OnReturnStatement(node as ReturnStatement):
-            if node.GetAncestor(NodeType.IfStatement) or node.GetAncestor(NodeType.UnlessStatement):
-                raise CompilerErrorFactory.NotImplemented(node, 'Return is not currently supported inside if or unless statements')
-
             # If it has an expression just handle as a yield
             if node.Expression:
                 ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
@@ -139,19 +138,30 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             if State != afterstate - 1:
                 Current.Add(JUMP)
 
-            if not node.ExceptionHandlers.IsEmpty:
+            unless node.ExceptionHandlers.IsEmpty:
                 # Register the states covered by this protected block
                 State = trystate
                 Current.Insert(0, [| $(REF_EXCEPT).push($exceptstate) |])
 
                 # Produce the exception handler
                 State = exceptstate
+                # HACK: Assign the value to the global ex holder
+                Current.Add([| _ex_ = $(REF_VALUE) |])
+
                 Visit node.ExceptionHandlers
+
+                # HACK: If we reached the end add a new guard so we pop it in afterstate
+                #       This avoids creating a specific state for the it.
+                Current.Add([| $(REF_EXCEPT).push(-1) |])
 
                 # Make sure we end up in the after state
                 Current.Add([| $REF_STATE = $afterstate |])
                 if State != afterstate - 1:
-                    Current.Add(JUMP)                
+                    Current.Add(JUMP)
+
+                # Remove the guard once we are out of the except block
+                State = afterstate
+                Current.Add([| $(REF_EXCEPT).pop() |])
 
             # Continue in the after state
             State = afterstate
@@ -161,18 +171,65 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 Current.Add( [| $(REF_ENSURE).pop()() |] )
 
         def OnUnlessStatement(node as UnlessStatement):
-        """ We just include them in the current state, no special processing is performed
-            currently. This means that neither yield nor return statements can be used inside.
+        """ We just convert to a simple IfStatement
         """
-            super(node)
-            Current.Add(node)
+            ifnode = IfStatement(node.LexicalInfo)
+            ifnode.Condition = node.Condition
+            ifnode.TrueBlock = node.Block
+            Visit(ifnode)
 
         def OnIfStatement(node as IfStatement):
-        """ We just include them in the current state, no special processing is performed
-            currently. This means that neither yield nor return statements can be used inside.
-        """
-            super(node)
-            Current.Add(node)
+            # Optimize common case of simple if without else clause
+            if not node.FalseBlock or node.FalseBlock.IsEmpty:
+                placeholder = ExpressionStatement()
+                block = [|
+                    if not $(node.Condition):
+                        $placeholder
+                        $JUMP
+                |]
+                Current.Add(block)
+                Visit node.TrueBlock
+
+                # Create an exit state and setup the jump
+                exitstate = CreateState()
+                placeholder.Expression = [| $REF_STATE = $exitstate |]
+                State = exitstate
+                return
+
+            truestate = CreateState()
+            falsestate = CreateState()
+            block = [|
+                if $(node.Condition):
+                    $REF_STATE = $truestate
+                    $JUMP
+                else:
+                    $REF_STATE = $falsestate
+                    $JUMP
+            |]
+            Current.Add(block)
+
+            State = truestate
+            Visit(node.TrueBlock)
+            truestate = State
+
+            State = falsestate
+            Visit(node.FalseBlock)
+            falsestate = State
+
+            exitstate = CreateState()
+
+            # Point true and false blocks to the exit
+            State = truestate
+            Current.Add([| $REF_STATE = $exitstate |])
+            if State != exitstate - 1:
+                Current.Add(JUMP)
+            State = falsestate
+            Current.Add([| $REF_STATE = $exitstate |])
+            if State != exitstate - 1:
+                Current.Add(JUMP)
+
+            # Continue in the exit state
+            State = exitstate
 
 
     override def Run():
@@ -197,7 +254,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         return false
 
     override def EnterMethod(node as Method):
-    """ NOTE: We just handle methods. Boo will create generators in a separate method event for 
+    """ NOTE: We just handle methods. Boo will create generators in a separate method even for 
               block expressions. We will later remove them but since right now their body references
               the same node, we can just work with them and block expressions will be automatically
               updated too.
@@ -244,7 +301,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         statemachine as Statement
         statemachine = [|
             # NOTE: To simplify we will raise the sent error from the top of the generator
-            #       function and not from the current step. Unless real world scenarios show
+            #       function and not from the current state. Unless real world scenarios show
             #       that it's desirable to have it raised from more exact locations, it doesn't
             #       seem to have a great value added in contrast to its cost.
             if $REF_ERROR:
@@ -264,6 +321,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 except:
                     if $(REF_EXCEPT).length:
                         $REF_ERROR = null  # Make sure any reported error is removed
+                        $REF_VALUE = _ex_  # HACK: Assign the exception to the value
                         $REF_STATE = $(REF_EXCEPT).pop()
                         goto statemachine
 

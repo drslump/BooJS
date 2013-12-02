@@ -4,7 +4,8 @@
 
 /*global Boo: true, setImmediate: false, setTimeout: false */
 
-Boo.define('Async', ['exports', 'Boo'], function (exports, Boo) {
+// TODO: Think about how to solve the namespace to be Boo.Async for example
+Boo.define('BooJs.Lang.Async', ['exports', 'Boo'], function (exports, Boo) {
     'use strict';
 
     var DeferredState = {

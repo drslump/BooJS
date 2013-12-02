@@ -219,6 +219,9 @@ class FixtureRunner:
           try:
             engine.Execute(code)
             Window.waitTimers()
+
+
+
             Assert.AreEqual(expected, console.output())
           except ex:
             Window.clearTimers()

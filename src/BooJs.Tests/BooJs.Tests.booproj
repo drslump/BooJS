@@ -102,6 +102,7 @@
     <Compile Include="ArraysFixtures.boo" />
     <Compile Include="Support\FixtureRunner.boo" />
     <Compile Include="ClassesFixtures.boo" />
+    <Compile Include="BoojsFixtures.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Support\" />

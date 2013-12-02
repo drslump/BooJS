@@ -178,8 +178,12 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
             $tmpref = $mie
             try:
                 $whilest
-            except _ex_ if _ex_ is Boo.STOP:
-                pass
+            # HACK: The generator rewriter is a bit dumb, let's help him
+            #except _ex_ if _ex_ is Boo.STOP:
+            #    pass
+            except _ex_:
+                if _ex_ is not Boo.STOP:
+                    raise
             ensure:
                 $tmpref.close()
         |]

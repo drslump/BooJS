@@ -73,6 +73,7 @@ generate-fixtures:
 	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/statements > src/BooJs.Tests/StatementsFixtures.boo
 	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/stdlib > src/BooJs.Tests/StdlibFixtures.boo
 	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
+	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
 	
 clean:
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) /target:clean src/boojs.sln
