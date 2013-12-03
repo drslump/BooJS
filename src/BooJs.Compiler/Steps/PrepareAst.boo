@@ -441,36 +441,40 @@ class PrepareAst(AbstractTransformerCompilerStep):
         else:
             raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
 
+    static _negated_binary_ops = {
+        BinaryOperatorType.Equality: BinaryOperatorType.Inequality,
+        BinaryOperatorType.Inequality: BinaryOperatorType.Equality,
+        BinaryOperatorType.GreaterThan: BinaryOperatorType.LessThanOrEqual,
+        BinaryOperatorType.GreaterThanOrEqual: BinaryOperatorType.LessThan,
+        BinaryOperatorType.LessThan: BinaryOperatorType.GreaterThanOrEqual,
+        BinaryOperatorType.LessThanOrEqual: BinaryOperatorType.GreaterThan,
+    }
+
     def OnUnaryExpression(node as UnaryExpression):
-        # Logical Not folding
+    """ Fold logical not expressions to simplify the generated code. This is
+        specially useful for normalizing `unless` conditions converted to `if not`
+    """
         if node.Operator == UnaryOperatorType.LogicalNot:
             # not(not(expr)) -> expr
             if ue = node.Operand as UnaryExpression and ue.Operator == UnaryOperatorType.LogicalNot:
                 ReplaceCurrentNode Visit(ue.Operand)
                 return
 
+            # not i != 10 -> i == 10
             if be = node.Operand as BinaryExpression:
-                inverses = {
-                    BinaryOperatorType.Equality: BinaryOperatorType.Inequality,
-                    BinaryOperatorType.Inequality: BinaryOperatorType.Equality,
-                    BinaryOperatorType.GreaterThan: BinaryOperatorType.LessThanOrEqual,
-                    BinaryOperatorType.LessThanOrEqual: BinaryOperatorType.GreaterThan,
-                    BinaryOperatorType.LessThan: BinaryOperatorType.GreaterThanOrEqual,
-                    BinaryOperatorType.GreaterThanOrEqual: BinaryOperatorType.LessThan,
-                }
-
-                if be.Operator in inverses:
-                    be.Operator = inverses[be.Operator]
+                if be.Operator in _negated_binary_ops:
+                    be.Operator = _negated_binary_ops[be.Operator]
                     ReplaceCurrentNode Visit(be)
                     return
 
         super(node)
 
     def OnBlock(node as Block):
-
+    """ Flatten nested blocks. During the code transformation steps we may
+        have introduced nested blocks as statements.
+    """
         Visit node.Statements
 
-        # Flatten nested blocks
         ofs = 0
         while ofs < len(node.Statements):
             st = node.Statements[ofs]
