@@ -28,12 +28,24 @@ class PrepareAst(AbstractTransformerCompilerStep):
     [getter(BooMethodCache)]
     private _booMethodCache as BooRuntimeMethodCache
 
-    protected def GetAttribute[of T(System.Attribute)](node as Node) as T:
-        entity = node.Entity as TypeSystem.IExternalEntity
-        return (GetAttribute[of T](entity) if entity else null as T)
+    protected def HasAttribute[of T(System.Attribute)](node as Node):
+        if ent = node.Entity as TypeSystem.IExternalEntity:
+            return (HasAttribute[of T](ent) if ent else null as T)
+        
+        if anode = node as INodeWithAttributes:
+            targetAttr = TypeSystemServices.Map(T)
+            for attr in anode.Attributes:
+                ctor = TypeSystemServices.GetEntity(attr) as TypeSystem.IConstructor
+                if ctor and targetAttr == ctor.DeclaringType:
+                    return true
 
-    protected def GetAttribute[of T(System.Attribute)](entity as TypeSystem.IExternalEntity) as T:
-        return System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(T))
+        return false
+
+    protected def HasAttribute[of T(System.Attribute)](entity as TypeSystem.IExternalEntity):
+        return System.Attribute.GetCustomAttribute(entity.MemberInfo, typeof(T)) != null
+
+    protected def IsCompilerGenerated(node as Node):
+        return HasAttribute[of CompilerGeneratedAttribute](node)
 
     protected def IsBuiltin(node as Node) as bool:
         entity = node.Entity as TypeSystem.Reflection.ExternalType
@@ -57,6 +69,11 @@ class PrepareAst(AbstractTransformerCompilerStep):
         _booMethodCache = EnvironmentProvision[of BooRuntimeMethodCache]()
 
     def EnterModule(node as Module):
+        if IsCompilerGenerated(node):
+            RemoveCurrentNode()
+            return false
+
+        # TODO: Is this still needed?
         if node.Name == 'CompilerGenerated':
             RemoveCurrentNode()
             return false
@@ -64,11 +81,12 @@ class PrepareAst(AbstractTransformerCompilerStep):
         return true
 
     def EnterClassDefinition(node as ClassDefinition):
-        if node.Name == 'CompilerGeneratedExtensions':
+        if IsCompilerGenerated(node):
             RemoveCurrentNode()
             return false
 
-        if GetAttribute[of CompilerGeneratedAttribute](node):
+        # TODO: Is this still needed?
+        if node.Name == 'CompilerGeneratedExtensions':
             RemoveCurrentNode()
             return false
 
@@ -170,7 +188,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode result
             return
 
-        if GetAttribute[of VarArgsAttribute](node.Target) and not node.ContainsAnnotation('varargs-processed'):
+        if HasAttribute[of VarArgsAttribute](node.Target) and not node.ContainsAnnotation('varargs-processed'):
             node['varargs-processed'] = true
             // Common case where the only param is already an array
             if len(node.Arguments) == 1 and node.Arguments.Last isa ListLiteralExpression:
