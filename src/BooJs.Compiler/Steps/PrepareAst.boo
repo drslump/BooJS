@@ -11,7 +11,7 @@ from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
 from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 from BooJs.Lang.Extensions import TransformAttribute, VarArgsAttribute
 
-from System.Runtime.CompilerServices import CompilerGeneratedAttribute
+from System.Runtime.CompilerServices import CompilerGeneratedAttribute, CompilerGlobalScopeAttribute
 
 
 class PrepareAst(AbstractTransformerCompilerStep):
@@ -27,6 +27,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     [getter(BooMethodCache)]
     private _booMethodCache as BooRuntimeMethodCache
+
 
     protected def HasAttribute[of T(System.Attribute)](node as Node):
         if ent = node.Entity as TypeSystem.IExternalEntity:
@@ -108,11 +109,6 @@ class PrepareAst(AbstractTransformerCompilerStep):
         super(node)
 
     protected def ProcessReference(node as ReferenceExpression) as Node:
-        if TransformAttribute.HasAttribute(node):
-            result = TransformAttribute.Resolve(node, null)
-            Visit result
-            return result
-
         # Primitive type references
         if entity = node.Entity as ExternalType and TypeSystemServices.IsLiteralPrimitive(entity):
             return StringLiteralExpression(node.LexicalInfo, entity.FullName)
@@ -129,12 +125,11 @@ class PrepareAst(AbstractTransformerCompilerStep):
             node.Name = node.Name.Split(char('.'))[-1]
             return node
 
-
         # Members of the module are placed in the top scope
         intEntity = node.Entity as TypeSystem.IInternalEntity
         if intEntity and intEntity.EntityType in (EntityType.Type, EntityType.Constructor):
-            # HACK: We should check for the Module attribute but I'm lazy right now :(
-            if intEntity.Name.EndsWith('Module'):
+            # Detect module class
+            if HasAttribute[of CompilerGlobalScopeAttribute](intEntity.Node):
                 node.Name = 'exports'
                 return node
             # Prefix type references in the same module with exports
@@ -158,9 +153,16 @@ class PrepareAst(AbstractTransformerCompilerStep):
         return node
 
     def OnReferenceExpression(node as ReferenceExpression):
+        # Apply Transform attribute metadata to generate the output AST node
+        if TransformAttribute.HasAttribute(node):
+            result = TransformAttribute.Resolve(node, null)
+            ReplaceCurrentNode Visit(result)
+            return
+
         ReplaceCurrentNode ProcessReference(node)
 
     def OnMemberReferenceExpression(node as MemberReferenceExpression):
+        # Apply Transform attribute metadata to generate the output AST node
         if TransformAttribute.HasAttribute(node):
             result = TransformAttribute.Resolve(node, null)
             Visit result
@@ -181,13 +183,14 @@ class PrepareAst(AbstractTransformerCompilerStep):
         super(node)
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
-        # Convert Transform attribute metadata to an AST annotation
+        # Apply Transform attribute metadata to generate the output AST node
         if TransformAttribute.HasAttribute(node.Target):
             result = TransformAttribute.Resolve(node.Target, node.Arguments)
             result = VisitNode(result)
             ReplaceCurrentNode result
             return
 
+        # Handle vararg attribute
         if HasAttribute[of VarArgsAttribute](node.Target) and not node.ContainsAnnotation('varargs-processed'):
             node['varargs-processed'] = true
             // Common case where the only param is already an array
@@ -225,6 +228,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
         rtsGetSlice = ResolveMethod(rts, 'GetSlice')
         */
 
+        # Undo binary operator overloads
         if node.Target.Entity == MethodCache.InvokeBinaryOperator:
 
             # Convert it back into a binary expression
@@ -240,6 +244,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
             ReplaceCurrentNode Visit(be)
             return
 
+        # Undo unary operator overloads
         if node.Target.Entity == MethodCache.InvokeUnaryOperator:
             # Convert it back into a unary expression
             ue = UnaryExpression(node.LexicalInfo)
@@ -293,7 +298,10 @@ class PrepareAst(AbstractTransformerCompilerStep):
             yield DeclarationStatement(LexicalInfo: local.LexicalInfo, Declaration: decl, Initializer: initializer)
 
     def OnBlockExpression(node as BlockExpression):
-    """ Convert locals annotation to declarations
+    """ Convert locals annotation to declarations.
+        Boo AST does not allow to attach locals to block expressions but we
+        need them in some cases, here we convert those local nodes to variable
+        declarations.
     """
         if node.ContainsAnnotation('locals'):
             for st in LocalsToDecls(node['locals']):
@@ -302,14 +310,16 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
         Visit node.Body
 
-    def OnMethod(node as Method):
-    """ Process locals and detect the Main method to move its statements into the Module globals
-    """
+    def EnterMethod(node as Method):
         # Skip compiler generated methods
         if node.IsSynthetic and node.IsInternal:
             RemoveCurrentNode
-            return
+            return false
+        return true
 
+    def OnMethod(node as Method):
+    """ Process locals and detect the Main method to move its statements into the Module globals
+    """
         for st in LocalsToDecls(node.Locals):
             node.Body.Insert(0, st)
 
@@ -324,8 +334,9 @@ class PrepareAst(AbstractTransformerCompilerStep):
 
     def IsEntryPoint(node as Method):
         # Note: We cannot use ContextAnnotations.GetEntryPoint(Context) to detect
-        # the entry point since when emitting the assembly we have to clone the AST
-        # and then the node instance is different.
+        # the entry point since when emitting the assembly and loading it again 
+        # we might have to clone the AST and then the node instance is different.
+        # TODO: Is this still the case?
         return node.Name == IntroduceModuleClasses.EntryPointMethodName \
                and node.IsSynthetic and node.IsStatic and node.IsPrivate
 
