@@ -7,6 +7,7 @@ import System.Reflection(Assembly)
 import System.Timers(Timer)
 
 import Boo.Lang.Compiler.IO
+from Boo.Lang.Compiler import CompilerError, CompilerWarning
 import BooJs.Compiler
 import BooJs.Compiler.Pipelines as Pipelines
 
@@ -101,6 +102,8 @@ class FixtureRunner:
 
       #print 'Setup: ', timer.ElapsedMilliseconds
 
+      expected_diags = []
+
       # Check if we want to ignore this fixture
       fp = StreamReader(file)
       while (line = fp.ReadLine()) != null:
@@ -108,6 +111,8 @@ class FixtureRunner:
           Assert.Ignore(line.Substring(len('#IGNORE')+1))
         elif line.IndexOf('#DUCKY') == 0:
           comp.Parameters.Ducky = true
+        elif line.IndexOf('#BCE') == 0 or line.IndexOf('#BCW') == 0:
+          expected_diags.Add(line.Substring(1).TrimEnd())
 
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))
@@ -121,20 +126,28 @@ class FixtureRunner:
 
       #print 'Compilation: ', timer.ElapsedMilliseconds
 
-      if len(result.Warnings):
-        for warn as Boo.Lang.Compiler.CompilerWarning in result.Warnings:
-            li = warn.LexicalInfo
-            name = System.IO.Path.GetFileName(li.FileName)
-            print "$(warn.Code) $(warn.Message) [$name:$(li.Line),$(li.Column)]"
+      if len(expected_diags):
+          for warn as CompilerWarning in result.Warnings:
+              expected_diags.Remove(warn.Code)
+          for err as CompilerError in result.Errors:
+              expected_diags.Remove(err.Code)
+          if len(expected_diags):
+              raise 'Expected ' + join(expected_diags, ', ')
+          return
+
+      for warn as CompilerWarning in result.Warnings:
+          li = warn.LexicalInfo
+          name = System.IO.Path.GetFileName(li.FileName)
+          print "$(warn.Code) $(warn.Message) [$name:$(li.Line),$(li.Column)]"
 
       if len(result.Errors):
-        for err as Boo.Lang.Compiler.CompilerError in result.Errors:
+          for err as CompilerError in result.Errors:
             li = err.LexicalInfo
             name = System.IO.Path.GetFileName(li.FileName)
             print "$(err.Code): $(err.Message) [$name:$(li.Line),$(li.Column)]"
-        print '-----------------------------------------------------'
-        print result.CompileUnit.ToCodeString()
-        raise result.Errors[0]
+            print '-----------------------------------------------------'
+            print result.CompileUnit.ToCodeString()
+            raise result.Errors[0]
 
 
       module = result.CompileUnit.Modules[0]
