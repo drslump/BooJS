@@ -31,7 +31,8 @@ class SaveFileTest:
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
-        assert content.IndexOf('//# booAssembly = ') >= 0
+        print content
+        assert content.IndexOf('//# booAssembly') >= 0
 
         asm = comp.Parameters.LoadAssembly(result.GeneratedAssemblyFileName)
         assert asm isa Boo.Lang.Compiler.TypeSystem.Reflection.IAssemblyReference
@@ -43,7 +44,7 @@ class SaveFileTest:
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
-        assert content.IndexOf('//# booAssembly = ') == -1
+        assert content.IndexOf('//# booAssembly') == -1
 
     [Test]
     def generate_sourcemap():
@@ -52,7 +53,7 @@ class SaveFileTest:
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
-        assert content.IndexOf('//# sourceMappingURL = ') >= 0
+        assert content.IndexOf('//# sourceMappingURL') >= 0
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName + '.map')
         assert content.IndexOf(result.GeneratedAssemblyFileName) >= 0
@@ -64,7 +65,7 @@ class SaveFileTest:
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
-        assert content.IndexOf('//# sourceMappingURL = srcmap.map') >= 0
+        assert content.IndexOf('//# sourceMappingURL=srcmap.map') >= 0
 
         content = File.ReadAllText((comp.Parameters as CompilerParameters).SourceMap)
         assert content.IndexOf(result.GeneratedAssemblyFileName) >= 0
