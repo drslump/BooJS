@@ -37,3 +37,11 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
         them using a runtime.
     """
         NotImplemented node, 'Event is not implemented in Boojs'
+
+    def OnUnaryExpression(node as UnaryExpression):
+        if node.Operator in (
+            UnaryOperatorType.Decrement, UnaryOperatorType.Increment,
+            UnaryOperatorType.PostDecrement, UnaryOperatorType.PostIncrement
+        ):
+            if node.Operand isa SlicingExpression:
+                NotImplemented node, 'Increment/Decrement operators are not supported for slicing expressions'
