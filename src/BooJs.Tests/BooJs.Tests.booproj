@@ -100,29 +100,32 @@
     <Compile Include="GeneratorsFixtures.boo" />
     <Compile Include="SaveFile.boo" />
     <Compile Include="ArraysFixtures.boo" />
-    <Compile Include="Support\FixtureRunner.boo" />
     <Compile Include="ClassesFixtures.boo" />
     <Compile Include="BoojsFixtures.boo" />
+    <Compile Include="Support\FixtureRunner.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Support\" />
     <Folder Include="resources\" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\Boo.js">
-      <Link>resources\Boo.js</Link>
-      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
-      <LogicalName>Boo.js</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\BooJs.Tests.Support.js">
-      <LogicalName>BooJs.Tests.Support.js</LogicalName>
-      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
   <ItemGroup>
     <None Include="..\Boo.Async.js">
       <Link>resources\Boo.Async.js</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+    </None>
+    <None Include="..\Boo.js">
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+      <Link>resources\Boo.js</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\BooJs.Tests.Support.js">
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Boo.debug.js">
+      <Link>resources\Boo.debug.js</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
     </None>

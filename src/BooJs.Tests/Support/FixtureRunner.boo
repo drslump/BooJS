@@ -201,20 +201,16 @@ class FixtureRunner:
             engine.SetGlobalValue('console', console)
 
             # Load runtime
-            stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('Boo.js')
-            reader = System.IO.StreamReader(stream)
-            engine.Execute(reader.ReadToEnd())
+            engine.ExecuteFile('resources/Boo.js')
+            #engine.ExecuteFile('resources/Boo.debug.js')
+            engine.ExecuteFile('resources/Boo.Async.js')
 
             # Patch the runtime to be compatible with Jurassic
             engine.Execute('Boo.AssertionError.prototype.toString = function(){ return this.message; };')
 
             # Load tests support types
-            stream = typeof(FixtureRunner).Assembly.GetManifestResourceStream('BooJs.Tests.Support.js')
-            reader = System.IO.StreamReader(stream)
-            engine.Execute(reader.ReadToEnd())
+            engine.ExecuteFile('resources/BooJs.Tests.Support.js')
 
-            engine.ExecuteFile('resources/Boo.Async.js')
-            
             self._engine = engine
 
         return self._engine
