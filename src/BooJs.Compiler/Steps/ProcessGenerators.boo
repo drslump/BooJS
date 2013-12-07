@@ -170,6 +170,15 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             if node.EnsureBlock:
                 Current.Add( [| $(REF_ENSURE).pop()() |] )
 
+            # We need to make absolutely sure we jump out to a clean state
+            # NOTE: nested try/except blocks may have created new states
+            nextstate = CreateState()
+            Current.Add([| $REF_STATE = $nextstate |])
+            if State != nextstate - 1:
+                Current.Add(JUMP)
+
+            State = nextstate
+
         def OnUnlessStatement(node as UnlessStatement):
         """ We just convert to a simple IfStatement
         """
