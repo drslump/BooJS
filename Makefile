@@ -37,7 +37,12 @@ NUNIT_OPTS=-nologo -domain=single -noshadow -output=/tmp/nunit-stdout
 all: test
 
 compile:
-	$(MSBUILD_PATH) $(MSBUILD_OPTS) src/boojs/boojs.booproj
+	@$(MSBUILD_PATH) $(MSBUILD_OPTS) src/boojs/boojs.booproj
+
+build: compile
+	@mkdir -p build
+	@rm -rf build/*
+	@cp src/boojs/bin/Debug/* build/.
 
 compile-tests: compile
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) src/BooJs.Tests/BooJs.Tests.booproj
