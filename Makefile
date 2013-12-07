@@ -41,7 +41,6 @@ compile:
 
 build: compile
 	@mkdir -p build
-	@rm -rf build/*
 	@cp src/boojs/bin/Debug/* build/.
 
 compile-tests: compile
@@ -60,7 +59,7 @@ else
 	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 endif
 
-rebuild: clean compile generate-fixtures compile-tests
+rebuild: clean build generate-fixtures compile-tests
 
 generate-fixtures:
 	lib/booi scripts/generate-fixture-testcases.boo -- tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
@@ -82,8 +81,9 @@ generate-fixtures:
 	
 clean:
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) /target:clean src/boojs.sln
+	@rm -rf build/*
 
 help:
 	@printf $(HELPTEXT)
 
-.PHONY : all compile compile-tests clean help test run
+.PHONY : all compile build compile-tests clean help test run

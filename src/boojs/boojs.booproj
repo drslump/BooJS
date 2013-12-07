@@ -44,9 +44,6 @@
     <Reference Include="Boo.Lang.Useful">
       <HintPath>..\..\lib\Boo.Lang.Useful.dll</HintPath>
     </Reference>
-    <Reference Include="Boo.Hints">
-      <HintPath>..\..\lib\Boo.Hints.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Compiler\BooJs.Compiler.booproj">
@@ -59,7 +56,6 @@
     <Compile Include="AssemblyInfo.boo" />
     <Compile Include="CommandLine.boo" />
     <Compile Include="Watcher.boo" />
-    <Compile Include="Hints.boo" />
   </ItemGroup>
   <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
 </Project>

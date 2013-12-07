@@ -74,11 +74,6 @@ cmdLine = parseCommandLine(argv)
 if cmdLine is null: return
 
 
-if cmdLine.HintsServer:
-    hints(cmdLine)
-    return
-
-
 compiler = newBooJsCompiler(selectPipeline(cmdLine))
 configureParams(cmdLine, compiler.Parameters)
 

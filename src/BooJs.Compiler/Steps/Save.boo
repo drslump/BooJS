@@ -64,8 +64,7 @@ class Save(AbstractCompilerStep):
 
             base64 = Convert.ToBase64String(gzipped.ToArray())
 
-        Context.TraceVerbose('Embedding metadata assembly (binary / base64): {0} / {2}' % (len(bytes), len(base64)))
-
+        Context.TraceVerbose('Embedding assembly metadata (binary / base64): {0} / {2}' % (len(bytes), len(base64)))
         return base64
 
     def GetFileName():
