@@ -256,8 +256,9 @@
 
         // Wrap the closure into a generator like object
         return {
-            // In BooJs Iterators and Iterables share the same interface
+            // In BooJs Iterators and Generators share the same interface
             iterator: function () { return this; },
+            // GeneratorIterator interface
             next: closure,  // next()
             send: closure,  // send(value)
             'throw': function (error) {
@@ -399,6 +400,7 @@
     Boo.reduce = boo_reduce;
 
     // Builds a list of lists using one item from each given array (zip shortest)
+    // TODO: User VarArgs?
     function boo_zip(args) {
         var i, fn, result = [],
             all_arrays = boo_reduce(args, true, function (a, b) { return a && typeIs(b, 'Array', 'String'); });
@@ -415,15 +417,17 @@
             }
         } else {
             // If there is a generator among them
-            fn = function (arg) { return arg[i]; };
+            fn = function (arg) { return arg.next(); };
             // Initialize
             for (i = 0; i < args.length; i++) {
-                args[i] = (Boo.generator(args[i]))();
+                args[i] = Boo.generator(args[i]);
             }
             // Consume
+            i = 0;
             while (true) {
                 try {
                     result[i] = boo_map(args, fn);
+                    i++;
                 } catch (e) {
                     if (e !== Boo.STOP) throw e;
                     break;
