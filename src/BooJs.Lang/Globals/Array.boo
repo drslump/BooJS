@@ -43,10 +43,11 @@ class Array[of T] (Object, Iterable[of T]):
     public final length as uint
 
     # Indexer
+    # TODO: Use same optimizations as slicing on arrays
     self[index as int] as T:
-        [Transform( $0[$1] )]
+        [Transform( Boo.slice($0, $1) )]
         get: pass
-        [Transform( $0[$1] = $2 )]
+        [Transform( Boo.sliceSet($0, $1, $2) )]
         set: pass
 
     def constructor():

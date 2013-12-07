@@ -35,6 +35,7 @@ script:
      BooJs.Tests.ClassesFixtures,
      BooJs.Tests.DevelFixtures,
      BooJs.Tests.DucktypingFixtures,
+     BooJs.Tests.OperatorsFixtures,
      BooJs.Tests.PrimitivesFixtures,
      BooJs.Tests.SaveFileTest,
      BooJs.Tests.StatementsFixtures,

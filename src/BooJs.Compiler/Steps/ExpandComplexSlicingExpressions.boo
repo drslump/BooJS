@@ -39,17 +39,17 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
     # Implement Boo 0.9.6's AstNodePredicates
     def IsComplexSlicing(node as SlicingExpression) as bool:
         return node.Indices.Contains({idx| IsComplexSlice(idx)})
-        
-    def IsTargetOfAssignment(node as Expression) as bool:
-        parentExpression = node.ParentNode as BinaryExpression
-        return false if not parentExpression
-        return node == parentExpression.Left and AstUtil.IsAssignment(parentExpression)
 
     def IsComplexSlice(slice as Slice) as bool:
         # Only literal positive integers are considered not complex
         if not slice.End and not slice.Step and slice.Begin isa IntegerLiteralExpression:
             return (slice.Begin as IntegerLiteralExpression).Value < 0
         return true
+
+    def IsTargetOfAssignment(node as Expression) as bool:
+        parentExpression = node.ParentNode as BinaryExpression
+        return false if not parentExpression
+        return node == parentExpression.Left and AstUtil.IsAssignment(parentExpression)
 
     def IsNullOrOmitted(expression as Expression) as bool:
         return expression == null or expression == OmittedExpression.Default
@@ -106,7 +106,7 @@ class ExpandComplexSlicingExpressions(AbstractFastVisitorCompilerStep):
 
         if IsTargetOfAssignment(node):
             # Use slice setter from the runtime (only needed to handle negative values)
-            # TODO: Issue a warning if the node is inside a loop
+            # TODO: Issue a warning if the node is inside a loop (performance)
             rhs = (node.ParentNode as BinaryExpression).Right
             mie = CodeBuilder.CreateMethodInvocation(_sliceSet, node.Target, slice.Begin, rhs)
         else:

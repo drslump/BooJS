@@ -6,20 +6,24 @@ interface Iterable:
 """
     def iterator() as Iterator
 
+
 interface Iterable[of T] (Iterable):
 """ Enumerable interface for generic types (aka IEnumerable[of T])
 """
     def iterator() as Iterator[of T]
+
 
 interface Iterator:
 """ Enumerator interface (aka IEnumerator)
 """
     def next() as object
 
+
 interface Iterator[of T] (Iterator):
 """ Enumerator interface for generic types (aka IEnumerator[of T])
 """
     def next() as T
+
 
 interface GeneratorIterator(Iterable, Iterator):
 """ Generator based enumerator
@@ -30,6 +34,7 @@ interface GeneratorIterator(Iterable, Iterator):
     def send(value as object)
     def throw(error as object)
     def close()
+
 
 interface GeneratorIterator[of T] (GeneratorIterator, Iterable[of T], Iterator[of T]):
 """ Generator based enumerator for generic types
