@@ -136,9 +136,10 @@ class CompileToMemory(BooPipelines.CompileToMemory):
         PatchBooPipeline(self)
 
 
-class PrintBoo(Compile):
+class PrintBoo(BooPipelines.ParseAndPrint):
+    # TODO: Find out why the PrintBoo step breaks when using BooJs parser AST
     def constructor():
-        Add PrintBoo()
+        super()
 
 
 class PrintJs(Compile):
@@ -154,4 +155,3 @@ class PrintAst(Compile):
 class SaveJs(Compile):
     def constructor():
         Add Steps.Save()
-

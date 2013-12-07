@@ -1,6 +1,7 @@
 namespace BooJs.Compiler
 
+from Boo.Lang.Compiler import CompilerPipeline as BooCompilerPipeline
 
-class CompilerPipeline(Boo.Lang.Compiler.CompilerPipeline):
-""" Override the pipeline just in case we need to modify something there"""
+class CompilerPipeline(BooCompilerPipeline):
+""" Override the pipeline just in case we need to modify something here"""
 	pass
