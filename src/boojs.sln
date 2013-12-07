@@ -11,8 +11,6 @@ Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Lang", "BooJs.Lang\Bo
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Lang.Extensions", "BooJs.Lang.Extensions\BooJs.Lang.Extensions.booproj", "{758F8FBF-64E3-41E7-837E-6DA79A42EFDB}"
 EndProject
-Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "boojs-linter", "boojs-linter\boojs-linter.booproj", "{E04DA280-DDA5-430D-8693-AFF2AE3C03D9}"
-EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler.Mozilla", "BooJs.Compiler.Mozilla\BooJs.Compiler.Mozilla.booproj", "{B52B76BB-B275-4EE3-AE06-3B930C452C72}"
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler.SourceMap", "BooJs.Compiler.SourceMap\BooJs.Compiler.SourceMap.booproj", "{7FF045EF-2398-424B-AD00-0D8804A753BD}"
