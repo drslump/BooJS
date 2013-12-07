@@ -33,7 +33,7 @@ class Save(AbstractCompilerStep):
             unit = ctxt['MozillaUnit']
             printer.Visit(unit)
 
-            if params.EmbedAssembly:
+            if params.EmbedTypes:
                 writer.WriteLine()
                 writer.WriteLine('//# booAssembly=' + GetCompressedAssembly())
 

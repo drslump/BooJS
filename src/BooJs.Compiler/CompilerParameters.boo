@@ -10,8 +10,8 @@ from System import Convert
 
 class CompilerParameters(BooCompilerParameters):
 
-    [Property(EmbedAssembly)]
-    _embedasm = true
+    [Property(EmbedTypes)]
+    _embedtypes = true
 
     [Property(SourceMap)]
     _sourceMap = null

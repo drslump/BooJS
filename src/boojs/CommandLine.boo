@@ -31,23 +31,23 @@ class CommandLine(AbstractCommandLine):
     IsValid:
         get: return self.HintsServer or len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
 
-    [Option("Output directory", ShortForm: "o", LongForm: "out")]
+    [Option("Output {filename}", ShortForm: "o", LongForm: "out")]
     public OutputDirectory = "."
 
-    [Option("Prints the resulting bytecode to stdout (js, boo).", ShortForm: 'p', LongForm: "print")]
-    public PrintCode = false
+    [Option("Select a pipeline (boo or js prints code)", ShortForm: 'p', LongForm: "pipeline")]
+    public Pipeline as string
 
-    [Option("Enables duck typing.", LongForm: "ducky")]
+    [Option("Enables duck typing.", ShortForm: 'd', LongForm: "ducky")]
     public Ducky = false
 
     [Option("Enables writing debug symbols.", LongForm: "debug")]
     public Debug = false
 
-    [Option("Enables verbose mode.", LongForm: "verbose")]
+    [Option("Enables verbose mode.", ShortForm: "v", LongForm: "verbose")]
     public Verbose = false
 
-    [Option("Embeds the types metadata assembly into the generated file (enabled by default).", LongForm: "embedasm")]
-    public EmbedAssembly = true
+    [Option("Embeds types metadata into the generated file (on by default).", LongForm: "embedtypes")]
+    public EmbedTypes = true
 
     [Option("References the specified {assembly}", ShortForm: 'r', LongForm: "reference", MaxOccurs: int.MaxValue)]
     def AddReference(reference as string):
@@ -56,13 +56,13 @@ class CommandLine(AbstractCommandLine):
 
         _references.AddUnique(Unquote(reference))
 
-    [Option("Includes all *.boo files from {srcdir}", LongForm: "srcdir", MaxOccurs: int.MaxValue)]
+    [Option("Includes all *.boo files from {directory}", LongForm: "srcdir", MaxOccurs: int.MaxValue)]
     def AddSourceDir(srcDir as string):
         _srcDirs.AddUnique(Path.GetFullPath(srcDir))
 
-    [Option("Specify an output file where to generate source map", LongForm: "sourcemap")]
+    [Option("Specify an output {file} where to generate source map (- to embed)", LongForm: "srcmap")]
     public SourceMap as string = null
-    [Option("Root prefix for source map files", LongForm: "sourcemap-root")]
+    [Option("Root {prefix} for source map files", LongForm: "srcmap-root")]
     public SourceMapRoot as string = null
 
     # TODO: Add option to launch external program on compilation failure
@@ -74,9 +74,6 @@ class CommandLine(AbstractCommandLine):
 
     [Option("Launch the compiler in hints mode", LongForm: "hints-server")]
     public HintsServer as bool = false
-
-    [Option("Make hints mode compatible with standard Boo", LongForm: "hints-boo")]
-    public HintsBoo as bool = false
 
     [Argument]
     def AddSourceFile([required] sourceFile as string):

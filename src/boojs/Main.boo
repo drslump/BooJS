@@ -32,7 +32,7 @@ def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     params.Debug = cmdLine.Debug
     params.OutputAssembly = getOutputDirectory(cmdLine)
     params.Ducky = cmdLine.Ducky
-    params.EmbedAssembly = cmdLine.EmbedAssembly
+    params.EmbedTypes = cmdLine.EmbedTypes
     params.SourceMap = cmdLine.SourceMap
     params.SourceMapRoot = cmdLine.SourceMapRoot
 

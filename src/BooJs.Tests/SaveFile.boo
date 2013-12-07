@@ -27,7 +27,7 @@ class SaveFileTest:
     [Test]
     def embedded_assembly():
         comp = setup_compiler(CODE)
-        (comp.Parameters as CompilerParameters).EmbedAssembly = true
+        (comp.Parameters as CompilerParameters).EmbedTypes = true
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
@@ -40,7 +40,7 @@ class SaveFileTest:
     [Test]
     def non_embedded_assembly():
         comp = setup_compiler(CODE)
-        (comp.Parameters as CompilerParameters).EmbedAssembly = false
+        (comp.Parameters as CompilerParameters).EmbedTypes = false
         result = comp.Run()
 
         content = File.ReadAllText(result.GeneratedAssemblyFileName)
