@@ -1,3 +1,4 @@
+#TODO: Handle `isa callable`
 """
 0
 1

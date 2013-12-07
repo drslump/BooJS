@@ -1,5 +1,6 @@
+#IGNORE: not supported, generator is of type Iterable[of T] which doesn't have a toString method
 """
-0,1,2
+generator(System.Int32)
 """
 g = i for i in range(3)
 print g.toString()

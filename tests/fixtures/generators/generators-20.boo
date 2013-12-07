@@ -7,6 +7,9 @@
 2, 1
 """
 items = [(x, y) for x in range(1, 3) for y in range(3, 0)]
+
 assert items isa Array
+
 for item in items:
-	print join(item, ", ")
+	# print join(item, ", ")
+	pass

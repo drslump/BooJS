@@ -54,7 +54,7 @@ def NestedEnsures():
         print "outer ensure"
         raise "Exception from outer ensure"
 
-def Consume(generator as IGenerator[of string], count as int):
+def Consume(generator as GeneratorIterator[of string], count as int):
     enumerator = generator
     try:
         for i in range(count):

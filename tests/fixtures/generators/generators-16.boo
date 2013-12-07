@@ -1,4 +1,4 @@
-#IGNORE: BooJs generators are evaluated immediatly
+#IGNORE: Generator expressions are optimized in BooJs and directly converted to arrays
 
 a = range(3)
 g = i*2 for i in a
