@@ -43,7 +43,8 @@ class RuntimeServices:
     [Transform( $1[$2] )]
     static def GetProperty(target as object, name as string) as object:
         pass
-    [Transform( Boo.slice_set($1, $2, $3) )]
+    # TODO: These will probably need custom support from the runtime
+    [Transform( Boo.sliceSet($1, $2, $3) )]
     static def SetSlice(target as object, name as string, args as object*) as object:
         pass
     [Transform( Boo.slice($1, $2, $3) )]
@@ -68,6 +69,12 @@ class RuntimeServices:
     [Transform( Boo.slice($1, $2, $3, $4) )]
     static def slice3[of T](list as T*, begin as int, end as int, step as int) as T*:
         pass
+
+    [Transform( Boo.sliceSet($1, $2, $3) )]
+    static def sliceSet[of T](list as T*, idx as int, value as T) as T*:
+        pass
+
+
 
 
     # TODO: When a type doesn't have a explicit operator overload they seem to use the ones from other types :-s

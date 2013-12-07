@@ -475,16 +475,23 @@
 
     // Runtime support for slicing on arrays
     Boo.slice = function (value, begin, end, step) {
+        var len = value.length;
         begin = begin || 0;
-        if (begin < 0) begin += value.length;
+        if (begin < 0) {
+            begin += len;
+            if (begin < 0) begin = 0;  // Don't go out of range
+        }
 
         // Index access
         if (arguments.length === 2) {
             return value[begin];
         }
 
-        end = end || value.length;
-        if (end < 0) end += value.length;
+        end = end || len;
+        if (end < 0) {
+            end += len;
+            if (end < 0) end = 0; // don't go out of range
+        }
         step = step || (begin <= end ? 1 : -1);
 
         // Optimize common case
@@ -501,16 +508,19 @@
         return (typeof value === 'string') ? result.join('') : result;
     };
 
-    Boo.sliceSet = function (target, begin, end, value) {
-        var args;
+    // Only used to ensure we handle negative values
+    // TODO: Runtime support for expressions like [1:] = [1,2,3]
+    Boo.sliceSet = function (target, idx, value) {
+        var len = target.length;
 
-        begin = begin || 0;
-        if (begin < 0) begin += target.length;
-        end = end || target.length;
-        if (end < 0) end += target.length;
+        idx = idx || 0;
+        if (begin < 0) {
+            idx += target.length;
+            if (idx < 0) idx = 0;
+        }
 
-        args = [begin, end - begin].concat(value);
-        target.splice.apply(target, args);
+        target[idx] = value;
+        return target;
     };
 
     // Check if a value is null (or undefined)
