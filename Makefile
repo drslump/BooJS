@@ -36,6 +36,14 @@ MSBUILD_OPTS=/nologo /verbosity:quiet
 NUNIT_PATH=$(MONO) lib/nunit/nunit-console.exe
 NUNIT_OPTS=-framework=4.0 -nologo -domain=none -noshadow -timeout=10000 -output=/tmp/nunit-stdout
 
+MONOLINKER_PATH=monolinker
+
+ILREPACK_PATH=ilrepack
+ILREPACK_OPTS=/log
+
+BIN_PATH=src/boojs/bin/Debug
+BUNDLE_NAME=boojs
+
 
 all: test
 
@@ -84,6 +92,32 @@ generate-fixtures:
 docs:
 	cd docs; make html; cd -
 
+bundle-ilrepack:
+	@mkdir -p build
+	$(ILREPACK_PATH) $(ILREPACK_OPTS) /out:build/$(BUNDLE_NAME).exe /internalize $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll	
+
+bundle-dynamic:
+	@mkdir -p build/linked
+	CC="cc -arch i386" AS="as -arch i386" \
+		mkbundle -o build/$(BUNDLE_NAME).exe -z --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
+
+bundle-linked:
+	@mkdir -p build/linked
+	monolinker -out build/linked -d $(BIN_PATH) -l none -c link -a $(BIN_PATH)/boojs.exe
+
+bundle-linked-dynamic: bundle-linked
+	CC="cc -arch i386" AS="as -arch i386" \
+		mkbundle -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+
+bundle-linked-static: bundle-linked
+	CC="cc -arch i386" AS="as -arch i386" \
+		mkbundle --static -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+
+bundle-linked-static-osx: bundle-linked
+	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
+		mkbundle --static -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+
+
 # Tests for Travis-CI environment
 ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
@@ -103,6 +137,7 @@ ci-tests:
 
 clean:
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) /target:clean src/boojs.sln
+	rm -rf build
 	cd docs; make clean; cd -
 
 help:
