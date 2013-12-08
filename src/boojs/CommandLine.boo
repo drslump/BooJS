@@ -29,7 +29,7 @@ class CommandLine(AbstractCommandLine):
                 yield fname
 
     IsValid:
-        get: return self.HintsServer or len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
+        get: return len(self._sourceFiles) > 0 or len(self._srcDirs) > 0
 
     [Option("Output {filename}", ShortForm: "o", LongForm: "out")]
     public OutputDirectory = "."
@@ -72,8 +72,6 @@ class CommandLine(AbstractCommandLine):
     [Option("Display this help and exit", LongForm: "help")]
     public DoHelp = false
 
-    [Option("Launch the compiler in hints mode", LongForm: "hints-server")]
-    public HintsServer as bool = false
 
     [Argument]
     def AddSourceFile([required] sourceFile as string):
