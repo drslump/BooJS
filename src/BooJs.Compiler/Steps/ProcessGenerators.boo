@@ -39,17 +39,17 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         def constructor():
             CreateState()
 
+            # Add value check to first state
+            valuecheck = [|
+                if $REF_VALUE is not Boo.UNDEF or $REF_ERROR is not Boo.UNDEF:
+                    raise TypeError('Generator not started yet, unable to process sent value/error')
+            |]
+            Current.Add(valuecheck)
+
         def CreateState():
             block = Block()
             States.Add(block)
             return len(States)-1
-
-        def OnExpressionStatement(node as ExpressionStatement):
-            Current.Add(node)
-
-        def OnForStatement(node as ForStatement):
-            # We assume that loops with yields where converted to while statements
-            Current.Add(node)
 
         def OnYieldStatement(node as YieldStatement):
             # Create a re-entry state
@@ -63,32 +63,21 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = nextstate
 
         def OnReturnStatement(node as ReturnStatement):
-            # If it has an expression just handle as a yield
-            if node.Expression:
-                ynode = YieldStatement(node.LexicalInfo, Expression: node.Expression)
-                OnYieldStatement(ynode)
-            # Otherwise just create a new state where the generator terminates
-            else:
-                nextstate = CreateState()
-                Current.Add([| $REF_STATE = $nextstate |])
-                if State != nextstate - 1:
-                    Current.Add(JUMP)
-                State = nextstate
-
-            # At this point we want to always stop the generator
-            Current.Add([| raise Boo.STOP |])
-
-        def OnRaiseStatement(node as RaiseStatement):
-            # Create a new state in case the generator is entered again
-            nextstate = CreateState()
-            Current.Add([| $REF_STATE = $nextstate |])
-
-            # Raise now
+            # Make sure the generator is stopped even if re-entered
+            Current.Add([| $REF_STATE = -1 |])
             Current.Add(node)
 
-            # At this point we want to always stop the generator
-            State = nextstate
-            Current.Add([| raise Boo.STOP |])
+        def OnRaiseStatement(node as RaiseStatement):
+            # Make sure the generator is stopped even if re-entered
+            Current.Add([| $REF_STATE = -1 |])
+            Current.Add(node)
+
+        def OnExpressionStatement(node as ExpressionStatement):
+            Current.Add(node)
+
+        def OnForStatement(node as ForStatement):
+            # We assume that loops with yields where converted to while statements
+            Current.Add(node)
 
         def OnWhileStatement(node as WhileStatement):
             # Loop always starts in a new step
@@ -124,7 +113,8 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = exitstate
 
         def OnTryStatement(node as TryStatement):
-            # A try block always initiates an state
+            # A try block always initiates an state. This simplifies a bit the
+            # mapping of protected blocks.
             trystate = CreateState()
 
             # Make sure the current state ends up in the new one
@@ -192,8 +182,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             State = nextstate
 
         def OnUnlessStatement(node as UnlessStatement):
-        """ We just convert to a simple IfStatement
-        """
+            # We just convert to a negated IfStatement
             ifnode = IfStatement(node.LexicalInfo)
             ifnode.Condition = [| not $(node.Condition) |]
             ifnode.TrueBlock = node.Block
@@ -303,13 +292,6 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             CodeBuilder.DeclareLocal(node, REF_ENSURE.Name, TypeSystemServices.ArrayType)
             node.Body.Add( CodeBuilder.CreateAssignment(REF_EXCEPT, ListLiteralExpression()) )
             node.Body.Add( CodeBuilder.CreateAssignment(REF_ENSURE, ListLiteralExpression()) )
-
-        # Add value check to first state
-        valuecheck = [|
-            if $REF_VALUE is not Boo.UNDEF or $REF_ERROR is not Boo.UNDEF:
-                raise TypeError('Generator not started yet, unable to process sent value/error')
-        |]
-        (transformer.States[0] as Block).Insert(0, valuecheck)
 
         # Wrap the steps into a switch/case construct
         # TODO: Use Boo's native switch construct
