@@ -87,6 +87,7 @@ docs:
 # Tests for Travis-CI environment
 ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
+		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \
         BooJs.Tests.ClassesFixtures, \
      	BooJs.Tests.DevelFixtures, \
