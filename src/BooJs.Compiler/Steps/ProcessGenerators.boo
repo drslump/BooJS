@@ -79,7 +79,16 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             Current.Add([| raise Boo.STOP |])
 
         def OnRaiseStatement(node as RaiseStatement):
+            # Create a new state in case the generator is entered again
+            nextstate = CreateState()
+            Current.Add([| $REF_STATE = $nextstate |])
+
+            # Raise now
             Current.Add(node)
+
+            # At this point we want to always stop the generator
+            State = nextstate
+            Current.Add([| raise Boo.STOP |])
 
         def OnWhileStatement(node as WhileStatement):
             # Loop always starts in a new step
@@ -186,7 +195,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
         """ We just convert to a simple IfStatement
         """
             ifnode = IfStatement(node.LexicalInfo)
-            ifnode.Condition = node.Condition
+            ifnode.Condition = [| not $(node.Condition) |]
             ifnode.TrueBlock = node.Block
             Visit(ifnode)
 
