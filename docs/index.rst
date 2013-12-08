@@ -15,6 +15,7 @@ A JavaScript backend for the Boo language.
   Overloading
   Runtime
   Modules
+  Generators
   Async
 
 **Resources**

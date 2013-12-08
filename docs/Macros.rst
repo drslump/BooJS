@@ -115,11 +115,11 @@ match.
 
     [extension] 
     def toISO(date as Date):
-      return date.getFullYear() + d.getMonth() + d.getDate()
+      return date.getFullYear() + date.getMonth() + date.getDate()
 
     [extension]
     def incr(date as Date, seconds as int):
-      d.setTime( date.getTime() + seconds*1000 )
+      date.setTime( date.getTime() + seconds*1000 )
 
     d = Date()
     print d.toISO()     # Converted to: print toISO(d) 
