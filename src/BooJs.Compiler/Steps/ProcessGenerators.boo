@@ -343,9 +343,12 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                 try:
                     $statemachine
                 except:
+                    # HACK: Assign the exception to _value_ so we can work with it
+                    #       in a matched except block or override it from the ensures
+                    $REF_VALUE = _ex_
+
                     if $(REF_EXCEPT).length:
                         $REF_ERROR = null  # Make sure any reported error is removed
-                        $REF_VALUE = _ex_  # HACK: Assign the exception to the value
                         $REF_STATE = $(REF_EXCEPT).pop()
                         goto statemachine
 
@@ -353,11 +356,15 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                     $REF_STATE = -1
 
                     # Ensure all finally blocks are executed before exiting
+                    # NOTE: Any error raised inside an ensure block overrides the previous
                     while $(REF_ENSURE).length:
-                        $(REF_ENSURE).pop()()
+                        try:
+                            $(REF_ENSURE).pop()()
+                        except:
+                            $REF_VALUE = _ex_
 
                     # Re-raise the exception
-                    raise _ex_
+                    raise $REF_VALUE
             |]
 
         # Make the method return a generator

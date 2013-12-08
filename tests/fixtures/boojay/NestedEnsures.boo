@@ -54,11 +54,14 @@ def nestedEnsures():
         print "outer ensure"
         raise "Exception from outer ensure"
 
-def consume(strings as string*, count as int):
-    enumerator = strings.iterator()
+# NOTE: The Boojay test does not manually "close" the generator,
+#       it seems that its behaviour is to close it automatically
+#       when exiting a loop where it's used :-s
+def consume(gen as GeneratorIterator, count as int):
     try:
         for i in range(count):
-            print enumerator.next()
+            print gen.next()
+        gen.close()
     except ex:
         print "Caught: $(ex.message)"
 
