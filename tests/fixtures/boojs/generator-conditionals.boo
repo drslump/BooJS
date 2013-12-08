@@ -18,7 +18,7 @@ def gen_if(x as int):
 
 
 def gen_unless(x as int):
-	unless x < 10:
+	unless x > 10:
 		yield "unless"
 	yield 'end'
 
