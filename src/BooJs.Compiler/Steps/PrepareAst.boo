@@ -453,6 +453,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
             raise 'Unsupported TypeReference: ' + node.Type + ' (' + node.Type.NodeType + ')'
 
     static _negated_binary_ops = {
+        BinaryOperatorType.ReferenceEquality: BinaryOperatorType.ReferenceInequality,
+        BinaryOperatorType.ReferenceInequality: BinaryOperatorType.ReferenceEquality,
         BinaryOperatorType.Equality: BinaryOperatorType.Inequality,
         BinaryOperatorType.Inequality: BinaryOperatorType.Equality,
         BinaryOperatorType.GreaterThan: BinaryOperatorType.LessThanOrEqual,

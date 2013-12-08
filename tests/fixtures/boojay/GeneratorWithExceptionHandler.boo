@@ -6,7 +6,9 @@ An exception occurred
 """
 def foo(raiseException as bool) as int*:
 	try:
-		assert not raiseException
+		# assert not raiseException
+		if raiseException:
+			raise "Foo"
 		print "test"
 	except e:
 		print "An exception occurred"

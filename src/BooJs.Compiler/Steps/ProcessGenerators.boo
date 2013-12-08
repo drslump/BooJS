@@ -78,6 +78,9 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             # At this point we want to always stop the generator
             Current.Add([| raise Boo.STOP |])
 
+        def OnRaiseStatement(node as RaiseStatement):
+            Current.Add(node)
+
         def OnWhileStatement(node as WhileStatement):
             # Loop always starts in a new step
             loopstate = CreateState()
@@ -197,7 +200,9 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
                         $JUMP
                 |]
                 Current.Add(block)
-                Visit node.TrueBlock
+
+                # Dump the conditional block
+                Visit(node.TrueBlock)
 
                 # Create an exit state and setup the jump
                 exitstate = CreateState()
