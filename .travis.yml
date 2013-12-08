@@ -22,27 +22,11 @@ install:
 
 before_script:
  # Build BooJs...
- - xbuild src/boojs.sln
+ - make rebuild
 
 script:
  # Run Tests
- - echo "Running tests..."
- - >
-    mono --runtime=v4.0 --gc=boehm 
-    lib/nunit/nunit-console.exe -nologo -nodots -domain=none -timeout=10000 -framework=4.0 -output=stdout.txt 
-    -run="
-     BooJs.Tests.BoojsFixtures,
-     BooJs.Tests.ClassesFixtures,
-     BooJs.Tests.DevelFixtures,
-     BooJs.Tests.DucktypingFixtures,
-     BooJs.Tests.OperatorsFixtures,
-     BooJs.Tests.PrimitivesFixtures,
-     BooJs.Tests.SaveFileTest,
-     BooJs.Tests.StatementsFixtures,
-     BooJs.Tests.StdlibFixtures,
-     BooJs.Tests.SourceMapTest
-    "
-    src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+ - make ci-tests
 
 # Notify development list when needed
 notifications:
