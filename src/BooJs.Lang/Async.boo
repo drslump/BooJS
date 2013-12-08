@@ -2,52 +2,60 @@ namespace BooJs.Lang.Async
 
 from System import AttributeUsageAttribute, AttributeTargets
 from Boo.Lang.Environments import my
-from Boo.Lang.Compiler import AbstractAstAttribute, CompilerWarningFactory, CompilerContext
+from Boo.Lang.Compiler import AbstractAstAttribute, CompilerWarningFactory, CompilerErrorFactory, CompilerContext
 from Boo.Lang.Compiler.Ast import *
 
 from BooJs.Lang.Extensions import TransformAttribute
 
 
+# HACK: We want to reference the _value_ reference inside the generator
+#       however when the await macro is expanded that reference does not
+#       yet exists. Hence we use the Transform attribute to output the
+#       correct reference name and not references to this module.
 [Transform( _value_ )]
-def _value_() as object:
+def _value_() as duck:
     pass
 [Transform( _value_ )]
-def _valuelist_() as (object):
+def _valuelist_() as (duck):
     pass
+
+
+[AttributeUsage(AttributeTargets.Method)]
+class AsyncAttribute(AbstractAstAttribute):
+
+    def Apply(node as Node):
+        method = node as Method
+        method.Body = [|
+            return async(): $(method.Body)
+        |].ToBlock()
 
 
 macro await:
-    # await foo()
-    # await foo(), bar()  <==>  (foo(), bar())
-    # await data = foo()
-    # await data = foo(), bar()
-    # await data, data2 = foo(), bar()
+    # await foo()  -->  yield foo()
+    # await foo(), bar()  -->  yield (foo(), bar())
+    # await data = foo()  -->  yield foo() ; data = _value_
+    # await data = foo(), bar()  -->  yield (foo(), bar()) ; data = _value_
+    # await data, data2 = foo(), bar()  -->  yield (foo(), bar()) ; data, data2 = _value_
 
     # TODO: Support its use as an expression (meta method?)
     #       foo = await(bar())
     #       data1, data2 = await(foo()), bar()
     #       foo(10, await(bar), false)
-
-    # TODO: What about the rarely used one's complement?
+    #       # What about the rarely used one's complement?
     #       foo = ~ bar()
     #       foo(10, ~ bar, false)
+    # Perhaps is will be better to convert yield to an expression
+    # in Boo and then use the upstream changes.
 
-    # TODO: Support type definitions
+    # TODO: Support specific types for await values
 
     # Check if the macro is used with async
     has_async = false
-    parent = await.ParentNode
-    while parent:
-        if mie = parent as MethodInvocationExpression:
-            target = mie.Target as ReferenceExpression
-            if target and target.Name == 'async':
-                has_async = true
-                break
-
-        parent = parent.ParentNode
-
-    if not has_async:
-        warning = CompilerWarningFactory.CustomWarning(await, 'await macro is being used in a method without the async attribute')
+    parent = await.GetAncestor[of MethodInvocationExpression]()
+    if parent and target = parent.Target as ReferenceExpression:
+        has_async = target.Name == 'async'
+    unless has_async:
+        warning = CompilerWarningFactory.CustomWarning(await, 'await used in a method without the async attribute')
         my(CompilerContext).Warnings.Add(warning)
 
     decls = ExpressionCollection()
@@ -56,13 +64,14 @@ macro await:
     for arg in await.Arguments:
         if be = arg as BinaryExpression:
             if be.Operator != BinaryOperatorType.Assign:
-                raise 'Invalid operator, only simple assigns are allowed'
+                error = CompilerErrorFactory.CustomError(be, 'only plain assignments are allowed in await')
+                my(CompilerContext).Errors.Add(error)
+                return
             decls.Add(be.Left)
             exprs.Add(be.Right)
             list = exprs
-            continue
-
-        list.Add(arg)
+        else:
+            list.Add(arg)
 
     # No expressions mean we are not handling an assignment operation
     if len(exprs) == 0:
@@ -75,22 +84,13 @@ macro await:
 
     if len(decls) == 1:
         yield [| $(decls[0]) = Async._value_() |]
-    elif len(decls) > 1:
+    else:
         unpack = UnpackStatement()
         for decl as ReferenceExpression in decls:
             unpack.Declarations.Add(Declaration(Name: decl.Name))
         unpack.Expression = [| Async._valuelist_() |]
         yield unpack
 
-
-[AttributeUsage(AttributeTargets.Method)]
-class AsyncAttribute(AbstractAstAttribute):
-
-    def Apply(node as Node):
-        method = node as Method
-        method.Body = [|
-            return async(): $(method.Body)
-        |].ToBlock()
 
 
 interface Thenable:

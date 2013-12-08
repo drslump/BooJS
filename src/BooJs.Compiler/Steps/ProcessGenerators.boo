@@ -13,6 +13,14 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
     transformed into a reentrant state machine, allowing to halt execution
     where a yield is found and resume later on from that same point.
 
+    While in Boo yield is an statement the transformed code supports sending
+    values and errors from the outer context, making them work as coroutines
+    and allowing advanced use cases like Async/Await.
+    Every initialized generator accepts two arguments (_value_ and _error_),
+    that can be used to communicate with it, if an _error_ is given the
+    generator will raise it. For _value_ there is no direct support but
+    it can be used by macros to implement complex patterns.
+
     The generated code is convoluted but pretty fast on modern browsers, it
     runs roughly at half the speed of an user land forEach implementation
     and about 70% the speed of Firefox's native generators.
@@ -118,6 +126,7 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
             trystate = CreateState()
 
             # Make sure the current state ends up in the new one
+            # TODO: Is this ever needed?
             Current.Add([| $REF_STATE = $(trystate) |])
             if State != trystate - 1:
                 Current.Add(JUMP)
