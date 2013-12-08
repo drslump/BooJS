@@ -77,11 +77,15 @@ macro await:
     if len(exprs) == 0:
         exprs, decls = decls, exprs
 
+    if len(exprs) == 0:
+        yield [| yield null |]
     if len(exprs) == 1:
         yield [| yield $(exprs[0]) |]
     else:
         yield [| yield $( ArrayLiteralExpression(Items: exprs) ) |]
 
+    if len(decls) == 0:
+        pass
     if len(decls) == 1:
         yield [| $(decls[0]) = Async._value_() |]
     else:
