@@ -144,7 +144,7 @@ Transforms a Boo AST into a Mozilla AST
             object: Moz.Identifier(name: 'Boo'),
             property: Moz.Identifier(name: 'define')
         )
-        call.arguments.Add(Moz.Literal(value: (node.Namespace.ToString() if node.Namespace else '')))
+        call.arguments.Add(Moz.Literal(value: (node.Namespace.Name if node.Namespace else '')))
         call.arguments.Add(Moz.ArrayExpression(elements: deps))
         fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
         call.arguments.Add(fn)
@@ -193,7 +193,7 @@ Transforms a Boo AST into a Mozilla AST
             )
             # Clone the deps list replacing 'exports' by the namespace
             deps = deps.GetRange(0, len(deps))
-            deps[0] = Moz.Literal(node.Namespace or '')
+            deps[0] = Moz.Literal((node.Namespace.Name if node.Namespace else ''))
             rcall.arguments.Add(Moz.ArrayExpression(elements: deps))
             fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
             rcall.arguments.Add(fn)

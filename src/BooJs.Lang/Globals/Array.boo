@@ -21,6 +21,9 @@ class Array[of T] (Object, Iterable[of T]):
     [Transform( Boo.Array.op_Addition($1, $2) )]
     static def op_Addition(lhs as Array[of T], rhs as Array[of T]) as Array[of T]:
         pass
+    [Transform( Boo.Array.op_Multiply($2, $1) )]
+    static def op_Multiply(lhs as int, rhs as Array[of T]) as Array[of T]:
+        pass
     [Transform( Boo.Array.op_Multiply($1, $2) )]
     static def op_Multiply(lhs as Array[of T], rhs as int) as Array[of T]:
         pass

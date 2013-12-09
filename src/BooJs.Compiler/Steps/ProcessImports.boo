@@ -66,6 +66,11 @@ class ProcessImports(AbstractTransformerCompilerStep):
         _nsidx = 0
 
     def OnImport(node as Import):
+        # Detect imports of the own module namespace
+        module = node.GetAncestor[of Module]()
+        if module and module.Namespace and module.Namespace.Name == node.Namespace:
+            return
+
         if mie = node.Expression as MethodInvocationExpression:
             for arg as ReferenceExpression in mie.Arguments:
                 fqn = node.Namespace + '.' + arg.Name
