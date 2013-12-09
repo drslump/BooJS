@@ -47,6 +47,9 @@ BUNDLE_NAME = boojs
 MKBUNDLE_PATH = mkbundle
 MKBUNDLE_OPTS = -z
 
+UPX_PATH = upx
+UPX_OPTS = -9
+
 
 all: test
 
@@ -110,6 +113,7 @@ bundle-static-osx:
 		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
 
 bundle-linked:
+	# TODO: When linking there is a bug using the CommandLine Argument attribute
 	@mkdir -p build/linked
 	monolinker -out build/linked -d $(BIN_PATH) -l none -c link -a $(BIN_PATH)/boojs.exe
 
@@ -127,7 +131,7 @@ bundle-linked-static-osx: bundle-linked
 
 upx:
 	@echo "NOTE: For best results create the static bundle with MKBUNDLE_OPTS=''"
-	upx -9 build/$(BUNDLE_NAME)
+	$(UPX_PATH) $(UPX_OPTS) build/$(BUNDLE_NAME)
 
 
 # Tests for Travis-CI environment
