@@ -1,7 +1,6 @@
 namespace BooJs.Lang.Macros
 
 from Boo.Lang.Compiler import CompilerContext
-from Boo.Lang.Compiler.Ast import *
 
 
 macro assert:

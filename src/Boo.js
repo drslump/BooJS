@@ -56,7 +56,7 @@
 
     // Main namespace
     var Boo = {
-        '__RUNTIME_VERSION__': '0.0.1',
+        __RUNTIME_VERSION__: '0.0.1',
         UNDEF: undefined,
         // Used in loops to flag branching
         LOOP_OR: 1,

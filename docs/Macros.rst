@@ -3,33 +3,16 @@ Macros and Syntactic Attributes
 
 By default some macros are made automatically available for their use in Boo without
 importing any namespace. Some of them are equivalent to standard Boo while others 
-are only available when using the BooJs compiler
+are only available when using the BooJs compiler.
+
+.. note:: Macros, Meta-Methods and AST Attributes are resolved at compile-time, this
+          means that they are executed as part of the compilation and thus not part
+          of the generated JavaScript code. They work by transforming the program syntax
+          tree, refer to the standard Boo documentation to learn more about them.
 
 
 Macros
 ~~~~~~
-
-print
------
-
-The ``print`` macro outputs the given arguments using the ``console.log`` function if
-available in your environment.
-
-::
-
-    foo = 'DrSlump'
-    print "Hello", foo   # Hello Drslump
-
-trace
------
-
-Very similar to ``print`` but only outputs when in *debug* mode. The message is 
-prefixed with the filename and line number where the macro was used.
-
-::
-    
-    trace 'hello there'   # filename.boo:11 hello there
-
 
 assert
 ------
@@ -51,7 +34,7 @@ const
 
 Boo's syntax doesn't allow to define variables at the module level, the compiler will 
 interpret such declarations as the start of the module entry point. This macro allows
-to circumvent this issue and declare module variables.
+to work around this issue and bind static variables to the current module.
 
 ::
 
@@ -78,7 +61,65 @@ available in the code.
     jQuery('#foo').html('Hi there!')
 
     global MY_FLAG as int   # MY_FLAG is available with a type of int
-    print MY_FLAG + 10 
+    print MY_FLAG + 10
+
+
+match
+-----
+
+BooJs automatically exposes the ``match`` macro from Boo.Lang.PatternMatching. This
+macro allows to use pattern matching in your code completely at compile time. You can
+learn a few of the basics from `this mailing list message <https://groups.google.com/d/msg/boolang/DsvE0SFVXPg/XvraEpRP0vQJ>`_.
+
+
+new
+---
+
+JavaScript allows to instantiate new objects in a variety of ways, when interfacing
+external code without using type definitions for it we may need to indicate the
+compiler how it should call a constructor function.
+
+The ``new`` symbol is not actually a macro but a *meta-method*, the syntax for
+applying it is the same as for functions but it's resolved at compile-time, so it 
+doesn't appears in the generate JavaScript code.
+
+Since Boo already has a ``new`` keyword, used to define members with the same name
+as one in the inherited type, we can't use it directly to flag a constructor. To use
+it we have to prefix ``new`` with ``@`` to tell the compiler that we are referencing
+the meta-method instead of the keyword.
+
+::
+
+    global Coords
+
+    obj = Coords(10, 20)
+    # js: obj = Coords(10, 20); 
+
+    obj = @new( Coords(10, 20) )
+    # js: obj = new Coords(10, 20);
+
+
+print
+-----
+
+The ``print`` macro outputs the given arguments using the ``console.log`` function if
+available in your environment.
+
+::
+
+    foo = 'DrSlump'
+    print "Hello", foo   # Hello Drslump
+
+
+trace
+-----
+
+Very similar to ``print`` but only outputs when in *debug* mode. The message is 
+prefixed with the filename and line number where the macro was used.
+
+::
+    
+    trace 'hello there'   # filename.boo:11 hello there
 
 
 with

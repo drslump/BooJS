@@ -74,12 +74,14 @@ class Builtins:
         def constructor(msg as string):
             pass
 
-    # TODO: Is this used right now?
-    class ReturnValue:
-        public value as object
 
-        def constructor(val as object):
-            value = val
+    class CastError(Error):
+    """ BooJs specific error to signal failures when casting
+    """
+        def constructor():
+            pass
+        def constructor(msg as string):
+            pass
 
 
     static def range(stop as int) as (int):
