@@ -1,5 +1,7 @@
 namespace BooJs.Lang.Globals
 
+from BooJs.Lang.Macros import *
+
 
 interface Iterable:
 """ Enumerable interface (aka IEnumerable)
@@ -43,12 +45,22 @@ interface GeneratorIterator[of T] (GeneratorIterator, Iterable[of T], Iterator[o
     def iterator() as GeneratorIterator[of T]
 
 
+internal private interface IArguments:
+""" Internal model for the arguments keyword """
+    self[index as int] as object:
+        get
+        set
+
+    length as int:
+        get
 
 
+const NaN = 0
+const Infinity = 0
+const undefined = null
+const arguments as IArguments = null
+const StopIteration = null  # Ecma 6
 
-# TODO: They would be declared as module locals
-#NaN = 0
-#Infinity = 0
 
 def parseInt(n as string, radix as int) as int:
     pass
@@ -59,6 +71,12 @@ def parseFloat(n as string) as double:
 
 def isFinite(number as double) as bool:
     pass
+def isNaN(number as double) as bool:
+    pass
+
+def eval(x as string) as object:
+    pass
+
 def decodeURI(encodedURI as string) as string:
     pass
 def decodeURIComponent(encodedURIComponent as string) as string:
@@ -67,10 +85,9 @@ def encodeURI(uri as string) as string:
     pass
 def encodeURIComponent(uriComponent as string) as string:
     pass
-def eval(x as string) as object:
+
+# Deprecated in moder Javascript
+def escape(str as string) as string:
     pass
-def isNaN(number as double) as bool:
+def unescape(str as string) as string:
     pass
-
-
-

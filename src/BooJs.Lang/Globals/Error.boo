@@ -45,4 +45,3 @@ class URIError(Error):
         pass
     def constructor(msg as string):
         pass
-
