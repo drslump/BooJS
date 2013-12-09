@@ -6,8 +6,6 @@ from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 
 class NormalizeLiterals(AbstractTransformerCompilerStep):
 
-    static public final INTERPOLATION_MAX_ITEMS = 3
-    
     def Run():
         Visit CompileUnit
 
@@ -16,9 +14,9 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         return str and str.Value == ''
 
     def LeaveExpressionInterpolationExpression(node as ExpressionInterpolationExpression):
-    """ We build either as a string concatenation or as a literal array and a join
-            "foo \$bar" => 'foo' + bar
-            "foo \$bar \$baz" -> ['foo', bar, ' ', baz].join('')
+    """ We build a string concatenation. Modern browsers apply excellent optimizations
+        for this use case, avoiding the need to build an array an joining it afterwards
+        as was done previously
     """
         items = node.Expressions
 
@@ -26,14 +24,11 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         items.Remove(items.First) while IsEmptyString(items.First)
         items.Remove(items.Last) while IsEmptyString(items.Last)
 
-        if len(items) < INTERPOLATION_MAX_ITEMS:
-            repl = items.First
+        repl = items.First
+        items.Remove(items.First)
+        while items.First:
+            repl = [| $repl + $(items.First) |]
             items.Remove(items.First)
-            while items.First:
-                repl = [| $repl + $(items.First) |]
-                items.Remove(items.First)
-        else:
-            repl = [| $(ArrayLiteralExpression(Items: items)).join('') |]
 
         ReplaceCurrentNode repl
 

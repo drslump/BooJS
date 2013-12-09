@@ -1,3 +1,20 @@
+"""
+
+TODO: There's been some discussion in the ES standardization to include the concept
+      of Promises (previously called Futures). At this time there isn't anything
+      mature yet but we should keep an eye on it and see if it makes sense to adopt
+      their API if they are still being compatible with *thenables*.
+        
+        http://dom.spec.whatwg.org/#promises
+        https://github.com/domenic/promises-unwrapping
+
+        p = Promise def(resolve, reject):
+            if rand() > 1000:
+                reject(1000)
+            setTimeout({ resolve(true) }, 1000)
+        p.then def (v): print v
+"""
+
 namespace BooJs.Lang.Async
 
 from System import AttributeUsageAttribute, AttributeTargets
