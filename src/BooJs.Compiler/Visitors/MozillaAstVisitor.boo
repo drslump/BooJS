@@ -122,8 +122,8 @@ Transforms a Boo AST into a Mozilla AST
     def OnModule(node as Module):
         n = Moz.Program(loc: loc(node))
 
-        deps = List of Moz.IExpression() { Moz.Literal('exports'), Moz.Literal('Boo') }
-        refs = List of Moz.IPattern() { Moz.Identifier('exports'), Moz.Identifier('Boo') }
+        deps = List of Moz.IExpression() { Moz.Literal('Boo') }
+        refs = List of Moz.IPattern() { Moz.Identifier('Boo') }
 
         # Get namespace mapping annotations
         mapping as Hash = node['nsmapping']
@@ -193,7 +193,7 @@ Transforms a Boo AST into a Mozilla AST
             )
             # Clone the deps list replacing 'exports' by the namespace
             deps = deps.GetRange(0, len(deps))
-            deps[0] = Moz.Literal((node.Namespace.Name if node.Namespace else ''))
+            #deps[0] = Moz.Literal((node.Namespace.Name if node.Namespace else ''))
             rcall.arguments.Add(Moz.ArrayExpression(elements: deps))
             fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
             rcall.arguments.Add(fn)

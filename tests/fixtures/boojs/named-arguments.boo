@@ -1,10 +1,10 @@
 """
 foo: FOO
 bar: 2
-baz: 
+baz: null
 -foo: FOO
 -bar: 2
--baz: 
+-baz: null
 """
 
 import Apis(jQuery)

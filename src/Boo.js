@@ -111,9 +111,10 @@
         for (i = 0, l = deps.length; i < l; i++) {
             dep = deps[i];
 
-            // Handle exports in a special way. It works like an alias to the
-            // module namespace being defined.
-            if (dep === 'exports') {
+            // Handle importing the namespace for the module currently being defined.
+            // NOTE: `exports` work as an alias to the current module namespace
+            // TODO: Do we still want to support the 'exports' syntax?
+            if (dep === name || dep === 'exports') {
                 refs[i] = mod_defined[name] = mod_defined[name] || {};
                 continue;
             }

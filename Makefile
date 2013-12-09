@@ -140,6 +140,7 @@ ci-tests:
 		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \
         BooJs.Tests.ClassesFixtures, \
+        BooJs.Tests.CompilationFixtures, \
      	BooJs.Tests.DevelFixtures, \
      	BooJs.Tests.DucktypingFixtures, \
      	BooJs.Tests.OperatorsFixtures, \

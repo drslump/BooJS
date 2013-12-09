@@ -49,6 +49,10 @@ class ProcessImports(AbstractTransformerCompilerStep):
             _asmrefs[actualns] = asmref.Name
 
     def OnModule(node as Module):
+        # Map module namespace to the exports special symbol
+        ns = (node.Namespace.Name if node.Namespace else '')
+        _mappings[ns] = 'exports'
+
         # Makes sure we visit the imports first
         Visit node.Imports
         Visit node.Members
