@@ -101,6 +101,11 @@ bundle-dynamic:
 	CC="cc -arch i386" AS="as -arch i386" \
 		mkbundle -o build/$(BUNDLE_NAME).exe -z --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
 
+bundle-static:
+	@mkdir -p build
+	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
+		mkbundle --static -o build/$(BUNDLE_NAME) -z --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
+
 bundle-linked:
 	@mkdir -p build/linked
 	monolinker -out build/linked -d $(BIN_PATH) -l none -c link -a $(BIN_PATH)/boojs.exe
