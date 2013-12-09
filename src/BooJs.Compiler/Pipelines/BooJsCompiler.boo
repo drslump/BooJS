@@ -1,6 +1,9 @@
 ﻿namespace BooJs.Compiler.Pipelines
 
 from System import InvalidOperationException, ArgumentNullException
+from System.Reflection import Assembly
+from System.Collections.Generic import HashSet
+
 from Boo.Lang.Environments import DeferredEnvironment
 from Boo.Lang.Compiler import BooCompiler, CompilerParameters
 from Boo.Lang.Compiler.Ast import *
@@ -45,10 +48,16 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
         BooUniqueNameProvider: { UniqueNameProvider() }
     }
 
-    # Load language runtime assemblies
-    params.References.Add(params.LoadAssembly('BooJs.Lang'))
-    # Load Boo.Lang.PatternMatching assembly (we provide access to it by default)
-    params.References.Add(params.LoadAssembly('Boo.Lang.PatternMatching'))
+    # When running from a *bundle* (ilrepack, mkbundle, ...) the namespaces may be already loaded
+    asm = Assembly.GetExecutingAssembly()
+    namespaces = HashSet[of string]()
+    for type in asm.GetTypes():
+        namespaces.Add(type.Namespace)
+
+    # Load language runtime and pattern matching assemblies by default
+    for ns in ('BooJs.Lang', 'Boo.Lang.PatternMatching'):
+        if ns not in namespaces:
+            params.References.Add(params.LoadAssembly(ns))
 
     params.Pipeline = pipeline
     return BooJsCompiler(params)
