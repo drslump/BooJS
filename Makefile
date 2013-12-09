@@ -41,8 +41,11 @@ MONOLINKER_PATH=monolinker
 ILREPACK_PATH=ilrepack
 ILREPACK_OPTS=/log
 
-BIN_PATH=src/boojs/bin/Debug
-BUNDLE_NAME=boojs
+BIN_PATH = src/boojs/bin/Debug
+BUNDLE_NAME = boojs
+
+MKBUNDLE_PATH = mkbundle
+MKBUNDLE_OPTS = -z
 
 
 all: test
@@ -99,12 +102,12 @@ bundle-ilrepack:
 bundle-dynamic:
 	@mkdir -p build/linked
 	CC="cc -arch i386" AS="as -arch i386" \
-		mkbundle -o build/$(BUNDLE_NAME).exe -z --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
+		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) -o build/$(BUNDLE_NAME).exe --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
 
-bundle-static:
+bundle-static-osx:
 	@mkdir -p build
 	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
-		mkbundle --static -o build/$(BUNDLE_NAME) -z --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
+		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
 
 bundle-linked:
 	@mkdir -p build/linked
@@ -112,15 +115,19 @@ bundle-linked:
 
 bundle-linked-dynamic: bundle-linked
 	CC="cc -arch i386" AS="as -arch i386" \
-		mkbundle -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
 
 bundle-linked-static: bundle-linked
 	CC="cc -arch i386" AS="as -arch i386" \
-		mkbundle --static -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
 
 bundle-linked-static-osx: bundle-linked
 	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
-		mkbundle --static -o build/$(BUNDLE_NAME) -z -L build/linked build/linked/boojs.exe build/linked/*.dll
+		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
+
+upx:
+	@echo "NOTE: For best results create the static bundle with MKBUNDLE_OPTS=''"
+	upx -9 build/$(BUNDLE_NAME)
 
 
 # Tests for Travis-CI environment
