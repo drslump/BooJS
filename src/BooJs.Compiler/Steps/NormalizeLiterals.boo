@@ -27,7 +27,13 @@ class NormalizeLiterals(AbstractTransformerCompilerStep):
         repl = items.First
         items.Remove(items.First)
         while items.First:
-            repl = [| $repl + $(items.First) |]
+            # HACK: Binary expressions are wrapped with an eval to disambiguate special
+            #       cases like "foo $( 10 + 10 )" to become: "foo" + (10 + 10)
+            if items.First.NodeType == NodeType.BinaryExpression:
+                repl = [| $repl + @( $(items.First) ) |]
+            else:
+                repl = [| $repl + $(items.First) |]
+
             items.Remove(items.First)
 
         ReplaceCurrentNode repl
