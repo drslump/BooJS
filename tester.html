@@ -1,0 +1,67 @@
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="http://cdn.jsdelivr.net/codemirror/3.14.0/codemirror.css" />
+    <link type="text/css" rel="stylesheet" href="http://cdn.jsdelivr.net/codemirror/3.14.0/theme/solarized.css" />
+
+    <style>
+    .CodeMirror {
+      border: 1px solid #eee;
+      height: auto;
+      font-size: 12pt;
+    }
+    .CodeMirror-scroll {
+      overflow-y: hidden;
+      overflow-x: auto;
+    }
+    
+    textarea {
+        width: 100%;
+        font-family: monospace;
+        font-size: 120%;
+    }
+    button {
+        position: relative;
+        margin-top: -2em;
+        float: right;
+        width: 10em;
+        height: 2em;
+        font-size: 150%;
+        z-index: 100;
+        opacity: 0.5;
+    }
+    button:hover {
+        opacity: 1;
+    }
+    </style>
+
+    <script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/codemirror/3.14.0/codemirror.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/codemirror/3.14.0/mode/javascript/javascript.js"></script>
+    
+    <script src="src/Boo.js"></script>
+    <script src="src/Boo.debug.js"></script>
+    <script src="src/Boo.Async.js"></script>
+
+    <script>
+    $(function () {
+        var editor_js = CodeMirror.fromTextArea(document.getElementById('code'), {
+          mode: "javascript",
+          theme: "solarized",
+          indentUnit: 2,
+          tabSize: 2,
+          lineNumbers: true,
+          autofocus: true
+        });
+
+        $('#run').click(function () {
+            var code = editor_js.getValue();
+            eval(code);
+        });
+    });
+    </script>
+</head>
+<body>
+    <textarea id="code"></textarea>
+    <button id="run">Run</button>
+</body>
+</html>
