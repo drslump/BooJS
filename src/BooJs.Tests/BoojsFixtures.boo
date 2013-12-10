@@ -31,12 +31,20 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/globals.boo')
 
   [Test]
+  def test_ifdef():
+    FixtureRunner.run('tests/fixtures/boojs/ifdef.boo')
+
+  [Test]
   def test_jquery():
     FixtureRunner.run('tests/fixtures/boojs/jquery.boo')
 
   [Test]
   def test_named_arguments():
     FixtureRunner.run('tests/fixtures/boojs/named-arguments.boo')
+
+  [Test]
+  def test_preserving():
+    FixtureRunner.run('tests/fixtures/boojs/preserving.boo')
 
   [Test]
   def test_reference_same_module():

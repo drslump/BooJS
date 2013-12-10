@@ -15,6 +15,8 @@ class CommandLine(AbstractCommandLine):
 
     _srcDirs = List[of string]()
 
+    property Defines = {}
+
     def constructor(argv):
         Parse(argv)
 
@@ -37,7 +39,7 @@ class CommandLine(AbstractCommandLine):
     [Option("Select a pipeline (boo or js prints code)", ShortForm: 'p', LongForm: "pipeline")]
     public Pipeline as string
 
-    [Option("Enables duck typing.", ShortForm: 'd', LongForm: "ducky")]
+    [Option("Enables duck typing.", LongForm: "ducky")]
     public Ducky = false
 
     [Option("Enables writing debug symbols.", LongForm: "debug")]
@@ -59,6 +61,14 @@ class CommandLine(AbstractCommandLine):
     [Option("Includes all *.boo files from {directory}", LongForm: "srcdir", MaxOccurs: int.MaxValue)]
     def AddSourceDir(srcDir as string):
         _srcDirs.AddUnique(Path.GetFullPath(srcDir))
+
+    [Option('Defines a {symbol} with an optional value (=val)', ShortForm: 'D', LongForm: 'define', MaxOccurs: int.MaxValue)]
+    def AddDefine(define as string):
+        pair = define.Split(char('='))
+        if len(pair) == 1:
+            Defines[pair[0]] = pair[0]
+        else:
+            Defines[pair[0]] = pair[1]
 
     [Option("Specify an output {file} where to generate source map (- to embed)", LongForm: "srcmap")]
     public SourceMap as string = null

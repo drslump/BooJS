@@ -64,6 +64,25 @@ available in the code.
     print MY_FLAG + 10
 
 
+ifdef
+-----
+
+Allows to define blocks for conditional compilation by evaluating the condition
+against the compiler defined symbols. You can use your own defined symbols with
+the ``-D:symbol`.
+
+If the condition evaluates to false the contents of the block are removed from
+the compilation unit.
+
+::
+
+    ifdef DEBUG:
+        print "Debug mode enabled"
+
+    ifdef not WINDOWS and DEBUG:
+        print "Compiling on a non-windows system"
+
+
 match
 -----
 
@@ -97,6 +116,24 @@ the meta-method instead of the keyword.
 
     obj = @new( Coords(10, 20) )
     # js: obj = new Coords(10, 20);
+
+
+preserving
+----------
+
+Solves the common problem of temporally backing up some variables to perform an action.
+
+::
+
+    x = 'foo'
+    y = [10, 20]
+    preserving x, y[1]:
+        x = 'bar'
+        y[0] = 50
+        y[1] = 60
+
+    print x    # 'foo'
+    print y    # [50, 20]
 
 
 print

@@ -519,7 +519,7 @@
         var len = target.length;
 
         idx = idx || 0;
-        if (begin < 0) {
+        if (idx < 0) {
             idx += target.length;
             if (idx < 0) idx = 0;
         }

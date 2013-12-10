@@ -47,6 +47,9 @@ def configureParams(cmdLine as CommandLine, params as JsCompilerParameters):
     params.EmbedTypes = cmdLine.EmbedTypes
     params.SourceMap = cmdLine.SourceMap
     params.SourceMapRoot = cmdLine.SourceMapRoot
+    for pair in cmdLine.Defines:
+        print pair.Key, pair.Value
+        params.Defines[pair.Key] = pair.Value
 
     if cmdLine.Verbose:
         params.TraceLevel = TraceLevel.Verbose
