@@ -10,6 +10,7 @@ A JavaScript backend for the Boo language.
   :maxdepth: 2
 
   Comparison-with-Javascript
+  Comparison-with-boo
   Compilation
   Macros
   Overloading

@@ -9,7 +9,7 @@ multiline declared
 """
 
 `console.log('invocation')`
-`var a = 'multiline';
+js `var a = 'multiline';
  console.log(a);
 `
 # Check the variable was properly declared
