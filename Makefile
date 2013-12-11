@@ -117,6 +117,10 @@ bundle-linked:
 	@mkdir -p build/linked
 	monolinker -out build/linked -d $(BIN_PATH) -l none -c link -a $(BIN_PATH)/boojs.exe
 
+bundle-linked-ilrepack: bundle-linked
+	# TODO: ilrepack can't produce the assembly when it's been linked
+	$(ILREPACK_PATH) $(ILREPACK_OPTS) /out:build/$(BUNDLE_NAME).exe /internalize build/linked/boojs.exe build/linked/*.dll
+
 bundle-linked-dynamic: bundle-linked
 	CC="cc -arch i386" AS="as -arch i386" \
 		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
