@@ -330,6 +330,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
             RemoveCurrentNode
             return
 
+        # TODO: Why do we need to call Visit and super to process the contents?
+        Visit(node.Body)
         super(node)
 
     def IsEntryPoint(node as Method):

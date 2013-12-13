@@ -7,7 +7,7 @@ def bar():
 def hyphenate(fn as ICallable):
 	return "-${fn()}"
 	
-def upper(fn as ICallable):
+def upper(fn as callable):
 	return fn().toString().toUpperCase()
 	
 def test(expectedValues as Array, decorator as ICallable):
