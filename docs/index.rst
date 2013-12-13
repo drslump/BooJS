@@ -9,6 +9,7 @@ A JavaScript backend for the Boo language.
 .. toctree::
   :maxdepth: 2
 
+  Overview
   Comparison-with-Javascript
   Comparison-with-boo
   Compilation
