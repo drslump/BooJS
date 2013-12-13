@@ -142,14 +142,17 @@ class Builtins:
         pass
 
 
+    # TODO: This overload must be the first since we have a hacky logic in
+    #       InvocationTypeInferenceRules that relies on finding it as the first
+    #       overload.
+    #       We should change this to use an explicit attribute.
+    static def array(enumerable as Iterable) as Array:
+        pass
     [TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
     static def array(type as System.Type, enumerable as Iterable) as Array:
         pass
     [TypeInferenceRule(TypeInferenceRules.ArrayOfTypeReferencedByFirstArgument)]
     static def array(type as System.Type, num as int) as Array:
-        pass
-    [TypeInferenceRule(TypeInferenceRules.TypeOfFirstArgument)]
-    static def array(enumerable as Iterable) as (object):
         pass
     static def array[of T](enumerable as Iterable[of T]) as (T):
         pass

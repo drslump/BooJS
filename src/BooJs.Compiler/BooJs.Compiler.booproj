@@ -81,6 +81,8 @@
     <Compile Include="CompilerContext.boo" />
     <Compile Include="CompilerParameters.boo" />
     <Compile Include="CompilerPipeline.boo" />
+    <Compile Include="UniqueNameProvider.boo" />
+    <Compile Include="Utils.boo" />
     <Compile Include="Steps\InitializeEntityNameMatcher.boo" />
     <Compile Include="Steps\NormalizeLiterals.boo" />
     <Compile Include="Steps\NormalizeLoops.boo" />
@@ -101,21 +103,19 @@
     <Compile Include="Steps\ExpandDuckTypedExpressions.boo" />
     <Compile Include="Steps\IntroduceGlobalNamespaces.boo" />
     <Compile Include="Steps\MozillaAst.boo" />
-    <Compile Include="Visitors\MozillaAstVisitor.boo" />
     <Compile Include="Steps\PrintAst.boo" />
     <Compile Include="Steps\PrepareAst.boo" />
     <Compile Include="Steps\ExpandVarArgsMethodInvocation.boo" />
     <Compile Include="Steps\EmitAssembly.boo" />
     <Compile Include="Steps\Save.boo" />
-    <Compile Include="Utils.boo" />
     <Compile Include="Steps\AdaptParsingAst.boo" />
     <Compile Include="Steps\BranchChecking.boo" />
     <Compile Include="Steps\ProcessImports.boo" />
     <Compile Include="Steps\SafeAccess.boo" />
     <Compile Include="Steps\ApplyPlaceholderParameters.boo" />
+    <Compile Include="Visitors\MozillaAstVisitor.boo" />
     <Compile Include="Pipelines\BooJsCompiler.boo" />
     <Compile Include="Pipelines\BooJsPipelines.boo" />
-    <Compile Include="UniqueNameProvider.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Visitors\" />
