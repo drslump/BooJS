@@ -1,15 +1,16 @@
+#IGNORE: Events not supported yet
 """
 1 - clicked!
 2 - clicked!
 
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+import BooJs.Tests.Support
 
 class Handler:
 	
 	public State = null
 		
-	def clicked(sender, args as System.EventArgs):
+	def clicked(sender, args):
 		print("${State} - clicked!")
 
 handler = Handler(State: 1)

@@ -1,3 +1,5 @@
+#IGNORE: Casting to Callable definitions is not supported yet
+
 import System
 
 

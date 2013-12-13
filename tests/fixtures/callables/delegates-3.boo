@@ -1,9 +1,10 @@
+#IGNORE: Events not supported yet
 """
 handler - clicked!
 handler - clicked!
 
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+import BooJs.Tests.Support
 
 class Handler:
 	
@@ -12,7 +13,7 @@ class Handler:
 	def constructor(tag):
 		self.tag = tag
 		
-	def clicked(sender, args as System.EventArgs):
+	def clicked(sender, args):
 		print("${tag} - clicked!")
 
 c = Clickable()

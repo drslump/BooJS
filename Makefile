@@ -143,6 +143,7 @@ ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
 		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \
+    	BooJs.Tests.CallablesFixtures, \
         BooJs.Tests.ClassesFixtures, \
         BooJs.Tests.CompilationFixtures, \
      	BooJs.Tests.DevelFixtures, \

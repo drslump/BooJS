@@ -1,11 +1,13 @@
+#IGNORE: Events not supported yet
 """
 clicked!
 clicked!
 
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+import BooJs.Tests.Support
 
-def clicked(sender, args as System.EventArgs):
+
+def clicked(sender, args):
 	print("clicked!")
 
 c = Clickable()

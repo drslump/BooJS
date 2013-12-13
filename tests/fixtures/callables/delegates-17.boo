@@ -1,3 +1,4 @@
+#IGNORE: Threads not supported
 """
 I'm a thread!
 """

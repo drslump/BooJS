@@ -1,3 +1,4 @@
+#IGNORE: Threads not supported
 """
 ping
 pong

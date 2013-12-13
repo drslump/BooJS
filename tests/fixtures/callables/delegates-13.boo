@@ -1,9 +1,10 @@
+#IGNORE: Events not supported yet
 """
 before
 clicked!
 after
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+import BooJs.Tests.Support
 
 def click():
 	print("clicked!")

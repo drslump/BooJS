@@ -1,3 +1,4 @@
+#IGNORE: Events not supported yet
 """
 added
 clicked!
@@ -6,7 +7,7 @@ added
 clicked!
 removed
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+import BooJs.Tests.Support
 
 class Application:
 	
@@ -24,7 +25,7 @@ class Application:
 			
 			c.RaiseClick()
 		
-	def clicked(sender, args as System.EventArgs):
+	def clicked(sender, args):
 		print("clicked!")
 		
 Application().Run()

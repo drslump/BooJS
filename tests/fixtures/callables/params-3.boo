@@ -11,7 +11,7 @@ def foo(*args):
 def repr(o) as object:
 	if o isa string:
 		return "'${o}'"
-	if o isa System.Collections.IList:
+	if o isa Array:
 		return "[${join(repr(item) for item in o, ', ')}]"
 	return o
 

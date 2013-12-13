@@ -19,6 +19,13 @@ Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
         return {Name: name};
     };
 
+    exports.Clickable = function () {
+        this.Click = Boo.Event();
+    };
+    exports.Clickable.prototype.RaiseClick = function () {
+        this.Click();
+    };
+
     exports.square = function (x) {
         return x * x;
     };

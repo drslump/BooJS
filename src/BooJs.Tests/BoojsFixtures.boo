@@ -19,6 +19,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/eval.boo')
 
   [Test]
+  def test_event():
+    FixtureRunner.run('tests/fixtures/boojs/event.boo')
+
+  [Test]
   def test_generator_conditionals():
     FixtureRunner.run('tests/fixtures/boojs/generator-conditionals.boo')
 
