@@ -23,6 +23,21 @@ create your own proxy objects and extension methods to emulate the JavaScript
 types for Boo or vice versa.
 
 
+Primitive types
+~~~~~~~~~~~~~~~
+
+The following boo literal types are not defined in BooJs: char, sbyte, byte,
+short, ushort, long, ulong and single. Only ``int``, ``uint`` and ``double`` are
+supported as number types.
+
+At the runtime, standard JavaScript rules apply when working with number types,
+in summary all numbers are actually 64bit doubles with a 53bits mantissa, when
+used with binary arithmetic operators all numbers are casted to 32bit integers.
+
+.. note:: There is an additional BooJs literal type with the symbol ``any``. It's
+          just an alias for ``duck``.
+
+
 Named parameters
 ~~~~~~~~~~~~~~~~
 
