@@ -109,6 +109,11 @@ class PrepareAst(AbstractTransformerCompilerStep):
         super(node)
 
     protected def ProcessReference(node as ReferenceExpression) as Node:
+        # Object type reference
+        # TODO: Why is this not being detected with IsLiteralPrimitive?
+        if TypeSystemServices.IsSystemObject(node.Entity as Boo.Lang.Compiler.TypeSystem.IType):
+            return StringLiteralExpression(node.LexicalInfo, 'object')
+
         # Primitive type references
         if entity = node.Entity as ExternalType and TypeSystemServices.IsLiteralPrimitive(entity):
             return StringLiteralExpression(node.LexicalInfo, entity.FullName)

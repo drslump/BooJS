@@ -471,7 +471,7 @@
         return result;
     };
 
-    // Makes sure a value is enumerable
+    // Makes sure a value is enumerable (this is a runtime support method)
     Boo.enumerable = function (value) {
         if (typeIs(value, 'String')) value = value.split('');
         if (value && typeof(value.next) === 'function') value = Boo.array(value);
@@ -538,6 +538,10 @@
     function boo_isa(value, type) {
         // Handle literal primitives
         if (typeof type === 'string') {
+            // Always allow downcast to object
+            if (type === 'object')
+                return true;
+
             switch (typeOf(value)) {
             case 'String':
                 return type === 'string';
