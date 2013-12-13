@@ -1,4 +1,3 @@
-import System
 
 callable BinaryFunction(a, b) as object
 

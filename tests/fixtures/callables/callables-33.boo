@@ -1,5 +1,4 @@
-import System
-
+#IGNORE: Casting callables not supported
 
 callable Function(item) as object
 

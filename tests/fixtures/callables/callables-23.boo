@@ -10,5 +10,4 @@ assert "foo" == a()
 
 fn as StringFunction
 fn = a
-assert StringFunction is fn.GetType()
 assert "foo" == fn()

@@ -3,6 +3,9 @@ namespace BooJs.Compiler.Steps
 from Boo.Lang.Compiler.Ast import *
 from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 
+from Boo.Lang.Environments import my
+from BooJs.Compiler.TypeSystem import RuntimeMethodCache 
+
 
 class NormalizeUnpack(AbstractTransformerCompilerStep):
 """
@@ -34,11 +37,15 @@ class NormalizeUnpack(AbstractTransformerCompilerStep):
 
         # If the target to unpack is a reference just use it
         upkref as ReferenceExpression
-        if node.Expression.NodeType == NodeType.ReferenceExpression:
+        # TODO: Always use a tmp variable so we can convert the expression
+        #       to an array in order to support slicing. If the step is moved
+        #       after type resolution we could inspect the expression type
+        #       and only convert to array if needed.
+        if false and node.Expression.NodeType == NodeType.ReferenceExpression:
             upkref = node.Expression
         else:
             upkref = ReferenceExpression(Name: Context.GetUniqueName(REFERENCE_NAME))
-            seq.Arguments.Add( [| $upkref = $(node.Expression) |] )
+            seq.Arguments.Add( [| $upkref = array($(node.Expression)) |] )
 
         for i as int, decl as Declaration in enumerate(node.Declarations):
             seq.Arguments.Add( [| $(ReferenceExpression(decl.Name)) = $(upkref)[$i] |] )
