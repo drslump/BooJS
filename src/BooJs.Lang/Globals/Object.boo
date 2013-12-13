@@ -3,51 +3,13 @@ namespace BooJs.Lang.Globals
 from BooJs.Lang.Extensions import TransformAttribute
 
 
-class Object(System.Object):
+class Object:
 """
 Serves as base for all JS types
 """
     [Transform( $1 + $2 )]
     static def op_Addition(lhs as object, rhs as string) as string:
         pass
-
-
-    public prototype as Object
-
-    def hasOwnProperty(key as string) as bool:
-        pass
-
-    def isPrototypeOf(obj as object) as bool:
-        pass
-
-    def toString() as string:
-        pass
-    def toLocaleString() as string:
-        pass
-
-    def valueOf() as Object:
-        pass
-
-    def propertyIsEnumerable(name as string) as bool:
-        pass
-
-
-    # ECMAScript 5th Edition
-
-    # These are no real classes in Javascript
-    class PropertyDescriptor:
-        configurable as bool?
-        enumerable as bool?
-        value as object
-        writable as bool?
-        _get as callable
-        _set as callable
-
-    class PropertyDescriptorMap:
-        self[key as string] as PropertyDescriptor:
-            get: pass
-            set: pass
-
 
     static def getPrototypeOf(obj as object) as object:
         pass
@@ -77,4 +39,43 @@ Serves as base for all JS types
         pass
     static def keys(obj as object) as string*:
         pass
+
+
+    public prototype as Object
+
+    def hasOwnProperty(key as string) as bool:
+        pass
+
+    def isPrototypeOf(obj as object) as bool:
+        pass
+
+    def toString() as string:
+        pass
+
+    def toLocaleString() as string:
+        pass
+
+    def valueOf() as Object:
+        pass
+
+    def propertyIsEnumerable(name as string) as bool:
+        pass
+
+
+    # ECMAScript 5th Edition
+
+    # These are no real classes in Javascript
+    internal class PropertyDescriptor:
+        configurable as bool?
+        enumerable as bool?
+        value as object
+        writable as bool?
+        _get as callable
+        _set as callable
+
+    internal class PropertyDescriptorMap:
+        self[key as string] as PropertyDescriptor:
+            get: pass
+            set: pass
+
 

@@ -50,11 +50,9 @@ class TypeSystemServices(BooServices):
         IEnumerableType = Map(typeof(Globals.Iterable))
         IEnumerableGenericType = Map(typeof(Globals.Iterable[of*]))
 
-        # TODO: Custom generator type
+        # Custom generator type
         IGeneratorType = Map(typeof(Globals.GeneratorIterator))
         IGeneratorGenericType = Map(typeof(Globals.GeneratorIterator[of*]))
-
-
 
         RegExpType = Map(Globals.RegExp)
 
