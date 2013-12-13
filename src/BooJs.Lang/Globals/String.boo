@@ -87,6 +87,8 @@ class String(Object, Iterable):
 
     def split(sep as string) as (string):
         pass
+    def split(sep as regex) as (string):
+        pass
 
     def substr(start as uint, length as int) as string:
         pass
