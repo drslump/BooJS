@@ -379,5 +379,35 @@ it safe for using it with infinite generators.
     # outputs: 3 random numbers
 
 
+Events
+~~~~~~
+
+Boo Event's are a way to easily setup delegates in classes, implementing the observer
+pattern. Basically they allow registering a callback on them from outside the class but
+only firing them from inside the class.
+
+Since it's not clear how to map this to JavaScript there is a very lightweight runtime
+support for them. Every event field is mapped to a function that triggers it when called,
+exposing two additional methods ``add`` and ``remove`` to handle subscriptions. This is
+transparent when using Boo code, adding a subscription is done with the ``+=`` operator
+and removing one with ``-=``.
+
+::
+
+    class Foo:
+        event click as callable()
+        def DoClick():
+            click()
+
+    f = Foo()
+    f.click += def ():
+        print "Clicked!"
+
+To use it from JavaScript code we can use the runtime interface directly:
+
+::
+
+    f.click.add(function () { console.log('Clicked!') })
+
 
 

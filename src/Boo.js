@@ -520,7 +520,7 @@
 
         idx = idx || 0;
         if (idx < 0) {
-            idx += target.length;
+            idx += len;
             if (idx < 0) idx = 0;
         }
 
@@ -745,13 +745,12 @@
 
     ////////// Events support /////////////////////////////////////////////////
 
-    Boo.Event = function () {
+    Boo.event = function () {
         var handlers = [];
 
         function fire() {
-            var i, args = arguments;
-            for (i = 0; i < handlers.length; i++) {
-                handlers[i].apply(fire, args);
+            for (var i = 0; i < handlers.length; i++) {
+                handlers[i].apply(fire, arguments);
             }
         }
 
@@ -763,7 +762,7 @@
         fire.remove = function (hdlr) {
             var idx = Boo.indexOf(handlers, hdlr);
             if (idx >= 0) {
-                handlers.splice(idx);
+                handlers.splice(idx, 1);
             }
             return idx >= 0;
         };

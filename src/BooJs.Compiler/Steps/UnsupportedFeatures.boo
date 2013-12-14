@@ -29,15 +29,6 @@ class UnsupportedFeatures(AbstractVisitorCompilerStep):
     """
         NotImplemented node, 'Struct is not implemented in Boojs'
 
-    def OnEvent(node as Event):
-    """ Boo Event's are a way to easily setup delegates in classes, implementing the 
-        observer pattern. Basically they allow registering a callback on them from outside
-        the class but only firing them from inside the class.
-        There is no clear translation of them to Javascript, we could perhaps just implement
-        them using a runtime.
-    """
-        NotImplemented node, 'Event is not implemented in Boojs'
-
     def OnUnaryExpression(node as UnaryExpression):
         if node.Operator in (
             UnaryOperatorType.Decrement, UnaryOperatorType.Increment,

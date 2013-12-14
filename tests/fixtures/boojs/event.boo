@@ -1,12 +1,31 @@
-#IGNORE: Events not supported yet
+"""
+Start
+Handler(10)
+Click with value: 10
+Click with value: 20
+Stop
+"""
 class Foo:
-	event Click as callable()
+	event Click as callable(int)
 
-	def ClickIt():
-		Click() if Click
+	def ClickIt(x):
+		Click(x) if Click
+
+
+def handler(x):
+	print "Handler($x)"
+
+
+print "Start"
 
 f = Foo()
+f.Click += handler
 f.Click += def (x):
-	print x
+	print "Click with value: $x"
 
-f.ClickIt()
+f.ClickIt(10)
+
+f.Click -= handler
+f.ClickIt(20)
+
+print "Stop"

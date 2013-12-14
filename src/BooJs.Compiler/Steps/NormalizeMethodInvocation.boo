@@ -6,6 +6,7 @@ from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 
 from Boo.Lang.Environments import EnvironmentProvision
 from Boo.Lang.Compiler.TypeSystem.Services import RuntimeMethodCache as BooRuntimeMethodCache
+from Boo.Lang.Compiler.TypeSystem.Internal import InternalMethod, InternalField
 from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 
@@ -14,6 +15,12 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
     Normalize method invocations to undo some of the instrumentation performend by Boo's
     ProcessMethodBodies step. Since Javascript is highly dynamic there is no need to call
     special interface methods for things like array access or calling anonymous functions.
+
+    NOTE: Events are converted here to use the runtime instead of the compiler generated
+          methods introduced in BindTypeMembers. The solution is a bit dirty but it allows
+          the standard Boo type resolution to work without modifications and then just undo
+          the instrumentation.
+    TODO: Move Events transformations to their own step
 """
     [getter(MethodCache)]
     private _methodCache as RuntimeMethodCache
@@ -31,8 +38,7 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
     """ We need to attach to the Leave hook since we sometimes have to replace the node """
 
         # Map runtime methods inserted by Boo to our custom ones
-        target = node.Target
-        if target isa ReferenceExpression:
+        if target = node.Target as ReferenceExpression:
             # Handle equality
             if target.Entity is BooMethodCache.RuntimeServices_EqualityOperator:
                 mie = CodeBuilder.CreateMethodInvocation(MethodCache.RuntimeEquality, node.Arguments[0], node.Arguments[1])
@@ -55,6 +61,17 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                     for arg in lst:
                         node.Arguments.Add(arg)
                 return
+            # Handle synthetic methods (ie Events)
+            elif imethod = target.Entity as InternalMethod and imethod.Method.IsSynthetic:
+                # Map Event synthetic methods to our runtime
+                if target.Name.StartsWith('raise_'):
+                    target.Name = target.Name[len('raise_'):]
+                elif target.Name.StartsWith('add_'):
+                    target.Name = target.Name[len('add_'):] + '.add'
+                elif target.Name.StartsWith('remove_'):
+                    target.Name = target.Name[len('remove_'):] + '.remove'
+                return
+
             # Retarget builtins
             elif target.Entity and TypeSystemServices.IsBuiltin(target.Entity):
                 if target.NodeType == NodeType.MemberReferenceExpression:
@@ -62,4 +79,13 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                 else:
                     (target as ReferenceExpression).Name = 'Boo.' + (target as ReferenceExpression).Name
                 return
+
+    def LeaveMemberReferenceExpression(node as MemberReferenceExpression):
+
+        if ifield = node.Entity as InternalField and ifield.Field.IsSynthetic:
+            # Map Event private field to the actual Event
+            if node.Name.StartsWith('$event$'):
+                node.Name = node.Name[len('$event$'):]
+
+
 

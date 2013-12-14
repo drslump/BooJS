@@ -292,6 +292,14 @@ Transforms a Boo AST into a Mozilla AST
             # TODO: Disabled until the basics are working
             #cons.body.body.Add(Moz.ExpressionStatement(assign))
 
+        # Events
+        # TODO: Do it properly (ie: static events?)
+        for e as Event in [m for m in node.Members if m.NodeType == NodeType.Event]:
+            assign = Moz.AssignmentExpression(operator:'=')
+            assign.left = Moz.Identifier(loc: loc(e), name: 'this.' + e.Name)
+            assign.right = Moz.CallExpression(callee: Moz.Identifier('Boo.event'))
+            cons.body.body.Add(Moz.ExpressionStatement(assign))
+
         # Handle constructors
         members = [m for m in node.Members if m.NodeType == NodeType.Constructor]
         for c as Constructor in members:
@@ -363,7 +371,6 @@ Transforms a Boo AST into a Mozilla AST
                 body: fn.body
             )
             block.body.Add(Moz.ExpressionStatement(assign))
-
 
         # Wrap everything in a self calling function and assign to a variable
         # js: Bar = (function(__super__){ ... return Bar; })(Object)
