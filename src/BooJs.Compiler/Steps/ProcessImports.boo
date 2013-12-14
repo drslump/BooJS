@@ -16,7 +16,6 @@ class ProcessImports(AbstractTransformerCompilerStep):
 """
     _mappings = {}
     _asmrefs = {}
-    _nsidx = 0
 
     protected def FindNamespace(fqn as string) as string:
     """ Given a fully qualified name it will check backwards until it 
@@ -41,7 +40,7 @@ class ProcessImports(AbstractTransformerCompilerStep):
 
         # Generate an alias name if none given
         if not alias:
-            alias = 'NS' + _nsidx++
+            alias = Context.GetUniqueName('NS')
 
         # Map the namespace
         _mappings[actualns] = alias
@@ -67,7 +66,6 @@ class ProcessImports(AbstractTransformerCompilerStep):
         # Reset for next module
         _mappings.Clear()
         _asmrefs.Clear()
-        _nsidx = 0
 
     def OnImport(node as Import):
         # Detect imports of the own module namespace
