@@ -16,10 +16,10 @@ class Character:
         Name = name
 
 class Clickable:
-    event Click as callable()
+    event Click as callable(Clickable)
 
     def RaiseClick():
-        Click() if Click
+        Click(self) if Click
 
 
 def method(x):

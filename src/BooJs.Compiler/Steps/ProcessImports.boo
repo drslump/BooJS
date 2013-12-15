@@ -2,7 +2,7 @@ namespace BooJs.Compiler.Steps
 
 from Boo.Lang.Compiler.Ast import *
 from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
-from Boo.Lang.Compiler.TypeSystem import EntityType
+from Boo.Lang.Compiler.TypeSystem import EntityType, IExternalEntity, ExternalConstructor, IMethod
 from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
 
 from BooJs.Compiler.Utils import *
@@ -89,11 +89,29 @@ class ProcessImports(AbstractTransformerCompilerStep):
             else:
                 MapNamespace(node.Namespace, null, node.AssemblyReference)
 
+    def OnMemberReferenceExpression(node as MemberReferenceExpression):
+        # Ignore special method names
+        if im = node.Entity as IMethod and im.IsSpecialName:
+            super(node)
+            return
+
+        # Make sure we use the entity name for external references (they may have been aliased)
+        if extent = node.Entity as IExternalEntity:
+            node.Name = extent.Name
+        super(node)
+
     def OnReferenceExpression(node as ReferenceExpression):
-        # Only process external types
-        # NOTE: Shouldn't we check here against Entity?
-        if etype = node.ExpressionType as ExternalType:
-            name = etype.FullName
+        # External constructors
+        if extent = node.Entity as IExternalEntity:
+            if extent.EntityType == EntityType.Constructor:
+                name = (extent as ExternalConstructor).DeclaringType.FullName
+            else:
+                name = extent.FullName
+
+        # External types
+        elif exttype = node.Entity as ExternalType:
+            
+            name = exttype.FullName
 
         # Handle aliases with multiple references: import Foo(Bar, Baz) as MyFoo
         elif esimple = node.Entity as Boo.Lang.Compiler.TypeSystem.Core.SimpleNamespace:
@@ -105,8 +123,7 @@ class ProcessImports(AbstractTransformerCompilerStep):
                         name = (member as ExternalType).ActualType.Namespace
                         break;
 
-        if not name:
-            return
+        return unless name
 
         # Find a mapping containing the full name of the entity
         parts = name.Split(char('.'))
@@ -123,6 +140,7 @@ class ProcessImports(AbstractTransformerCompilerStep):
                 rhs.Add(parts[-1])
 
             parts = parts[:-1]
+
 
     protected def IsModule(fqn as string) as bool:
     """ Checks if the given fully qualified name actually resolves into a module

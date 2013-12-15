@@ -1,4 +1,4 @@
-Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
+Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
     exports.Gender = {
         Male: 0,
         Female: 1
@@ -11,24 +11,41 @@ Boo.define('BooJs.Tests.Support', ['exports'], function (exports) {
         spades: 3
     };
 
-    exports.method = function (x) {
-        return x;
+    function Character(name) {
+        this.Name = null;
+        this.set_Name(name);
+    }
+    Character.prototype = Boo.create(Object.prototype);
+    Character.prototype.constructor = Character;
+    Character.prototype.$boo$interfaces = [];
+    Character.prototype.get_Name = function Character$get_Name() {
+        return this.Name;
     };
+    Character.prototype.set_Name = function Character$set_Name(value) {
+        this.Name = value;
+    };
+    exports.Character = Character;
 
-    exports.Character = function (name) {
-        return {Name: name};
+    function Clickable() {
+        this.Click = Boo.event();
     };
-
-    exports.Clickable = function () {
-        this.Click = Boo.Event();
-    };
-    exports.Clickable.prototype.RaiseClick = function () {
+    Clickable.prototype = Boo.create(Object.prototype);
+    Clickable.prototype.constructor = Clickable;
+    Clickable.prototype.$boo$interfaces = [];
+    Clickable.prototype.RaiseClick = function () {
         this.Click();
     };
+    exports.Clickable = Clickable;
 
-    exports.square = function (x) {
+    function method(x) {
+        return x;
+    }
+    exports.method = method;
+
+    function square(x) {
         return x * x;
-    };
+    }
+    exports.square = square;
 });
 
 

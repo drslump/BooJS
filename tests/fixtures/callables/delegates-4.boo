@@ -1,8 +1,7 @@
-#IGNORE: Events not supported yet
+#IGNORE: Classes not supported yet
 """
 1 - clicked!
 2 - clicked!
-
 """
 import BooJs.Tests.Support
 
@@ -10,7 +9,7 @@ class Handler:
 	
 	public State = null
 		
-	def clicked(sender, args):
+	def clicked(sender):
 		print("${State} - clicked!")
 
 handler = Handler(State: 1)

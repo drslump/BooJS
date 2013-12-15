@@ -1,4 +1,3 @@
-#IGNORE: Events not supported yet
 """
 before
 clicked!
@@ -7,10 +6,10 @@ after
 import BooJs.Tests.Support
 
 
-def click(sender, args):
+def click(sender):
 	print("clicked!")
 
-c = Clickable(Click: System.EventHandler(null, __addressof__(click)))
+c = Clickable(Click: click)  #System.EventHandler(null, __addressof__(click)))
 
 print("before")
 c.RaiseClick()

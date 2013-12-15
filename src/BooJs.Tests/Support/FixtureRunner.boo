@@ -32,6 +32,7 @@ class ConsoleMock(ObjectInstance):
 
     def reset():
         _output.Clear()
+        
 
 static class Window:
     timers = Boo.Lang.List[of Timer]()
@@ -97,7 +98,7 @@ class FixtureRunner:
       comp.Parameters.Strict = false
 
       # Enable compiler debug messages
-      #comp.Parameters.TraceLevel = System.Diagnostics.TraceLevel.Verbose
+      # comp.Parameters.TraceLevel = System.Diagnostics.TraceLevel.Verbose
 
 
       #print 'Setup: ', timer.ElapsedMilliseconds

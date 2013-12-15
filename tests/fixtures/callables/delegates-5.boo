@@ -1,4 +1,3 @@
-#IGNORE: Events not supported yet
 """
 added
 clicked!
@@ -25,7 +24,7 @@ class Application:
 			
 			c.RaiseClick()
 		
-	def clicked(sender, args):
+	def clicked(sender):
 		print("clicked!")
 		
 Application().Run()

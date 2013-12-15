@@ -1,13 +1,11 @@
-#IGNORE: Events not supported yet
 """
 clicked!
 clicked!
-
 """
 import BooJs.Tests.Support
 
 
-def clicked(sender, args):
+def clicked(sender):
 	print("clicked!")
 
 c = Clickable()

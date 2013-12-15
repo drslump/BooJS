@@ -7,6 +7,7 @@ from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 from Boo.Lang.Environments import EnvironmentProvision
 from Boo.Lang.Compiler.TypeSystem.Services import RuntimeMethodCache as BooRuntimeMethodCache
 from Boo.Lang.Compiler.TypeSystem.Internal import InternalMethod, InternalField
+from Boo.Lang.Compiler.TypeSystem import IMethod
 from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 
@@ -64,6 +65,17 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
             # Handle synthetic methods (ie Events)
             elif imethod = target.Entity as InternalMethod and imethod.Method.IsSynthetic:
                 # Map Event synthetic methods to our runtime
+                if target.Name.StartsWith('raise_'):
+                    target.Name = target.Name[len('raise_'):]
+                elif target.Name.StartsWith('add_'):
+                    target.Name = target.Name[len('add_'):] + '.add'
+                elif target.Name.StartsWith('remove_'):
+                    target.Name = target.Name[len('remove_'):] + '.remove'
+                return
+
+            elif im = target.Entity as IMethod and im.IsSpecialName:
+                # Map Event synthetic methods to our runtime
+                # TODO: Make sure they relate to an event (check if suffix is an event field?)
                 if target.Name.StartsWith('raise_'):
                     target.Name = target.Name[len('raise_'):]
                 elif target.Name.StartsWith('add_'):

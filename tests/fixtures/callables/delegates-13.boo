@@ -1,4 +1,3 @@
-#IGNORE: Events not supported yet
 """
 before
 clicked!
@@ -6,7 +5,7 @@ after
 """
 import BooJs.Tests.Support
 
-def click():
+def click(o):
 	print("clicked!")
 
 c = Clickable(Click: click)
