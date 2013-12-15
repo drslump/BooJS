@@ -65,12 +65,35 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         Boo.each(obj, {v,k| ...})
 """
 
-    class NodeFinder(DepthFirstVisitor):
-        [property(Accepted)]
-        _accepted as (NodeType)
+    class ClosureWrapper(DepthFirstTransformer):
+    """ Boo ensures that closures inside loops capture also the state of the loop
+        declarations. To allow this in JavaScript we wrap closures in self executing
+        functions.
 
-        [property(Skipped)]
-        _skipped as (NodeType)
+        for i in range(3):              | for i in range(3):
+            result[i] = { i + 2 }       |     result[i] = {i| { i + 2 } }(i)
+    """
+        _decls as DeclarationCollection
+
+        def constructor(decls as DeclarationCollection):
+            _decls = decls
+
+        def OnBlockExpression(node as BlockExpression):
+            wrapper = [| { return $node } |]
+            mie = MethodInvocationExpression(node.LexicalInfo)
+            mie.Target = wrapper
+
+            for decl in _decls:
+                pd = ParameterDeclaration(decl.LexicalInfo, Name: decl.Name, Type: decl.Type)
+                wrapper.Parameters.Add(pd)
+                mie.Arguments.Add(ReferenceExpression(decl.Name))
+
+            ReplaceCurrentNode(mie)
+
+
+    class NodeFinder(DepthFirstVisitor):
+        property Accepted as (NodeType)
+        property Skipped as (NodeType) = (,)
 
         _found as bool
 
@@ -103,8 +126,7 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
     [getter(MethodCache)]
     _methodCache as RuntimeMethodCache
 
-    [property(CurrentMethod)]
-    _method as Method
+    property CurrentMethod as Method
 
     override def OnMethod(node as Method):
         prev = CurrentMethod
@@ -148,6 +170,10 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
         # TODO: Detect Globals.Array here too?
         type = GetExpressionType(node)
         return type and type.IsArray
+
+    protected def WrapClosures(node as ForStatement):
+        wrapper = ClosureWrapper(node.Declarations)
+        wrapper.Visit(node.Block)
 
     protected def ForToWhile(node as ForStatement) as Statement:
         # Make sure any nested loops are processed too
@@ -298,17 +324,21 @@ class NormalizeLoops(AbstractTransformerCompilerStep):
 
         # If it contains a yield statement or has and Or or Then block
         if HasYield(node) or node.OrBlock or node.ThenBlock:
+            WrapClosures(node)
             ReplaceCurrentNode ForToWhile(node)
         # Check if it can be optimized in the generated output
         elif IsLiteralRange(node.Iterator):
+            WrapClosures(node)
             # Nothing to do here, we will process it before generating the Javascript
             TempLocalInMethod(CurrentMethod, TypeSystemServices.IntType, node.Declarations[0].Name)
             Visit node.Block
         # If it's an array create an optimizable version of the loop
         elif IsArray(node.Iterator):
+            WrapClosures(node)
             ReplaceCurrentNode ForToIndex(node)
         # If it has a return statement use a while
         elif HasReturn(node):
+            WrapClosures(node)
             ReplaceCurrentNode ForToWhile(node)
         # Any other case uses the Boo.each runtime method to handle the iteration
         else:
