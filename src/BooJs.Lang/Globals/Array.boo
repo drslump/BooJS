@@ -58,9 +58,8 @@ class Array[of T] (Object, Iterable[of T]):
     def constructor(n as int):
         pass
 
-    # HACK: Emulate multiple params in a Javascript compatible way (up to 3 elements)
     [VarArgs]
-    def push(itm as T, *other as (T)) as uint:
+    def push(*items as (T)) as uint:
         pass
 
     def pop() as T:
