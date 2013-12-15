@@ -39,6 +39,22 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/ifdef.boo')
 
   [Test]
+  def test_import_alias():
+    FixtureRunner.run('tests/fixtures/boojs/import-alias.boo')
+
+  [Test]
+  def test_import_ns():
+    FixtureRunner.run('tests/fixtures/boojs/import-ns.boo')
+
+  [Test]
+  def test_import_type():
+    FixtureRunner.run('tests/fixtures/boojs/import-type.boo')
+
+  [Test]
+  def test_import():
+    FixtureRunner.run('tests/fixtures/boojs/import.boo')
+
+  [Test]
   def test_jquery():
     FixtureRunner.run('tests/fixtures/boojs/jquery.boo')
 

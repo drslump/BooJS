@@ -80,8 +80,11 @@ class ProcessImports(AbstractTransformerCompilerStep):
 
                 if node.Alias:
                     MapNamespace(node.Namespace + '.' + arg.Name, null, node.AssemblyReference)
+                elif arg.ContainsAnnotation('alias'):
+                    MapNamespace(node.Namespace + '.' + arg.Name, arg['alias'], node.AssemblyReference)
                 else:
                     MapNamespace(node.Namespace + '.' + arg.Name, arg.Name, node.AssemblyReference)
+
 
         elif not isExtern(node.Namespace):
             if node.Alias:

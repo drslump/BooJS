@@ -62,6 +62,7 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                     for arg in lst:
                         node.Arguments.Add(arg)
                 return
+
             # Handle synthetic methods (ie Events)
             elif imethod = target.Entity as InternalMethod and imethod.Method.IsSynthetic:
                 # Map Event synthetic methods to our runtime
