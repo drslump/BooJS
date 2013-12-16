@@ -1,3 +1,4 @@
+#IGNORE: Ast types not supported
 """
 node1 as Node = [|
 	return 3

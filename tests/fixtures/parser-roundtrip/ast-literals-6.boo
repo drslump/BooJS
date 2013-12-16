@@ -1,3 +1,4 @@
+#IGNORE: Ast types not supported
 """
 def foo():
 	return [|

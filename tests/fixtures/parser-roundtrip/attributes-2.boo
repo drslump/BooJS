@@ -1,3 +1,4 @@
+#IGNORE: Attributes not supported yet
 """
 [module: M]
 [assembly: Foo(true)]

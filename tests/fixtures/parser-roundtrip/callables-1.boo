@@ -1,3 +1,4 @@
+#IGNORE: Callable definitions not supported yet
 """
 callable CallableDef1()
 callable CallableDef2(arg)

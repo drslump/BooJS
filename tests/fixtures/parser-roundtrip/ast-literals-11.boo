@@ -1,3 +1,4 @@
+#IGNORE: Ast types not supported
 """
 p1 = [|
 	Foo:

@@ -1,3 +1,4 @@
+#IGNORE: Ast types not supported
 """
 code = [|
 	a = 0

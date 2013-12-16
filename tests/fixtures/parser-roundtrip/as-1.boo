@@ -1,31 +1,22 @@
 """
-l = List()
-if z = (l as object):
-	pass
-if not (z = (l as object)):
-	pass
-q = (l as object)
-if q is (l as object):
-	pass
-a = [1, 2]
-b as object = [3, 4]
-if a + (b as List):
-	pass
+as object
+q is
+Array sum
 """
-l = List()
+l = Array()
 
 if z=l as object:
-	pass
+	print 'as object'
 
 if not (z = l as object):
-	pass
+	print 'not as object'
 
 q = l as object
 if q is l as object:
-	pass
+	print 'q is'
 
 a = [1,2]
 b as object = [3,4]
-if a + b as List:
-	pass
+if a + b as Array:
+	print 'Array sum'
 

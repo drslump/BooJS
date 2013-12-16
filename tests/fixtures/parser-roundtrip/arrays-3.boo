@@ -1,13 +1,8 @@
 """
-a = (1, (b = 2), 3)
-lock spam = foo(), eggs = bar()
-c = (1 in (1, 2, 3))
-print((d = 1), 2)
-print((1 in (1, 2, 3)))
+1 2
+True
 """
 a = 1, b=2, 3
-lock spam=foo(), eggs=bar():
-	pass
 c = 1 in (1, 2, 3)
 print(d=1, 2)
-print(1 in (1, 2, 3))
+print(c)

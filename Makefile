@@ -34,7 +34,8 @@ MSBUILD_PATH=xbuild
 MSBUILD_OPTS=/nologo /verbosity:quiet
 
 NUNIT_PATH=$(MONO) lib/nunit/nunit-console.exe
-NUNIT_OPTS=-framework=4.0 -nologo -domain=none -noshadow -timeout=10000 -output=/tmp/nunit-stdout
+# NOTE: -domain=none produces an error with pattern matching
+NUNIT_OPTS=-framework=4.0 -nologo -domain=single -noshadow -timeout=10000 -output=/tmp/nunit-stdout
 
 MONOLINKER_PATH=monolinker
 
@@ -142,7 +143,7 @@ upx:
 
 # Tests for Travis-CI environment
 ci-tests:
-	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
+	$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
 		BooJs.Tests.ArraysFixtures, \
 		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \

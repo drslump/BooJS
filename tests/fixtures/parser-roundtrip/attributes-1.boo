@@ -1,3 +1,4 @@
+#IGNORE: Classes not supported yet
 """
 [XmlElement('Person', Namespace: 'urn:foo:bar')]
 class Person:
