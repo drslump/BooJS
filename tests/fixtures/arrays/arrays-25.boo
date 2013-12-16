@@ -1,3 +1,4 @@
+#IGNORE: BUG #5 - slice multi-dimensional arrays
 a = array(typeof((int)), 2)
 a[0] = array(int, 2)
 a[1] = array(int, 2)

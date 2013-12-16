@@ -1,3 +1,4 @@
+#IGNORE: BUG #6 - Array addition
 
 def assertArray(expected, actual):
 	#assert expected.GetType() is actual.GetType()

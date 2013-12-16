@@ -141,6 +141,7 @@ upx:
 # Tests for Travis-CI environment
 ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
+		BooJs.Tests.ArraysFixtures, \
 		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \
     	BooJs.Tests.CallablesFixtures, \

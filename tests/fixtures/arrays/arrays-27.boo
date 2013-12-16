@@ -1,3 +1,4 @@
+#IGNORE: BUG #5 - slice multi-dimensional arrays
 a = (array(int, 2), array(int, 2))
 
 for i in range(len(a)):
