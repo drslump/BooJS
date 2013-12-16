@@ -683,7 +683,7 @@ Transforms a Boo AST into a Mozilla AST
                 # Check if we can use verbatim code for the node
                 if node.ContainsAnnotation('verbatim') and \
                    arg = node.Arguments.First and arg.NodeType == NodeType.StringLiteralExpression:
-                    n.verbatim = (node.Arguments[0] as StringLiteralExpression).Value
+                    n.verbatim = (arg as StringLiteralExpression).Value
 
             Return n
 
