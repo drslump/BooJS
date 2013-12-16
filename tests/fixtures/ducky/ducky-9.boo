@@ -1,3 +1,4 @@
+#IGNORE: BUG Infinite loop in the compiler
 """
 2
 4

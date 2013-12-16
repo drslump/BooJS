@@ -1,15 +1,12 @@
-"""
-public class ClassWithField(object):
-
-	public def constructor():
-		super()
-		self._name = ''
-
-	protected _name as string
-"""
-
 class ClassWithField:
 	def constructor():
 		pass
 
 	_name = ""
+
+	def test():
+		assert _name == ''
+
+
+c = ClassWithField()
+c.test()

@@ -1,3 +1,4 @@
+#IGNORE: Collections not supported
 """
 [System.Runtime.CompilerServices.CompilerGlobalScopeAttribute]
 public final transient class Hash_initializerModule(object):

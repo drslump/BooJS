@@ -1,15 +1,3 @@
-"""
-public class Test(object):
-
-	public static def IsNotNull(o as object) as bool:
-		return (o is not null)
-
-	public static def IsNull(o as object) as bool:
-		return (o is null)
-
-	public def constructor():
-		super()
-"""
 class Test:
 
 	static def IsNotNull(o):
@@ -17,3 +5,10 @@ class Test:
 		
 	static def IsNull(o):
 		return o == null
+
+assert Test.IsNotNull({}) == true
+assert Test.IsNotNull(null) == false
+assert Test.IsNotNull('') == true
+assert Test.IsNull({}) == false
+assert Test.IsNull(null) == true
+assert Test.IsNull('') == false

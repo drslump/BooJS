@@ -1,29 +1,4 @@
 """
-public class Foo(object):
-
-	protected _first as int
-
-	protected _second as int
-
-	public def constructor():
-		super()
-		if self.\$initialized__Foo\$:
-			goto ___initialized___
-		self._first = 14
-		self._second = (self._first * 2)
-		self.\$initialized__Foo\$ = true
-		:___initialized___
-
-	public def constructor(bar as object):
-		super()
-		if self.\$initialized__Foo\$:
-			goto ___initialized___
-		self._first = 14
-		self._second = (self._first * 2)
-		self.\$initialized__Foo\$ = true
-		:___initialized___
-
-	private \$initialized__Foo\$ as bool
 """
 class Foo:
 	_first = 14
@@ -34,3 +9,11 @@ class Foo:
 		
 	def constructor(bar):
 		pass
+
+	def test():
+		assert _first == 14
+		assert _second == 28
+
+
+c = Foo()
+c.test()

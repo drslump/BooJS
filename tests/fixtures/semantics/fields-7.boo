@@ -1,16 +1,6 @@
 """
-public class B(object):
-
-	public def constructor():
-		super()
-		self.b = 'foo'
-		self.a = 'bar'
-		System.Console.WriteLine(self.a)
-		System.Console.WriteLine(self.b)
-
-	protected b as string
-
-	protected a as string
+bar
+foo
 """
 class B:
 	def constructor():
@@ -19,3 +9,6 @@ class B:
 		
 	b = "foo"
 	a = "bar"
+
+
+c = B()

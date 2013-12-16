@@ -1,24 +1,8 @@
 """
-public class Foo(object):
-
-	public def constructor():
-		super()
-		self.a = 1
-		self.d = 'abc'
-		System.Console.WriteLine(self.a)
-		System.Console.WriteLine(self.b)
-		System.Console.WriteLine(self.c)
-		System.Console.WriteLine(self.d)
-
-	protected a as int
-
-	protected b as int
-
-	protected c as string
-
-	protected d as string
-
-	protected x as single
+1
+0
+null
+abc
 """
 class Foo:
 	def constructor():

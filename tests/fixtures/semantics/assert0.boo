@@ -1,12 +1,7 @@
 """
-[System.Runtime.CompilerServices.CompilerGlobalScopeAttribute]
-public final transient class Assert0Module(object):
-
-	private static def Main(argv as (string)) as void:
-		unless false:
-			raise Boo.Lang.Runtime.AssertionFailedException('assert message')
-
-	private def constructor():
-		super()
+assert message
 """
-assert true and false, "assert message"
+try:
+	assert true and false, "assert message"
+except ex:
+	print ex
