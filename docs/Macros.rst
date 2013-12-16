@@ -83,6 +83,38 @@ the compilation unit.
         print "Compiling on a non-windows system"
 
 
+js
+~~
+
+Every now an then there is the odd case where we can't map some JavaScript code to
+BooJs, or perhaps we are just prototyping something and we want to copy-paste some
+snippet of code. The ``js`` meta method will include any literal string given as
+argument without modifying it. Any other expression will be wrapped in a call to
+``eval``.
+
+::
+
+    a = 100 + js('10')
+    js `alert(a)`
+    # generates:
+    # var a = 100 + 10
+    # alert(a)
+
+    # We can include multi line snippets too
+    a = js(`
+        [ 'foo',
+          'bar'
+        ]
+    `)
+
+    # Anything other than a string literal is generated with a call to eval
+    a = 'alert("foo")'
+    js a
+    # generates:
+    # var a = 'alert("foo")';
+    # eval(a);
+
+
 match
 -----
 

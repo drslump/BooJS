@@ -62,6 +62,10 @@ Stores the version of the runtime currently in use. You can use this value to
 work around versioning issues in your code to make it compatible with different
 BooJs releases.
 
+.. note:: To obtain the version of the compiler used to generate the code you can
+          use the ``__COMPILER_VERSION__`` reference. The compiler will automatically
+          convert those references to a string containing the compiler version.
+
 
 Array
 -----

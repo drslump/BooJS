@@ -20,11 +20,6 @@ class AdaptParsingAst(AbstractTransformerCompilerStep):
         if node.Name == 'System.Collections.Generic.IEnumerable':
             node.Name = 'BooJs.Lang.Globals.Iterable'
 
-    override def OnStringLiteralExpression(node as StringLiteralExpression):
-        # Convert backquoted literals to eval expressions
-        if node.ContainsAnnotation('quote') and node['quote'] == '`':
-            ReplaceCurrentNode [| eval($node) |]
-
     override def OnReferenceExpression(node as ReferenceExpression):
     """ Inject the compiler version where the placeholder is found.
     """

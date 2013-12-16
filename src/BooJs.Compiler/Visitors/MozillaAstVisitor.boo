@@ -676,14 +676,14 @@ Transforms a Boo AST into a Mozilla AST
             for arg in node.Arguments:
                 n.arguments.Add(Apply(arg))
 
-            # Detect calls to eval() with a simple string argument to define a
-            # verbatim version of the expression.
-            # cache = my(RuntimeMethodCache)
+            # Detect calls to eval()
             cache = My[of RuntimeMethodCache].Instance
-            if node.Target.Entity is cache.Eval and \
-               len(node.Arguments) == 1 and \
-               node.Arguments[0].NodeType == NodeType.StringLiteralExpression:
-                n.verbatim = (node.Arguments[0] as StringLiteralExpression).Value
+            if node.Target.Entity is cache.Eval:
+                n.callee = Moz.Identifier('eval')
+                # Check if we can use verbatim code for the node
+                if node.ContainsAnnotation('verbatim') and \
+                   arg = node.Arguments.First and arg.NodeType == NodeType.StringLiteralExpression:
+                    n.verbatim = (node.Arguments[0] as StringLiteralExpression).Value
 
             Return n
 

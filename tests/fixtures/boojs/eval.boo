@@ -3,21 +3,25 @@ invocation
 multiline
 multiline declared
 3.14159265358979
+foo
 0
 1
 2
 """
 
-`console.log('invocation')`
-`var a = 'multiline';
+js `console.log('invocation')`
+js `var a = 'multiline';
  console.log(a);
 `
 # Check the variable was properly declared
 global a
 print a, 'declared'
 
-v = `Math.PI`
+v = js('Math.PI')
 print v
 
-for i in range(`Math.max(1, 3)`):
+# Uses eval if the expression is not just a literal string
+js "console.log('{0}')" % ('foo',)
+
+for i in range(js('Math.max(1, 3)')):
 	print i

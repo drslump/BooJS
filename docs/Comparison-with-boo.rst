@@ -109,34 +109,3 @@ safe access operator to do it for us.
     if person?.address?.city == 'Barcelona':
         pass
 
-
-Verbatim JavaScript code
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-Every now an then there is the odd case where we can't map some JavaScript code to
-BooJs, or perhaps we are just prototyping something and we want to copy-paste some
-snippet of code. BooJs will include code quoted with a backtick ````` in the generated
-JavaScript code without modifying it.
-
-.. note:: The behavior for backtick quoted strings in plain Boo is to define a string
-          literal without any special handling for escape sequences.
-
-.. warning:: This behavior might change in a future version by requiring to wrap the
-             JavaScript code with a call to a ``js`` function. This will allow to keep
-             the original use for backtick strings and to build JavaScript code with
-             string interpolation.
-
-::
-
-    a = 100 + `10`
-    `alert(a)`
-    # generates:
-    # var a = 100 + 10
-    # alert(a)
-
-    # We can include multi line snippets too
-    a = `
-        [ 'foo',
-          'bar'
-        ]
-    `

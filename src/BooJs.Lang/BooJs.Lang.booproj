@@ -80,6 +80,7 @@
     <Compile Include="Macros\ExtensionAttribute.boo" />
     <Compile Include="Macros\GlobalMacro.boo" />
     <Compile Include="Macros\IfdefMacro.boo" />
+    <Compile Include="Macros\JsMeta.boo" />
     <Compile Include="Macros\MetaAttribute.boo" />
     <Compile Include="Macros\NewMeta.boo" />
     <Compile Include="Macros\PreservingMacro.boo" />
