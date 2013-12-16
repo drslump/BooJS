@@ -28,7 +28,7 @@ HELPTEXT = "\
 \n\n                             					\
 "
 
-MONO=mono --runtime=v4.0
+MONO=mono --debug --runtime=v4.0
 
 MSBUILD_PATH=xbuild
 MSBUILD_OPTS=/nologo /verbosity:quiet
@@ -80,6 +80,7 @@ endif
 generate-fixtures:
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/boojay > src/BooJs.Tests/BoojayFixtures.boo
+	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/callables > src/BooJs.Tests/CallablesFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/classes > src/BooJs.Tests/ClassesFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/closures > src/BooJs.Tests/ClosuresFixtures.boo
@@ -93,7 +94,8 @@ generate-fixtures:
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/statements > src/BooJs.Tests/StatementsFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/stdlib > src/BooJs.Tests/StdlibFixtures.boo
 	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
+	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/parser > src/BooJs.Tests/ParserFixtures.boo
+	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/parser-roundtrip > src/BooJs.Tests/ParserRoundtripFixtures.boo
 	
 docs:
 	cd docs; make html; cd -
