@@ -71,6 +71,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/preserving.boo')
 
   [Test]
+  def test_recursive_closure():
+    FixtureRunner.run('tests/fixtures/boojs/recursive-closure.boo')
+
+  [Test]
   def test_reference_same_module():
     FixtureRunner.run('tests/fixtures/boojs/reference-same-module.boo')
 
