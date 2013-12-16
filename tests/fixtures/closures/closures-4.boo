@@ -4,7 +4,7 @@ before
 clicked!!!
 after
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Clickable
 
 click = def:
 	print("clicked!!!")

@@ -1,3 +1,4 @@
+#IGNORE: Generics not supported yet
 """
 01 02 03 04
 """

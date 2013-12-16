@@ -145,6 +145,7 @@ ci-tests:
     	BooJs.Tests.BoojsFixtures, \
     	BooJs.Tests.CallablesFixtures, \
         BooJs.Tests.ClassesFixtures, \
+        BooJs.Tests.ClosuresFixtures, \
         BooJs.Tests.CompilationFixtures, \
      	BooJs.Tests.DevelFixtures, \
      	BooJs.Tests.DucktypingFixtures, \

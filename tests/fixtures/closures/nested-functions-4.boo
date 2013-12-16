@@ -1,3 +1,4 @@
+#IGNORE: BUG: recursive closures are not supported yet
 """
 42
 """
@@ -9,5 +10,3 @@ def rec(n as int) as int:
 	return n
 		
 print rec(0)
-
-	
