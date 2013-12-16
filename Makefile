@@ -78,25 +78,34 @@ else
 	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 endif
 
+MAKE_FIXTURE = $(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo --
 generate-fixtures:
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/boojay > src/BooJs.Tests/BoojayFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/callables > src/BooJs.Tests/CallablesFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/classes > src/BooJs.Tests/ClassesFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/closures > src/BooJs.Tests/ClosuresFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/compilation > src/BooJs.Tests/CompilationFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/devel > src/BooJs.Tests/DevelFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/duck-typing > src/BooJs.Tests/DuckTypingFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/examples > src/BooJs.Tests/ExamplesFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/generators > src/BooJs.Tests/GeneratorsFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/operators > src/BooJs.Tests/OperatorsFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/primitives > src/BooJs.Tests/PrimitivesFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/statements > src/BooJs.Tests/StatementsFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/stdlib > src/BooJs.Tests/StdlibFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/parser > src/BooJs.Tests/ParserFixtures.boo
-	$(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo -- tests/fixtures/parser-roundtrip > src/BooJs.Tests/ParserRoundtripFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/boojay > src/BooJs.Tests/BoojayFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/callables > src/BooJs.Tests/CallablesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/classes > src/BooJs.Tests/ClassesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/closures > src/BooJs.Tests/ClosuresFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/compilation > src/BooJs.Tests/CompilationFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/devel > src/BooJs.Tests/DevelFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/duck-typing > src/BooJs.Tests/DuckTypingFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/examples > src/BooJs.Tests/ExamplesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/generators > src/BooJs.Tests/GeneratorsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/operators > src/BooJs.Tests/OperatorsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/primitives > src/BooJs.Tests/PrimitivesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/statements > src/BooJs.Tests/StatementsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/stdlib > src/BooJs.Tests/StdlibFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/parser > src/BooJs.Tests/ParserFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/parser-roundtrip > src/BooJs.Tests/ParserRoundtripFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/semantics > src/BooJs.Tests/SemanticsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/types > src/BooJs.Tests/TypesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/modules > src/BooJs.Tests/ModulesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/meta-programming > src/BooJs.Tests/MetaProgrammingFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/extensions > src/BooJs.Tests/ExtensionsFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/attributes > src/BooJs.Tests/AttributesFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/ducky > src/BooJs.Tests/DuckyFixtures.boo
+	$(MAKE_FIXTURE) tests/fixtures/generics > src/BooJs.Tests/GenericsFixtures.boo
 	
 docs:
 	cd docs; make html; cd -
@@ -143,7 +152,7 @@ upx:
 
 # Tests for Travis-CI environment
 ci-tests:
-	$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
+	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
 		BooJs.Tests.ArraysFixtures, \
 		BooJs.Tests.BoojayFixtures, \
     	BooJs.Tests.BoojsFixtures, \

@@ -105,6 +105,14 @@
     <Compile Include="ParserFixtures.boo" />
     <Compile Include="ParserRoundtripFixtures.boo" />
     <Compile Include="Support\FixtureRunner.boo" />
+    <Compile Include="AttributesFixtures.boo" />
+    <Compile Include="DuckyFixtures.boo" />
+    <Compile Include="ExtensionsFixtures.boo" />
+    <Compile Include="GenericsFixtures.boo" />
+    <Compile Include="MetaProgrammingFixtures.boo" />
+    <Compile Include="ModulesFixtures.boo" />
+    <Compile Include="SemanticsFixtures.boo" />
+    <Compile Include="TypesFixtures.boo" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Support\" />

@@ -36,7 +36,7 @@ for fname in Directory.GetFiles(path):
   continue unless fname.EndsWith(".boo")
 
   name = Path.GetFileNameWithoutExtension(fname)
-  name = name.Replace('-', '_')
+  name = name.Replace('-', '_').Replace('.', '_')
 
   print "  [Test]"
   print "  def test_$name():"
