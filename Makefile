@@ -156,7 +156,8 @@ ci-tests:
      	BooJs.Tests.SaveFileTest, \
      	BooJs.Tests.StatementsFixtures, \
      	BooJs.Tests.StdlibFixtures, \
-     	BooJs.Tests.SourceMapTest \
+     	BooJs.Tests.SourceMapTest, \
+     	BooJs.Tests.TypesystemFixtures \
     " \
     src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 
