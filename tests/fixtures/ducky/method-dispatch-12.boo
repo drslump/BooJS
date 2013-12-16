@@ -1,3 +1,4 @@
+#DUCKY
 """
 bar(int, int, int)
 bar(single, single, single)

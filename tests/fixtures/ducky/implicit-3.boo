@@ -1,3 +1,5 @@
+#IGNORE: Classes not supported yet
+#DUCKY
 """
 gate is open
 gate is closed

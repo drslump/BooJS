@@ -784,8 +784,8 @@
     // function foo$1(str, dict) {}
     Boo.overload = function (args, specs, funcs) {
         // Pre-filter based on the number of args
-        var matching = [];
-        for (var i = 0; i < specs.length; i++) {
+        var i, matching = [];
+        for (i = 0; i < specs.length; i++) {
             if (args.length === specs[i].length) {
                 matching.push(i);
             }
@@ -801,6 +801,30 @@
         }
 
         // Filter based on types
+        var max_score = 0;
+        var best_idx = -1;
+        for (i = 0; i < matching.length; i++) {
+            var spec = specs[matching[i]];
+            var score = 0;
+            for (var j = 0; j < spec.length; j++) {
+                // TODO: We should have some version of isa that returns a score (a is string -> 1, a isa string -> 0.5)
+                if (boo_isa(args[j], spec[j])) {
+                    score += 1;
+                } else {
+                    score = 0;
+                    break;
+                }
+            }
+            if (score > max_score) {
+                max_score = score;
+                best_idx = matching[i];
+            }
+        }
+
+        if (best_idx !== -1) {
+            return funcs[best_idx].apply(this, args);
+        }
+
         throw new Error('Overloads based on parameter types are not supported yet');
     };
 

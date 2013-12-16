@@ -1,3 +1,4 @@
+#DUCKY
 """
 Foo.bar
 42

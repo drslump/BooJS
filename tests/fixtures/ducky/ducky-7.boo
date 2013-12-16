@@ -1,3 +1,5 @@
+#IGNORE: IQuackFu not supported yet
+#DUCKY
 """
 Homer
 Simpson

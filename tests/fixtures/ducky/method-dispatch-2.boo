@@ -1,3 +1,5 @@
+#IGNORE: Runtime type-based overloading not supported yet
+#DUCKY
 """
 tom
 tom

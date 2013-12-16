@@ -1,3 +1,4 @@
+#DUCKY
 """
 func1
 func2 with arg: test

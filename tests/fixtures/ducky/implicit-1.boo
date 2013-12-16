@@ -1,3 +1,5 @@
+#IGNORE: Property macro not ported yet
+#DUCKY
 """
 a love supreme
 a love supreme
@@ -6,8 +8,7 @@ class Song:
 	static def op_Implicit(song as Song) as string:
 		return song.Name
 		
-	[property(Name)]
-	_name = ""
+	property Name = ''
 	
 class Movie:
 	public title as string

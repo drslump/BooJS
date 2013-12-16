@@ -1,3 +1,5 @@
+#IGNORE: Classes not supported yet
+#DUCKY
 """
 baz
 Foo.Call(1, 1, 2)

@@ -1,3 +1,5 @@
+#IGNORE: Runtime type-based overloading not supported yet
+#DUCKY
 """
 double: 42
 int: 1

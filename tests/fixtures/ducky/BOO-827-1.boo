@@ -1,3 +1,4 @@
+#DUCKY
 """
 string Hello
 stuff A
