@@ -14,6 +14,6 @@ foo(10)
 foo('bar', 'baz')
 
 # Test runtime overload dispatching
-`exports.foo(10)`
-`exports.foo('bar', 'baz')`
+js `exports.foo(10)`
+js `exports.foo('bar', 'baz')`
 
