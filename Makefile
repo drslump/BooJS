@@ -149,6 +149,7 @@ ci-tests:
         BooJs.Tests.CompilationFixtures, \
      	BooJs.Tests.DevelFixtures, \
      	BooJs.Tests.DucktypingFixtures, \
+     	BooJs.Tests.GeneratorsFixtures, \
      	BooJs.Tests.OperatorsFixtures, \
      	BooJs.Tests.PrimitivesFixtures, \
      	BooJs.Tests.SaveFileTest, \

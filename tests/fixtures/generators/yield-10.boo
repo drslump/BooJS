@@ -1,4 +1,4 @@
-#TODO: Handle `isa callable`
+#IGNORE: BUG #4 - Nested generators are processed but not present in generated code
 """
 0
 1
