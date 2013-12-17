@@ -33,7 +33,7 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
     Clickable.prototype.constructor = Clickable;
     Clickable.prototype.$boo$interfaces = [];
     Clickable.prototype.RaiseClick = function () {
-        this.Click();
+        this.Click(this);
     };
     exports.Clickable = Clickable;
 
