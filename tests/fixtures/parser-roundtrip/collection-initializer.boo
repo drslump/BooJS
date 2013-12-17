@@ -1,6 +1,10 @@
+#IGNORE: Array initializer not supported yet
 """
-h = List[of string]() { 'foo' }
-h = List[of string]() { 'foo', 'bar' }
+foo
+foo,bar
 """
-h = List[of string]() { "foo" }
-h = List[of string]() { "foo", "bar" }
+h1 = Array[of string]() { "foo" }
+h2 = Array[of string]() { "foo", "bar" }
+
+print h1
+print h2

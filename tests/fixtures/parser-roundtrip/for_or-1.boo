@@ -1,10 +1,7 @@
 """
-for item in []:
-	pass
-or:
-	return 1
+1
 """
 for item in []:
 	pass
 or:
-	return 1
+	print 1

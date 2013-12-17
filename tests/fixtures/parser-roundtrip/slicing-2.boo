@@ -1,3 +1,4 @@
+#IGNORE: Matrix not supported
 """
 table = MultiplicationTable()
 print table[1, 2]

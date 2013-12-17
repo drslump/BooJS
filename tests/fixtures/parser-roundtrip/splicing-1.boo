@@ -1,3 +1,4 @@
+#IGNORE: Parser test
 """
 a = [| \$(item) |]
 b = [| (x as \$(type)) |]

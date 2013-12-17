@@ -1,3 +1,4 @@
+#IGNORE: Parser test
 """
 enum E:
 

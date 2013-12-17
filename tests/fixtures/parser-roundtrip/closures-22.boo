@@ -1,12 +1,12 @@
 """
-a = { return }
-foo({ return })
-bar({ return })
 """
+def foo(fn as callable):
+	fn()
+
 a = def ():
 	pass
 
 foo():
 	pass
 	
-bar({ return })
+foo({ return })

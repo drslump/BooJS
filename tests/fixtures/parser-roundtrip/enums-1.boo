@@ -1,26 +1,7 @@
-#FIXME: replaced -1s with 42 temporarily
-#       parenthesis surround -1 now that enum initializer is an Expression (as of rev.3228)
 """
-enum AnEnum:
-
-	Foo
-
-	Bar = 1
-
-	Baz = 42
-
-enum AnotherEnum:
-
-	Foo = 42
-
-enum YetAnother:
-
-	Foo
-
-	Bar
-
-enum Empty:
-	pass
+0 1 42
+42
+0 1
 """
 enum AnEnum:
 	Foo
@@ -37,3 +18,6 @@ enum YetAnother:
 enum Empty:
 	pass
 
+print AnEnum.Foo, AnEnum.Bar, AnEnum.Baz
+print AnotherEnum.Foo
+print YetAnother.Foo, YetAnother.Bar

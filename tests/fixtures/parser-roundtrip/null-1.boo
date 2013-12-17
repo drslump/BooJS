@@ -1,4 +1,3 @@
 """
-a = null
 """
 a = null

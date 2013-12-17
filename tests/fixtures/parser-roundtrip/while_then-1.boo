@@ -1,11 +1,9 @@
 """
-while true:
-	pass
-then:
-	return 1
+then
 """
-while true:
-	pass
+x = true
+while x:
+	x = false
 then:
-	return 1
+	print 'then'
 	

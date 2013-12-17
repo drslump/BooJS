@@ -1,11 +1,8 @@
 """
-for item in []:
-	pass
-then:
-	return 1
+then
 """
 for item in []:
 	pass
 then:
-	return 1
+	print 'then'
 	

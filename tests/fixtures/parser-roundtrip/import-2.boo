@@ -1,3 +1,4 @@
+#IGNORE: Parser test
 """
 import Gtk from 'gtk-sharp'
 import FooBar from 'foo-bar'

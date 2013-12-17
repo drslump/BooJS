@@ -1,11 +1,18 @@
+#IGNORE: internal modifier not supported yet
+"""
+Click
+Activated
 """
 class Button:
+	event Click as callable()
+	internal event Activated as callable()
 
-	event Click as EventHandler
+	def Run():
+		Click()
+		Activated()
 
-	internal event Activated as EventHandler
-"""
-class Button:
-	event Click as EventHandler
-	internal event Activated as EventHandler
+b = Button()
+b.Click += { print 'Click' }
+b.Activated += { print 'Activated' }
 
+b.Run()

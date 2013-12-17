@@ -1,5 +1,5 @@
 """
-print(('foo' + 'bar'))
+foobar
 """
 /*
 	a multiline

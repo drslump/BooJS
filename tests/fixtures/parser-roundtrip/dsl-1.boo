@@ -1,13 +1,9 @@
 """
-def foo():
-	return bar({ return 42 })
-
-def baz():
-	a = bar({ return 42 })
-
-doc = XmlBuilder()
-doc.html({ doc.body({ doc.text('Hello, world!') }) })
+42
 """
+def bar(fn as callable):
+	return fn()
+
 def foo():
 	return bar: // dsl friendly invocation syntax
 		return 42
@@ -15,8 +11,10 @@ def foo():
 def baz():
 	a = bar:
 		return 42
-		
-doc = XmlBuilder()
-doc.html:
-	doc.body:
-		doc.text("Hello, world!")
+
+print foo()
+
+# doc = XmlBuilder()
+# doc.html:
+# 	doc.body:
+# 		doc.text("Hello, world!")

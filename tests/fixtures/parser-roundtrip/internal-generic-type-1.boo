@@ -1,7 +1,8 @@
+#IGNORE: Interfaces not supported yet
 """
 public class GenericType[of T](BaseType, SomeInterface):
 	pass
 """
 
-public class GenericType[of T](BaseType, SomeInterface):
+public class GenericType[of T](Object, Iterable):
 	pass

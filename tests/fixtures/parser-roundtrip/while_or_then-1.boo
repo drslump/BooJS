@@ -1,14 +1,11 @@
 """
-while false:
-	x++
-or:
-	print 'skipped'
-then:
-	pass 
+skipped
+then
 """
+x = 1
 while false:
 	x++
 or:
 	print 'skipped'
 then:
-	pass
+	print 'then'

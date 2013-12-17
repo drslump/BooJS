@@ -1,10 +1,11 @@
 """
-button = Button()
-button.Click += { print('clicked!') }
-button.Click += { print('yes, it was!') }
-button.Click += { sender | print("\$sender clicked!") }
+clicked!
+yes, it was!
+[object Object] clicked!
 """
-button = Button()
+from BooJs.Tests.Support import Clickable
+
+button = Clickable()
 button.Click += def:
 	print("clicked!")
 
@@ -13,3 +14,5 @@ button.Click += def ():
 	
 button.Click += def (sender):
 	print("$sender clicked!")
+
+button.RaiseClick()

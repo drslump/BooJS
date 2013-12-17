@@ -1,16 +1,15 @@
 """
-class Console:
-
-	def WriteLine(format as string, *args):
-		print(string.Format(format, args))
-
-	def WriteLn(format as string, *args as (object)):
-		print(string.Format(format, args))
+foo -> bar
+foo -> bar
 """
 class Console:
 	def WriteLine(format as string, *args):
-		print(string.Format(format, args))
+		print(format % args)
 		
 	def WriteLn(format as string, *args as (object)):
-		print(string.Format(format, args))
-		
+		print(format % args)
+
+
+c = Console()
+c.WriteLine('{0} -> {1}', 'foo', 'bar')
+c.WriteLn('{0} -> {1}', 'foo', 'bar')

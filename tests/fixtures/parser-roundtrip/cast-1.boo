@@ -1,4 +1,6 @@
 """
-a = (b cast c)
+4.5
 """
-a = b cast c
+b = 9
+a = b cast double
+print a / 2

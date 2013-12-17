@@ -1,11 +1,8 @@
 """
-try:
-	raise System.Exception('throw')
-except ex:
-	Console.WriteLine('catch')
+catch
 """
 try:
-	raise System.Exception("throw")
+	raise Error("throw")
 except ex:
-	Console.WriteLine("catch")
+	print "catch"
 

@@ -1,17 +1,9 @@
 """
-namespace Foo.Bar
-
-import System
-
-def foo():
-	print('bar')
-
-foo()
-foo()
+bar
+bar
 """
 namespace Foo.Bar;
 ;
-import System;
 
 def foo():
 	print('bar');

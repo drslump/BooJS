@@ -1,14 +1,11 @@
 """
-for item in []:
-	pass
-or:
-	x = 1
-then:
-	print 'done'
+or
+done
 """
 for item in []:
 	pass
 or:
-	x = 1
+	print 'or'
 then:
 	print 'done'
+

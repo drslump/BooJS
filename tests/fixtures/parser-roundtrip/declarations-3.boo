@@ -1,5 +1,5 @@
 """
-i as long = [1, 2, 3].IndexOf({ item as int | return (item > 2) })
+1
 """
-i as long = [1, 2, 3].IndexOf() do (item as int):
-	return item > 2
+i as int = [1, 2, 3].indexOf(2)
+print i

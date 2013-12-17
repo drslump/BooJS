@@ -1,6 +1,6 @@
 """
-print(@/ foo bar /)
-print(@/tab	space /)
+/foobar/
+/tabspace/
 """
 print(@/ foo bar /)
 print(@/tab	space /)

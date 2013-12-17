@@ -1,3 +1,4 @@
+#IGNORE: Macro not supported yet
 """
 macro foo:
 	print 

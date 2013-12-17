@@ -1,8 +1,5 @@
 """
-class Foo:
-
-	bar as string
 """
 class Foo:
 
-	bar as string
+    bar as string

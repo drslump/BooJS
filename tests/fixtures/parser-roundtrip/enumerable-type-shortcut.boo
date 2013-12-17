@@ -1,11 +1,20 @@
+#IGNORE: IEnumerable handling is not fully supported yet
 """
-def foo() as System.Collections.Generic.IEnumerable[of string]:
-	pass
-
-def bar() as System.Collections.Generic.IEnumerable[of System.Collections.Generic.IEnumerable[of string]]:
-	pass
+foo
+bar
+foo
+bar
+foo
+bar
 """
 def foo() as string*:
-	pass
+	return ['foo', 'bar']
 def bar() as string**:
-	pass
+	return [['foo','bar'],['foo','bar']]
+
+for i in foo():
+	print i
+
+for l in bar():
+	for i in l:
+		print i

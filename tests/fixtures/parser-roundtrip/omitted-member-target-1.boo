@@ -1,12 +1,16 @@
 """
-a = .value
-b = .operation()
-.value = 42
-.operation() if (.value == 42)
-print.value.ToString()
+42
+42 42
 """
-a = .value
-b = .operation()
-.value = 42
-.operation() if .value == 42
-print .value.ToString()
+class Foo:
+	public value as int
+	def operation():
+		return value
+
+with Foo():
+	.value = 42
+	a = .value
+	b = .operation()
+	print(.value)
+	print a, b
+

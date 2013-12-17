@@ -1,14 +1,8 @@
 """
-def abs(i as int):
-	return { return i } if (i > 0)
-	return { return (1 - i) }
-
-assert 3 == abs(-3)()
-assert 1 == abs(1)()
 """
 def abs(i as int):
 	return { return i } if i > 0
-	return { return 1-i }
+	return { return -1 * i }
 
 assert 3 == abs(-3)()
 assert 1 == abs(1)()

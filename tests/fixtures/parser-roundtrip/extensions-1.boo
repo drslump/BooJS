@@ -1,16 +1,14 @@
 """
-[Extension]
-static def foo(item as string):
-	return item.ToUpper()
-
-[Extension]
-static def join(item as string, items):
-	return join(items, self)
+FOO
+1|2|3
 """
 [Extension]
 static def foo(item as string):
-	return item.ToUpper()
+	return item.toUpperCase()
 	
 [Extension]
-static def join(item as string, items):
-	return join(items, self)
+static def joinit(item as string, items):
+	return join(items, item)
+
+print 'foo'.foo()
+print '|'.joinit([1,2,3])

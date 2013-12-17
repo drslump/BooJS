@@ -1,12 +1,4 @@
-"""
-class Customer:
-
-	[Property(FirstName, Default: '')]
-	_fname as string
-
-c = Customer(FirstName: 'Rodrigo')
-
-"""
+#IGNORE: Properties not supported yet
 class Customer:
 	[Property(FirstName, Default: "")]
 	_fname as string

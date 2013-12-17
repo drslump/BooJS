@@ -1,4 +1,5 @@
 """
-c = { print('Hello!') }
+Hello!
 """
 c = { print("Hello!") }
+c()

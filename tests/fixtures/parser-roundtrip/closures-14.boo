@@ -1,10 +1,7 @@
 """
-def foo():
-	return { print('foo') }
-
-print(foo()())
+foo
 """
 def foo():
 	return { print('foo') }
 
-print(foo()())
+foo()()

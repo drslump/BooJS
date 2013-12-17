@@ -1,8 +1,11 @@
 """
-class Foo:
-
-	bar = (1, 2, 3)
+1,2,3
 """
 class Foo:
 
-	bar = 1, 2, 3
+    bar = 1, 2, 3
+
+    def Test():
+        print bar
+
+Foo().Test()

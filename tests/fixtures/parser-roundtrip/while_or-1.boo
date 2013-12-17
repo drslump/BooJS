@@ -1,11 +1,8 @@
 """
-while false:
-	pass
-or:
-	return 1
+1
 """
 while false:
 	pass
 or:
-	return 1
+	print 1
 	

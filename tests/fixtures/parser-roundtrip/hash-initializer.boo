@@ -1,3 +1,4 @@
+#IGNORE: Generic Hash not supported yet
 """
 h = Hash[of string, string]() { 'foo': 'bar' }
 h = Hash[of string, string]() { 'foo': 'bar', 'bar': 'baz' }

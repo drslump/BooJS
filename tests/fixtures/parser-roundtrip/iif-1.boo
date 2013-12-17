@@ -1,3 +1,4 @@
+#IGNORE: Parser test
 """
 n = int.Parse(prompt('select a number: '))
 print(iif((n % 2), 'sorry', 'cool'))

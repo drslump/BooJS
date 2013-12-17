@@ -1,6 +1,6 @@
 """
-print 'albatross!' if (len(argv) > 0)
-print 'albatross!!!' unless (len(argv) < 5)
+albatross!
 """
-print "albatross!" if len(argv) > 0
-print "albatross!!!" unless len(argv) < 5
+args = [1]
+print "albatross!" if len(args) > 0
+print "albatross!!!" unless len(args) < 5

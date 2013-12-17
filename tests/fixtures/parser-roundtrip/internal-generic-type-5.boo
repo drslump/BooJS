@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 public struct GenericType[of T](BaseType, SomeInterface):
 	pass

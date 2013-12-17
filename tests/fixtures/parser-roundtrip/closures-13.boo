@@ -1,10 +1,7 @@
 """
-def foo():
-	return [1, 2, 3].Find({ item as int | return (item > 2) })
-
-print(foo())
+3
 """
 def foo():
-	return [1, 2, 3].Find() do (item as int):
+	return [1, 2, 3].filter() do (item as int):
 		return item > 2
 print(foo())
