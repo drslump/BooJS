@@ -8,12 +8,10 @@
 (function (exports, undefined) {
 
     // Short alias for hasOwnProperty
-    function hop(obj, prop) {
-        return Object.prototype.hasOwnProperty.call(obj, prop);
-    }
+    var _hop = Object.prototype.hasOwnProperty;
 
     // Just skip if the runtime is already loaded
-    if (hop(exports, 'Boo')) return;
+    if (_hop.call(exports, 'Boo')) return;
 
     // Map of typeof and Object.toString values
     var type_lookup = {
@@ -103,7 +101,7 @@
         }
 
         // The first time we know about the module add it to the waiting list
-        if (!hop(mod_defined, name)) {
+        if (!_hop.call(mod_defined, name)) {
             mod_waiting[name] = [name, deps, factory];
         }
 
@@ -126,7 +124,7 @@
             }
 
             // If the dependency is waiting to be resolved, do it now
-            if (hop(mod_waiting, dep)) {
+            if (_hop.call(mod_waiting, dep)) {
                 // Pop the dependant module from the waiting list
                 args = mod_waiting[dep];
                 delete mod_waiting[dep];
@@ -136,7 +134,7 @@
             }
 
             // The module should now be available
-            if (!hop(mod_defined, dep)) {
+            if (!_hop.call(mod_defined, dep)) {
                 delete mod_waiting[dep];
                 throw new Error('Unable to load module "' + dep + '"');
             }
@@ -153,7 +151,7 @@
         // TODO: Handle nested levels?
         module = mod_defined[name];
         for (member in module) {
-            if (hop(module, member) && typeIs(module[member], 'Object')) {
+            if (_hop.call(module, member) && typeIs(module[member], 'Object')) {
                 mod_defined[name + '.' + member] = module[member];
             }
         }
@@ -165,7 +163,7 @@
     Boo.require = function (deps, callback) {
         // Single argument just obtains a previously defined module
         if (arguments.length === 1) {
-            if (hop(mod_defined, deps))
+            if (_hop.call(mod_defined, deps))
                 return mod_defined[deps];
             throw new Error('Module "' + deps + '" not found');
         }
@@ -173,7 +171,7 @@
         // Collect all dependencies
         var i, l, args = [];
         for (i = 0, l = deps.length; i < l; i++) {
-            if (!hop(mod_defined, deps[i]))
+            if (!_hop.call(mod_defined, deps[i]))
                 throw new Error('Module "' + deps[i] + '" not found');
             args[i] = mod_defined[deps[i]];
         }
@@ -222,7 +220,7 @@
             // For dictionaries we always pass the key and the value
             // TODO: Shouldn't we just pass the key?
             for (i in obj) {
-                if (hop(obj, i)) {
+                if (_hop.call(obj, i)) {
                     if (iterator.call(context, i, obj[i]) === Boo.STOP) return;
                 }
             }
@@ -237,7 +235,7 @@
         // Wrap array/object into a generator function
         if (typeof closure === 'object') {
             // Forward generators
-            if (hop(closure, 'next') && hop(closure, 'close') &&
+            if (_hop.call(closure, 'next') && _hop.call(closure, 'close') &&
                 typeof closure.next === 'function' && typeof closure.close === 'function') {
                 return closure;
             }
@@ -401,7 +399,7 @@
     Boo.reduce = boo_reduce;
 
     // Builds a list of lists using one item from each given array (zip shortest)
-    // TODO: User VarArgs?
+    // TODO: Use VarArgs?
     function boo_zip(args) {
         var i, fn, result = [],
             all_arrays = boo_reduce(args, true, function (a, b) { return a && typeIs(b, 'Array', 'String'); });
@@ -573,7 +571,7 @@
             return true;
 
         // Check interfaces
-        return hop(value, '$boo$interfaces') && -1 !== Boo.indexOf(value.$boo$interfaces, type);
+        return _hop.call(value, '$boo$interfaces') && -1 !== Boo.indexOf(value.$boo$interfaces, type);
     }
     Boo.isa = boo_isa;
 
@@ -616,7 +614,7 @@
             if (tof === 'object') {
                 var k, length = 0;
                 for (k in value)
-                    if (hop(value, k)) length++;
+                    if (_hop.call(value, k)) length++;
                 return length;
             }
         }
