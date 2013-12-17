@@ -250,7 +250,11 @@ class JsPrinter(Printer):
 
     virtual def OnMemberExpression(node as MemberExpression):
         Parens Precedence.Member:
+            # Wrap numbers in parens (TODO: detect only numbers)
+            Write '(' if node.object isa Literal
             Visit node.object
+            Write ')' if node.object isa Literal
+
         if node.computed:
             Write '['
             Visit node.property
