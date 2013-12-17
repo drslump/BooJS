@@ -4,6 +4,7 @@ from Boo.Lang.Compiler import CompilerContext
 from Boo.Lang.Compiler.Ast import *
 from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 
+from Boo.Lang.PatternMatching import *
 from Boo.Lang.Environments import EnvironmentProvision
 from Boo.Lang.Compiler.TypeSystem.Services import RuntimeMethodCache as BooRuntimeMethodCache
 from Boo.Lang.Compiler.TypeSystem.Internal import InternalMethod, InternalField
@@ -13,7 +14,7 @@ from BooJs.Compiler.TypeSystem import RuntimeMethodCache
 
 class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
 """
-    Normalize method invocations to undo some of the instrumentation performend by Boo's
+    Normalize method invocations to undo some of the instrumentation performed by Boo's
     ProcessMethodBodies step. Since Javascript is highly dynamic there is no need to call
     special interface methods for things like array access or calling anonymous functions.
 
@@ -39,32 +40,30 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
     """ We need to attach to the Leave hook since we sometimes have to replace the node """
 
         # Map runtime methods inserted by Boo to our custom ones
-        if target = node.Target as ReferenceExpression:
+        target = node.Target as ReferenceExpression
+        return unless target
+
+        match target.Entity:
             # Handle equality
-            if target.Entity is BooMethodCache.RuntimeServices_EqualityOperator:
+            case BooMethodCache.RuntimeServices_EqualityOperator:
                 mie = CodeBuilder.CreateMethodInvocation(MethodCache.RuntimeEquality, node.Arguments[0], node.Arguments[1])
                 ReplaceCurrentNode mie
-                return
             # Handle enumerables
-            elif target.Entity is BooMethodCache.RuntimeServices_GetEnumerable:
+            case BooMethodCache.RuntimeServices_GetEnumerable:
                 mie = CodeBuilder.CreateMethodInvocation(MethodCache.RuntimeEnumerable, node.Arguments[0])
                 ReplaceCurrentNode mie
-                return
             # Removes ICallable `.Call`
-            elif target.Entity is BooMethodCache.ICallable_Call:
-                t_target = (target as MemberReferenceExpression).Target
-                node.Target = t_target
+            case BooMethodCache.ICallable_Call:
+                node.Target = (target as MemberReferenceExpression).Target
                 # Convert varargs to plain arguments
-                # TODO: What happens if the callable actually expects a vararg?
                 if len(node.Arguments) == 1 and node.Arguments.First.NodeType == NodeType.ArrayLiteralExpression:
                     lst = (node.Arguments.First as ArrayLiteralExpression).Items
                     node.Arguments.Clear()
                     for arg in lst:
                         node.Arguments.Add(arg)
-                return
 
             # Handle synthetic methods (ie Events)
-            elif imethod = target.Entity as InternalMethod and imethod.Method.IsSynthetic:
+            case InternalMethod(Method: Node(IsSynthetic: true)):
                 # Map Event synthetic methods to our runtime
                 if target.Name.StartsWith('raise_'):
                     target.Name = target.Name[len('raise_'):]
@@ -72,9 +71,8 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                     target.Name = target.Name[len('add_'):] + '.add'
                 elif target.Name.StartsWith('remove_'):
                     target.Name = target.Name[len('remove_'):] + '.remove'
-                return
 
-            elif im = target.Entity as IMethod and im.IsSpecialName:
+            case IMethod(IsSpecialName: true):
                 # Map Event synthetic methods to our runtime
                 # TODO: Make sure they relate to an event (check if suffix is an event field?)
                 if target.Name.StartsWith('raise_'):
@@ -83,22 +81,22 @@ class NormalizeMethodInvocation(AbstractTransformerCompilerStep):
                     target.Name = target.Name[len('add_'):] + '.add'
                 elif target.Name.StartsWith('remove_'):
                     target.Name = target.Name[len('remove_'):] + '.remove'
-                return
 
             # Retarget builtins
-            elif target.Entity and TypeSystemServices.IsBuiltin(target.Entity):
+            # TODO: Move to the prepare step?
+            case IMethod() and TypeSystemServices.IsBuiltin(target.Entity):
                 if target.NodeType == NodeType.MemberReferenceExpression:
                     (target as MemberReferenceExpression).Target = [| Boo |]
                 else:
                     (target as ReferenceExpression).Name = 'Boo.' + (target as ReferenceExpression).Name
-                return
+
+            otherwise:
+                pass
 
     def LeaveMemberReferenceExpression(node as MemberReferenceExpression):
-
-        if ifield = node.Entity as InternalField and ifield.Field.IsSynthetic:
-            # Map Event private field to the actual Event
-            if node.Name.StartsWith('$event$'):
-                node.Name = node.Name[len('$event$'):]
+        # Map Event private field to the actual Event
+        if node.Name.StartsWith('$event$'):
+            node.Name = node.Name[len('$event$'):]
 
 
 

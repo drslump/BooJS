@@ -55,7 +55,7 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
     override def OnMethodInvocationExpression(node as MethodInvocationExpression):
         # Convert named arguments in method invocations to a hash literal
         if len(node.NamedArguments) and IsMethod(node.Target):
-            h = HashLiteralExpression(node.NamedArguments[0].LexicalInfo)
+            h = HashLiteralExpression(node.NamedArguments.First.LexicalInfo)
             for arg in node.NamedArguments:
                 arg.First = StringLiteralExpression(arg.LexicalInfo, (arg.First as ReferenceExpression).Name)
                 h.Items.Add(arg)
