@@ -1,31 +1,31 @@
 HELPTEXT = "\
-\n BooJs Makefile usage         					\
-\n                               					\
-\n  Options (current value)  		    			\
-\n                               					\
+\n BooJs Makefile usage                             \
+\n                                                  \
+\n  Options (current value)                         \
+\n                                                  \
 \n    MONO          ($(MONO))                       \
-\n    MSBUILD_PATH  ($(MSBUILD_PATH))   			\
-\n    MSBUILD_OPTS  ($(MSBUILD_OPTS))   			\
-\n    NUNIT_PATH    ($(NUNIT_PATH))    				\
-\n    NUNIT_OPTS    ($(NUNIT_OPTS)) 			    \
-\n                					                \
-\n  Targets                  					    \
-\n                               					\
+\n    MSBUILD_PATH  ($(MSBUILD_PATH))               \
+\n    MSBUILD_OPTS  ($(MSBUILD_OPTS))               \
+\n    NUNIT_PATH    ($(NUNIT_PATH))                 \
+\n    NUNIT_OPTS    ($(NUNIT_OPTS))                 \
+\n                                                  \
+\n  Targets                                         \
+\n                                                  \
 \n    compile        - compile the solution         \
 \n    compile-tests  - compile the tests            \
 \n    test           - run uptodate tests           \
 \n    run            - run pre compiled tests       \
 \n    docs           - build html docs              \
-\n    clean          -             					\
+\n    clean          -                              \
 \n    rebuild        - compile everything           \
-\n    help                       					\
+\n    help                                          \
 \n                                                  \
-\n  Notes                        					\
-\n                               					\
+\n  Notes                                           \
+\n                                                  \
 \n    Use FIXTURE and TEST with *test* and *run*    \
 \n    targets to launch specific tests:             \
-\n      make test FIXTURE=Ported.Boojay 		    \
-\n\n                             					\
+\n      make test FIXTURE=Ported.Boojay             \
+\n\n                                                \
 "
 
 MONO=mono --debug --runtime=v4.0
@@ -75,7 +75,7 @@ else
 	$(NUNIT_PATH) $(NUNIT_OPTS) -fixture=BooJs.Tests.$(FIXTURE)Fixtures src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests*.dll
 endif
 else
-	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests*.dll
 endif
 
 MAKE_FIXTURE = $(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo --
@@ -107,23 +107,23 @@ generate-fixtures:
 	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/devel > src/BooJs.Tests/DevelFixtures.boo
 	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/examples > src/BooJs.Tests/ExamplesFixtures.boo
 	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
-	
+    
 docs:
 	cd docs; make html; cd -
 
 bundle-ilrepack:
 	@mkdir -p build
-	$(ILREPACK_PATH) $(ILREPACK_OPTS) /out:build/$(BUNDLE_NAME).exe /internalize $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll	
+	$(ILREPACK_PATH) $(ILREPACK_OPTS) /out:build/$(BUNDLE_NAME).exe /internalize $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll    
 
 bundle-dynamic:
 	@mkdir -p build/linked
 	CC="cc -arch i386" AS="as -arch i386" \
-		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) -o build/$(BUNDLE_NAME).exe --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
+	    $(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) -o build/$(BUNDLE_NAME).exe --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe
 
 bundle-static-osx:
 	@mkdir -p build
 	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
-		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
+	    $(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) --deps -L $(BIN_PATH) $(BIN_PATH)/boojs.exe $(BIN_PATH)/*.dll
 
 bundle-linked:
 	# TODO: When linking there is a bug using the CommandLine Argument attribute
@@ -144,7 +144,7 @@ bundle-linked-static: bundle-linked
 
 bundle-linked-static-osx: bundle-linked
 	CC="cc -arch i386 -framework CoreFoundation -liconv" AS="as -arch i386" \
-		$(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
+	    $(MKBUNDLE_PATH) $(MKBUNDLE_OPTS) --static -o build/$(BUNDLE_NAME) -L build/linked build/linked/boojs.exe build/linked/*.dll
 
 upx:
 	@echo "NOTE: For best results create the static bundle with MKBUNDLE_OPTS=''"
@@ -154,29 +154,25 @@ upx:
 # Tests for Travis-CI environment
 ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
-		BooJs.Tests.Ported.ArraysFixtures, \
-		BooJs.Tests.Ported.BoojayFixtures, \
-    	BooJs.Tests.Ported.CallablesFixtures, \
+        BooJs.Tests.Ported.ArraysFixtures, \
+        BooJs.Tests.Ported.BoojayFixtures, \
+        BooJs.Tests.Ported.CallablesFixtures, \
         BooJs.Tests.Ported.ClassesFixtures, \
         BooJs.Tests.Ported.ClosuresFixtures, \
         BooJs.Tests.Ported.CompilationFixtures, \
-     	BooJs.Tests.Ported.DucktypingFixtures, \
-     	BooJs.Tests.Ported.GeneratorsFixtures, \
-     	BooJs.Tests.Ported.OperatorsFixtures, \
-     	BooJs.Tests.Ported.PrimitivesFixtures, \
-     	BooJs.Tests.Ported.StatementsFixtures, \
-     	BooJs.Tests.Ported.StdlibFixtures, \
-    " \
-    src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests.Ported.dll
-
-	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
-    	BooJs.Tests.BoojsFixtures, \
-     	BooJs.Tests.DevelFixtures, \
-     	BooJs.Tests.SaveFileTest, \
-     	BooJs.Tests.SourceMapTest, \
-     	BooJs.Tests.TypesystemFixtures \
-     " \
-     src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+        BooJs.Tests.Ported.DucktypingFixtures, \
+        BooJs.Tests.Ported.GeneratorsFixtures, \
+        BooJs.Tests.Ported.OperatorsFixtures, \
+        BooJs.Tests.Ported.PrimitivesFixtures, \
+        BooJs.Tests.Ported.StatementsFixtures, \
+        BooJs.Tests.Ported.StdlibFixtures, \
+        BooJs.Tests.BoojsFixtures, \
+        BooJs.Tests.DevelFixtures, \
+        BooJs.Tests.SaveFileTest, \
+        BooJs.Tests.SourceMapTest, \
+        BooJs.Tests.TypesystemFixtures \
+	" \
+	src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests*.dll
 
 clean:
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) /target:clean src/boojs.sln
