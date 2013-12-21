@@ -82,7 +82,13 @@ Transforms a Boo AST into a Mozilla AST
         Return Moz.Literal(loc: loc(node), value: node.Value, regexp: true)
 
     def OnSelfLiteralExpression(node as SelfLiteralExpression):
-        Return Moz.ThisExpression(loc: loc(node))
+    """ If it's inside a constructor we keep the `self` identifier since they
+        act as a factory. Otherwise we create a `this` keyword
+    """
+        if node.GetAncestor[of Constructor]():
+            Return Moz.Identifier(loc: loc(node), 'self')
+        else:
+            Return Moz.ThisExpression(loc: loc(node))
 
     def OnListLiteralExpression(node as ListLiteralExpression):
         n = Moz.ArrayExpression(loc: loc(node))
@@ -111,13 +117,21 @@ Transforms a Boo AST into a Mozilla AST
             )
 
         # Assign the object to a variable
+        Return CreateVar(node, node.Name, o)
+
+    protected def CreateVar(node as Node, name as string, value as Moz.IExpression):
         v = Moz.VariableDeclarator(loc: loc(node))
-        v.id = Moz.Identifier(loc: loc(node), name: node.FullName)
-        v.init = o
+        v.id = Moz.Identifier(loc: loc(node), name)
+        v.init = value
         n = Moz.VariableDeclaration(loc: loc(node), kind: 'var')
         n.declarations.Add(v)
+        return n
 
-        Return n
+    protected def CreateAssign(loc as Moz.SourceLocation, ident as string, value as Moz.IExpression):
+        a = Moz.AssignmentExpression(loc: loc, operator:'=')
+        a.left = Moz.Identifier(loc: loc, name: ident)
+        a.right = value
+        return a
 
     def OnModule(node as Module):
         n = Moz.Program(loc: loc(node))
@@ -226,122 +240,184 @@ Transforms a Boo AST into a Mozilla AST
 
         # TODO: Handle visibility (internals should not be exposed)
 
-        # Bar = (function (__super__) {
+        # Bar = (function (_super_) {
         #     // Constructor
-        #     function Bar() {
-        #         // Allow the intantiation without using the `new` operator (TODO: do we really want this?)
-        #         if (!(this instanceof Bar)) { 
-        #             return new (Function.prototype.bind.apply(Bar, [this].concat(Array.prototype.slice.call(arguments)) )); 
-        #         }
+        #     function Bar(_init_) {
+        #         // Call constructor (for calls from JS or duck code)
+        #         // TODO: Use `this instanceof Bar` test instead?
+        #         if (_init_ !== Boo.INIT)
+        #             return Boo.overload(arguments, [ [], ['string', 'int'] ], [Foo.ctor$0, Foo.ctor$1]);
         #
-        #         // Initialize fields (TODO: can this be moved to the prototype? at least the non private ones)
+        #         // Initialize fields (TODO: can this be moved to the prototype?)
         #         this.field = '';
         #
-        #         // Bind instance methods (TODO: Support annotation to avoid binding)
+        #         // Bind public instance methods (NOTE: also inherited) (TODO: Support annotation to avoid binding)
         #         this.foo = Boo.bind(this.foo, this);
-        #
-        #         // Constructor code (TODO: how to handle overloads?)
-        #         // ...
         #     }
         #
-        #     // Setup inheritance
-        #     Bar.prototype = Boo.create(__super__.prototype);
+        #     // Inherit "static" members
+        #     Boo.extend(Bar, _super_);
+        #
+        #     // Static constructor factories (called from typed code)
+        #     Bar.ctor$0 = function Bar$ctor$0() {
+        #         var self = this instanceof Foo ? this : new Foo(Boo.INIT);
+        #         // Call parent constructor
+        #         _super_.call(self);
+        #         // Call constructor overload
+        #         Bar.ctor$1.call(self, 'foo')
+        #         // constructor logic
+        #         ...
+        #         return self;
+        #     }
+        #
+        #     // Static members
+        #     Bar.bars = function Bar$$bars() {};
+        #
+        #     // Setup inheritance (TODO: move this into Boo.extend?)
+        #     Bar.prototype = Boo.create(_super_.prototype);
         #     Bar.prototype.constructor = Bar;
         #
         #     // Reflect metadata
         #     Bar.prototype.$boo$interfaces = [IEnumerator];
+        #     Bar.prototype.$boo$super = _super_
         #
+        #     // Alias static members to instance (for JavaScript access)
+        #     // TODO: Shall we differ from Boo an only allow static access on type?
+        #     Bar.prototype.bars = Bar.bars;
+        #     
         #     // Instance members
         #     Bar.prototype.foo = function Bar$foo() {
-        #         __super__.prototype.foo.call(this);
+        #         // Call parent method
+        #         _super_.prototype.foo.call(this);
         #     };
         #
-        #
-        #     // Inherit "static" properties (TODO: Is this actually needed?)
-        #     for (var prop in __super__) {
-        #         if (__super__.hasOwnProperty(prop)) {
-        #             Bar[prop] = __super__[prop];
-        #         }
-        #     }
-        #
-        #     // Static members
-        #     Bar.bars = function Bar$bars() {};
-        #
-        #     // Static constructor
-        #     // ...
+        #     // Static constructor logic (in .Net this only runs when the type is first accessed)
+        #     ...
         #
         #     return Bar;
         # })(Foo);
 
+        # TODO: Support constructor overloading
+        constructors = [c for c in node.Members if c.NodeType == NodeType.Constructor]
+        if len(constructors) > 1:
+            raise "Constructor overloading not supported yet"
+
         block = Moz.BlockStatement()
 
         # Constructor
-        # js: function Bar() {}
+        # js: function Bar(_init_) {}
         cons = Moz.FunctionDeclaration(loc: loc(node))
+        cons.params = List[of Moz.IPattern]() { Moz.Identifier('_init_') }
         cons.body = Moz.BlockStatement()
         cons.id = Moz.Identifier(node.Name)
-        block.body.Add(cons)
+        block.Add(cons)
+
+        # Call constructor factory
+        # js: if (_init_ !== Boo.INIT) return Boo.overload(arguments, [ ... ], [ cons$0, cons$1 ])
+        ifst = Moz.IfStatement(loc: loc(node))
+        ifst.test = Moz.BinaryExpression(
+            operator: '!==',
+            left: Moz.Identifier('_init_'),
+            right: Moz.Identifier('Boo.INIT')
+        )
+        # TODO: Build a proper overload call
+        ifst.consequent = Moz.ReturnStatement(
+            argument: Moz.CallExpression(
+                callee: Moz.Identifier(node.Name + '.constructor.apply'),
+                arguments: List[of Moz.IExpression]() {
+                    Moz.Literal(value: null),
+                    Moz.Identifier('arguments')
+                }
+            )
+            # argument: Moz.CallExpression(
+            #     callee: Moz.Identifier('Boo.overload'),
+            #     arguments: List[of Moz.IExpression]() {
+            #         Moz.Identifier('arguments'),
+            #         Moz.Literal(value: []),
+            #         Moz.Literal(value: [])
+            #     }
+            # )
+        )
+        cons.body.Add(ifst)
+
+        # Bind instance methods
+        # js: this.foo = Boo.bind(this.foo, this);
+        for m in node.Members:
+            continue unless m.NodeType == NodeType.Method and not m.IsStatic
+            assign = CreateAssign(loc(m), "this.$(m.Name)", Moz.CallExpression(
+                Moz.Identifier('Boo.bind'),
+                Moz.MemberExpression(
+                    object: Moz.ThisExpression(),
+                    property: Moz.Identifier(m.Name)
+                ),
+                Moz.ThisExpression()
+            ))
+            cons.body.Add(assign)
+
+        # Events
+        # TODO: Do it properly (ie: static events?)
+        for e as Event in [m for m in node.Members if m.NodeType == NodeType.Event]:
+            assign = CreateAssign(loc(e), "this.$(e.Name)", null)
+            assign.right = Moz.CallExpression(callee: Moz.Identifier('Boo.event'))
+            cons.body.Add(assign)
 
         # Initialize fields
         # TODO: Shouldn't fields with primitive initializers be moved to the prototype?
         # TODO: Boo already moves field initialization to the constructors
         for f as Field in [m for m in node.Members if m.NodeType == NodeType.Field]:
-            assign = Moz.AssignmentExpression(operator:'=')
-            assign.left = Moz.Identifier(loc:loc(f), name:'this.' + f.Name)
-            assign.right = Apply(f.Initializer)
-            # TODO: Disabled until the basics are working
-            #cons.body.body.Add(Moz.ExpressionStatement(assign))
+            # TODO: Define fields without initializers too
+            if f.Initializer:
+                assign = CreateAssign(loc(f), "this.$(f.Name)", Apply(f.Initializer))
+                cons.body.Add(assign)
 
-        # Events
-        # TODO: Do it properly (ie: static events?)
-        for e as Event in [m for m in node.Members if m.NodeType == NodeType.Event]:
-            assign = Moz.AssignmentExpression(operator:'=')
-            assign.left = Moz.Identifier(loc: loc(e), name: 'this.' + e.Name)
-            assign.right = Moz.CallExpression(callee: Moz.Identifier('Boo.event'))
-            cons.body.body.Add(Moz.ExpressionStatement(assign))
+        # Inherit "static" members from the parent type
+        # js: Boo.extend(Bar, _super_)
+        block.Add(Moz.CallExpression(
+            Moz.Identifier('Boo.extend'),
+            Moz.Identifier(node.Name),
+            Moz.Identifier('_super_')
+        ))
 
-        # Handle constructors
+        # Include constructor factories as private scoped functions
         members = [m for m in node.Members if m.NodeType == NodeType.Constructor]
         for c as Constructor in members:
             continue if not c
-            # TODO: Disabled until the basics are working
-            #cons.body.body.Add(Apply(c))
 
-        # Static members
-        # js: Bar.sbar = function Bar_sbar (arg) { }
-        members = [m for m in node.Members if m.NodeType == NodeType.Method and m.IsStatic]
-        for method as Method in members:
-            assign = Moz.AssignmentExpression(operator:'=')
-            assign.left = Moz.Identifier(name:node.Name + '.' + method.Name)
-            fn = Apply(method) as Moz.FunctionDeclaration
+            assign = CreateAssign(loc(node), "$(node.Name).$(c.Name)", null)
+            fn = Apply(c) as Moz.FunctionDeclaration
             assign.right = Moz.FunctionExpression(
                 loc: fn.loc,
-                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '_')),
+                id: Moz.Identifier(node.FullName.Replace('.', '$') + '$$' + c.Name),
                 params: fn.params,
                 body: fn.body
             )
-            block.body.Add(Moz.ExpressionStatement(assign))
+            block.Add(assign)
+
+        # Static members
+        # js: Bar.sbar = function Bar$$sbar (arg) { }
+        # TODO: Handle static fields too!
+        for m in node.Members:
+            continue unless m.NodeType == NodeType.Method and m.IsStatic
+            assign = CreateAssign(loc(m), "$(node.Name).$(m.Name)", null)
+            fn = Apply(m) as Moz.FunctionDeclaration
+            assign.right = Moz.FunctionExpression(
+                loc: fn.loc,
+                id: Moz.Identifier(node.FullName.Replace('.', '$') + '$$' + m.Name),
+                params: fn.params,
+                body: fn.body
+            )
+            block.Add(assign)
 
         # Setup inheritance
-        # js: Bar.prototype = Boo.create(__super__.prototype)
-        assign = Moz.AssignmentExpression(operator:'=')
-        assign.left = Moz.Identifier(name:node.Name + '.prototype')
-        assign.right = Moz.CallExpression()
-        (assign.right as Moz.CallExpression).callee = Moz.Identifier('Boo.create')
-        (assign.right as Moz.CallExpression).arguments.Add(
-            Moz.Identifier('__super__.prototype')
-            # Moz.Identifier(
-            #     ('Object' if typeSystem().IsSystemObject(node.BaseTypes.First.Entity) 
-            #         else node.BaseTypes.First.Entity.FullName) + '.prototype'
-            # )
-        )
-        block.body.Add(Moz.ExpressionStatement(assign))
-
+        # js: Bar.prototype = Boo.create(_super_.prototype)
+        assign = CreateAssign(loc(node), "$(node.Name).prototype", Moz.CallExpression(
+            Moz.Identifier('Boo.create'),
+            Moz.Identifier('_super_.prototype')
+        ))
+        block.Add(assign)
         # js: Bar.prototype.constructor = Bar
-        assign = Moz.AssignmentExpression(operator:'=')
-        assign.left = Moz.Identifier(name:node.Name + '.prototype.constructor')
-        assign.right = Moz.Identifier(name:node.Name)
-        block.body.Add(Moz.ExpressionStatement(assign))
+        assign = CreateAssign(loc(node), "$(node.Name).prototype.constructor", Moz.Identifier(node.Name))
+        block.Add(assign)
 
         # Metadata
         # js: Bar.prototype.$boo$interfaces = [ IEnumerable ]
@@ -352,34 +428,45 @@ Transforms a Boo AST into a Mozilla AST
             interfaces.elements.Add(
                 Moz.Identifier(t.Entity.FullName)
             )
-        assign = Moz.AssignmentExpression(operator:'=')
-        assign.left = Moz.Identifier(name:node.Name + '.prototype.$boo$interfaces')
-        assign.right = interfaces
-        block.body.Add(Moz.ExpressionStatement(assign))
+        assign = CreateAssign(loc(node), node.Name + '.prototype.$boo$interfaces', interfaces)
+        block.Add(assign)
+        # js: Bar.prototype.$boo$super = _super_
+        assign = CreateAssign(loc(node), node.Name + '.prototype.$boo$super', Moz.Identifier('_super_'))
+        block.Add(assign)
+
+        # Alias static members to instance (for JavaScript access)
+        # js: Bar.prototype.bars = Bar.bars;
+        # TODO: Shall we differ from Boo an only allow static access on type?
+        for m in node.Members:
+            continue unless m.NodeType == NodeType.Method and m.IsStatic
+            assign = CreateAssign(loc(m), node.Name + '.prototype.' + m.Name, Moz.Identifier(node.Name + '.' + m.Name))
+            block.Add(assign)
 
         # Instance members
         # js: Bar.prototype.bar = function Bar$bar (arg) { }
         members = [m for m in node.Members if m.NodeType == NodeType.Method and not m.IsStatic]
         for method as Method in members:
-            assign = Moz.AssignmentExpression(operator:'=')
-            assign.left = Moz.Identifier(name:node.Name + '.prototype.' + method.Name)
+            assign = CreateAssign(loc(node), node.Name + '.prototype.' + method.Name, null)
             fn = Apply(method) as Moz.FunctionDeclaration
             assign.right = Moz.FunctionExpression(
                 loc: fn.loc,
-                id: Moz.Identifier((node.Name + '.' + fn.id.name).Replace('.', '$')),
+                id: Moz.Identifier(node.FullName.Replace('.', '$') + '$' + fn.id.name),
                 params: fn.params,
                 body: fn.body
             )
-            block.body.Add(Moz.ExpressionStatement(assign))
+            block.Add(assign)
+
+        # TODO: Include static constructor logic to run when creating the type
+
 
         # Wrap everything in a self calling function and assign to a variable
-        # js: Bar = (function(__super__){ ... return Bar; })(Object)
+        # js: Bar = (function(_super_){ ... return Bar; })(Object)
         block.body.Add(
             Moz.ReturnStatement(argument: Moz.Identifier(node.Name))
         )
 
         func = Moz.FunctionExpression(body:block)
-        func.params = List of Moz.IPattern() { Moz.Identifier('__super__') }
+        func.params = List of Moz.IPattern() { Moz.Identifier('_super_') }
         call = Moz.CallExpression(callee:func)
         call.arguments.Add(
             Moz.Identifier(
@@ -387,29 +474,48 @@ Transforms a Boo AST into a Mozilla AST
                     else node.BaseTypes.First.Entity.FullName)
             )
         )
-        decl = Moz.VariableDeclarator(loc:loc(node))
-        decl.id = Moz.Identifier(node.Name)
-        # decl.init = Moz.CallExpression(callee: Moz.FunctionExpression(body:block))
-        decl.init = call
-        decl_st = Moz.VariableDeclaration(loc:loc(node), kind:'var')
-        decl_st.declarations.Add(decl)
 
-        Return decl_st
+        Return CreateVar(node, node.Name, call)
 
     def OnField(node as Field):
         pass
 
     def OnConstructor(node as Constructor):
-        OnMethod(node)
-        return
+        n = Moz.FunctionDeclaration(loc: loc(node))
+        n.id = Moz.Identifier(loc: loc(node), name: node.FullName.Replace('.', '$'))
+        for param in node.Parameters:
+            p = Moz.Identifier(loc: loc(param), name: param.Name)
+            n.params.Add(p)
 
-        ifst = Moz.IfStatement()
-        # TODO: Apply test based on arguments and constructor parameters
-        ifst.test = Moz.Identifier(name:'true')
+        n.body = Apply(node.Body)
 
-        ifst.consequent = Apply(node.Body)
+        // js: var self = this instanceof Foo ? this : new Foo(Boo.INIT);
+        n.body.body.Insert(0, CreateVar(
+            node,
+            'self',
+            Moz.ConditionalExpression(
+                test: Moz.BinaryExpression(
+                    operator: 'instanceof',
+                    left: Moz.ThisExpression(),
+                    right: Moz.Identifier(node.DeclaringType.Name)
+                ),
+                consequent: Moz.ThisExpression(),
+                alternate: Moz.NewExpression(
+                    _constructor: Moz.Identifier(node.DeclaringType.Name),
+                    arguments: List[of Moz.IExpression]() {
+                        Moz.Identifier('Boo.INIT')
+                    }
+                )
+            )
+        ))
+        // js: return self
+        n.body.Add(
+            Moz.ReturnStatement(
+                argument: Moz.Identifier('self')
+            )
+        )
 
-        Return ifst
+        Return n
 
     def OnMethod(node as Method):
         n = Moz.FunctionDeclaration(loc: loc(node))
@@ -423,13 +529,7 @@ Transforms a Boo AST into a Mozilla AST
 
     def OnDeclarationStatement(node as DeclarationStatement):
         # TODO: Generate type annotated comments
-        v = Moz.VariableDeclarator(loc: loc(node))
-        v.id = Moz.Identifier(name: node.Declaration.Name)
-        v.init = Apply(node.Initializer)
-
-        vd = Moz.VariableDeclaration(loc: loc(node), kind: 'var')
-        vd.declarations.Add(v)
-        Return vd
+        Return CreateVar(node, node.Declaration.Name, Apply(node.Initializer))
 
     def OnBlock(node as Block):
         b = Moz.BlockStatement(loc: loc(node))
@@ -447,7 +547,13 @@ Transforms a Boo AST into a Mozilla AST
 
     def OnReturnStatement(node as ReturnStatement):
         n = Moz.ReturnStatement(loc: loc(node))
-        n.argument = Apply(node.Expression)
+
+        # Inside constructors always return `self`
+        if node.GetAncestor[of Constructor]():
+            n.argument = Moz.Identifier('self')
+        else:
+            n.argument = Apply(node.Expression)
+
         Return n
 
     def OnIfStatement(node as IfStatement):
@@ -481,11 +587,7 @@ Transforms a Boo AST into a Mozilla AST
         index = Moz.Identifier(node.Declarations[0].Name)
 
         fst = Moz.ForStatement(loc: loc(node))
-        fst.init = Moz.AssignmentExpression(
-            left: index,
-            operator: '=',
-            right: start
-        )
+        fst.init = CreateAssign(loc(node), index.name, start)
         fst.test = Moz.BinaryExpression(
             left: index,
             operator: '<',
@@ -508,8 +610,6 @@ Transforms a Boo AST into a Mozilla AST
         Return wst
 
     def OnTryStatement(node as TryStatement):
-
-
         n = Moz.TryStatement(loc: loc(node))
         n.block = Apply(node.ProtectedBlock)
 
@@ -638,9 +738,8 @@ Transforms a Boo AST into a Mozilla AST
         else:
             raise 'Macro statements should have been already resolved'
 
-
     def OnSuperLiteralExpression(node as SuperLiteralExpression):
-        n = Moz.Identifier('__super__')
+        n = Moz.Identifier('_super_')
         Return n
 
     def OnMethodInvocationExpression(node as MethodInvocationExpression):
@@ -649,11 +748,20 @@ Transforms a Boo AST into a Mozilla AST
         if node.ContainsAnnotation('constructor') or \
            node.Target.Entity and node.Target.Entity.EntityType == EntityType.Constructor and not isFactory(node.Target):
            #node.Target.Entity isa IConstructor and not isFactory(node.Target):
+            # TODO: Check if we know for sure there is a constructor factory
             c = Moz.NewExpression(loc: loc(node))
             c._constructor = Apply(node.Target)
             for arg in node.Arguments:
                 c.arguments.Add(Apply(arg))
             Return c
+            # ce = Moz.CallExpression(loc: loc(node))
+            # ce.callee = Moz.MemberExpression(
+            #     object: Apply(node.Target),
+            #     property: Moz.Identifier('constructor')
+            # )
+            # for arg in node.Arguments:
+            #     ce.arguments.Add(Apply(arg))
+            # Return ce
         # Detect sequences
         elif node.Target.ToString() == '@':
             s = Moz.SequenceExpression(loc: loc(node))
@@ -664,7 +772,7 @@ Transforms a Boo AST into a Mozilla AST
         elif node.Target.NodeType == NodeType.SuperLiteralExpression:
             method = node.GetAncestor[of Method]()
             n = Moz.CallExpression(loc: loc(node))
-            n.callee = Moz.Identifier('__super__.prototype.' + method.Name + '.call')
+            n.callee = Moz.Identifier('_super_.prototype.' + method.Name + '.call')
             n.arguments.Add(Moz.ThisExpression())
             for arg in node.Arguments:
                 n.arguments.Add(Apply(arg))
@@ -763,7 +871,6 @@ Transforms a Boo AST into a Mozilla AST
                 n = Moz.LogicalExpression(loc: loc(node), operator: '&&')
             case BinaryOperatorType.Or:
                 n = Moz.LogicalExpression(loc: loc(node), operator: '||')
-
 
             otherwise:
                 raise 'Operator not supported ' + node.Operator

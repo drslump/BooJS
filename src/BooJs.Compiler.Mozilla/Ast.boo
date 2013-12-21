@@ -120,6 +120,12 @@ class BlockStatement(Node, IStatement):
 """ A block statement, i.e., a sequence of statements surrounded by braces. """
     public body = List[of IStatement]()
 
+    def Add(expr as IExpression):
+        Add(ExpressionStatement(expr))
+
+    def Add(stmt as IStatement):
+        body.Add(stmt)
+
 
 class ExpressionStatement(Node, IStatement):
 """ An expression statement, i.e., a statement consisting of a single expression. """
@@ -360,6 +366,14 @@ class CallExpression(Node, IExpression):
 """ A function or method call expression. """
     public callee as IExpression
     public arguments = List[of IExpression]()
+
+    def constructor():
+        pass
+
+    def constructor(callee as IExpression, *args as (IExpression)):
+        self.callee = callee
+        for arg in args:
+            self.arguments.Add(arg)
 
 
 class MemberExpression(Node, IExpression):

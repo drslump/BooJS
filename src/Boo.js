@@ -31,7 +31,7 @@
     };
 
     // Tells the type of a variable according to the following rules:
-    //  - Undefineds and Nulls are coerced to null
+    //  - Undefined and Null are coerced to null
     //  - Non primitive objects are reported as Object (except for Array, Date and RegExp)
     function typeOf(v) {
         var t = typeof(v);
@@ -59,7 +59,9 @@
         // Used in loops to flag branching
         LOOP_OR: 1,
         LOOP_THEN: 2,
-        // Used as an unique identifier when we want to stop iterating a generator
+        // Used as unique identifier to signal constructors
+        INIT: {},
+        // Used as unique identifier when we want to stop iterating a generator
         STOP: typeof StopIteration !== 'undefined' ? StopIteration : {name: 'StopIteration'}
     };
 
@@ -75,7 +77,7 @@
     // Cast error
     function CastError(from, to) {
         this.name = 'CastError';
-        this.message = "Cannot cast '" + from + "' to '" + to + "'";
+        this.message = "Cannot cast <" + from + "> to <" + to + ">";
     }
     CastError.prototype = new Error();
     CastError.prototype.constructor = CastError;
@@ -183,9 +185,9 @@
     Boo.sourcemap = function (srcmap) {
     };
 
-    // Note: We don't use the native forEach method since this we need custom
-    //       tailored logic four our generated code. Basically we need to handle
-    //       unpacking and iteration stoppage.
+    // Note: We don't use the native forEach method since we need custom tailored
+    //       logic four our generated code. Basically we need to handle unpacking
+    //       and iteration stoppage.
     function boo_each(obj, iterator, context) {
         if (obj === null || typeof obj === 'undefined') return;
         if (typeof obj === 'string') obj = obj.split('');
@@ -229,8 +231,8 @@
     Boo.each = boo_each;
 
     // Generator factory. Given a method to obtain a next element will wrap it into a 
-    // generator like object. The method must accept two params, a sent value and an sent
-    // error from the outside.
+    // generator like object. The method must accept two arguments, a sent value and
+    // a sent error from the outside.
     Boo.generator = function (closure) {
         // Wrap array/object into a generator function
         if (typeof closure === 'object') {
@@ -597,7 +599,11 @@
 
     // Casts a value to the given type, resulting in a null if it's not possible
     function boo_trycast(value, type) {
-        return boo_isa(value, type) ? value : null;
+        try {
+            return boo_cast(value, type);
+        } catch (e) {
+            return null;
+        }
     }
     Boo.trycast = boo_trycast;
 
@@ -823,9 +829,16 @@
             return funcs[best_idx].apply(this, args);
         }
 
-        throw new Error('Overloads based on parameter types are not supported yet');
+        throw new Error('Overloads based on parameter types are not fully supported yet');
     };
 
+    // Extends a constructor with the static members of another
+    Boo.extend = function (type, parent) {
+        for (var k in parent) if (_hop.call(parent, k)) {
+            type[k] = parent[k];
+        }
+        return type;
+    }
 
     ///////// Shims ////////////////////////////////////////////////////////
 

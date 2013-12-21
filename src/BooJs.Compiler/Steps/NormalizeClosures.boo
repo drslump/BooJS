@@ -52,6 +52,8 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
             name = name.Split(char('.'))[0]
             name = name.Split(char('['))[0]
 
+            return if name == 'self'
+                
             # Check if the variable already exists in one of the enclosing scopes
             exists = false
             for n in _nodes:

@@ -11,10 +11,16 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
         spades: 3
     };
 
-    function Character(name) {
-        this.Name = null;
-        this.set_Name(name);
+    function Character(_init_) {
+        if (_init_ !== Boo.INIT)
+            return Character.constructor.apply(null, arguments);
     }
+    Character.constructor = function BooJs$Tests$Support$Character$$constructor (name) {
+        var self = this instanceof Character ? this : new Character(Boo.INIT);
+        self.Name = null;
+        self.set_Name(name);
+        return self;
+    };
     Character.prototype = Boo.create(Object.prototype);
     Character.prototype.constructor = Character;
     Character.prototype.$boo$interfaces = [];
