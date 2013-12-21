@@ -24,7 +24,7 @@ HELPTEXT = "\
 \n                               					\
 \n    Use FIXTURE and TEST with *test* and *run*    \
 \n    targets to launch specific tests:             \
-\n      make test FIXTURE=Boojay 		            \
+\n      make test FIXTURE=Ported.Boojay 		    \
 \n\n                             					\
 "
 
@@ -70,9 +70,9 @@ test: compile-tests run
 run:
 ifdef FIXTURE
 ifdef TEST
-	$(NUNIT_PATH) $(NUNIT_OPTS) -run=BooJs.Tests.$(FIXTURE)Fixtures.$(TEST) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+	$(NUNIT_PATH) $(NUNIT_OPTS) -run=BooJs.Tests.$(FIXTURE)Fixtures.$(TEST) src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests*.dll
 else
-	$(NUNIT_PATH) $(NUNIT_OPTS) -fixture=BooJs.Tests.$(FIXTURE)Fixtures src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+	$(NUNIT_PATH) $(NUNIT_OPTS) -fixture=BooJs.Tests.$(FIXTURE)Fixtures src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests*.dll
 endif
 else
 	$(NUNIT_PATH) $(NUNIT_OPTS) src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
