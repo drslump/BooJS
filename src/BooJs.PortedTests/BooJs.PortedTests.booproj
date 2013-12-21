@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{EF0D7427-0168-48BF-A021-0956B9D1C22A}</ProjectGuid>
+    <ProjectGuid>{EF0D7427-0168-48BF-A021-0956B9D1C22B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>BooJs.Tests</RootNamespace>
     <AssemblyName>BooJs.Tests</AssemblyName>
@@ -53,6 +53,9 @@
     <Reference Include="Boo.Lang.PatternMatching">
       <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
     </Reference>
+    <Reference Include="Boo.Lang.Interpreter">
+      <HintPath>..\..\lib\Boo.Lang.Interpreter.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <Private>False</Private>
     </Reference>
@@ -80,19 +83,27 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SourceMap.boo" />
-    <Compile Include="DevelFixtures.boo" />
-    <Compile Include="TypeSystemFixtures.boo" />
-    <Compile Include="ExamplesFixtures.boo" />
-    <Compile Include="Support\Support.boo" />
-    <Compile Include="SaveFile.boo" />
-    <Compile Include="ClassesFixtures.boo" />
-    <Compile Include="BoojsFixtures.boo" />
-    <Compile Include="Support\FixtureRunner.boo" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Support\" />
-    <Folder Include="resources\" />
+    <Compile Include="OperatorsFixtures.boo" />
+    <Compile Include="StatementsFixtures.boo" />
+    <Compile Include="PrimitivesFixtures.boo" />
+    <Compile Include="CompilationFixtures.boo" />
+    <Compile Include="ClosuresFixtures.boo" />
+    <Compile Include="DuckTypingFixtures.boo" />
+    <Compile Include="StdlibFixtures.boo" />
+    <Compile Include="BoojayFixtures.boo" />
+    <Compile Include="CallablesFixtures.boo" />
+    <Compile Include="GeneratorsFixtures.boo" />
+    <Compile Include="ArraysFixtures.boo" />
+    <Compile Include="ParserFixtures.boo" />
+    <Compile Include="ParserRoundtripFixtures.boo" />
+    <Compile Include="AttributesFixtures.boo" />
+    <Compile Include="DuckyFixtures.boo" />
+    <Compile Include="ExtensionsFixtures.boo" />
+    <Compile Include="GenericsFixtures.boo" />
+    <Compile Include="MetaProgrammingFixtures.boo" />
+    <Compile Include="ModulesFixtures.boo" />
+    <Compile Include="SemanticsFixtures.boo" />
+    <Compile Include="TypesFixtures.boo" />
   </ItemGroup>
   <Import Project="$(BooToolPath)\Boo.Microsoft.Build.targets" />
   <ItemGroup>

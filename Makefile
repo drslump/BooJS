@@ -80,32 +80,33 @@ endif
 
 MAKE_FIXTURE = $(MONO) lib/booi.exe scripts/generate-fixture-testcases.boo --
 generate-fixtures:
-	$(MAKE_FIXTURE) tests/fixtures/arrays > src/BooJs.Tests/ArraysFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/boojay > src/BooJs.Tests/BoojayFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/callables > src/BooJs.Tests/CallablesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/classes > src/BooJs.Tests/ClassesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/closures > src/BooJs.Tests/ClosuresFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/compilation > src/BooJs.Tests/CompilationFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/devel > src/BooJs.Tests/DevelFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/duck-typing > src/BooJs.Tests/DuckTypingFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/examples > src/BooJs.Tests/ExamplesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/generators > src/BooJs.Tests/GeneratorsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/operators > src/BooJs.Tests/OperatorsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/primitives > src/BooJs.Tests/PrimitivesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/statements > src/BooJs.Tests/StatementsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/stdlib > src/BooJs.Tests/StdlibFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/parser > src/BooJs.Tests/ParserFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/parser-roundtrip > src/BooJs.Tests/ParserRoundtripFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/semantics > src/BooJs.Tests/SemanticsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/types > src/BooJs.Tests/TypesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/modules > src/BooJs.Tests/ModulesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/meta-programming > src/BooJs.Tests/MetaProgrammingFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/extensions > src/BooJs.Tests/ExtensionsFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/attributes > src/BooJs.Tests/AttributesFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/ducky > src/BooJs.Tests/DuckyFixtures.boo
-	$(MAKE_FIXTURE) tests/fixtures/generics > src/BooJs.Tests/GenericsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/arrays > src/BooJs.Tests.Ported/ArraysFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/attributes > src/BooJs.Tests.Ported/AttributesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/boojay > src/BooJs.Tests.Ported/BoojayFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/callables > src/BooJs.Tests.Ported/CallablesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/closures > src/BooJs.Tests.Ported/ClosuresFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/compilation > src/BooJs.Tests.Ported/CompilationFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/ducky > src/BooJs.Tests.Ported/DuckyFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/duck-typing > src/BooJs.Tests.Ported/DuckTypingFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/extensions > src/BooJs.Tests.Ported/ExtensionsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/generators > src/BooJs.Tests.Ported/GeneratorsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/generics > src/BooJs.Tests.Ported/GenericsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/meta-programming > src/BooJs.Tests.Ported/MetaProgrammingFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/modules > src/BooJs.Tests.Ported/ModulesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/operators > src/BooJs.Tests.Ported/OperatorsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/parser > src/BooJs.Tests.Ported/ParserFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/parser-roundtrip > src/BooJs.Tests.Ported/ParserRoundtripFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/primitives > src/BooJs.Tests.Ported/PrimitivesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/statements > src/BooJs.Tests.Ported/StatementsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/stdlib > src/BooJs.Tests.Ported/StdlibFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/semantics > src/BooJs.Tests.Ported/SemanticsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests.Ported tests/fixtures/types > src/BooJs.Tests.Ported/TypesFixtures.boo
+
+	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/boojs > src/BooJs.Tests/BoojsFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/classes > src/BooJs.Tests/ClassesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/devel > src/BooJs.Tests/DevelFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/examples > src/BooJs.Tests/ExamplesFixtures.boo
+	$(MAKE_FIXTURE) BooJs.Tests tests/fixtures/typesystem > src/BooJs.Tests/TypesystemFixtures.boo
 	
 docs:
 	cd docs; make html; cd -
@@ -153,25 +154,29 @@ upx:
 # Tests for Travis-CI environment
 ci-tests:
 	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
-		BooJs.Tests.ArraysFixtures, \
-		BooJs.Tests.BoojayFixtures, \
+		BooJs.Tests.Ported.ArraysFixtures, \
+		BooJs.Tests.Ported.BoojayFixtures, \
+    	BooJs.Tests.Ported.CallablesFixtures, \
+        BooJs.Tests.Ported.ClassesFixtures, \
+        BooJs.Tests.Ported.ClosuresFixtures, \
+        BooJs.Tests.Ported.CompilationFixtures, \
+     	BooJs.Tests.Ported.DucktypingFixtures, \
+     	BooJs.Tests.Ported.GeneratorsFixtures, \
+     	BooJs.Tests.Ported.OperatorsFixtures, \
+     	BooJs.Tests.Ported.PrimitivesFixtures, \
+     	BooJs.Tests.Ported.StatementsFixtures, \
+     	BooJs.Tests.Ported.StdlibFixtures, \
+    " \
+    src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests.Ported.dll
+
+	@$(NUNIT_PATH) $(NUNIT_OPTS) -nodots -run=" \
     	BooJs.Tests.BoojsFixtures, \
-    	BooJs.Tests.CallablesFixtures, \
-        BooJs.Tests.ClassesFixtures, \
-        BooJs.Tests.ClosuresFixtures, \
-        BooJs.Tests.CompilationFixtures, \
      	BooJs.Tests.DevelFixtures, \
-     	BooJs.Tests.DucktypingFixtures, \
-     	BooJs.Tests.GeneratorsFixtures, \
-     	BooJs.Tests.OperatorsFixtures, \
-     	BooJs.Tests.PrimitivesFixtures, \
      	BooJs.Tests.SaveFileTest, \
-     	BooJs.Tests.StatementsFixtures, \
-     	BooJs.Tests.StdlibFixtures, \
      	BooJs.Tests.SourceMapTest, \
      	BooJs.Tests.TypesystemFixtures \
-    " \
-    src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
+     " \
+     src/BooJs.Tests/bin/Debug/BooJs.Tests.dll
 
 clean:
 	$(MSBUILD_PATH) $(MSBUILD_OPTS) /target:clean src/boojs.sln

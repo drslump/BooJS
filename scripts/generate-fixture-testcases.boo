@@ -10,10 +10,11 @@ def IntegrationTestFixtureName(dir as string):
 
 
 if not len(argv):
-  print "Usage: booi script.boo -- path/to/fixtures/directory"
+  print "Usage: booi script.boo -- ns path/to/fixtures/directory"
   return
 
-path = argv[0]
+ns = argv[0]
+path = argv[1]
 
 name = Path.GetFileNameWithoutExtension(path)
 name = name[:1].ToUpper() + name[1:]
@@ -23,7 +24,7 @@ print '"""'
 print "  Automatically generated!"
 print "  Fixture test cases from $path"
 print '"""'
-print 'namespace BooJs.Tests'
+print 'namespace ' + ns
 print ''
 print 'import BooJs.Tests.Support'
 print 'import NUnit.Framework'

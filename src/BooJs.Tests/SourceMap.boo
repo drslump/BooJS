@@ -1,7 +1,5 @@
 namespace BooJs.Tests
 
-import BooJs.Tests.Support
-
 import NUnit.Framework
 
 import BooJs.Compiler.SourceMap

@@ -17,7 +17,8 @@
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
@@ -26,7 +27,8 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
@@ -41,7 +43,7 @@
     <Compile Include="ReflectionProvider.boo" />
     <Compile Include="RuntimeMethodCache.boo" />
     <Compile Include="TypeSystemServices.boo" />
-    <Compile Include="InvocationTypeInferenceRules.boo" />    
+    <Compile Include="InvocationTypeInferenceRules.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">

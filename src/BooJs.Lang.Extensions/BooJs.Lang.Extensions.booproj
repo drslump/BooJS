@@ -16,7 +16,8 @@
     <DebugType>full</DebugType>
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>
@@ -26,7 +27,8 @@
     <DebugType>none</DebugType>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <culture />
+    <culture>
+    </culture>
     <nostdlib>false</nostdlib>
     <ConsolePause>False</ConsolePause>
     <genwarnings>False</genwarnings>

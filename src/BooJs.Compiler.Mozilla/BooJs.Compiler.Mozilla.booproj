@@ -17,7 +17,8 @@
     <OutputPath>bin\Debug</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
@@ -26,7 +27,8 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <ducky>False</ducky>
-    <culture />
+    <culture>
+    </culture>
     <genwarnings>False</genwarnings>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>

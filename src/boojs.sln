@@ -17,6 +17,8 @@ Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler.SourceMap", 
 EndProject
 Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Compiler.TypeSystem", "BooJs.Compiler.TypeSystem\BooJs.Compiler.TypeSystem.booproj", "{04A70369-236F-4E54-8C59-9A5ADEB9EBE2}"
 EndProject
+Project("{B3672514-7503-4B01-B4B4-B44E87061EA2}") = "BooJs.Tests.Ported", "BooJs.Tests.Ported\BooJs.Tests.Ported.booproj", "{EF0D7427-0168-48BF-A021-0956B9D1C22B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,16 @@ Global
 		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF0D7427-0168-48BF-A021-0956B9D1C22A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Debug Net-1.1|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Debug Net-1.1|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Micro-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Micro-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Micro-Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Micro-Release|Any CPU.Build.0 = Debug|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF0D7427-0168-48BF-A021-0956B9D1C22B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = boojs\boojs.booproj
