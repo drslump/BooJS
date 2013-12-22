@@ -1,8 +1,7 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Super not supported yet
 """
 John Cleese
 """
-import java.lang
 
 class Named:
 	public name as string
@@ -15,7 +14,7 @@ class Person(Named):
 		
 class Printer:
 	def print(line as string):
-		System.out.println(line)
+		print line
 
 funnyGuy = Person("John Cleese")
 Printer().print(funnyGuy.name)

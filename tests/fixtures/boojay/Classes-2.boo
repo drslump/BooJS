@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Interfaces not supported yet
 """
 true
 false

@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#!IGNORE: Classes not supported yet
 """
 -42
 -1
@@ -12,18 +12,17 @@
 2147483647
 -2147483648
 2130903040
-true
-false
-true
+True
+False
+True
 42
 """
-import java.lang
 
 class I:
 	public value as int
 
 def sysout(i as int):
-	System.out.println(i)
+	print i
 
 sysout -42
 sysout -1

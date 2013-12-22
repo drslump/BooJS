@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: interfaces not supported yet
 """
 yeah
 """
@@ -7,7 +7,7 @@ interface Foo:
 
 class FooImpl(Foo):
 	def bar():
-		java.lang.System.out.println("yeah")
+		print "yeah"
 		
 def useFoo(f as Foo):
 	f.bar()

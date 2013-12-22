@@ -1,4 +1,3 @@
-#IGNORE: Classes not supported
 """
 42
 ltuae

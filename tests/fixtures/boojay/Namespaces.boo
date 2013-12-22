@@ -1,12 +1,8 @@
-#IGNORE: Classes not supported yet
 """
-class foo.bar.Foo
 """
 namespace foo.bar
-
-import java.lang
 
 class Foo:
 	pass
 	
-System.out.println(Foo)
+assert Foo == js(`Boo.require('foo.bar').Foo`)
