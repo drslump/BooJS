@@ -1,4 +1,3 @@
-#IGNORE Class not supported
 """
 first
 second

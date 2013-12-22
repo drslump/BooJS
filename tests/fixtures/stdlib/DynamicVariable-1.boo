@@ -1,4 +1,4 @@
-#IGNORE classes not supported yet
+#IGNORE: DynamicVariable runtime not supported
 """
 True
 False

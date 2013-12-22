@@ -18,6 +18,15 @@ class ProcessGoto(AbstractTransformerCompilerStep):
 
     TODO: Check implementation constraints. Referenced label can only be present in 
           the same method and above the goto statement
+
+    TODO: Implementing forward gotos could be made by using exceptions.
+
+        while true:           |  try:
+          goto end            |    while true:
+          print 'foo'         |      raise Boo.GotoError('end')
+        :end                  |      print 'foo'
+                              |  except ex as GotoError and ex.message == 'end':
+                              |    pass                              
 """
     override def Run():
         if len(Errors) > 0:

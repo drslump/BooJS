@@ -21,6 +21,9 @@ class NormalizeClosures(AbstractFastVisitorCompilerStep):
     _method as Method
     _nodes = []
 
+    def OnConstructor(node as Constructor):
+        OnMethod(node)
+
     def OnMethod(node as Method):
         _method = node
         _nodes.Push(node)

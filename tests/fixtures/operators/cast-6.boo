@@ -1,4 +1,4 @@
-#IGNORE classes not supported yet
+#IGNORE: interfaces not supported yet
 """
 Clone
 Dispose

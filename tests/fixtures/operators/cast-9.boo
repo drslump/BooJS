@@ -1,4 +1,4 @@
-#IGNORE classes not supported
+#IGNORE Decimal not supported
 // explicit conversion operators
 a = System.Decimal(8)
 assert 8 == cast(int, a)

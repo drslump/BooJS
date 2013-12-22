@@ -1,4 +1,4 @@
-#IGNORE Classes not supported yet
+#IGNORE: Type system not fully supported
 """
 2
 3

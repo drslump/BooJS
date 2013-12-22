@@ -1,6 +1,4 @@
-#IGNORE classes not supported yet
+from BooJs.Tests.Support import Character
 
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
-
-assert 28 == Person(Age: 28).Age
-assert 30 == Person(Age: 30L).Age
+assert 28 == Character('foo', Age: 28).Age
+assert 30 == Character('bar', Age: 30L).Age

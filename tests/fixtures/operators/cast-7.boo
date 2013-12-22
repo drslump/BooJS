@@ -1,6 +1,5 @@
-#IGNORE enums not fully supported yet
 """
-Bar
+3
 3
 """
 enum Foo:

@@ -1,8 +1,8 @@
-#IGNORE Classes not supported
+#IGNORE: Implicit conversion not supported yet
 """
 f(42)
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import ImplicitConversionToDouble
 
 def f(d as double):
 	print "f(${d})"

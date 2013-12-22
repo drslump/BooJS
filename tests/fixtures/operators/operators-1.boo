@@ -1,4 +1,4 @@
-#IGNORE classes not supported yet
+#IGNORE: Operator overloading not fully supported
 """
 lhs is null
 True
@@ -9,7 +9,7 @@ False
 lhs is null
 False
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import OverrideEqualityOperators
 
 print null == OverrideEqualityOperators()
 print OverrideEqualityOperators() == null

@@ -1,4 +1,4 @@
-#IGNORE Generators not supported yet
+#IGNORE: Enumerators not supported yet
 """
 before 1
 before 2

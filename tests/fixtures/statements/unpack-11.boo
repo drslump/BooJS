@@ -1,11 +1,10 @@
-#IGNORE Class not supported yet
 """
 first
 second
 """
 class Foo:
-	[property(First)] _first = null
-	[property(Second)] _second = null
+	public First = null
+	public Second = null
 	def constructor(value):
 		First, Second = value
 		

@@ -1,4 +1,3 @@
-#IGNORE single is not supported
 """
 1: success
 2: success

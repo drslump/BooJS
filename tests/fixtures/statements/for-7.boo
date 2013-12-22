@@ -1,4 +1,4 @@
-#IGNORE: classes not supported yet
+#IGNORE: Interfaces not supported yet
 """
 before
 GetEnumerator

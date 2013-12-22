@@ -1,15 +1,15 @@
-#IGNORE imports not supported yet
+#IGNORE: property overloading not supported yet
 """
 Homer
 Idle
 Simpson
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import CharacterCollection, Character
 
-people = PersonCollection()
-people.Add(Person(FirstName: "Homer", LastName: "Simpson"))
-people.Add(Person(FirstName: "Eric", LastName: "Idle"))
+people = CharacterCollection()
+people.Add(Character("Homer", Age: 20))
+people.Add(Character("Eric", Age: 30))
 
-print(people[0].FirstName)
-print(people[1].LastName)
-print(people["Homer"].LastName)
+print(people[0].Name)
+print(people[1].Age)
+print(people["Homer"].Age)

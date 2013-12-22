@@ -1,4 +1,4 @@
-#IGNORE classes not supported yet
+#IGNORE: Environments not supported
 """
 """
 import Boo.Lang.Environments

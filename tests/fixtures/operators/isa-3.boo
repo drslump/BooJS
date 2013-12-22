@@ -1,4 +1,3 @@
-#IGNORE classes not supported yet
 """
 woot! foo is a string!
 0 is not a string :-(
@@ -23,6 +22,6 @@ Foo[of int](0)
 
 FooClass[of string]("bar")
 FooClass[of object]("baz")
-FooClass[of object](object())
+FooClass[of object](Object())
 FooClass[of object](null)
 

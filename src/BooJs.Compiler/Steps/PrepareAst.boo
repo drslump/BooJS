@@ -322,6 +322,9 @@ class PrepareAst(AbstractTransformerCompilerStep):
             return false
         return true
 
+    def OnConstructor(node as Constructor):
+        OnMethod(node)
+
     def OnMethod(node as Method):
     """ Process locals and detect the Main method to move its statements into the Module globals
     """

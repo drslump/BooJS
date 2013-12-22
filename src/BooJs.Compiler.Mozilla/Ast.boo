@@ -373,7 +373,7 @@ class CallExpression(Node, IExpression):
     def constructor(callee as IExpression, *args as (IExpression)):
         self.callee = callee
         for arg in args:
-            self.arguments.Add(arg)
+            arguments.Add(arg)
 
 
 class MemberExpression(Node, IExpression):
