@@ -548,8 +548,10 @@ Transforms a Boo AST into a Mozilla AST
     def OnReturnStatement(node as ReturnStatement):
         n = Moz.ReturnStatement(loc: loc(node))
 
+        if node.GetAncestor[of BlockExpression]():
+            n.argument = Apply(node.Expression)
         # Inside constructors always return `self`
-        if node.GetAncestor[of Constructor]():
+        elif node.GetAncestor[of Constructor]():
             n.argument = Moz.Identifier('self')
         else:
             n.argument = Apply(node.Expression)
