@@ -1,4 +1,3 @@
-#IGNORE: No class support yet
 """
 Bar.Run
 Bar.Run

@@ -1,4 +1,4 @@
-#IGNORE Classes not supported
+#IGNORE: BUG #7 - bind block expressions to instance
 """
 """
 

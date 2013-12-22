@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#IGNORE: Type system reflection not fully supported
 """
 Person[][]
 """

@@ -1,8 +1,8 @@
-#IGNORE Classes not supported
+#IGNORE: Getters not supported yet
 """
 """
 
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Clickable
 
 class App:
 	

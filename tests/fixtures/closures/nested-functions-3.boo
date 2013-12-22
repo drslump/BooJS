@@ -1,4 +1,4 @@
-#IGNORE Classes not supported
+#IGNORE: BUG #1 - recursive closures
 """
 55
 """

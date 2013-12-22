@@ -1,4 +1,4 @@
-#IGNORE: Class support not ready yet
+#IGNORE: Type system not fully supported
 """
 Foo[]
 Base[]

@@ -1,6 +1,5 @@
-#IGNORE Classes not supported
 """
-007
+107
 """
 
 public class Class:
@@ -10,5 +9,5 @@ public class Class:
 		Event(7)
 
 c = Class()
-c.Event += { i | print i.ToString("000") }
+c.Event += { i | print i + 100 }
 c.FireEvent()

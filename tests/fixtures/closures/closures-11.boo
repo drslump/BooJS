@@ -1,10 +1,9 @@
-#IGNORE Classes not supported
 """
 before
 clicked!!!
 after
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Clickable
 
 c = Clickable()
 c.Click += { print("clicked!!!") }

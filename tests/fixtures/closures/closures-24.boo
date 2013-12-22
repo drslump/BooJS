@@ -1,4 +1,3 @@
-#IGNORE Classes not supported
 """
 foo!
 bar!
@@ -12,7 +11,7 @@ class Foo:
 f = Foo()
 f.bar("foo!")
 f.bar("bar!")
-f.bar = { msg | print(msg.ToString()*2) }
+f.bar = { msg | print(msg.toString() * 2) }
 f.bar("foo!")
 f.bar("bar!")
 	

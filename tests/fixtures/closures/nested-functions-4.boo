@@ -1,4 +1,4 @@
-#IGNORE: BUG: recursive closures are not supported yet
+#IGNORE: BUG #1 - recursive closures are not supported yet
 """
 42
 """

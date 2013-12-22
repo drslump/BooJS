@@ -1,4 +1,4 @@
-#IGNORE: Type sytem not fully supported
+#IGNORE: Type system reflection not fully supported
 """
 System.Object
 System.Object
