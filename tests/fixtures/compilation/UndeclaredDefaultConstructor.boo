@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Properties not fully supported
 """
 42
 """

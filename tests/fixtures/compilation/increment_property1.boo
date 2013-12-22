@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Increment on non simple references should raise a not supported error
 """
 4
 """

@@ -49,10 +49,10 @@ Serves as base for all JS types
     def isPrototypeOf(obj as object) as bool:
         pass
 
-    def toString() as string:
+    virtual def toString() as string:
         pass
 
-    def toLocaleString() as string:
+    virtual def toLocaleString() as string:
         pass
 
     def valueOf() as Object:

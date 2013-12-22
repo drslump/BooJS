@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Static fields not fully supported yet
 """
 0
 1

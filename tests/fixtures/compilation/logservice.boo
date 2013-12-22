@@ -1,6 +1,5 @@
-#IGNORE: Classes not supported yet
 """
-WARNING: albatross!
+1: albatross!
 """
 enum LogMessageLevel:
 	INFO     = 0
@@ -12,7 +11,7 @@ class FileLogService:
 	def log(msg as string):
 		log(LogMessageLevel.WARNING, msg)
 
-	def log(logMessageLevel as LogMessageLevel, [required] msg as string):
+	def log(logMessageLevel as LogMessageLevel, msg as string):
 		print("${logMessageLevel}: ${msg}")
 
 FileLogService().log("albatross!")

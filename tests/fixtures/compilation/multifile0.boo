@@ -1,8 +1,7 @@
-#IGNORE: Classes not supported yet
 """
 Homer
 """
-import MultiFileTest
+from BooJs.Tests.Support import Character
 
 c = Character("Homer")
 print(c.Name)

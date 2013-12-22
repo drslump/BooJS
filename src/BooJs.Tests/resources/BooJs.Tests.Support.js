@@ -11,6 +11,27 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
         spades: 3
     };
 
+    var Constants = (function (_super_) {
+        function Constants(_init_) {
+            if (_init_ != Boo.INIT)
+                return Constants.constructor.apply(null, arguments);
+        }
+        Constants.constructor = function BooJs$Tests$Support$Constants$$constructor () {
+            var self = this instanceof Constants ? this : new Constants(Boo.INIT);
+            return self;
+        }
+        Constants.StringConstant = 'Foo';
+        Constants.IntegerConstant = 14;
+
+        Constants.prototype = Boo.create(_super_.prototype);
+        Constants.prototype.constructor = Constants;
+        Constants.prototype.$boo$interfaces = [];
+        Constants.prototype.$boo$super = _super_;
+
+        return Constants;
+    })(Object);
+    exports.Constants = Constants;
+
     var Character = (function (_super_) {
         function Character(_init_) {
             if (_init_ !== Boo.INIT)

@@ -11,6 +11,10 @@ enum Card:
     hearts
     spades
 
+class Constants:
+    static public final StringConstant = 'Foo'
+    static public final IntegerConstant = 14
+
 class Character:
     property Name as string
     property Age as uint

@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: .Net framework not supported
 """
 foo
 bar

@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Increment on non simple references should raise a not supported error
 """
 4
 """
@@ -14,8 +14,8 @@ class Integer:
 		set:
 			_value = value
 
-	override def ToString():
-		return _value.ToString()
+	override def toString():
+		return _value.toString()
 
 i = Integer(3)
 ++i.Value

@@ -1,5 +1,5 @@
-#IGNORE: Classes/Namespace not supported
+#IGNORE: Absolute fqn not supported yet
 """
-ApplicationData
+0
 """
-print(System.Environment.SpecialFolder.ApplicationData)
+print(BooJs.Tests.Support.Gender.Male)

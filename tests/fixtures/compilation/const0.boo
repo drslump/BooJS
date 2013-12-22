@@ -1,10 +1,9 @@
-#IGNORE: Imports not supported yet
 """
 FOO
 28
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Constants
 
-print Constants.StringConstant.ToUpper()
+print Constants.StringConstant.toUpperCase()
 print Constants.IntegerConstant*2
 

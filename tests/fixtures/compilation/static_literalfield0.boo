@@ -1,4 +1,4 @@
-#IGNORE: Type sytem not fully supported
+#IGNORE: Type system not fully supported
 """
 255
 System.Byte
