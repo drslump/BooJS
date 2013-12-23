@@ -83,6 +83,16 @@
     CastError.prototype.constructor = CastError;
     Boo.CastError = CastError;
 
+    // NotImplemented error
+    function NotImplementedError(message) {
+        this.name = 'NotImplementedError';
+        this.message = message || "Method not implemented";
+    }
+    NotImplementedError.prototype = new Error();
+    NotImplementedError.prototype.constructor = NotImplementedError;
+    Boo.NotImplementedError = NotImplementedError;
+
+
     // State for the module loader
     var mod_waiting = {},
         mod_defined = { 'Boo': Boo };

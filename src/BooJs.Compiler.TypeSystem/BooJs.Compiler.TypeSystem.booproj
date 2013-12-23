@@ -44,6 +44,7 @@
     <Compile Include="RuntimeMethodCache.boo" />
     <Compile Include="TypeSystemServices.boo" />
     <Compile Include="InvocationTypeInferenceRules.boo" />
+    <Compile Include="BooJsCodeBuilder.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooJs.Lang\BooJs.Lang.booproj">

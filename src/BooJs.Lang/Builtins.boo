@@ -84,6 +84,15 @@ class Builtins:
             pass
 
 
+    class NotImplementedError(Error):
+    """ BooJs specific error to signal not implemented methods
+    """
+        def constructor():
+            pass
+        def constructor(msg as string):
+            pass
+
+
     static def range(stop as int) as (int):
         pass
     static def range(start as int, stop as int) as (int):

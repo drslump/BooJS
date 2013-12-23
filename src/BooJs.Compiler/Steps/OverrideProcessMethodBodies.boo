@@ -2,6 +2,7 @@ namespace BooJs.Compiler.Steps
 
 from System.Reflection import BindingFlags
 from Boo.Lang.Environments import my
+from Boo.Lang.PatternMatching import *
 from Boo.Lang.Compiler.Steps import ProcessMethodBodies, ProcessMethodBodiesWithDuckTyping
 from Boo.Lang.Compiler.Ast import *
 from Boo.Lang.Compiler.TypeSystem import ExternalMethod, IExternalEntity, IMethod, \
@@ -197,3 +198,15 @@ class OverrideProcessMethodBodies(ProcessMethodBodiesWithDuckTyping):
 
         enumerableType = (TypeSystemServices as BooJs.Compiler.TypeSystem.TypeSystemServices).IGeneratorGenericType
         return enumerableType.GenericInfo.ConstructType(itemType)
+
+    override def OnRaiseStatement(node as RaiseStatement):
+    """ Automatically created stubs raise a NotImplementedException, it's easier to
+        just retarget the exception here instead of modifying the stub creation
+    """
+        match node.Exception:
+            case [| System.NotImplementedException() |]:
+                node.Exception = [| BooJs.Lang.Builtins.NotImplementedError() |]
+            otherwise:
+                pass
+
+        super(node)

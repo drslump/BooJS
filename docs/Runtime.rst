@@ -261,6 +261,12 @@ results.
     # result: [ 'FOO', 'BAR', 'BAZ' ]
 
 
+NotImplementedError
+-------------------
+
+Specific error type raised when an abstract method is not implemented
+
+
 range
 -----
 

@@ -8,10 +8,11 @@ from Boo.Lang.Environments import DeferredEnvironment, my
 from Boo.Lang.Compiler import BooCompiler, CompilerParameters
 from Boo.Lang.Compiler.Ast import *
 from Boo.Lang.Compiler.Services import UniqueNameProvider
-from Boo.Lang.Compiler.TypeSystem import TypeSystemServices
+from Boo.Lang.Compiler.TypeSystem import TypeSystemServices, BooCodeBuilder
 from Boo.Lang.Compiler.TypeSystem.Services import DowncastPermissions, InvocationTypeInferenceRules
 
 from BooJs.Compiler import UniqueNameProvider as JsUniqueNameProvider, CompilerContext, TypeSystem as JsTypeSystem
+from BooJs.Compiler.TypeSystem import BooJsCodeBuilder
 
 
 class BooJsCompiler(BooCompiler):
@@ -47,6 +48,7 @@ def newBooJsCompiler(pipeline as Boo.Lang.Compiler.CompilerPipeline):
         TypeSystemServices: { JsTypeSystem.TypeSystemServices() },
         DowncastPermissions: { JsTypeSystem.DowncastPermissions() },
         UniqueNameProvider: { JsUniqueNameProvider() },
+        BooCodeBuilder: { BooJsCodeBuilder() },
         InvocationTypeInferenceRules: { JsTypeSystem.InvocationTypeInferenceRules() }
     }
 
