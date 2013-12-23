@@ -113,7 +113,7 @@ class FixtureRunner:
         elif line.IndexOf('#DUCKY') == 0:
           comp.Parameters.Ducky = true
         elif line.IndexOf('#BCE') == 0 or line.IndexOf('#BCW') == 0:
-          expected_diags.Add(line.Substring(1).TrimEnd())
+          expected_diags.Add(line.Substring(1, 7).TrimEnd())
         elif line.IndexOf('#UNSUPPORTED') == 0:
           return
 

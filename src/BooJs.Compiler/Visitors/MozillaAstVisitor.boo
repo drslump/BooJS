@@ -471,6 +471,7 @@ Transforms a Boo AST into a Mozilla AST
         call.arguments.Add(
             Moz.Identifier(
                 ('Object' if typeSystem().IsSystemObject(node.BaseTypes.First.Entity) 
+                    # TODO: The reference should take into account imported namespaces
                     else node.BaseTypes.First.Entity.FullName)
             )
         )

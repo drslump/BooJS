@@ -1,5 +1,6 @@
+#IGNORE: BUG - Initialize enum values
 """
-None
+0
 """
 class Foo:		
 	public static Level as LogLevel

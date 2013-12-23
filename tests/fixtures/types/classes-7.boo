@@ -1,8 +1,7 @@
 """
 clicked from app!
-
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Clickable
 
 class App:
 
@@ -11,7 +10,7 @@ class App:
 	def constructor():
 		_clickable = Clickable(Click: clicked)
 		
-	private def clicked(sender, args as System.EventArgs):
+	private def clicked(sender):
 		print("clicked from app!")
 		
 	def Run():

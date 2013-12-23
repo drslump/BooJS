@@ -1,3 +1,5 @@
+#UNSUPPORTED: Reflection not supported
+
 class Foo:
 	
 	enum LogLevel:

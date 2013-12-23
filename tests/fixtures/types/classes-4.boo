@@ -1,6 +1,6 @@
+#IGNORE: Properties not supported yet
 """
 homer
-
 """
 class Person:
 	

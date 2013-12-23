@@ -1,3 +1,4 @@
+#UNSUPPORTED: Byte type not supported
 """
 Foo = 1
 Foo = -1

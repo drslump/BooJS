@@ -1,6 +1,6 @@
+#IGNORE: Properties not supported yet
 """
 homer simpson
-
 """
 class Person:
 	
@@ -14,7 +14,7 @@ class Person:
 		_fname = fname
 		_lname = lname
 		
-	def ToString():
+	def toString():
 		return "${_fname} ${_lname}"
 		
 homer = Person("homer", "simpson")

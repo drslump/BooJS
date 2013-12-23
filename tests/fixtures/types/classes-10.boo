@@ -1,6 +1,5 @@
 """
 homer
-
 """
 class Person:
 	def constructor(name):		

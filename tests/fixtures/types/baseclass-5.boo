@@ -1,9 +1,10 @@
+#IGNORE: BUG - Base type reference should take into account imported namespace mapping
 """
 A.Method0
 BaseClass.Method1
 """
 
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import DerivedClass
 
 class A(DerivedClass):
 	def Method0():

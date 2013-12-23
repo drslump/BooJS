@@ -1,4 +1,4 @@
-import System
+#UNSUPPORTED: Reflection is not supported
 
 interface A:
 	def Test(o)

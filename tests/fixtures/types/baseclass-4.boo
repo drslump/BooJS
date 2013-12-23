@@ -1,9 +1,10 @@
+#IGNORE: BUG - Base type reference should take into account imported namespace mapping
 """
 BaseClass.constructor('Hello!')
 BaseClass.Method0
 
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import BaseClass
 
 class A(BaseClass):
 	def constructor():

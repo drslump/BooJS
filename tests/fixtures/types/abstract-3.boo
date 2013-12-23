@@ -1,4 +1,5 @@
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+#IGNORE: Properties not supported yet
+from BooJs.Tests.Support import AbstractClass
 
 class Concrete(AbstractClass):
 

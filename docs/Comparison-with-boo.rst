@@ -38,6 +38,22 @@ used with binary arithmetic operators all numbers are casted to 32bit integers.
           just an alias for ``duck``.
 
 
+Enums
+~~~~~
+
+Enums are converted to simple JavaScript literal objects mapping keys to numbers.
+This allows to use enums for 90% of the use cases normally, however when printing
+them they are just integer values, it's not possible to obtain the associated key.
+
+::
+
+    enum Foo:
+        orange
+        apple = 2
+
+    print Foo.apple  # outputs "2"
+
+
 Named parameters
 ~~~~~~~~~~~~~~~~
 

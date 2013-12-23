@@ -11,6 +11,13 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
         spades: 3
     };
 
+    exports.TestEnum = {
+        Foo: 1,
+        Bar: 2,
+        Baz: 4,
+        Gazong: -2
+    }
+
     var Constants = (function (_super_) {
         function Constants(_init_) {
             if (_init_ != Boo.INIT)
@@ -203,6 +210,150 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
         return VarArgs;
     })(Object);
     exports.VarArgs = VarArgs;
+
+    var AbstractClass = (function (_super_) {
+        function AbstractClass (_init_) {
+            if (_init_ !== Boo.INIT)
+                return AbstractClass.constructor.apply(null, arguments);
+        }
+        AbstractClass.constructor = function BooJs$Tests$Support$AbstractClass$$constructor () {
+            var self = this instanceof AbstractClass ? this : new AbstractClass(Boo.INIT);
+            return self;
+        };
+
+        AbstractClass.prototype = Boo.create(_super_.prototype);
+        AbstractClass.prototype.constructor = AbstractClass;
+        AbstractClass.prototype.$boo$interfaces = [];
+        AbstractClass.prototype.$boo$super = _super_;
+
+        return AbstractClass;
+    })(Object);
+    exports.AbstractClass = AbstractClass;
+
+    var AnotherAbstractClass = (function (_super_) {
+        function AnotherAbstractClass (_init_) {
+            if (_init_ !== Boo.INIT)
+                return AnotherAbstractClass.constructor.apply(null, arguments);
+        }
+        AnotherAbstractClass.constructor = function BooJs$Tests$Support$AnotherAbstractClass$$constructor () {
+            var self = this instanceof AnotherAbstractClass ? this : new AnotherAbstractClass(Boo.INIT);
+            return self;
+        };
+
+        AnotherAbstractClass.prototype = Boo.create(_super_.prototype);
+        AnotherAbstractClass.prototype.constructor = AnotherAbstractClass;
+        AnotherAbstractClass.prototype.$boo$interfaces = [];
+        AnotherAbstractClass.prototype.$boo$super = _super_;
+
+        AnotherAbstractClass.prototype.Foo = function BooJs$Tests$Support$AnotherAbstractClass$Foo () {
+            throw new Boo.NotImplementedError;
+        };
+        AnotherAbstractClass.prototype.Bar = function BooJs$Tests$Support$AnotherAbstractClass$Bar () {
+            return 'Bar';
+        };
+
+        return AnotherAbstractClass;
+    })(Object);
+    exports.AnotherAbstractClass = AnotherAbstractClass;
+
+
+    var BaseClass = (function (_super_) {
+        function BaseClass (_init_) {
+            if (_init_ !== Boo.INIT)
+                return BaseClass.constructor.apply(null, arguments);
+        }
+        BaseClass.constructor = function BooJs$Tests$Support$BaseClass$constructor () {
+            return Boo.overload(arguments, [ [], [String] ], [BaseClass.constructor$0, BaseClass.constructor$1]);
+        };
+        BaseClass.constructor$0 = function BooJs$Tests$Support$BaseClass$$constructor$0 () {
+            var self = this instanceof BaseClass ? this : new BaseClass(Boo.INIT);
+            self._protectedfield = 0;
+            return self;
+        };
+        BaseClass.constructor$1 = function BooJs$Tests$Support$BaseClass$$constructor$1 (message) {
+            var self = this instanceof BaseClass ? this : new BaseClass(Boo.INIT);
+            self._protectedfield = 0;
+            Boo.print("BaseClass.constructor('" + message + "')");
+            return self;
+        };
+
+        BaseClass.prototype = Boo.create(_super_.prototype);
+        BaseClass.prototype.constructor = BaseClass;
+        BaseClass.prototype.$boo$interfaces = [];
+        BaseClass.prototype.$boo$super = _super_;
+
+        BaseClass.prototype.Method0 = function BooJs$Tests$Support$BaseClass$Method0 () {
+            return Boo.overload(arguments, [ [], [String] ], [this.Method0$0, this.Method0$1]);
+        };
+        BaseClass.prototype.Method0$0 = function BooJs$Tests$Support$BaseClass$Method0$0 () {
+            Boo.print('BaseClass.Method0');
+        };
+        BaseClass.prototype.Method0$1 = function BooJs$Tests$Support$BaseClass$Method0$1 (text) {
+            Boo.print("BaseClass.Method0('" + text + "')");
+        };
+
+        BaseClass.prototype.Method1 = function BooJs$Tests$Support$BaseClass$Method1 () {
+            Boo.print("BaseClass.Method1");
+        };
+
+        BaseClass.prototype.get_ProtectedProperty = function BooJs$Tests$Support$BaseClass$get_ProtectedProperty () {
+            return this._protectedfield;
+        };
+        BaseClass.prototype.set_ProtectedProperty = function BooJs$Tests$Support$BaseClass$set_ProtectedProperty (value) {
+            this._protectedfield = value;
+        };
+
+
+        return BaseClass;
+    })(Object);
+    exports.BaseClass = BaseClass;
+
+    var DerivedClass = (function (_super_) {
+        function DerivedClass (_init_) {
+            if (_init_ !== Boo.INIT)
+                return DerivedClass.constructor.apply(null, arguments);
+        }
+        DerivedClass.constructor = function BooJs$Tests$Support$DerivedClass$$constructor () {
+            var self = this instanceof DerivedClass ? this : new DerivedClass(Boo.INIT);
+            return self;
+        };
+
+        DerivedClass.prototype = Boo.create(_super_.prototype);
+        DerivedClass.prototype.constructor = DerivedClass;
+        DerivedClass.prototype.$boo$interfaces = [];
+        DerivedClass.prototype.$boo$super = _super_;
+
+        DerivedClass.prototype.Method2 = function BooJs$Tests$Support$DerivedClass$Method2 () {
+            this.Method0();
+            this.Method1();
+        };
+
+        return DerivedClass;
+    })(BaseClass);
+    exports.DerivedClass = DerivedClass;
+
+    var ClassWithNewMethod = (function (_super_) {
+        function ClassWithNewMethod (_init_) {
+            if (_init_ !== Boo.INIT)
+                return ClassWithNewMethod.constructor.apply(null, arguments);
+        }
+        ClassWithNewMethod.constructor = function BooJs$Tests$Support$ClassWithNewMethod$$constructor () {
+            var self = this instanceof ClassWithNewMethod ? this : new ClassWithNewMethod(Boo.INIT);
+            return self;
+        };
+
+        ClassWithNewMethod.prototype = Boo.create(_super_.prototype);
+        ClassWithNewMethod.prototype.constructor = ClassWithNewMethod;
+        ClassWithNewMethod.prototype.$boo$interfaces = [];
+        ClassWithNewMethod.prototype.$boo$super = _super_;
+
+        ClassWithNewMethod.prototype.Method2 = function BooJs$Tests$Support$ClassWithNewMethod$Method2 () {
+            Boo.print('ClassWithNewMethod.Method2');
+        };
+
+        return ClassWithNewMethod;
+    })(BaseClass);
+    exports.ClassWithNewMethod = ClassWithNewMethod;
 
 
     function method(x) {

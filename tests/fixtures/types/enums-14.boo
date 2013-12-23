@@ -1,3 +1,4 @@
+#UNSUPPORTED: Byte type not supported
 """
 4
 Bar

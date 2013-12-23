@@ -1,9 +1,10 @@
+#IGNORE: Properties not supported yet
 """
 homer
 
 """
 class Person:
-	override def ToString():
+	override def toString():
 		return Name
 		
 	Name:
@@ -14,4 +15,4 @@ class Person:
 		
 	_name as string
 		
-System.Console.WriteLine(Person(Name: "homer"))
+print Person(Name: "homer")

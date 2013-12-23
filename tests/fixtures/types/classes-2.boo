@@ -1,6 +1,5 @@
 """
 homer
-
 """
 class Person:
 	

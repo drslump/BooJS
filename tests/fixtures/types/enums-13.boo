@@ -1,3 +1,4 @@
+#IGNORE: BUG - resolve imported namespace for type references
 """
 0
 1

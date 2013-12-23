@@ -1,4 +1,6 @@
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+#IGNORE: BUG - Base type reference should take into account imported namespace mapping
+
+from BooJs.Tests.Support import AnotherAbstractClass
 
 class Concrete(AnotherAbstractClass):
 

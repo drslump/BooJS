@@ -2,7 +2,6 @@
 'Foo' flag is set
 'Baz' flag is set
 """
-[System.Flags]
 enum FooBarFlags:
 	None = 0
 	Foo = 1

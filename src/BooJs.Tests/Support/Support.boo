@@ -11,6 +11,12 @@ enum Card:
     hearts
     spades
 
+enum TestEnum:
+    Foo = 1
+    Bar = 2
+    Baz = 4
+    Gazong = -2
+
 class Constants:
     static public final StringConstant = 'Foo'
     static public final IntegerConstant = 14
@@ -72,6 +78,62 @@ class VarArgs:
         
     def Method(*args as (object)):
         print "VarArgs.Method(" + join(args, ', ') + ")"
+
+abstract class AbstractClass:
+    pass
+
+abstract class AnotherAbstractClass:
+    abstract protected def Foo() as string:
+        pass
+
+    virtual def Bar() as string:
+        return "Bar";
+
+class AmbiguousBase:
+    def Path(empty as string) as string:
+        return "Base"
+
+class AmbiguousSub1(AmbiguousBase):
+    Path as string:
+        get: return "Sub1"
+
+class AmbiguousSub2(AmbiguousSub1):
+    pass
+
+class BaseClass:
+    def constructor():
+        pass
+        
+    protected def constructor(message as string):
+        print "BaseClass.constructor('{0}')" % (message,)
+         
+    virtual def Method0():
+        print "BaseClass.Method0"
+        
+    virtual def Method0(text as string):
+        print "BaseClass.Method0('{0}')" % (text,)
+        
+    virtual def Method1():
+        print "BaseClass.Method1"
+        
+    //for BOO-632 regression test
+    protected _protectedfield as int = 0
+    protected ProtectedProperty as int:
+        get: return _protectedfield
+        set: _protectedfield = value
+
+class DerivedClass(BaseClass):
+    def constructor():
+        pass
+        
+    def Method2():
+        Method0()
+        Method1()
+
+class ClassWithNewMethod(DerivedClass):
+    new def Method2():
+        print "ClassWithNewMethod.Method2"
+        
 
 
 def method(x):

@@ -1,3 +1,5 @@
+#UNSUPPORTED: Reflection not supported
+
 enum PublicEnum:
 	None
 	

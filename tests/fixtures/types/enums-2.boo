@@ -1,10 +1,8 @@
 """
-Eric
-Eric, John
+1
+3
 """
-import System
 
-[Flags]
 enum MontyMembers:
 	Eric = 1
 	John = 2

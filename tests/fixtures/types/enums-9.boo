@@ -1,5 +1,6 @@
+#BCE0011: Constructor overloading not supported
 """
-Info
+1
 """
 namespace Bar
 
