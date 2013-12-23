@@ -1,4 +1,4 @@
-#IGNORE: class not supported
+#UNSUPPORTED: BeginInvoke not supported
 
 class Computer:
 	_prefix as string

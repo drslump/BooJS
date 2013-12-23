@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#UNSUPPORTED: BeginInvoke not supported
 def foo():
 	pass
 	

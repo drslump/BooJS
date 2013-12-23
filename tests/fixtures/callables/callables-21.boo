@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: Callables not fully supported
 """
 -Testing...
 """

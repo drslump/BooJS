@@ -1,4 +1,3 @@
-#IGNORE: Classes not supported yet
 """
 handler - clicked!
 handler - clicked!

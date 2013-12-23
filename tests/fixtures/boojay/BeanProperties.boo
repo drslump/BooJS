@@ -1,10 +1,7 @@
-#IGNORE: Constructors not supported yet
 """
 """
 namespace properties
 
-import java.util
-
-d = Date(seconds: 42)
-assert 42 == d.seconds
-assert d.seconds == d.getSeconds()
+d = Date(2013, 8)
+assert 8 == d.getMonth()
+assert 2013 == d.getFullYear()

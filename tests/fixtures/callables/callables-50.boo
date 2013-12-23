@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: Constructor overloading not supported yet
 """
 no param
 one param

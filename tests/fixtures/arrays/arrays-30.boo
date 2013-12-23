@@ -1,4 +1,4 @@
-#IGNORE: BooJS type system does not allow this operations
+#IGNORE: BooJS stdlib does not support this method
 """
 System.Int32[]
 System.Int32[,]

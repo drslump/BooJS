@@ -1,4 +1,4 @@
-#IGNORE: Casting to Callable definitions is not supported yet
+#IGNORE: Callable declarations not supported yet
 
 import System
 

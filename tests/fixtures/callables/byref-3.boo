@@ -1,4 +1,4 @@
-#IGNORE passing by reference is not supported
+#UNSUPPORTED: passing by reference is not supported
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 
 

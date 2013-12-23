@@ -1,4 +1,4 @@
-#IGNORE passing by reference is not supported
+#UNSUPPORTED: passing by reference is not supported
 """
 storerefobj 3 True
 loadrefobj 8 True

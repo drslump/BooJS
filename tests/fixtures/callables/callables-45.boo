@@ -1,4 +1,3 @@
-#IGNORE: classes not supported
 """
 foo
 """

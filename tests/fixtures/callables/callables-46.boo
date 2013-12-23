@@ -1,4 +1,4 @@
-#IGNORE: Async not supported
+#UNSUPPORTED: BeginInvoke not supported
 """
 started
 executing

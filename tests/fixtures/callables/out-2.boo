@@ -1,4 +1,4 @@
-#IGNORE: Out params not supported
+#UNSUPPORTED: Out params not supported
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 
 

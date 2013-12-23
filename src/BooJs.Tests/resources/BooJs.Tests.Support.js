@@ -175,6 +175,36 @@ Boo.define('BooJs.Tests.Support', ['Boo', 'exports'], function (Boo, exports) {
     exports.OverrideEqualityOperators = OverrideEqualityOperators;
 
 
+    var VarArgs = (function (_super_) {
+        function VarArgs (_init_) {
+            if (_init_ !== Boo.INIT)
+                return VarArgs.constructor.apply(null, arguments);
+        }
+        VarArgs.constructor = function BooJs$Tests$Support$VarArgs$$constructor () {
+            var self = this instanceof VarArgs ? this : new VarArgs(Boo.INIT);
+            return self;
+        };
+
+        VarArgs.prototype = Boo.create(_super_.prototype);
+        VarArgs.prototype.constructor = VarArgs;
+        VarArgs.prototype.$boo$interfaces = [];
+        VarArgs.prototype.$boo$super = _super_;
+
+        VarArgs.prototype.Method = function BooJs$Tests$Support$VarArgs$Method () {
+            return Boo.overload(arguments, [ [], [Array] ], [this.Method$0, this.Method$1]);
+        };
+        VarArgs.prototype.Method$0 = function BooJs$Tests$Support$VarArgs$Method$0 () {
+            Boo.print("VarArgs.Method")
+        };
+        VarArgs.prototype.Method$1 = function BooJs$Tests$Support$VarArgs$Method$1 (args) {
+            Boo.print("VarArgs.Method(" + Boo.join(args, ', ') + ")");
+        };
+
+        return VarArgs;
+    })(Object);
+    exports.VarArgs = VarArgs;
+
+
     function method(x) {
         return x;
     }

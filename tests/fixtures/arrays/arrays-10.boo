@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#UNSUPPORTED: Type system not fully supported
 """
 Foo[]
 Base[]

@@ -66,6 +66,13 @@ class OverrideEqualityOperators:
             print 'rhs is null'
         return false
 
+class VarArgs:
+    def Method():
+        print "VarArgs.Method"
+        
+    def Method(*args as (object)):
+        print "VarArgs.Method(" + join(args, ', ') + ")"
+
 
 def method(x):
     return x

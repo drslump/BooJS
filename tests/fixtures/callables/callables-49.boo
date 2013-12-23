@@ -1,4 +1,4 @@
-#IGNORE: BeginInvoke not supported
+#UNSUPPORTED: BeginInvoke not supported
 """
 1st
 finished

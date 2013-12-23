@@ -1,4 +1,4 @@
-#IGNORE: Equals is not supported in Javascript
+#UNSUPPORTED: Equals is not supported in Javascript
 """
 true
 false

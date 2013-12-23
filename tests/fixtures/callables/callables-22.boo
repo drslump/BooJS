@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: Callables not fully supported
 
 callable OutputHandler(message as string) as string
 

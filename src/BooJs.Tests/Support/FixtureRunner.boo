@@ -114,6 +114,8 @@ class FixtureRunner:
           comp.Parameters.Ducky = true
         elif line.IndexOf('#BCE') == 0 or line.IndexOf('#BCW') == 0:
           expected_diags.Add(line.Substring(1).TrimEnd())
+        elif line.IndexOf('#UNSUPPORTED') == 0:
+          return
 
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))

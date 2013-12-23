@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Callables not fully supported yet
 """
 FOO
 """

@@ -1,4 +1,4 @@
-#IGNORE: .Net apis not supported
+#UNSUPPORTED: DynamicInvoke not supported
 import System
 
 

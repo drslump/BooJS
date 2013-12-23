@@ -1,5 +1,4 @@
-#IGNORE: Classes not supported
-
+#IGNORE: Callable declarations not supported yet
 
 callable Function(item) as object
 

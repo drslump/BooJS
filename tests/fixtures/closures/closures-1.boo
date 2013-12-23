@@ -1,4 +1,4 @@
-#IGNORE: Reflection not supported
+#UNSUPPORTED: Reflection not supported
 """
 """
 import System

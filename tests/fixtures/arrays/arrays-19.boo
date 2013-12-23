@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported yet
+#UNSUPPORTED: Reflection not supported yet
 """
 Foo.Bar.Person[][]
 """

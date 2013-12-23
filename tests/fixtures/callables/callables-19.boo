@@ -1,4 +1,4 @@
-#IGNORE: class not supported
+#UNSUPPORTED: Reflection not supported
 import System
 import System.Reflection
 

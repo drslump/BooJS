@@ -1,4 +1,4 @@
-#IGNORE: Typesystem reflection not implemented yet
+#UNSUPPORTED: Reflection not supported yet
 """
 class java.lang.IllegalStateException
 """

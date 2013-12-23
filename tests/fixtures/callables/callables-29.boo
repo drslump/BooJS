@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: Callable declarations not supported yet
 import System
 
 callable Function(item) as object

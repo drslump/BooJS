@@ -1,4 +1,4 @@
-#IGNORE: Type system reflection not fully supported
+#UNSUPPORTED: Reflection not supported yet
 """
 System.Int32[]
 System.String[]

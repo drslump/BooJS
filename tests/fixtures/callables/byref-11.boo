@@ -1,4 +1,4 @@
-#IGNORE passing by reference is not supported
+#UNSUPPORTED: passing by reference is not supported
 """
 TestNonByrefCallable with notbyref method True True
 TestByrefCallable with byref method True True

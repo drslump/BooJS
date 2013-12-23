@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported
+#IGNORE: Generic dictionary not supported
 """
 foo
 bar
