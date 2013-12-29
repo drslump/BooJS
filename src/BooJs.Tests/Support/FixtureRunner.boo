@@ -116,6 +116,8 @@ class FixtureRunner:
           expected_diags.Add(line.Substring(1, 7).TrimEnd())
         elif line.IndexOf('#UNSUPPORTED') == 0:
           Assert.Inconclusive(line.Substring(len('#UNSUPPORTED:')).Trim())
+        elif line.IndexOf('#SKIP') == 0:
+          return
 
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))

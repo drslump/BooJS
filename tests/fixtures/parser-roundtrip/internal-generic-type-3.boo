@@ -1,4 +1,4 @@
-#IGNORE: Interfaces not supported yet
+#UNSUPPORTED: Interfaces not supported yet
 """
 public class GenericType[of T1, T2](BaseType, SomeInterface):
 	pass

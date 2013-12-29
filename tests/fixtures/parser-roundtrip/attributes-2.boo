@@ -1,4 +1,4 @@
-#IGNORE: Attributes not supported yet
+#UNSUPPORTED: Meta programming not supported
 """
 [module: M]
 [assembly: Foo(true)]

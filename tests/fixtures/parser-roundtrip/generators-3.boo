@@ -1,3 +1,4 @@
+#IGNORE: BUG - Nested generator expressions
 """
 1 4
 1 5

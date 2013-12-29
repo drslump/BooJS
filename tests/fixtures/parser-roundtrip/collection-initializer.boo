@@ -1,4 +1,4 @@
-#IGNORE: Array initializer not supported yet
+#UNSUPPORTED: Array initializer not supported yet
 """
 foo
 foo,bar

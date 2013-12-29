@@ -1,4 +1,4 @@
-#IGNORE: Macro not supported yet
+#UNSUPPORTED: Macro not supported yet
 """
 macro foo:
 	print 

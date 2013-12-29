@@ -7,3 +7,5 @@ def sqrt(x) as double:
 
 def add(x as int, y as int) as int:
 	pass
+
+sqrt(10)

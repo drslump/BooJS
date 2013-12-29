@@ -1,4 +1,4 @@
-#IGNORE: Parser test
+#SKIP: Parser test
 """
 container.set('foo')
 bar = container.get()

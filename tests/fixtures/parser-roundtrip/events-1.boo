@@ -1,4 +1,4 @@
-#IGNORE: internal modifier not supported yet
+#UNSUPPORTED: internal modifier not supported yet
 """
 Click
 Activated

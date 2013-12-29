@@ -10,3 +10,6 @@ class Foo:
 
 	new public def Bar2():
 		pass
+
+
+f = Foo()

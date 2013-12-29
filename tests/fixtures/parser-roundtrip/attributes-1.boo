@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#UNSUPPORTED: Meta programming not supported
 """
 [XmlElement('Person', Namespace: 'urn:foo:bar')]
 class Person:

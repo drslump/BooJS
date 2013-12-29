@@ -8,3 +8,6 @@ class Some[T](Maybe[T]):
 	
 class None[T](Maybe[T]):
 	pass
+
+
+m = Maybe[of int]()

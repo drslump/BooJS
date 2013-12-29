@@ -1,4 +1,4 @@
-#IGNORE: Parser test
+#SKIP: Parser test
 """
 import System.Collections
 import System.Windows.Forms from System.Windows.Forms as SWF

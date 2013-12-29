@@ -1,3 +1,4 @@
+#IGNORE: BUG - GlobalsModule not correctly generated
 """
 i > 5
 4

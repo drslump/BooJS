@@ -1,4 +1,4 @@
-#IGNORE: Structs not supported yet
+#UNSUPPORTED: Structs not supported yet
 """
 struct Size:
 

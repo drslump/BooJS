@@ -1,3 +1,4 @@
+#UNSUPPORTED: forward Goto not supported
 """
 ding
 ding

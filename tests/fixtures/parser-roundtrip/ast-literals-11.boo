@@ -1,4 +1,4 @@
-#IGNORE: Ast types not supported
+#UNSUPPORTED: Meta programming not supported
 """
 p1 = [|
 	Foo:

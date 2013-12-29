@@ -1,4 +1,4 @@
-#IGNORE: Callables definitions not yet supported
+#UNSUPPORTED: Callables definitions not yet supported
 """
 a as callable(*(string)) as string
 b as callable(int, *(string)) as string

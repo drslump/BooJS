@@ -1,4 +1,4 @@
-#IGNORE: Ast types not supported
+#UNSUPPORTED: Meta programming not supported
 """
 node1 as Node = [|
 	return 3

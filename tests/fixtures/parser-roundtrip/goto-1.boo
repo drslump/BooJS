@@ -1,3 +1,4 @@
+#UNSUPPORTED: forward Goto not supported
 """
 goto start if (i < 3)
 goto finish

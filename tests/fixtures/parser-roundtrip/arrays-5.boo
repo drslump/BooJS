@@ -1,4 +1,4 @@
-#IGNORE: matrix not supported yet
+#UNSUPPORTED: matrix not supported yet
 """
 a0 as (int)
 a1 as (int)

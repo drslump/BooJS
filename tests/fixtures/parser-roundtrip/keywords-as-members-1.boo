@@ -1,4 +1,4 @@
-#IGNORE: Interfaces not supported yet
+#UNSUPPORTED: Interfaces not supported yet
 """
 """
 

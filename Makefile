@@ -169,6 +169,7 @@ ci-tests:
         BooJs.Tests.Ported.ModulesFixtures, \
         BooJs.Tests.Ported.OperatorsFixtures, \
         BooJs.Tests.Ported.ParserFixtures, \
+        BooJs.Tests.Ported.ParserRoundtripFixtures, \
         BooJs.Tests.Ported.PrimitivesFixtures, \
         BooJs.Tests.Ported.StatementsFixtures, \
         BooJs.Tests.Ported.StdlibFixtures, \

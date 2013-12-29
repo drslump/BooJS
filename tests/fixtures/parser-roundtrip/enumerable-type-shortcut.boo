@@ -1,4 +1,4 @@
-#IGNORE: IEnumerable handling is not fully supported yet
+#IGNORE: BUG - IEnumerable handling is not fully supported yet
 """
 foo
 bar

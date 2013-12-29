@@ -11,3 +11,4 @@ class Test:
 	def method2():
 		pass
 
+t = Test()
