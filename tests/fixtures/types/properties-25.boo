@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 """
 1.0
 1.1

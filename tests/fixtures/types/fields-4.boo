@@ -1,3 +1,5 @@
+#IGNORE: Properties not supported
+
 class Adder:
 
 	public add = { value as int | return value*_amount }

@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 import System.Reflection
 
 class Person:

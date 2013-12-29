@@ -1,3 +1,4 @@
+#IGNORE: BUG - Static constructor / initialization
 """
 -4
 """

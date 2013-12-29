@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 A plant, a species of Morinda allied to the madder, the roots of which yield a red dye.
 a water bucket.

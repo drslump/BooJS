@@ -1,3 +1,4 @@
+#UNSUPPORTED: Inner classes
 """
 nested of a class with dtor
 """

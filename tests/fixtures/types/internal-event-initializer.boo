@@ -1,3 +1,4 @@
+#IGNORE: BUG - Event method assembly generation
 """
 Foo.Bar
 """

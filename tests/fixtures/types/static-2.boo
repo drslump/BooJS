@@ -1,3 +1,4 @@
+#IGNORE: BUG - Static constructor / initialization
 """
 Baz sees 0
 Foo.Bar()

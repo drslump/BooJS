@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection not supported
 """
 object: System.Object
 Base: Base

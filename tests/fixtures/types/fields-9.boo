@@ -1,3 +1,5 @@
+#UNSUPPORTED: Reflection not supported
+
 class FinalFields:
 	
 	public static final Bar = object()

@@ -2,17 +2,14 @@
 int: 3
 string: foo
 """
-import System.Console
 
-def print(value as int):
-	Write("int: ")
-	WriteLine(value)
+def pprint(value as int):
+	print "int:", value
 
 	
-def print(value as string):
-	Write("string: ")
-	WriteLine(value)
+def pprint(value as string):
+	print "string:", value
 
-print(3)
-print("foo")
+pprint(3)
+pprint("foo")
 	

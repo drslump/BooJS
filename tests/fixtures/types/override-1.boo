@@ -8,8 +8,8 @@ class Language:
 	def constructor(name as string):
 		_name = name
 		
-	def ToString() as string:
+	def toString() as string:
 		return _name
 		
-System.Console.Write(Language("boo"))
+print Language("boo")
 

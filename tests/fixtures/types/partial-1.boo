@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 method1
 field1

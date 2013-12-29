@@ -8,7 +8,5 @@ partial enum E:
 partial enum E:
 	Bar
 
-for value in System.Enum.GetValues(E):
-	print value, "=", value cast int
-	
-
+print "Foo = $(E.Foo)"
+print "Bar = $(E.Bar)"

@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 Bar1.get_Count
 1

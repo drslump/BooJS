@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 class Entity:
 	abstract Name as string:
 		get:

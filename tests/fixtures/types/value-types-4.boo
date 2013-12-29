@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 class Point(System.ValueType):
 	public X as int
 	public Y as int

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 #category FailsOnMono
 """
 Value: 5

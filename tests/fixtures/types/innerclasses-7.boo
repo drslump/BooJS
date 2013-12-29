@@ -1,3 +1,4 @@
+#UNSUPPORTED: Inner classes
 namespace Foo.Bar
 
 class Outer:	

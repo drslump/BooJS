@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection not supported
 """
 [Nested1, Nested2]
 """

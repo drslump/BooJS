@@ -1,3 +1,5 @@
+#UNSUPPORTED: Struct not supported
+
 """
 test_implicit_B
 test_implicit_int

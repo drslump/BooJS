@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 """
 Value: 5
 Value: 10

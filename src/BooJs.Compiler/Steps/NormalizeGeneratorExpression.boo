@@ -10,6 +10,9 @@ class NormalizeGeneratorExpression(AbstractTransformerCompilerStep):
 """
     # Keep track of last visited method
     _method as Method
+
+    def OnConstructor(node as Constructor):
+        OnMethod(node as Method)
     
     def OnMethod(node as Method):
         last = _method

@@ -1,8 +1,8 @@
+#BCE0011: Constructor overloading not supported yet
 """
 , foo
 foo, bar
 """
-import System
 
 class Observable:
 

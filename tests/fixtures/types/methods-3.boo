@@ -1,6 +1,5 @@
 """
 Hello, boo!
-
 """
 def main():
 	print(greet("boo"))

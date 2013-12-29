@@ -1,10 +1,11 @@
+#IGNORE: Interfaces not supported yet
 """
 FOO
 """
-class StringList(List[of string], string*):
+class StringList(Array[of string], string*):
 	pass
 	
 ss = StringList()
-ss.Add("foo")
+ss.push("foo")
 for s in ss:
-	print s.ToUpper()
+	print s.toUpperCase()

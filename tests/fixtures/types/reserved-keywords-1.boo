@@ -1,3 +1,4 @@
+#IGNORE: BUG - JavaScript reserved words
 class A:
 	virtual def @then():
 		return "A.then"

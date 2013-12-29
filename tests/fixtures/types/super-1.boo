@@ -1,5 +1,4 @@
 
-
 class A:
 	virtual def Foo():
 		return "A"

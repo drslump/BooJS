@@ -1,7 +1,6 @@
 """
 equals
 different
-
 """
 def foo(message as string):
 	print(message)

@@ -1,3 +1,4 @@
+#IGNORE: Port supporting class
 """
 before
 OverrideBoolOperator.operator bool

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 import System.Reflection
 
 class Point(System.ValueType):

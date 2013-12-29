@@ -1,9 +1,9 @@
+#IGNORE: Interfaces not supported
 """
 object: System.Object
 IFoo: Foo
 IBar: Bar
 """
-import System.Collections
 
 interface IFoo:
 	pass

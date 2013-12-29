@@ -1,4 +1,4 @@
-
+#IGNORE: BUG - Static constructors
 
 class Sketch:
 	public Name as string
@@ -16,5 +16,3 @@ for index, name in enumerate(("The Ministry of Silly Walks",
 							"Silly Job Interview")):
 							
 	assert name == s[index].Name
-
-	

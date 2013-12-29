@@ -1,3 +1,4 @@
+#UNSUPPORTED: .Invoke is not supported
 """
 before
 no handlers
@@ -6,11 +7,10 @@ before
 got it!
 after
 """
-import System
 
 class Observable:
 
-	event Changed as EventHandler
+	event Changed as callable(object, object)
 	
 	def RaiseChanged():
 		print("before")

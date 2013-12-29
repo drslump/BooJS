@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 1
 True

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 class Test[of T]:
 	pass
 class Test[of T,U]:

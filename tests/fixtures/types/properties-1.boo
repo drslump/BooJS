@@ -1,10 +1,10 @@
+#IGNORE: Properties not supported yet
 """
 Simpson, Homer
 """
-import System
 import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
 
 p = Person(LastName: "Simpson")
 p.FirstName = "Homer"
 
-Console.Write("${p.LastName}, ${p.FirstName}")
+print "${p.LastName}, ${p.FirstName}"

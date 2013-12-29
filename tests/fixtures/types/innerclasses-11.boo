@@ -1,3 +1,4 @@
+#UNSUPPORTED: Inner classes
 """
 3
 """

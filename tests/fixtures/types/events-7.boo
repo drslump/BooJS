@@ -1,18 +1,18 @@
+#IGNORE: BUG - Static events
 """
 Idle called
 """
-import System
 
 class Application:
 	
-	static event Idle as EventHandler
+	static event Idle as callable(object, object)
 	
 	static def Run(o):
-		Idle(null, EventArgs.Empty)
+		Idle(null, null)
 	
 class Test:
 	
-	_idleHandler as EventHandler = Application_Idle
+	_idleHandler as callable(object, object) = Application_Idle
 	
 	def constructor():
 		Application.Idle += _idleHandler

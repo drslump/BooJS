@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 class Point(System.ValueType):
 	[property(X)]
 	_x as int

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection not supported
 interface IFoo:
 	Bar:
 		get

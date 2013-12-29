@@ -1,4 +1,4 @@
-
+#IGNORE: Super not fully supported
 
 class A:
 	virtual def Foo():

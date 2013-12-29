@@ -1,3 +1,4 @@
+#IGNORE: BUG - Implicit overloading not fully supported
 """
 MyInt(3)
 4
@@ -20,7 +21,7 @@ struct MyInt:
 		get:
 			return item._v
 			
-	override def ToString():
+	override def toString():
 		return "MyInt(${_v})"
 
 

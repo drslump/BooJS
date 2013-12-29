@@ -1,6 +1,6 @@
 """
 ClassWithNewMethod.Method2
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import ClassWithNewMethod
 
 ClassWithNewMethod().Method2()

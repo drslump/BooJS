@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 class InstanceCount:
 	
 	static _instances = 0

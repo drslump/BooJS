@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection not supported
 """
 System.String
 get_Name

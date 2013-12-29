@@ -1,3 +1,4 @@
+#IGNORE: BUG - Implicit overloading not fully supported
 """
 Holder(3)
 Holder(4)
@@ -7,18 +8,18 @@ Holder(6)
 
 class Holder:
 	def constructor(value as double):
-		_value = value
+		Value = value
 	
 	def op_Implicit(value as double) as Holder:
 		return Holder(value)
 		
-	override def ToString():
-		return "Holder(${_value})"
+	override def toString():
+		return "Holder(${Value})"
 	
 	def op_Addition(left as Holder, right as Holder):
-		return Holder(left._value + right._value)
+		return Holder(left.Value + right.Value)
 		
-	[getter(Value)] _value as double
+	public Value as double
 
 def testreturn() as Holder:
 	return 6.0

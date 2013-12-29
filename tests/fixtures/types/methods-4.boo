@@ -1,6 +1,5 @@
 """
 Hello!
-
 """
 def main():
 	text = "Hello!"
@@ -8,6 +7,6 @@ def main():
 	
 def say(text):
 	message = "${text}"
-	System.Console.WriteLine(message)
+	print message
 	
 main()

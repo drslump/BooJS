@@ -1,3 +1,5 @@
+#UNSUPPORTED: .Net library not supported
+
 import System
 import System.Xml.Serialization from System.Xml
 

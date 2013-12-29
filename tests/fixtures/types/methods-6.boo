@@ -1,7 +1,6 @@
 """
 true
 false
-
 """
 def conditional(condition as bool):
 	if condition:

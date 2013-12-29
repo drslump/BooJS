@@ -1,3 +1,5 @@
+#UNSUPPORTED: Reflection not supported
+
 import System
 import System.Reflection
 

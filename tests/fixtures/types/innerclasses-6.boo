@@ -1,3 +1,4 @@
+#UNSUPPORTED: Inner classes
 class Outer:	
 
 	[getter(Values)]

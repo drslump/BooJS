@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 import System
 import System.Data
 import System.Data.SqlClient

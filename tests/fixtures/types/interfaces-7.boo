@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 Disposable.constructor
 Disposable.Dispose

@@ -5,6 +5,6 @@ class Foo:
 	def constructor():
 		pass
 		
-	public Value as string = string.Empty
+	public Value as string = ''
 	
-print(Foo().Value is string.Empty)
+print(Foo().Value is '')

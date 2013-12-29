@@ -1,3 +1,4 @@
+#IGNORE: .Net stdlib not supported
 """
 collection: foo bar
 enumerable: 0 1 2

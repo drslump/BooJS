@@ -6,15 +6,14 @@ clicked!
 clicked again!
 clicked!
 """
-import System
 
 class Button:
-	event Click as EventHandler
+	event Click as callable(object, object)
 	
 	def RaiseClick():
-		Click(self, EventArgs.Empty)
+		Click(self, null)
 	
-def click(sender, args as EventArgs):
+def click(sender, args as object):
 	print("clicked again!")
 
 b = Button()
@@ -26,7 +25,7 @@ print("nothing printed")
 b.Click += def (sender, args):
 	print("clicked!")
 	assert sender is b
-	assert EventArgs.Empty is args
+	assert null is args
 	
 b.RaiseClick()
 

@@ -1,3 +1,5 @@
+#IGNORE: Interfaces not supported yet
+
 """
 before
 Dispose(True)

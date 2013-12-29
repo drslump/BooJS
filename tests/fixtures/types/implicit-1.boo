@@ -1,3 +1,4 @@
+#IGNORE: .Net library not supported
 """
 {X=0, Y=0}
 {X=0, Y=0}

@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 import System
 
 convertible as IConvertible = 3

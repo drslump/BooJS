@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 """
 A.Foo.set
 A.Foo.set

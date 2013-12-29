@@ -1,3 +1,4 @@
+#IGNORE: BUG - Order of definitions impacts resolution
 
 class Foo:
 

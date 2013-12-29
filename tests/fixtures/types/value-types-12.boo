@@ -1,3 +1,4 @@
+#UNSUPPORTED: Value types not supported
 class Size(System.ValueType):
 	public Width as int
 	public Height as int

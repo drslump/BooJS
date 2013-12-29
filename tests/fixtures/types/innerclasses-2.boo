@@ -1,3 +1,4 @@
+#UNSUPPORTED: Inner classes
 """
 Outer+Inner.Dispose
 """

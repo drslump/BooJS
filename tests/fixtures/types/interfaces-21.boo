@@ -1,3 +1,4 @@
+#IGNORE: Interfaces not supported yet
 """
 f00f!
 """

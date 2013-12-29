@@ -1,3 +1,4 @@
+#IGNORE: Meta programming not fully supported
 """
 module0(4,17): BCE0004: Ambiguous reference 'IFoo': NS1.IFoo, NS2.IFoo.
 """

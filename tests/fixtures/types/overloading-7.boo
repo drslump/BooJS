@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 int:33
 string:test

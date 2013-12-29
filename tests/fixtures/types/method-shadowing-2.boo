@@ -1,3 +1,4 @@
+#IGNORE: BUG - All methods are virtual right now
 """
 A.Foo
 A.Foo

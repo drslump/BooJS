@@ -8,7 +8,7 @@ class Clickable:
 	callable ClickHandler(sender as object, args)
 
 	protected def RaiseClick():
-		self.Click(self, System.EventArgs.Empty)
+		self.Click(self, null)
 
 class Clickable2(Clickable):
 	def DoRaiseClick():

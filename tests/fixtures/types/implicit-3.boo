@@ -1,3 +1,4 @@
+#IGNORE: BUG - Implicit overloading not fully supported
 """
 Alpha(1)
 Bravo(1)
@@ -7,16 +8,16 @@ Bravo(1)
 
 class Alpha:
 	def constructor(value as double):
-		_value = value
+		Value = value
 	
-	override def ToString():
-		return "Alpha(${_value})"
+	override def toString():
+		return "Alpha(${Value})"
 	
-	[getter(Value)] _value as double
+	public Value as double
 
 class Bravo:
 	def constructor(value as double):
-		_value = value
+		Value = value
 	
 	def op_Implicit(value as Alpha) as Bravo:
 		return Bravo(value.Value)
@@ -24,10 +25,10 @@ class Bravo:
 	def op_Implicit(value as Bravo) as Alpha:
 		return Alpha(value.Value)
 	
-	override def ToString():
-		return "Bravo(${_value})"
+	override def toString():
+		return "Bravo(${Value})"
 	
-	[getter(Value)] _value as double
+	public Value as double
 
 def PrintAlpha(alpha as Alpha):
 	print alpha

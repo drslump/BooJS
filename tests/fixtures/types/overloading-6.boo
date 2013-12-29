@@ -1,5 +1,6 @@
+#IGNORE: Port support classes
 
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import AmbiguousSub2
 
 class Path:
 	pass

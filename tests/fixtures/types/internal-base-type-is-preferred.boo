@@ -1,3 +1,4 @@
+#IGNORE: Meta programming not fully supported yet
 """
 Hooray!
 """

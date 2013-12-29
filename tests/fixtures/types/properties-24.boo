@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported yet
 class Foo:
 	
 	[property(Version)]
