@@ -1,4 +1,4 @@
-#IGNORE: Runtime type-based overloading not supported yet
+#UNSUPPORTED: Runtime overloading based on argument type
 #DUCKY
 """
 double: 1.5 
