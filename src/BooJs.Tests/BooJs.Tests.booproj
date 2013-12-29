@@ -54,7 +54,7 @@
       <HintPath>..\..\lib\Boo.Lang.PatternMatching.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <Private>False</Private>
+      <HintPath>..\..\lib\nunit\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

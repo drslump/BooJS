@@ -1,4 +1,4 @@
-#IGNORE: matrix method not supported
+#UNSUPPORTED: matrix method not supported
 """
 1
 0

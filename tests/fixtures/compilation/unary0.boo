@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#UNSUPPORTED: Checked arithmetic not supported 
 """
 -3
 32767

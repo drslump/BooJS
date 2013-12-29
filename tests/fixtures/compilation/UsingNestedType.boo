@@ -1,4 +1,4 @@
-#IGNORE: Absolute fqn not supported yet
+#UNSUPPORTED: Absolute fqn not supported yet
 """
 0
 """

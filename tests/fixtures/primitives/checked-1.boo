@@ -1,4 +1,4 @@
-#IGNORE Checked arithmetic is not supported
+#UNSUPPORTED: Checked arithmetic is not supported
 """
 j: OverflowException
 no exception and k is -2147483648

@@ -1,4 +1,4 @@
-#IGNORE: BooJS stdlib does not support this method
+#UNSUPPORTED: .Net runtime not supported
 """
 System.Int32[]
 System.Int32[,]

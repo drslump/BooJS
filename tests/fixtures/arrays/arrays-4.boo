@@ -1,4 +1,4 @@
-#IGNORE: .ToArray not supported
+#UNSUPPORTED: .Net library not supported
 """
 System.Int32[]
 """

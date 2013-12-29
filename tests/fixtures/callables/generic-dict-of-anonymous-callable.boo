@@ -1,4 +1,4 @@
-#IGNORE: Generic dictionary not supported
+#UNSUPPORTED: .Net library not supported
 """
 foo
 bar

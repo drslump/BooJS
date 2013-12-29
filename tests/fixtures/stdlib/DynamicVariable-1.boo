@@ -1,4 +1,4 @@
-#IGNORE: DynamicVariable runtime not supported
+#UNSUPPORTED: DynamicVariable runtime not supported
 """
 True
 False

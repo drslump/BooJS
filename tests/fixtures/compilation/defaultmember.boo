@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Properties not supported yet
 """
 C1.ItemOne
 set C1.ItemOne

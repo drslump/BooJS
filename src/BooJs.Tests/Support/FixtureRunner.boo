@@ -115,7 +115,7 @@ class FixtureRunner:
         elif line.IndexOf('#BCE') == 0 or line.IndexOf('#BCW') == 0:
           expected_diags.Add(line.Substring(1, 7).TrimEnd())
         elif line.IndexOf('#UNSUPPORTED') == 0:
-          return
+          Assert.Inconclusive(line.Substring(len('#UNSUPPORTED:')).Trim())
 
       comp.Parameters.Input.Clear()
       comp.Parameters.Input.Add(FileInput(file))

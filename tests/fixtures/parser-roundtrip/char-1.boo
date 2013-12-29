@@ -1,4 +1,4 @@
-#IGNORE: char type not supported
+#UNSUPPORTED: char type not supported
 """
 print char('a')
 """

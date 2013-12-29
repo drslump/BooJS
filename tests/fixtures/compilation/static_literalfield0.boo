@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#UNSUPPORTED: Reflection
 """
 255
 System.Byte

@@ -1,4 +1,4 @@
-#IGNORE: Environments not supported
+#UNSUPPORTED: Environments not supported
 """
 """
 import Boo.Lang.Environments

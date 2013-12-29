@@ -1,4 +1,4 @@
-#IGNORE: Meta programming not fully supported
+#UNSUPPORTED: array indexing macros not supported
 """
 it worked!
 """

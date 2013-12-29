@@ -1,4 +1,4 @@
-#IGNORE char type not supported yet
+#UNSUPPORTED: char type not supported
 """
 System.Char
 a

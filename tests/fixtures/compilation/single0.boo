@@ -1,4 +1,4 @@
-#IGNORE: Typesystem not fully supported
+#UNSUPPORTED: Reflection
 """
 System.Single
 System.Single

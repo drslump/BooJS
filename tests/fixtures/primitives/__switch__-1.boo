@@ -1,4 +1,4 @@
-#IGNORE __switch__ is not supported
+#UNSUPPORTED: __switch__ is not supported
 """
 """
 def foo(value as int):

@@ -1,4 +1,4 @@
-#IGNORE: Meta programming not supported yet
+#UNSUPPORTED: Meta programming not supported yet
 """
 Hello!
 """

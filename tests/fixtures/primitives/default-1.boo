@@ -1,4 +1,4 @@
-#IGNORE not supported
+#UNSUPPORTED: Default values not supported
 """
 """
 interface IInterface:

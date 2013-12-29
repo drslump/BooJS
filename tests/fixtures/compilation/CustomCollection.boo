@@ -1,4 +1,5 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Properties not supported yet
+#IGNORE: Interfaces not supported yet
 """
 Homer
 Eric

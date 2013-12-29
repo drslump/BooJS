@@ -1,4 +1,4 @@
-#IGNORE: No class support yet
+#IGNORE: Properties not supported yet
 namespace MultiFileTest
 
 class Character:

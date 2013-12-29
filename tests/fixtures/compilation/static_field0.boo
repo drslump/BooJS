@@ -1,4 +1,4 @@
-#IGNORE: Static fields not fully supported yet
+#IGNORE: BUG - Static fields not fully supported yet
 """
 0
 1

@@ -1,10 +1,8 @@
-#IGNORE: Type system not fully supported
+#!IGNORE: Type system not fully supported
 """
 1, bar
 2, baz
 3, foo
-null
-null
 1
 2
 3
@@ -12,19 +10,21 @@ null
 5
 8
 null
+null
 1, 1
 1, 2
 1, 2, 3
 1, 2, 4
 1, 3
+null
 """
-def sort(items as List):
-	for item in items.Sort():
+def sort(items as Array):
+	for item in items.sort():
 		if item is null:
 			print("null")
 			continue
 			
-		if item isa System.Array:
+		if item isa Array:
 			print(join(item, ", "))
 			continue
 		

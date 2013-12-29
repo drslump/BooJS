@@ -1,4 +1,4 @@
-#IGNORE Checked/unchecked arithmetic is not supported
+#UNSUPPORTED: Checked/unchecked arithmetic is not supported
 """
 -2147483648
 """

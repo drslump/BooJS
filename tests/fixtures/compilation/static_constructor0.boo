@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: BUG - Constructor overloading
 """
 static constructor called
 0

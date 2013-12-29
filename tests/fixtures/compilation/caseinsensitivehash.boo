@@ -1,4 +1,4 @@
-#IGNORE: Hash caseinsensitive variant is not implemented
+#UNSUPPORTED: Hash caseinsensitive variant is not implemented
 """
 bar
 True

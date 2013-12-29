@@ -1,4 +1,4 @@
-#IGNORE: Type system not fully supported
+#UNSUPPORTED: Reflection
 """
 System.Int64
 System.Int64

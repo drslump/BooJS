@@ -1,4 +1,4 @@
-#IGNORE Char type not supported yet
+#UNSUPPORTED: char type not supported
 """
 b
 """

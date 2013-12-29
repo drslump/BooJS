@@ -1,4 +1,4 @@
-#IGNORE: Struct not implemented yet
+#UNSUPPORTED: Struct not implemented yet
 """
 Vector
 """

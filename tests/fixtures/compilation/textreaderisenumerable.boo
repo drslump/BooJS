@@ -1,4 +1,4 @@
-#IGNORE: .Net framework not supported
+#UNSUPPORTED: .Net framework not supported
 """
 foo
 bar

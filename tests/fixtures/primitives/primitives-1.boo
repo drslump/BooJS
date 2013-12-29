@@ -1,4 +1,4 @@
-#IGNORE Data types comparisons are not available in JS runtime
+#UNSUPPORTED: Reflection not supported
 
 def same(expected, actual):
 	assert expected is actual

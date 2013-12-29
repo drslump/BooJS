@@ -1,4 +1,4 @@
-#IGNORE char type is not supported
+#UNSUPPORTED: char type not supported
 """
 """
 def chr(value):

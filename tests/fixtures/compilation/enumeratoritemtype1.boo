@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#UNSUPPORTED: GetEnumerator is not supported
 """
 FOO
 BAR
@@ -9,4 +9,4 @@ class Enumerable(System.Collections.IEnumerable):
 		return ("foo", "bar").GetEnumerator()
 		
 for s in Enumerable():
-	print(s.ToUpper()) # s is declared as System.String
+	print(s.toUpperCase()) # s is declared as System.String

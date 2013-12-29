@@ -1,4 +1,4 @@
-#IGNORE Decimal type not supported yet
+#UNSUPPORTED: Decimal type not supported yet
 """
 """
 def toDecimal(d as decimal):

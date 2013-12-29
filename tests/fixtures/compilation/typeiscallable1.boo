@@ -1,4 +1,4 @@
-#IGNORE: Getter attribute not supported yet
+#IGNORE: Properties not supported yet
 """
 Eric
 Terry

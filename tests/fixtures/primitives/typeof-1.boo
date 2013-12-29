@@ -1,9 +1,7 @@
-#IGNORE: Javascript typesystem does not support this use
 """
-System.String
-Boo.Lang.List
-
+string
+function Array() { [native code] }
 """
 print(typeof(string))
-print(typeof(Hash))
+print(typeof(Array))
 

@@ -1,4 +1,4 @@
-#IGNORE: matrix method not supported
+#UNSUPPORTED: matrix method not supported
 """
 System.Int32[,]
 System.String[,]

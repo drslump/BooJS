@@ -1,4 +1,4 @@
-#IGNORE: Increment on non simple references should raise a not supported error
+#IGNORE: BUG - Should trigger an unsupported error BCE0031
 """
 4
 """
