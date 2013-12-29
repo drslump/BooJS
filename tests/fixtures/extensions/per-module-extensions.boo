@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported
 #category FailsOnMono
 """
 m1 m1

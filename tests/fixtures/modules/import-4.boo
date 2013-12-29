@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection
 """
 System.Drawing.Point
 """

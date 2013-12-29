@@ -1,3 +1,4 @@
+#IGNORE: Properties not supported
 """
 StringExtensions.length
 3

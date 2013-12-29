@@ -1,3 +1,4 @@
+#IGNORE: BUG - implicit conversion not supported
 enum E:
 	None
 	Foo = 1
@@ -5,8 +6,8 @@ enum E:
 	Baz = 4
 
 [Extension]
-static def op_Implicit(e as System.Enum) as bool:
-	return cast(System.IConvertible, e).ToInt32(null) != 0
+static def op_Implicit(e as Enum) as bool:
+	return cast(int, e) != 0
 
 flags = E.Foo | E.Bar
 

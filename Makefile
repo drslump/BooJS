@@ -162,9 +162,11 @@ ci-tests:
         BooJs.Tests.Ported.CompilationFixtures, \
         BooJs.Tests.Ported.DuckyFixtures, \
         BooJs.Tests.Ported.DucktypingFixtures, \
+        BooJs.Tests.Ported.ExtensionsFixtures, \
         BooJs.Tests.Ported.GeneratorsFixtures, \
         BooJs.Tests.Ported.GenericsFixtures, \
         BooJs.Tests.Ported.MetaProgrammingFixtures, \
+        BooJs.Tests.Ported.ModulesFixtures, \
         BooJs.Tests.Ported.OperatorsFixtures, \
         BooJs.Tests.Ported.PrimitivesFixtures, \
         BooJs.Tests.Ported.StatementsFixtures, \

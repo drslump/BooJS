@@ -1,3 +1,4 @@
+#UNSUPPORTED: Main method is not called by default
 """
 it works
 """

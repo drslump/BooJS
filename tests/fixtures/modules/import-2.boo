@@ -1,6 +1,6 @@
 """
-Hello, System.Console!
+1
 """
-import System.Console
+import BooJs.Tests.Support
 
-Write("Hello, System.Console!")
+print Gender.Female

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection
 """
 System.Text.StringBuilder
 """

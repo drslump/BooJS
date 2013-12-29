@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported
 """
 01 => A
 02 => B

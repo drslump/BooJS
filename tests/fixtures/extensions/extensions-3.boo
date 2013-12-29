@@ -1,12 +1,12 @@
 """
-IEnumerable.Each
+Iterable.Each
 Hello
 interface
 extensions
 """
 [Extension]
-def Each(e as System.Collections.IEnumerable, action as callable(object)):
-	print "IEnumerable.Each"
+def Each(e as Iterable, action as callable(object)):
+	print "Iterable.Each"
 	for item in e:
 		action(item)
 		

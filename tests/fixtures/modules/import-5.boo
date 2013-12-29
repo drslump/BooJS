@@ -1,6 +1,6 @@
 """
-Hello, S!
+1
 """
-import System as S
+import BooJs.Tests.Support.Gender as G
 
-S.Console.Write("Hello, S!")
+print G.Female

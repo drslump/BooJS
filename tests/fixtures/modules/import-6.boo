@@ -1,7 +1,7 @@
+#UNSUPPORTED: Loading from assembly reference not supported
 """
-MyPoint(0, 0)
+1
 """
-import System
-import System.Drawing from BooCompiler.Tests
+import BooJs.Tests.Support from BooJs.Tests.Support
 
-System.Console.Write(Point(0, 0).ToString())
+print Gender.Female

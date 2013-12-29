@@ -1,8 +1,9 @@
+#IGNORE: BUG - implicit conversion not supported
 """
 1, 2, 3
 """
 [Extension]
-def op_Implicit(a as System.Array) as string:
+def op_Implicit(a as Array) as string:
 	return join(a, ', ')
 
 a = (1, 2, 3)

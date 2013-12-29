@@ -1,10 +1,10 @@
+#UNSUPPORTED: Loading from assembly reference not supported
 """
-BooCompiler.Tests
-System.Drawing
+1
+1
 """
-import System
-import System.Drawing from System.Drawing as SD
-import System.Drawing from BooCompiler.Tests
+import BooJs.Tests.Support from BooJs.Tests.Support as SD
+import BooJs.Tests.Support from BooJs.Tests.Support
 
-Console.WriteLine(Point(0, 0).GetType().Assembly.GetName().Name)
-Console.Write(SD.Point(0, 0).GetType().Assembly.GetName().Name)
+print SD.Gender.Female
+print Gender.Female

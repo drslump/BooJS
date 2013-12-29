@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported
 import Boo.Lang.Compiler
 
 def compile(src, references):

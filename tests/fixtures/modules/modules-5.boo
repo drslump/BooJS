@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported
 import System
 import Boo.Lang.Compiler
 import Boo.Lang.Compiler.IO

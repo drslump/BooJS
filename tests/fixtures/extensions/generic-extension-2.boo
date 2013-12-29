@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported
 """
 spam (System.String)
 42 (System.Int32)

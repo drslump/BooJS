@@ -1,22 +1,23 @@
+#IGNORE: BUG - Overloading breaks extension definitions
 """
-List.Each
+Array.Each
 Hello
 interface
 extensions
-IEnumerable.Each
+Iterable.Each
 1
 2
 3
 """
 [Extension]
-def Each(e as System.Collections.IEnumerable, action as callable(object)):
-	print "IEnumerable.Each"
+def Each(e as Iterable, action as callable(object)):
+	print "Iterable.Each"
 	for item in e:
 		action(item)
 		
 [Extension]
-def Each(l as List, action as callable(object)):
-	print "List.Each"
+def Each(l as Array, action as callable(object)):
+	print "Array.Each"
 	for i in range(len(l)):
 		action(l[i])
 		

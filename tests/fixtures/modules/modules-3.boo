@@ -1,3 +1,4 @@
+#UNSUPPORTED: Supporting test class not ported
 import SunShip from BooModules
 
 

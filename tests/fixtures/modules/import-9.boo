@@ -1,10 +1,13 @@
+#UNSUPPORTED: Need more test namespaces to make it work
 """
-System.Text.StringBuilder
-System.Drawing.Rectangle
+1
+1
+1
 """
-from System.Text import *
-from System import Console as Cons
-from System.Drawing import Rectangle
+from BooJs.Tests.Support import *
+from BooJs.Tests.Support import Gender as G
+from BooJs.Tests.Support import TestEnum
 
-print StringBuilder().GetType()
-Cons.Write(Rectangle(0, 0, 1, 1).GetType())
+print Gender.Female
+print G.Female
+print TestEnum.Foo

@@ -1,3 +1,4 @@
+#IGNORE: BUG - Extension resolution for self is broken
 """
 it works for explicit self
 it works for implicit self

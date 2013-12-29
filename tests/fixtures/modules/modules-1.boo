@@ -1,3 +1,4 @@
+#UNSUPPORTED: Reflection
 import System
 import System.Reflection
 
