@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: BUG - Inherit from callable
 #DUCKY
 """
 baz

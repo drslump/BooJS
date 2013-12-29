@@ -1,3 +1,4 @@
+#IGNORE: BUG - ducky dispatching
 #DUCKY
 """
 func1

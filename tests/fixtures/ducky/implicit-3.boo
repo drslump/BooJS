@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#IGNORE: Properties not supported yet
 #DUCKY
 """
 gate is open

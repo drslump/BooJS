@@ -1,4 +1,4 @@
-#IGNORE: Struct not supported yet
+#UNSUPPORTED: Struct not supported yet
 #DUCKY
 """
 1 Point(1, 1) Point(2, 2)

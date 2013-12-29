@@ -1,3 +1,4 @@
+#IGNORE: BUG - Slicing duck types
 #DUCKY
 """
 0

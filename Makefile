@@ -160,17 +160,18 @@ ci-tests:
         BooJs.Tests.Ported.ClassesFixtures, \
         BooJs.Tests.Ported.ClosuresFixtures, \
         BooJs.Tests.Ported.CompilationFixtures, \
+        BooJs.Tests.Ported.DuckyFixtures, \
         BooJs.Tests.Ported.DucktypingFixtures, \
         BooJs.Tests.Ported.GeneratorsFixtures, \
         BooJs.Tests.Ported.OperatorsFixtures, \
         BooJs.Tests.Ported.PrimitivesFixtures, \
         BooJs.Tests.Ported.StatementsFixtures, \
         BooJs.Tests.Ported.StdlibFixtures, \
+        BooJs.Tests.Ported.TypesFixtures, \
         BooJs.Tests.BoojsFixtures, \
         BooJs.Tests.DevelFixtures, \
         BooJs.Tests.SaveFileTest, \
         BooJs.Tests.SourceMapTest, \
-        BooJs.Tests.TypesFixtures, \
         BooJs.Tests.TypesystemFixtures \
 	" \
 	src/BooJs.Tests.Ported/bin/Debug/BooJs.Tests*.dll

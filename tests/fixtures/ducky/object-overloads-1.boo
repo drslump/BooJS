@@ -1,4 +1,4 @@
-#IGNORE: date type not supported yet
+#UNSUPPORTED: date type not supported yet
 #DUCKY
 """
 05/21/2007 22:40:05

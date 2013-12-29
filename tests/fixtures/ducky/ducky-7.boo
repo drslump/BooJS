@@ -1,4 +1,4 @@
-#IGNORE: IQuackFu not supported yet
+#UNSUPPORTED: IQuackFu not supported yet
 #DUCKY
 """
 Homer
