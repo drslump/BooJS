@@ -1,4 +1,4 @@
-#IGNORE: Classes not supported yet
+#UNSUPPORTED: Docstrings are not kept in the generated code
 """
 A module can have a docstring.
 """

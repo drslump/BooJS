@@ -1,14 +1,19 @@
-#IGNORE: Classes not supported yet
+"""
+title body tag
+"""
 namespace ITL.Content
 
-import System
 
 class Article:
 	def getTitle() as string:
-		pass
+		return 'title'
 
 	def getBody() as string:
-		pass
+		return 'body'
 
 	def getTag():
-		pass
+		return 'tag'
+
+
+a = Article()
+print a.getTitle(), a.getBody(), a.getTag()

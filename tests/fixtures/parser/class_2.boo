@@ -1,4 +1,7 @@
-#IGNORE: Classes not supported yet
+"""
+ID: 1111
+First Name: Bamboo
+"""
 class Person:
 
 	_id as string
@@ -16,7 +19,7 @@ class Person:
 		return _fname
 
 	public static def Dump(p as Person):
-		print(string.Format("ID: {0}\nFirst Name: {1}", p._id, p._fname))
+		print("ID: {0}\nFirst Name: {1}" % (p._id, p._fname))
 
 
 p = Person("1111", "Bamboo")

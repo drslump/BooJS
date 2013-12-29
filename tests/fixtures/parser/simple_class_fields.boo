@@ -1,4 +1,6 @@
-#IGNORE: Classes not supported yet
+"""
+foo
+"""
 namespace ITL.PM
 
 class Project:
@@ -6,8 +8,11 @@ class Project:
 	_name as string
 
 	def constructor(name as string):
-		pass
+		_name = name
 
 	def getName():
 		return _name
+
+p = Project('foo')
+print p.getName()
 

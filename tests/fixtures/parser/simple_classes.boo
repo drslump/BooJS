@@ -1,4 +1,5 @@
-#IGNORE: Classes not supported yet
+"""
+"""
 namespace Foo.Bar
 
 class Customer:
@@ -6,3 +7,7 @@ class Customer:
 
 class Person:
 	pass
+
+
+c = Customer()
+p = Person()
