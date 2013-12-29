@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 Foo3
 Foo2

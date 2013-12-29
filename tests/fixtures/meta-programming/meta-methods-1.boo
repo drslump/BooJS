@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 compile time: (x is null)
 compile time: (x is not null)

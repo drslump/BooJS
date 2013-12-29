@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 class Foo:
 	_has as bool
 

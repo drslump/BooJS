@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 (a as Foo)
 (a as Foo.Bar)

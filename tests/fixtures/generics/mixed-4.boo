@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 import MixedBase from "mixedbase"
 
 class Person:

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 compile time: true
 compile time: false

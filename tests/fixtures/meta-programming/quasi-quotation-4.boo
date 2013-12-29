@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 block :
 	a = b if (a is not null)

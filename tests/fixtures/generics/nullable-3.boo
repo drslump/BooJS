@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 a nullable arithmetic with one operand without value cannot be cast to a non-nullable
 """

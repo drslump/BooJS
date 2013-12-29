@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 System.String
 Hello

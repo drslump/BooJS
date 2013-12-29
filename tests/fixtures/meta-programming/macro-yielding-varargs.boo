@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 1
 1, 2

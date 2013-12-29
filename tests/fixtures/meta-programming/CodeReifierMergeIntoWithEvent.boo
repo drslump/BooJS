@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 Foo.Trigger(1)
 Foo.Trigger(2)

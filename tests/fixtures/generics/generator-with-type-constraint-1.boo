@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 #ignore generic generators not supported yet
 """
 D

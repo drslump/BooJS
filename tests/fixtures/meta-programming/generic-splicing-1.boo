@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 Foo[of int]()
 (value as Foo[of int])

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 class Base:
 	virtual def Method[of T](arg as T):
 		return arg

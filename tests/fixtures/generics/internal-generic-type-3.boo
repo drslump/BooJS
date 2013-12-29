@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 public struct GenericStruct[of T]:
 	Field as T
 

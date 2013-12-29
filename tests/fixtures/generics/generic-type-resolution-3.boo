@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 Generic`1[System.Int32]
 Generic`2[System.Int32,System.String]

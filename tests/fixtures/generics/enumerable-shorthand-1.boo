@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 System.Collections.Generic.IEnumerable`1[System.Int32]
 System.Collections.Generic.IEnumerable`1[System.Nullable`1[System.Int32]]

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 import System
 
 d = Nullable of date()

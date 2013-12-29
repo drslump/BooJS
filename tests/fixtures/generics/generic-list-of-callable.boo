@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 Boo.Lang.List`1[TestFuncs.MyCallable]
 """

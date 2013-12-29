@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 na has value
 nn has no value

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 lexical-info-is-preserved.boo
 8

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 public class GenericType[of T]:
 	pass
 

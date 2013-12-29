@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 internal class Foo(Bar):
 

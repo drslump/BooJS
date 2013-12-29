@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 class xList[of T](List[of T]):
 	pass
 	

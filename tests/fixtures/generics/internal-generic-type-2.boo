@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 public interface GenericInterface[of T]:
 	pass
 

@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 #ignore generics with nested types not supported yet
 """
 System.String

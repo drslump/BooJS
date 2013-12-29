@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 Foo.Bar(1)
 Foo.Bar(2)

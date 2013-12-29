@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 a = 0
 c = 1
 na as int? = 0

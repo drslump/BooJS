@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 { print 'Merry Christmas, I don\'t want to fight tonite' }()
 """

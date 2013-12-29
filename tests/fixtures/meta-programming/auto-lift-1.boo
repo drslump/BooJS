@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 if not (x == y):
 	raise AssertionFailedException('x == y')

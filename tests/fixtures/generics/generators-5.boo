@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 import System
 import System.Collections.Generic
 

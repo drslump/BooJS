@@ -1,3 +1,4 @@
+#UNSUPPORTED: Generics not supported yet
 """
 A => Avish
 B => Bamboo

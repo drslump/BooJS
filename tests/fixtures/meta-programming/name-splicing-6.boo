@@ -1,3 +1,4 @@
+#UNSUPPORTED: Meta programming not supported yet
 """
 def foo():
 	return self.bar
