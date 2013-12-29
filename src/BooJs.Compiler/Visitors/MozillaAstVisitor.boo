@@ -340,6 +340,16 @@ Transforms a Boo AST into a Mozilla AST
         )
         cons.body.Add(ifst)
 
+        # Call parent constructor
+        ce = Moz.CallExpression(
+            callee: Moz.Identifier('_super_.apply'),
+            arguments: List[of Moz.IExpression]() {
+                Moz.ThisExpression(),
+                Moz.Identifier('arguments')
+            }
+        )
+        cons.body.Add(ce)
+
         # Bind instance methods
         # js: this.foo = Boo.bind(this.foo, this);
         for m in node.Members:
