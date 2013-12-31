@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: DefaultMember attribute
 """
 bar
 """

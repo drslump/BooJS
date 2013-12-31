@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported
+#IGNORE: BUG - Ducky invocations still use runtime helpers in some cases
 #DUCKY
 """
 Foo.bar
@@ -10,16 +10,16 @@ before property
 42
 """
 class Foo:
-	[getter(Function)]
-	public function as duck
+	[getter(Func)]
+	public func as duck
 	
-	def constructor(function):
-		self.function = function
+	def constructor(func):
+		self.func = func
 		
 	def bar():
 		print "Foo.bar"
-		function()
-		self.function()
+		func()
+		self.func()
 		
 def bar():
 	print "42"
@@ -27,8 +27,8 @@ def bar():
 f = Foo(bar)
 f.bar()
 print "before field"
-f.function()
+f.func()
 print "before property"
-f.Function()
+f.Func()
 		
 		

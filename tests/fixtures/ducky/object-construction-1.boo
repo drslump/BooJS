@@ -1,4 +1,4 @@
-#IGNORE: Property macro not supported yet
+#IGNORE: BUG - some ducky calls still use runtime helper
 #DUCKY
 """
 John Cleese
@@ -8,17 +8,17 @@ class Person:
 	property Name = ""
 	
 class Dog:
-	property Name _name = ""
+	property Name = ""
 	
-def New(type as System.Type, name as string):
+def New(type as Object, name as string):
 	return type(Name: name)
 	
 p = New(Person, "John Cleese")
-assert Person is p.GetType()
+assert p isa Person
 print p.Name
 
 d = New(Dog, "Fifi")
-assert Dog is d.GetType()
+assert d isa Dog
 print d.Name
 
 

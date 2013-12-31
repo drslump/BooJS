@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Static constructor/initialization not fully supported
 """
 default
 """

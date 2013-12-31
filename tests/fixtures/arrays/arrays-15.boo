@@ -1,4 +1,4 @@
-#IGNORE: Properties not yet supported
+#BCE0031 - Complex slicing not yet supported
 """
 1
 0

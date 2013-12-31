@@ -1,4 +1,6 @@
-#IGNORE: Classes not supported yet
+"""
+Elvin Jones
+"""
 class Person:
 
 	_id as string

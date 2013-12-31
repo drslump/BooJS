@@ -1,5 +1,5 @@
+#UNSUPPORTED: Ducky values do not resolve properties
 #DUCKY
-#IGNORE: Property macro not ported yet
 """
 Homer Simpson
 John Cleese

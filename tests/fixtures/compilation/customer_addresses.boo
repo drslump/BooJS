@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 """
 foo street, 50
 """
@@ -14,7 +13,7 @@ class Address:
 		_street = street
 		_number = number
 		
-	override def ToString():
+	override def toString():
 		return "${_street}, ${_number}"
 		
 class Customer:
@@ -25,10 +24,10 @@ class Customer:
 	[getter(Name)]
 	_name as string
 	
-	def constructor([required] name as string):
+	def constructor(name as string):
 		_name = name
 			
 c = Customer("Homer Simpson")
-c.Addresses.Add(Address("foo street", 50))
+c.Addresses.push(Address("foo street", 50))
 
 print(c.Addresses[0])

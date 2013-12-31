@@ -1,4 +1,3 @@
-#IGNORE: Properties not fully supported
 """
 42
 """

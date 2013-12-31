@@ -1,4 +1,4 @@
-#IGNORE: Property macro not ported yet
+#IGNORE: Implicit overloading not fully supported
 #DUCKY
 """
 a love supreme

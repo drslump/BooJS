@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: Callable definitions
 import System
 
 callable Function(item) as object

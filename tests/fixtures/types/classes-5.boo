@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 """
 homer simpson
 """
@@ -18,4 +17,4 @@ class Person:
 		return "${_fname} ${_lname}"
 		
 homer = Person("homer", "simpson")
-print(homer.ToString())
+print(homer.toString())

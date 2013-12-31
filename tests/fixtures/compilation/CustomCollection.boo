@@ -1,5 +1,4 @@
-#IGNORE: Properties not supported yet
-#IGNORE: Interfaces not supported yet
+#UNSUPPORTED: Interfaces not supported yet
 """
 Homer
 Eric

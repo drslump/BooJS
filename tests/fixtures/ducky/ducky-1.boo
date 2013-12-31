@@ -1,3 +1,4 @@
+#UNSUPPORTED: Ducky values do not resolve properties
 #DUCKY
 """
 Homer Simpson

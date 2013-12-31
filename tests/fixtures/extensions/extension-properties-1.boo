@@ -1,15 +1,14 @@
-#IGNORE: Properties not supported
+#IGNORE: BUG - Static properties not supported yet
 """
 StringExtensions.length
 3
 """
-import StringExtensions
 
 class StringExtensions:
 	[Extension]
-	static length[s as string]:
+	static count[s as string]:
 		get:
 			print "StringExtensions.length"
 			return len(s)
 			
-print "FOO".length
+print "FOO".count

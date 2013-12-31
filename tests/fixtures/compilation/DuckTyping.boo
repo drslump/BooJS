@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: Duck typing does not resolve properties
 """
 File.Name
 Person.Name

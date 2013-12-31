@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - type references generate the use of System.Activator
 """
 Homer
 """

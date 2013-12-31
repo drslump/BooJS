@@ -1,5 +1,6 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Type references not properly mapped to namespaces
 """
+juan
 """
 class Customer:
 
@@ -15,3 +16,8 @@ class Customer:
 	Name as string:
 		get:
 			return self._name
+
+
+c = Customer("juan")
+assert c.This isa Customer
+print c

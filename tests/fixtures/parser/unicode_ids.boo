@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported
 """
 test30test30test30
 """

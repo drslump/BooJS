@@ -1,7 +1,5 @@
-#IGNORE: Properties not supported yet
 """
 homer
-
 """
 class Person:
 	override def toString():

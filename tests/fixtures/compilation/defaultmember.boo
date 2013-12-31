@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: DefaultMember attribute
 """
 C1.ItemOne
 set C1.ItemOne

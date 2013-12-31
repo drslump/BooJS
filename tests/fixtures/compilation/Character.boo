@@ -1,4 +1,6 @@
-#IGNORE: Properties not supported yet
+"""
+Donald
+"""
 namespace MultiFileTest
 
 class Character:
@@ -9,5 +11,6 @@ class Character:
 	def constructor(name as string):
 		_name = name
 
-	
+c = Character("Donald")
+print c.Name	
 	

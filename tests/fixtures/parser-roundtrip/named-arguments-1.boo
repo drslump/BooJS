@@ -1,7 +1,7 @@
-#IGNORE: Properties not supported yet
 """
 """
 class Customer:
-	[Property(FirstName, Default: "")]
+	[Property(FirstName, Protected: true)]
 	_fname as string
 
+c = Customer()

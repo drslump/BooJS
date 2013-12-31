@@ -1,11 +1,17 @@
-#IGNORE: Properties not supported yet
-
+"""
+Hello World
+"""
 class Action:
-	cb = null
+	cb as callable = null
 	def constructor(callback):
 		cb = callback
+	def run():
+		cb()
 
 class A:
 	[property(Go)]
 	action = Action() def():
 		print("Hello World")
+
+a = A()
+a.Go.run()

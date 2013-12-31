@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Internal types are not exported
 """
 foo: bar
 """

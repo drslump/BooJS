@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Produces and endless loop in the compiler
 #DUCKY
 """
 42

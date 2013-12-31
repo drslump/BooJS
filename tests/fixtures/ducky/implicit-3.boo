@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: Implicit overloading not fully supported
 #DUCKY
 """
 gate is open

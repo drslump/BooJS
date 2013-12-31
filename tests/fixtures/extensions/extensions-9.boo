@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported
+#IGNORE: BUG - Static properties not supported yet
 """
 Extensions.Bar
 Foo2.Baz
