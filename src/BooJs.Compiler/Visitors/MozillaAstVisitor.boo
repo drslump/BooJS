@@ -375,9 +375,12 @@ Transforms a Boo AST into a Mozilla AST
         # TODO: Shouldn't fields with primitive initializers be moved to the prototype?
         # TODO: Boo already moves field initialization to the constructors
         for f as Field in [m for m in node.Members if m.NodeType == NodeType.Field]:
-            # TODO: Define fields without initializers too
             if f.Initializer:
                 assign = CreateAssign(loc(f), "this.$(f.Name)", Apply(f.Initializer))
+                cons.body.Add(assign)
+            else:
+                # TODO: Define fields according to their default values for each type
+                assign = CreateAssign(loc(f), "this.$(f.Name)", Moz.Literal(null))
                 cons.body.Add(assign)
 
         # Inherit "static" members from the parent type
@@ -465,6 +468,31 @@ Transforms a Boo AST into a Mozilla AST
                 body: fn.body
             )
             block.Add(assign)
+
+        # Instance properties
+        # TODO: Can we generate actual JavaScript properties too?
+        members = [m for m in node.Members if m.NodeType == NodeType.Property and not m.IsStatic]
+        for prop as Property in members:
+            if prop.Getter:
+                assign = CreateAssign(loc(prop.Getter), node.Name + '.prototype.get_' + prop.Name, null)
+                fn = Apply(prop.Getter) as Moz.FunctionDeclaration
+                assign.right = Moz.FunctionExpression(
+                    loc: fn.loc,
+                    id: Moz.Identifier(node.FullName.Replace('.', '$') + '$' + fn.id.name),
+                    params: fn.params,
+                    body: fn.body
+                )
+                block.Add(assign)
+            if prop.Setter:
+                assign = CreateAssign(loc(prop.Setter), node.Name + '.prototype.set_' + prop.Name, null)
+                fn = Apply(prop.Setter) as Moz.FunctionDeclaration
+                assign.right = Moz.FunctionExpression(
+                    loc: fn.loc,
+                    id: Moz.Identifier(node.FullName.Replace('.', '$') + '$' + fn.id.name),
+                    params: fn.params,
+                    body: fn.body
+                )
+                block.Add(assign)
 
         # TODO: Include static constructor logic to run when creating the type
 
@@ -818,6 +846,42 @@ Transforms a Boo AST into a Mozilla AST
         Return n
 
     def OnBinaryExpression(node as BinaryExpression):
+        # TODO: Do we actually get these inplace operators?
+        match node.Operator:
+            case BinaryOperatorType.InPlaceAddition:
+                node.Right = [| $(node.Left) + $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceDivision:
+                node.Right = [| $(node.Left) / $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceModulus:
+                node.Right = [| $(node.Left) % $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceMultiply:
+                node.Right = [| $(node.Left) * $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceSubtraction:
+                node.Right = [| $(node.Left) - $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceBitwiseAnd:
+                node.Right = [| $(node.Left) & $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceBitwiseOr:
+                node.Right = [| $(node.Left) | $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceExclusiveOr:
+                node.Right = [| $(node.Left) ^ $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceShiftLeft:
+                node.Right = [| $(node.Left) << $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            case BinaryOperatorType.InPlaceShiftRight:
+                node.Right = [| $(node.Left) >> $(node.Right) |]
+                node.Operator = BinaryOperatorType.Assign
+            otherwise:
+                pass
+
+
         n = Moz.BinaryExpression(loc: loc(node))
         match node.Operator:
             case BinaryOperatorType.ReferenceEquality:
@@ -870,23 +934,32 @@ Transforms a Boo AST into a Mozilla AST
                 n.operator = '<<'
             case BinaryOperatorType.ShiftRight:
                 n.operator = '>>'
-
-            case BinaryOperatorType.Assign:
-                n = Moz.AssignmentExpression(loc: loc(node), operator: '=')
-            case BinaryOperatorType.InPlaceBitwiseAnd:
-                n = Moz.AssignmentExpression(loc: loc(node), operator: '&=')
-            case BinaryOperatorType.InPlaceBitwiseOr:
-                n = Moz.AssignmentExpression(loc: loc(node), operator: '|=')
-            case BinaryOperatorType.InPlaceExclusiveOr:
-                n = Moz.AssignmentExpression(loc: loc(node), operator: '^=')
-
+                
             case BinaryOperatorType.And:
                 n = Moz.LogicalExpression(loc: loc(node), operator: '&&')
             case BinaryOperatorType.Or:
                 n = Moz.LogicalExpression(loc: loc(node), operator: '||')
 
+            case BinaryOperatorType.Assign:
+                # HACK: Don't know why the setter is not automatically converted to a call.
+                #       We have to perform the conversion here. It probably needs more work.
+                if node.Left.Entity and node.Left.Entity.EntityType == EntityType.Property:
+                    mre = node.Left as MemberReferenceExpression
+                    ce = Moz.CallExpression(
+                        Moz.MemberExpression(
+                            Apply(mre.Target),
+                            'set_' + mre.Name
+                        ),
+                        Apply(node.Right),
+                        loc: loc(node)
+                    )
+                    Return ce
+                    return
+                n = Moz.AssignmentExpression(loc: loc(node), operator: '=')
+
             otherwise:
                 raise 'Operator not supported ' + node.Operator
+
 
         n.left = Apply(node.Left)
         n.right = Apply(node.Right)
