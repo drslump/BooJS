@@ -78,6 +78,7 @@
     <Compile Include="Macros\AssertMacro.boo" />
     <Compile Include="Macros\ConstMacro.boo" />
     <Compile Include="Macros\ExtensionAttribute.boo" />
+    <Compile Include="Macros\GetterAttribute.boo" />
     <Compile Include="Macros\GlobalMacro.boo" />
     <Compile Include="Macros\IfdefMacro.boo" />
     <Compile Include="Macros\JsMeta.boo" />
@@ -85,6 +86,8 @@
     <Compile Include="Macros\NewMeta.boo" />
     <Compile Include="Macros\PreservingMacro.boo" />
     <Compile Include="Macros\PrintMacro.boo" />
+    <Compile Include="Macros\PropertyAttribute.boo" />
+    <Compile Include="Macros\PropertyMacro.boo" />
     <Compile Include="Macros\TraceMacro.boo" />
     <Compile Include="Macros\WithMacro.boo" />
     <Compile Include="Browser\Dom2.boo" />
