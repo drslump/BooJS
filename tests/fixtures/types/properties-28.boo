@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: DefaultMember attribute not supported
 import System.Reflection
 
 [DefaultMember("Item")]

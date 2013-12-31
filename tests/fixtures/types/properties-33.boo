@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: .Net library not supported
 """
 bar
 """

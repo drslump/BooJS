@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 """
 null reference
 """
@@ -9,7 +8,7 @@ class Person:
 
 try:
 	# make sure the getter is typed string by
-	# calling Trim
-	print(Person().Name.Trim())
-except x as System.NullReferenceException:
+	# calling toLowerCase
+	print(Person().Name.toLowerCase())
+except x as TypeError:
 	print("null reference")

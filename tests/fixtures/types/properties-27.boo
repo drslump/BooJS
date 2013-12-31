@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 class MultiplicationTable:
 	Item(lhs as int, rhs as int):
 		get:

@@ -1,5 +1,4 @@
-#UNSUPPORTED: Reflection
-
+#UNSUPPORTED: Interfaces not supported yet
 
 interface IFoo:
 

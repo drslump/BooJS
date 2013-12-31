@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: super not fully supported
 """
 A.Foo.set
 B.Foo.set

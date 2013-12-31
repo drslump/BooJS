@@ -1,4 +1,5 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: Reflection
+
 import System.Reflection
 
 class Person:

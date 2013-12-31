@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: Interfaces not supported yet
 interface IFoo:
 	Bar:
 		get

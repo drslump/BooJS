@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: Reflection
 class InstanceCount:
 	
 	[getter(Instances)]

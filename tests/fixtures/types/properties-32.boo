@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 """
 B.Name = 'Thelonius'
 Thelonius

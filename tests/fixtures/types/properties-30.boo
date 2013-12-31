@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: DefaultMember attribute not supported
 """
 1, 2
 2, 1: Carlos Ezequiel

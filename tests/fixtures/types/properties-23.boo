@@ -1,4 +1,5 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: reflection
+
 class Entity:
 	abstract Name as string:
 		get:

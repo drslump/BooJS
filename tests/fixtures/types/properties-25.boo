@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Static constructor/initialization not supported yet
 """
 1.0
 1.1

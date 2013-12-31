@@ -1,10 +1,9 @@
-#IGNORE: Properties not supported yet
 """
-Simpson, Homer
+Simpson, 51
 """
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Character
 
-p = Person(LastName: "Simpson")
-p.FirstName = "Homer"
+p = Character("Simpson")
+p.Age = 51
 
-print "${p.LastName}, ${p.FirstName}"
+print "${p.Name}, ${p.Age}"

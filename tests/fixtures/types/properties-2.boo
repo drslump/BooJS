@@ -1,12 +1,10 @@
-#IGNORE: Properties not supported yet
 """
 Si
 """
-import System
-import BooCompiler.Tests.SupportingClasses from BooCompiler.Tests
+from BooJs.Tests.Support import Character
 
-p = Person(LastName: "Simpson")
+p = Character("Simpson", Age: 51)
 
-firstLetter, secondLetter = p.LastName
+firstLetter, secondLetter = p.Name
 
-Console.Write("${firstLetter}${secondLetter}")
+print("${firstLetter}${secondLetter}")

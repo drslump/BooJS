@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 class Buffer:
 	
 	[property(Data)]

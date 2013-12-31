@@ -1,4 +1,5 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Static constructor/initialization not supported yet
+
 class Foo:
 	
 	[property(Version)]

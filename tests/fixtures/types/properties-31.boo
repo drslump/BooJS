@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#UNSUPPORTED: DefaultMember attribute not supported
 """
 0, 0
 1, 1

@@ -1,4 +1,4 @@
-#IGNORE: Properties not supported yet
+#IGNORE: BUG - Type reference not correctly mapped to namespace imports
 class Foo:
 
 	_gaga as int

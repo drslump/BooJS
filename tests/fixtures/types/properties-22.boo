@@ -1,4 +1,3 @@
-#IGNORE: Properties not supported yet
 """
 A.Foo.set
 B.Foo.set
