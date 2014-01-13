@@ -49,6 +49,13 @@ Transforms a Boo AST into a Mozilla AST
         Visit node
         return _return
 
+    def OnCompileUnit(node as CompileUnit):
+        p = Moz.Program()
+        for mod in node.Modules:
+            Visit(mod)
+            p.body.Add(_return)
+        Return p
+
     def OnBoolLiteralExpression(node as BoolLiteralExpression):
         Return Moz.Literal(loc: loc(node), value: node.Value)
 
@@ -134,7 +141,7 @@ Transforms a Boo AST into a Mozilla AST
         return a
 
     def OnModule(node as Module):
-        n = Moz.Program(loc: loc(node))
+        n = Moz.BlockStatement(loc: loc(node))
 
         deps = List of Moz.IExpression() { Moz.Literal('Boo') }
         refs = List of Moz.IPattern() { Moz.Identifier('Boo') }
