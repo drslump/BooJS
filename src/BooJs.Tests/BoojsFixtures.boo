@@ -15,6 +15,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/async-await.boo')
 
   [Test]
+  def test_duck_call():
+    FixtureRunner.run('tests/fixtures/boojs/duck-call.boo')
+
+  [Test]
   def test_eval():
     FixtureRunner.run('tests/fixtures/boojs/eval.boo')
 

@@ -28,7 +28,7 @@ class RuntimeServices:
 
     # Duck dynamic dispatching
 
-    [Transform( $1[$2]($3) )]
+    [Transform( $1[$2].apply($1, $3) )]
     static def Invoke(target as object, method as string, args as object*) as object:
         pass
     static def InvokeCallable(target as object, args as object*) as object:
