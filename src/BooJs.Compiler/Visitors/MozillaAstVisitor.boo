@@ -524,7 +524,12 @@ Transforms a Boo AST into a Mozilla AST
         Return CreateVar(node, node.Name, call)
 
     def OnField(node as Field):
-        pass
+        if node.IsStatic:
+            if ent = node.Entity as IField:
+                init = Moz.Literal(ent.StaticValue)
+            elif node.Initializer:
+                init = Apply(node.Initializer)
+            Return CreateVar(node, node.Name, init)
 
     def OnConstructor(node as Constructor):
         n = Moz.FunctionDeclaration(loc: loc(node))

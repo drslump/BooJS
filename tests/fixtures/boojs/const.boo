@@ -1,7 +1,6 @@
-#IGNORE: BUG - Constants are not properly defined to be exported
 """
 FOO
 """
-const FOO = "FOO"
+const FOO as string = "FOO"
 
 print FOO

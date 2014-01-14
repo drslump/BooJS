@@ -170,9 +170,9 @@ class FixtureRunner:
 
             timer = System.Diagnostics.Stopwatch()
             pipeline.BeforeStep += def(pipeline, args):
-                //print '-------------------------------------------'
-                //print 'Step:', args.Step
-                //print args.Context.CompileUnit
+                # print '-------------------------------------------'
+                # print 'Step:', args.Step
+                # print args.Context.CompileUnit
                 timer.Restart()
 
             pipeline.AfterStep += def(pipeline, args):
