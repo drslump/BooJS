@@ -53,7 +53,8 @@ Transforms a Boo AST into a Mozilla AST
         p = Moz.Program()
         for mod in node.Modules:
             Visit(mod)
-            p.body.Add(_return)
+            for st in (_return as Moz.BlockStatement).body:
+                p.body.Add(st)
         Return p
 
     def OnBoolLiteralExpression(node as BoolLiteralExpression):
@@ -92,7 +93,7 @@ Transforms a Boo AST into a Mozilla AST
     """ If it's inside a constructor we keep the `self` identifier since they
         act as a factory. Otherwise we create a `this` keyword
     """
-        if node.GetAncestor[of Constructor]():
+        if node.GetAncestor[of Constructor]() or node.GetAncestor[of BlockExpression]():
             Return Moz.Identifier(loc: loc(node), 'self')
         else:
             Return Moz.ThisExpression(loc: loc(node))
@@ -214,7 +215,6 @@ Transforms a Boo AST into a Mozilla AST
             )
             # Clone the deps list replacing 'exports' by the namespace
             deps = deps.GetRange(0, len(deps))
-            #deps[0] = Moz.Literal((node.Namespace.Name if node.Namespace else ''))
             rcall.arguments.Add(Moz.ArrayExpression(elements: deps))
             fn = Moz.FunctionExpression(params: refs, body: Moz.BlockStatement())
             rcall.arguments.Add(fn)
@@ -571,6 +571,11 @@ Transforms a Boo AST into a Mozilla AST
             n.params.Add(p)
 
         n.body = Apply(node.Body)
+
+        # HACK: Dirty hack to reference the instance from inside block expressions
+        # TODO: Properly implement this by checking if the method actually contains block expressions
+        n.body.body.Insert(0, CreateVar(node, 'self', Moz.ThisExpression()))
+
         Return n
 
     def OnDeclarationStatement(node as DeclarationStatement):
@@ -795,7 +800,6 @@ Transforms a Boo AST into a Mozilla AST
         # Detect constructors
         if node.ContainsAnnotation('constructor') or \
            node.Target.Entity and node.Target.Entity.EntityType == EntityType.Constructor and not isFactory(node.Target):
-           #node.Target.Entity isa IConstructor and not isFactory(node.Target):
             # TODO: Check if we know for sure there is a constructor factory
             c = Moz.NewExpression(loc: loc(node))
             c._constructor = Apply(node.Target)

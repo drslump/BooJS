@@ -137,6 +137,7 @@ class PrepareAst(AbstractTransformerCompilerStep):
             if HasAttribute[of CompilerGlobalScopeAttribute](intEntity.Node):
                 node.Name = 'exports'
                 return node
+
             # Prefix type references in the same module with exports
             if intEntity.Node.LexicalInfo.FullPath == node.LexicalInfo.FullPath:
                 mre = MemberReferenceExpression(

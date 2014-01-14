@@ -43,6 +43,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/generator-loop.boo')
 
   [Test]
+  def test_generator_method():
+    FixtureRunner.run('tests/fixtures/boojs/generator-method.boo')
+
+  [Test]
   def test_globals():
     FixtureRunner.run('tests/fixtures/boojs/globals.boo')
 
