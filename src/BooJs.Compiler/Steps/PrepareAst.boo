@@ -139,7 +139,8 @@ class PrepareAst(AbstractTransformerCompilerStep):
                 return node
 
             # Prefix type references in the same module with exports
-            if intEntity.Node.LexicalInfo.FullPath == node.LexicalInfo.FullPath:
+            # TODO: Shouldn't this take into account different namespaces?
+            if true or intEntity.Node.LexicalInfo.FullPath == node.LexicalInfo.FullPath:
                 mre = MemberReferenceExpression(
                     node.LexicalInfo,
                     Target: [| exports |],
