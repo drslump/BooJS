@@ -5,6 +5,8 @@ from Boo.Lang.Compiler.Steps import AbstractTransformerCompilerStep
 from Boo.Lang.Compiler.TypeSystem import EntityType, IExternalEntity, ExternalConstructor, IMethod
 from Boo.Lang.Compiler.TypeSystem.Reflection import ExternalType
 
+from BooJs.Lang.Extensions import ExternAttribute
+
 from BooJs.Compiler.Utils import *
 
 
@@ -101,9 +103,26 @@ class ProcessImports(AbstractTransformerCompilerStep):
         # Make sure we use the entity name for external references (they may have been aliased)
         if extent = node.Entity as IExternalEntity:
             node.Name = extent.Name
+
         super(node)
 
+    protected def GetExternName(ent as IExternalEntity) as string:
+        attr as ExternAttribute
+        if ec = ent as ExternalConstructor:
+            attr = System.Attribute.GetCustomAttribute(ec.ConstructorInfo.DeclaringType, typeof(ExternAttribute), false)
+        elif et = ent as ExternalType:
+            attr = System.Attribute.GetCustomAttribute(et.ActualType, typeof(ExternAttribute), false)
+
+        return (attr.Name if attr else null)
+
     def OnReferenceExpression(node as ReferenceExpression):
+        # Get name from extern definition
+        if node.Entity and node.Entity isa IExternalEntity:
+            name = GetExternName(node.Entity)
+            if name:
+                node.Name = name
+                return
+
         # External constructors
         if extent = node.Entity as IExternalEntity:
             if extent.EntityType == EntityType.Constructor:

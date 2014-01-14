@@ -31,6 +31,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/event.boo')
 
   [Test]
+  def test_extern():
+    FixtureRunner.run('tests/fixtures/boojs/extern.boo')
+
+  [Test]
   def test_for_closure():
     FixtureRunner.run('tests/fixtures/boojs/for-closure.boo')
 
