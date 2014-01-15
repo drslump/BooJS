@@ -524,6 +524,7 @@ Transforms a Boo AST into a Mozilla AST
         Return CreateVar(node, node.Name, call)
 
     def OnField(node as Field):
+        # This is basically to support `const` (static fields in the module class)
         if node.IsStatic:
             if ent = node.Entity as IField:
                 init = Moz.Literal(ent.StaticValue)

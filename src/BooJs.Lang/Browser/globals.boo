@@ -1,9 +1,9 @@
-namespace Browser
+namespace BooJs.Lang.Browser
 
 from BooJs.Lang.Extensions import ExternAttribute, TransformAttribute
 
 
-[extern]
+[extern('window')]
 static class window:
     interface Storage:
 
@@ -24,6 +24,8 @@ static class window:
     public localStorage as Storage
 
     public requestAnimationFrame as callable
+
+    public document as Dom3.Document
 
 
     def setTimeout(func as callable, delay as int) as object:

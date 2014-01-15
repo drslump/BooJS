@@ -112,8 +112,9 @@ class jQuery(ICallable):
         pass
     def constructor(elements as (DOM.Element)):
         pass
-    def constructor(callback as callable):
-        pass
+    # TODO: Why doesn't the compiler tell apart callables from objects?
+    # def constructor(callback as callable):
+    #     pass
     def constructor(any as object):
         pass
 
