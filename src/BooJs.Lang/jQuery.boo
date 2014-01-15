@@ -358,3 +358,6 @@ class jQuery(ICallable):
         pass
     def promise(type as string, target as object) as Promise:
         pass
+
+    def on(evt as string, fn as callable) as jQuery:
+        pass
