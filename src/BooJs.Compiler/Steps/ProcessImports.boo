@@ -79,6 +79,8 @@ class ProcessImports(AbstractTransformerCompilerStep):
             for arg as ReferenceExpression in mie.Arguments:
                 fqn = node.Namespace + '.' + arg.Name
                 continue if isExtern(fqn)
+                continue if fqn.EndsWith('Macro') or fqn.EndsWith('Attribute')
+
 
                 if node.Alias:
                     MapNamespace(node.Namespace + '.' + arg.Name, null, node.AssemblyReference)
