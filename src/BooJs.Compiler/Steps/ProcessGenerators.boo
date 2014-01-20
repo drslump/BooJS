@@ -287,6 +287,14 @@ class ProcessGenerators(AbstractTransformerCompilerStep):
     override def LeaveMethod(node as Method):
         has_try = HasTryStatement(node.Body)
 
+        # Before transforming the generator into a state machine we have to apply the custom
+        # try/except handling ad-hoc, for normal code this step will run automatically later
+        # on in the pipeline but since the try/except blocks are going to be transformed into
+        # states we use the same step now to cover some use cases (ie: custom variable
+        # declarations)
+        if has_try:
+            ProcessTry().Visit(node)
+
         # Transform the method body into a state machine
         transformer = TransformGenerator()
         transformer.OnBlock(node.Body)

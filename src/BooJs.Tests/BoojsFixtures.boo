@@ -43,6 +43,10 @@ class BoojsFixtures:
     FixtureRunner.run('tests/fixtures/boojs/generator-conditionals.boo')
 
   [Test]
+  def test_generator_except():
+    FixtureRunner.run('tests/fixtures/boojs/generator-except.boo')
+
+  [Test]
   def test_generator_loop():
     FixtureRunner.run('tests/fixtures/boojs/generator-loop.boo')
 
