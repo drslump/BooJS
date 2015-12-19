@@ -1,26 +1,12 @@
 # Travis-CI Build for BooJs
 # see travis-ci.org for details
 
-language: objective-c
-
-env:
-  global:
-    - EnableNuGetPackageRestore=true
-    - PKG_CONFIG_PATH=/Library/Frameworks/Mono.framework/Versions/Current/lib/pkgconfig/
-  matrix:
-    - MONO_VER="4.2.2"
+language: csharp
+mono:
+  - 3.12.1
 
 install:
-  # Obtain mono from a fast mirror (over 150Mb download), travis-ci seems to be hosted in NY
-  # - wget "http://switch.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  # - wget "http://softlayer-ams.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  # - wget "http://hivelocity.dl.sourceforge.net/project/mono.mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  # Personal mirror (PLEASE DO NOT USE IT!)
-  #- wget "http://s3.amazonaws.com/travis-mirror/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  # Official download
-  - wget "http://download.mono-project.com/archive/${MONO_VER}/macos-10-x86/MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg"
-  # Install mono
-  - sudo installer -pkg "MonoFramework-MDK-${MONO_VER}.macos10.xamarin.x86.pkg" -target /
+  - echo "nothing to install"
 
 before_script:
  # Build BooJs...
